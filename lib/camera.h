@@ -8,13 +8,14 @@ class Camera : Result
     private:
 
         /* Camera settings */
-        Point3          eye         = VECTOR_3D_I;
-        Point3          top         = VECTOR_3D_Y;
-        Point3          target      = VECTOR_3D_0;
+        Point3          eye             = VECTOR_3D_I;
+        Point3          top             = VECTOR_3D_Y;
+        Point3          target          = VECTOR_3D_0;
 
-        bool            eyeLock     = false;    /* Lock eye position */
-        bool            topLock     = false;    /* Lock top direction */
-        bool            targetLock  = false;    /* Lock target position */
+        bool            eyeLock         = false;    /* Lock eye position */
+        bool            topLock         = false;    /* Lock top direction */
+        bool            targetLock      = false;    /* Lock target position */
+        bool            distanceLock    = true;     /* Lock distance between eye and target*/
 
     public:
 
@@ -23,7 +24,17 @@ class Camera : Result
         */
         Camera& setEye
         (
-            const Point3*
+            const Point3&
+        );
+
+
+
+        /*
+            Directive set eye position
+        */
+        Camera& moveEye
+        (
+            const Point3&
         );
 
 
@@ -40,7 +51,17 @@ class Camera : Result
         */
         Camera& setTop
         (
-            const Point3*
+            const Point3&
+        );
+
+
+
+        /*
+            Move top vector with normalize
+        */
+        Camera& moveTop
+        (
+            const Point3&
         );
 
 
@@ -57,9 +78,18 @@ class Camera : Result
         */
         Camera& setTarget
         (
-            const Point3*
+            const Point3&
         );
 
+
+
+        /*
+            Move camera target with normalize
+        */
+        Camera& moveTarget
+        (
+            const Point3&
+        );
 
 
         /*
@@ -70,11 +100,30 @@ class Camera : Result
 
 
         /*
+            Normalize camera vectors and position
+        */
+        Camera& norm();
+
+
+
+        /*
+        Set top normal vector
+        */
+        Camera& place
+        (
+            const Point3& aEye = VECTOR_3D_X,
+            const Point3& aTarget = VECTOR_3D_0,
+            const Point3& aTop  = VECTOR_3D_Y
+        );
+
+
+
+        /*
             Shift camera at 3d
         */
         Camera& shift
         (
-            const Point3*
+            const Point3&
         );
 
 

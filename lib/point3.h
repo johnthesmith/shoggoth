@@ -14,6 +14,8 @@ struct Point3
     double y = 0;
     double z = 0;
 
+
+
     /*
       Constructor
     */
@@ -35,11 +37,37 @@ struct Point3
     );
 
 
+
+    friend Point3 operator+
+    (
+        const Point3&,  /* First operand */
+        const Point3&   /* Second operand */
+    );
+
+
+
     friend Point3 operator-
     (
         const Point3&,  /* First operand */
         const Point3&   /* Second operand */
     );
+
+
+
+    friend double operator*
+    (
+        const Point3&,  /* First operand */
+        const Point3&   /* Second operand */
+    );
+
+
+
+    friend Point3 operator%
+    (
+        const Point3&,  /* First operand */
+        const Point3&   /* Second operand */
+    );
+
 
 
     /*
@@ -132,7 +160,7 @@ struct Point3
     */
     Point3& add
     (
-        Point3&
+        const Point3&
     );
 
 

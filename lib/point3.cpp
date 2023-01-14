@@ -44,7 +44,26 @@ Point3::Point3
 
 
 /*
-    Operator minus r = a - b
+    Plus Operator r = a + b
+*/
+Point3 operator+
+(
+    const Point3& a,    /* First operand */
+    const Point3& b     /* Second operand */
+)
+{
+    return Point3
+    (
+        a.x + b.x,
+        a.y + b.y,
+        a.z + b.z
+    );
+}
+
+
+
+/*
+    Minus Operator r = a - b
 */
 Point3 operator-
 (
@@ -60,6 +79,42 @@ Point3 operator-
     );
 }
 
+
+
+/*
+    Operator dot product r = a * b
+*/
+double operator*
+(
+    const Point3& a,    /* First operand */
+    const Point3& b     /* Second operand */
+)
+{
+    return
+    a.x * b.x +
+    a.y * b.y +
+    a.z * b.z
+    ;
+}
+
+
+
+/*
+    Operator cross r = a x b
+*/
+Point3 operator%
+(
+    const Point3& a,    /* First operand */
+    const Point3& b     /* Second operand */
+)
+{
+    return Point3
+    (
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    );
+}
 
 
 
@@ -196,7 +251,7 @@ Point3& Point3::negative()
 */
 Point3& Point3::add
 (
-    Point3& a
+    const Point3& a
 )
 {
     x += a.x;

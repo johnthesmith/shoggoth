@@ -4,7 +4,9 @@
 #include "../lib/scene_payload.h"
 
 
+
 using namespace std;
+
 
 
 class Form : public ScenePayload
@@ -15,13 +17,14 @@ class Form : public ScenePayload
         */
         Form
         (
-            Log& aLog
+            Log& aLog   /* Log */
         )
         : ScenePayload( aLog ) /* Call parent constructor */
         {};
 
+
         virtual void draw
         (
             Scene& aScene   /* Scene object */
-        ) override;
+        );
 };

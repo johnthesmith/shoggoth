@@ -16,14 +16,19 @@ using namespace std;
 
 
 
-int main(int argc, char** argv)
+int main
+(
+    int argc,
+    char** argv
+)
 {
     auto log = Log();
 
     log.begin( "Application start" );
 
     auto scene      = Scene( log );
-    auto payload    = ScenePayload( log );
+    auto payload    = Form( log );
+
     scene.init().setPayload( payload ).loop().finit();
 
     log.end( "Application stop" );

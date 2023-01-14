@@ -7,19 +7,12 @@
 #include "../lib/log_points.h"
 #include "../lib/draw_mode.h"
 
+/* User libraries */
+#include "form.h"
+
 
 
 using namespace std;
-
-
-
-//Form::Form
-//(
-//    Log& aLog
-//)
-//: ScenePayload( aLog ) /* Call parent constructor */
-//{}
-//
 
 
 
@@ -72,9 +65,9 @@ void Form::draw
     }
     aScene.end();
 
-//    aScene.getLog().trace();
-//    LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );
-//    aScene.getLog().trace();
-//    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
+    aScene.getLog().trace();
+    LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );
+    aScene.getLog().trace();
+    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
 }
 
