@@ -4,6 +4,16 @@
 1. [OpenGL](#opengl) libray (developing)
 2. [Neuronet](neuronet) shabnigroth (planed)
 
+
+
+# Run
+
+./make
+
+
+
+# Current objects scheme
+
 ```mermaid
 flowchart
 
@@ -27,10 +37,6 @@ ScenePayload -->  UserPayload
 UserPayload -.-> main
 Scene -.-> main
 ```
-# Run
-
-./make
-
 
 
 # Core
