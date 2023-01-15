@@ -1,9 +1,9 @@
 
 # Shabnigroth
 
-0. [Core](#core)
-1. [OpenGL](#opengl) libray (developing)
-2. [Neuronet](#neuronet) shabnigroth (planed)
+1. [Core](#core)
+0. [OpenGL](#opengl) libray (developing)
+0. [Neuronet](#neuronet) shabnigroth (planed)
 
 
 
