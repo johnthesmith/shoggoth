@@ -19,7 +19,7 @@ using namespace std;
 /*
     Main draw method
 */
-void Form::draw
+void Form::onDraw
 (
     Scene& aScene   /* Scene object */
 )
@@ -37,9 +37,9 @@ void Form::draw
     .drawAxisIdentity()
     .drawGreedIdentity();
 
-    aScene.getLog().trace();
-    LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );
-    aScene.getLog().trace();
-    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
+//    aScene.getLog().trace();
+//    LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );
+//    aScene.getLog().trace();
+//    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
 }
 

@@ -23,7 +23,7 @@ class Form : public ScenePayload
         {};
 
 
-        virtual void draw
+        virtual void onDraw
         (
             Scene& aScene   /* Scene object */
         );

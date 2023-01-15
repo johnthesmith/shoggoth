@@ -8,6 +8,7 @@
 #include "matrix.h"
 #include "scene_payload.h"
 #include "log_points.h"
+#include "moment.h"
 
 using namespace std;
 
@@ -74,7 +75,10 @@ Scene& Scene::init
             /* Set user pointer for callback access */
             glfwSetWindowUserPointer( win, this );
 
-            /* Set mouse button evevnt in lambda */
+            /*
+                Set mouse button event in lambda
+                https://www.glfw.org/docs/latest/group__input.html#ga571e45a030ae4061f746ed56cb76aede
+            */
             glfwSetMouseButtonCallback
             (
                 win,
@@ -89,6 +93,26 @@ Scene& Scene::init
                     /* Get scene object in lambda and call method */
                     ((Scene*)glfwGetWindowUserPointer( aWin ))
                     -> mouseEvent( aButton, aAction, aMods );
+                }
+            );
+
+            /*
+                Set mouse wheel event in lambda
+                https://www.glfw.org/docs/latest/group__input.html#ga571e45a030ae4061f746ed56cb76aede
+            */
+            glfwSetScrollCallback
+            (
+                win,
+                []
+                (
+                    GLFWwindow* aWin,
+                    double aX,
+                    double aY
+                )
+                {
+                    /* Get scene object in lambda and call method */
+                    ((Scene*)glfwGetWindowUserPointer( aWin ))
+                    -> mouseWheelEvent( aX, aY );
                 }
             );
 
@@ -237,7 +261,7 @@ Scene& Scene::drawEvent()
 {
     if( isOk() && payload != NULL && isInit() )
     {
-        payload -> draw( *this );
+        payload -> onDraw( *this );
         /* Draw buffer to window */
         glfwSwapBuffers( win );
 
@@ -281,7 +305,8 @@ Scene& Scene::keyboardEvent
 
 
 /*
-    Internal mouse event
+    Internal mouse event controller
+    This method generate users event for mouse
 */
 Scene& Scene::mouseEvent
 (
@@ -292,23 +317,138 @@ Scene& Scene::mouseEvent
 {
     if( isOk() && payload != NULL && isInit() )
     {
+        /* Read current moment */
+        auto currentMoment = now();
+        auto keyMode = aMods;
+
+        /* Controller */
         switch( aButton )
         {
-            case 0:break;
-            case 1:break;
-            case 2:break;
-        }
+            case 0: /* Left button */
+                switch( aAction )
+                {
+                    case 0: /* Left button Up */
+                        payload -> onLeftUp( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                    case 1: /* Left button Down */
+                        payload -> onLeftDown( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                }
 
-//        getLog()
-//        .trace( "" )
-//        .prm( "key", aButton )
-//        .prm( "scancode", aAction )
-//        .prm( "scancode", aMods )
-//        ;
+                /* Click sequence change */
+                if( currentMoment - lastLeftMouse < clickTimeoutMls * MILLISECOND )
+                {
+                    leftClickCount += 1;
+                }
+                else
+                {
+                    /* Stop click sequence */
+                    leftClickCount = 0;
+                }
+
+                /* Click sequence controller */
+                switch( leftClickCount )
+                {
+                    case 0: /* First down, begin of click */ break;
+                    case 1: payload -> onLeftClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 2: /* Second down, begin of dbl click */ break;
+                    case 3: payload -> onLeftDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 4: leftClickCount = 0; break;
+                }
+
+                lastLeftMouse = currentMoment;
+            break;
+
+            case 1: /* Right button */
+                switch( aAction )
+                {
+                    case 0: /* Right button Up */
+                        payload -> onRightUp( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                    case 1: /* Right button Down */
+                        payload -> onRightDown( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                }
+
+                /* Click sequence change */
+                if( currentMoment - lastRightMouse < clickTimeoutMls * MILLISECOND )
+                {
+                    rightClickCount += 1;
+                }
+                else
+                {
+                    /* Stop click sequence */
+                    rightClickCount = 0;
+                }
+
+                /* Click sequence controller */
+                switch( rightClickCount )
+                {
+                    case 0: /* First down, begin of click */ break;
+                    case 1: payload -> onRightClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 2: /* Second down, begin of dbl click */ break;
+                    case 3: payload -> onRightDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 4: rightClickCount = 0; break;
+                }
+
+                lastRightMouse = currentMoment;
+            break;
+
+            case 2: /* Middle button */
+                switch( aAction )
+                {
+                    case 0: /* Middle button Up */
+                        payload -> onMiddleUp( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                    case 1: /* Middle button Down */
+                        payload -> onMiddleDown( *this, mousePos, mouseDelta, keyMode );
+                    break;
+                }
+
+                /* Click sequence change */
+                if( currentMoment - lastMiddleMouse < clickTimeoutMls * MILLISECOND )
+                {
+                    middleClickCount += 1;
+                }
+                else
+                {
+                    /* Stop click sequence */
+                    middleClickCount = 0;
+                }
+
+                /* Click sequence controller */
+                switch( middleClickCount )
+                {
+                    case 0: /* First down, begin of click */ break;
+                    case 1: payload -> onMiddleClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 2: /* Second down, begin of dbl click */ break;
+                    case 3: payload -> onMiddleDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 4: middleClickCount = 0; break;
+                }
+
+                lastMiddleMouse = currentMoment;
+            break;
+        }
+        ;
     }
     return *this;
 }
 
+
+
+/*
+    Internal mouse wheel event controller
+    This method generate users event for mouse wheel
+*/
+Scene& Scene::mouseWheelEvent
+(
+    const double aX,
+    const double aY
+)
+{
+    payload -> onMouseWheel( *this, aX, aY );
+    return *this;
+}
 
 
 /******************************************************************************
@@ -569,4 +709,17 @@ Scene& Scene::drawAxisIdentity()
     }
     end();
     return *this;
+}
+
+
+
+/*
+    Convert id glfw to KeyMode
+*/
+KeyMode Scene::keyModeById
+(
+    int a
+)
+{
+    return ALT;
 }

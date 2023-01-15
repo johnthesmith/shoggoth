@@ -1,8 +1,9 @@
+
 # Shabnigroth
 
 0. [Core](#core)
 1. [OpenGL](#opengl) libray (developing)
-2. [Neuronet](neuronet) shabnigroth (planed)
+2. [Neuronet](#neuronet) shabnigroth (planed)
 
 
 
@@ -51,8 +52,21 @@ math -.-> Scene
 
 # Core
 
+1. Core is contain the tiniy libraries for application with users controllers.
+
+
 
 # OpenGL
 
+1. User interface based on on [glfw](https://www.glfw.org/).
+0. Supports:
+    1. mouse events
+    0. keeboards events
+    0. simple math library for 3 and 4 components vectors.
+    0. simple 
+
+
 
 # Shabnigroth
+
+1. Waiting.

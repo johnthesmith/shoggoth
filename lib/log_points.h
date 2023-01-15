@@ -10,7 +10,7 @@
 class LogPoints
 {
     public:
-        static void write( Log&, Point3&, string = "" );
-        static void write( Log&, Point4&, string = "" );
-        static void write( Log&, Matrix4&, string = "" );
+        static void write( Log&, const Point3&, const string = "" );
+        static void write( Log&, const Point4&, const string = "" );
+        static void write( Log&, const Matrix4&, const string = "" );
 };

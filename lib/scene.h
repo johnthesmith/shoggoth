@@ -23,6 +23,18 @@ class ScenePayload;
 
 
 
+/*
+    Key mode
+*/
+enum KeyMode
+{
+    ALT,
+    CONTROL,
+    SHIFT
+};
+
+
+
 class Scene : public Result
 {
     private:
@@ -39,6 +51,13 @@ class Scene : public Result
         int             height      = 0;        /* Scene window height */
         float           ratio       = 0;        /* Radio window width / height */
 
+        long long       lastLeftMouse   = 0;
+        long long       lastRightMouse  = 0;
+        long long       lastMiddleMouse = 0;
+        short           leftClickCount  = 0;
+        short           rightClickCount  = 0;
+        short           middleClickCount  = 0;
+
         /* Camera settings */
         Point3          eye         = VECTOR_3D_I;
         Point3          top         = VECTOR_3D_Y;
@@ -49,6 +68,7 @@ class Scene : public Result
 
     public:
 
+        int clickTimeoutMls     = 200;                          /* Click and double click timeoud in milliseconds */
         Point3  mousePos        = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position */
         Point3  mouseDelta      = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position delta */
         Rgba    backgroundColor = Rgba( 0.2, 0.2, 0.2, 1.0 );   /* Bakcgound color */
@@ -121,6 +141,17 @@ class Scene : public Result
             int,
             int,
             int
+        );
+
+
+
+        /*
+            Internal mouse wheel event
+        */
+        Scene& mouseWheelEvent
+        (
+            const double, /* x offset */
+            const double  /* y offset */
         );
 
 
@@ -237,4 +268,13 @@ class Scene : public Result
 
         Scene& drawGreedIdentity();
         Scene& drawAxisIdentity();
+
+        /*
+            Convert id glfw to KeyMode
+        */
+        static KeyMode keyModeById
+        (
+            int
+        );
 };
+

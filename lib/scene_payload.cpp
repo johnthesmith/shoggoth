@@ -40,7 +40,7 @@ Scene& ScenePayload::getScene()
 /*
     Main draw method
 */
-void ScenePayload::draw
+void ScenePayload::onDraw
 (
     Scene& aScene   /* Scene object */
 )
@@ -53,4 +53,323 @@ void ScenePayload::draw
     .color( RGBA_RED ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Z )
     .end()
     ;
+}
+
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onLeftUp
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "left up",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onLeftDown
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "left down",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onLeftClick
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "left click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onLeftDblClick
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "left double click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onRightUp
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "right up",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onRightDown
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "right down",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onRightClick
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "right click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onRightDblClick
+
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "right double click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onMiddleUp
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "middle up",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onMiddleDown
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "middle down",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onMiddleClick
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "middle click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Main draw method
+*/
+void ScenePayload::onMiddleDblClick
+(
+    const Scene& aScene,          /* Scene object */
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    defaultMouseEventInformation
+    (
+        aScene,
+        "middle double click",
+        aMousePos,
+        aMouseDelta,
+        aKeyMode
+    );
+}
+
+
+
+/*
+    Mouse wheel event
+*/
+void ScenePayload::onMouseWheel
+(
+    const Scene& aScene,  /* Scene object */
+    const double aX,      /* x scroll value */
+    const double aY      /* y scroll value */
+)
+{
+    getLog()
+    .trace( "Mouse wheel" )
+    .prm( "x", aX )
+    .prm( "y", aY )
+    .lineEnd();
+}
+
+
+
+/*
+    Private methods
+*/
+ScenePayload& ScenePayload::defaultMouseEventInformation
+(
+    const Scene& aScene,          /* Scene object */
+    const string aEvent,
+    const Point3& aMousePos,      /* MousePosition */
+    const Point3& aMouseDelta,    /* MousePosition */
+    const int aKeyMode
+)
+{
+    getLog()
+    .trace( "Mouse event" )
+    .prm( "name", aEvent )
+    .prm( "mode", aKeyMode )
+    .lineEnd();
+    return *this;
 }

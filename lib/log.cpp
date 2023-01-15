@@ -282,7 +282,7 @@ Log& Log::value
     }
     else
     {
-        setColor( colorValue );
+        setColor( colorValueZero );
     }
     text( to_string( a ) );
     popColor();
@@ -496,7 +496,12 @@ Log& Log::lineEnd()
     /* Вывод строки */
     if( enabled && typeLine != lrNone )
     {
+        /* Close current line */
+        typeLine = lrNone;
+
+        /* Draw enter */
         eol();
+
         if( fileName == "" )
         {
             cout << buffer;

@@ -67,7 +67,8 @@ class Log
 
         string          tabColor        = INK_SILVER;
         string          colorJob        = INK_GOLD;
-        string          colorValue      = INK_GREY;
+        string          colorValue      = INK_MAGENTA;
+        string          colorValueZero  = INK_CYAN;
         string          colorValuePos   = INK_GREEN;
         string          colorValueNeg   = INK_MAGENTA;
         string          colorLabel      = INK_GREY;

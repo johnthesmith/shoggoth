@@ -11,8 +11,8 @@
 void LogPoints::write
 (
     Log& aLog,
-    Point3& aPoint,
-    string aTitle
+    const Point3& aPoint,
+    const string aTitle
 )
 {
     aLog
@@ -61,8 +61,8 @@ void LogPoints::write
 void LogPoints::write
 (
     Log& aLog,
-    Point4& aPoint,
-    string aTitle
+    const Point4& aPoint,
+    const string aTitle
 )
 {
     aLog
@@ -121,8 +121,8 @@ void LogPoints::write
 void LogPoints::write
 (
     Log& aLog,
-    Matrix4& aMatrix,
-    string aTitle
+    const Matrix4& aMatrix,
+    const string aTitle
 )
 {
     aLog.trace( aTitle ).trace();
