@@ -74,7 +74,25 @@ Scene& Scene::init
             /* Set user pointer for callback access */
             glfwSetWindowUserPointer( win, this );
 
-            /* Set keyboard event */
+            /* Set mouse button evevnt in lambda */
+            glfwSetMouseButtonCallback
+            (
+                win,
+                []
+                (
+                    GLFWwindow* aWin,
+                    int aButton,
+                    int aAction,
+                    int aMods
+                )
+                {
+                    /* Get scene object in lambda and call method */
+                    ((Scene*)glfwGetWindowUserPointer( aWin ))
+                    -> mouseEvent( aButton, aAction, aMods );
+                }
+            );
+
+            /* Set keyboard event in lambda */
             glfwSetKeyCallback
             (
                 win,
@@ -88,14 +106,8 @@ Scene& Scene::init
                 )
                 {
                     /* Get scene object in lambda */
-                    Scene& scene = *(Scene*)glfwGetWindowUserPointer( aWin );
-
-                    scene.setResult( "stop", "user press the keyh" );
-
-                    scene.getLog()
-                    .info( "" )
-                    .prm( "key", aKey )
-                    .prm( "scancode", aScancode );
+                    ((Scene*)glfwGetWindowUserPointer( aWin ))
+                    -> keyboardEvent( aKey, aScancode, aAction, aMods );
                 }
             );
         }
@@ -131,32 +143,6 @@ Scene& Scene::finit()
         glfwTerminate();
         glInit = false;     /* Set initialize flag to false */
     }
-    return *this;
-}
-
-
-
-/*
-    Draw method
-    Call payload draw method
-*/
-Scene& Scene::draw()
-{
-    if( payload != NULL && isInit() )
-    {
-        payload -> draw( *this );
-        /* Draw buffer to window */
-        glfwSwapBuffers( win );
-
-        auto code = glGetError();
-        if( code != GL_NO_ERROR )
-        {
-            auto message = Scene::openglErrorToString( code );
-            getLog().warning( "opengl error" ).prm( "code", code ).prm( "message", message );
-            setResult( "opengl_error", message );
-        }
-    }
-
     return *this;
 }
 
@@ -207,7 +193,7 @@ Scene& Scene::loop()
             mouseDelta.subFrom( mousePos );
 
             /* Draw frame */
-            draw();
+            drawEvent();
             auto stopDraw = now();
 
             /* Calculate dalta draw */
@@ -237,6 +223,90 @@ Scene& Scene::loop()
     return *this;
 }
 
+
+
+/******************************************************************************
+    Internal Events method
+*/
+
+/*
+    Internal draw event method
+    Call payload draw method
+*/
+Scene& Scene::drawEvent()
+{
+    if( isOk() && payload != NULL && isInit() )
+    {
+        payload -> draw( *this );
+        /* Draw buffer to window */
+        glfwSwapBuffers( win );
+
+        auto code = glGetError();
+        if( code != GL_NO_ERROR )
+        {
+            auto message = Scene::openglErrorToString( code );
+            getLog().warning( "opengl error" ).prm( "code", code ).prm( "message", message );
+            setResult( "opengl_error", message );
+        }
+    }
+
+    return *this;
+}
+
+
+
+/*
+    Internal keyboard event
+*/
+Scene& Scene::keyboardEvent
+(
+    int aKey,
+    int aScancode,
+    int aAction,
+    int aMods
+)
+{
+    if( isOk() && payload != NULL && isInit() )
+    {
+        getLog()
+        .info( "" )
+        .prm( "key", aKey )
+        .prm( "scancode", aScancode )
+        .prm( "mode", aMods )
+        ;
+    }
+    return *this;
+}
+
+
+
+/*
+    Internal mouse event
+*/
+Scene& Scene::mouseEvent
+(
+    int aButton,
+    int aAction,
+    int aMods
+)
+{
+    if( isOk() && payload != NULL && isInit() )
+    {
+        getLog()
+        .info( "" )
+        .prm( "key", aButton )
+        .prm( "scancode", aAction )
+        .prm( "scancode", aMods )
+        ;
+    }
+    return *this;
+}
+
+
+
+/******************************************************************************
+    Services
+*/
 
 
 /*
@@ -285,8 +355,8 @@ bool Scene::isWindow()
 
 
 
-/*
-    Service methods
+/******************************************************************************
+    Opengl API
 */
 
 

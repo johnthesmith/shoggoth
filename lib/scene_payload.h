@@ -1,8 +1,8 @@
 #pragma once
 
 /* Local libraries */
-#include "result.h"
-#include "log.h"
+#include "payload.h"
+//#include "log.h"
 //#include "scene.h"
 
 
@@ -13,23 +13,24 @@ using namespace std;
 
 class Scene;
 
-class ScenePayload : public Result
+class ScenePayload : public Payload
 {
     private:
 
-        Log& log;
         Scene* scene    = NULL;   /* Current scene for this payload */
 
     public:
+
         /*
-            Constructor
+            Transparent constructor
         */
         ScenePayload
         (
-            Log&
-        );
+            Log& aLog   /* Log */
+        )
+        : Payload( aLog ) /* Call parent constructor */
+        {};
 
-        ~ScenePayload();
 
         /*
             Set scene value
@@ -44,10 +45,6 @@ class ScenePayload : public Result
         */
         Scene& getScene();
 
-        /*
-            Get scene value
-        */
-        Log& getLog();
 
         /*
             Draw method
@@ -55,5 +52,5 @@ class ScenePayload : public Result
         virtual void draw
         (
             Scene& aScene   /* Scene object */
-        ) = 0;
+        );
 };

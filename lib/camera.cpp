@@ -203,7 +203,7 @@ Camera& Camera::shift
 
 
 /*
-    Shift camera at screen
+    Shift camera at 2d screen
 */
 Camera& Camera::shift
 (

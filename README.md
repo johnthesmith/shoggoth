@@ -17,25 +17,35 @@
 ```mermaid
 flowchart
 
+ScenePayload
+Log
+Camera
+
+math((math<br>libs))
+
 Result --> Camera
 Result --> Payload
 
-Point3 -.-> Scene
-Point4 -.-> Scene
-Matrix4 -.-> Scene
-
 Payload --> ScenePayload
-ScenePayload-.-> Scene
-Camera -.-> Scene
-
-Log -.-> Scene
+Camera -.-> UserPayload
 Log -.-> UserPayload
-Log -.-> main
 
 ScenePayload -->  UserPayload 
+Log -.-> Scene
+ScenePayload-.-> Scene
+
+Log -.-> main
+
 
 UserPayload -.-> main
 Scene -.-> main
+
+
+Point3 -.-> math
+Matrix4 -.-> math
+Point4 -.-> math
+
+math -.-> Scene
 ```
 
 

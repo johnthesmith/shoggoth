@@ -13,23 +13,6 @@ using namespace std;
 
 
 
-ScenePayload::ScenePayload
-(
-    Log& aLog
-):
-log( aLog ) /* define the prived log from aLog argument */
-{
-    getLog().trace( "Create payload" );
-}
-
-
-
-ScenePayload::~ScenePayload()
-{
-    getLog().trace( "Destroy payload" );
-}
-
-
 /*
     Set scene value
 */
@@ -71,17 +54,3 @@ void ScenePayload::draw
     .end()
     ;
 }
-
-
-
-/*
-    Get scene value
-*/
-Log& ScenePayload::getLog()
-{
-    return log;
-}
-
-
-
-

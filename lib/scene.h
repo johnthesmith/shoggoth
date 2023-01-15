@@ -87,18 +87,47 @@ class Scene : public Result
         */
         Scene& finit();
 
-
-        /*
-            Draw method
-        */
-        Scene& draw();
-
         /*
             Main loop for scene
         */
         Scene& loop();
 
 
+        /******************************************************************************
+            Internal Events method
+        */
+
+        /*
+            Internal draw method
+        */
+        Scene& drawEvent();
+
+
+        /*
+            Internal keyboard event
+        */
+        Scene& keyboardEvent
+        (
+            int,
+            int,
+            int,
+            int
+        );
+
+        /*
+            Internal mouse event
+        */
+        Scene& mouseEvent
+        (
+            int,
+            int,
+            int
+        );
+
+
+        /******************************************************************************
+            Services
+        */
 
         /*
             Get payload
