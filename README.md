@@ -61,9 +61,9 @@ math -.-> Scene
 1. User interface based on on [glfw](https://www.glfw.org/).
 0. Supports:
     1. mouse events
-    0. keeboards events
-    0. simple math library for 3 and 4 components vectors.
-    0. simple 
+    0. keyboards events
+    0. math library for vectors operations
+    0. matrix transformation
 
 
 
