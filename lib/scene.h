@@ -194,44 +194,19 @@ class Scene : public Result
 
 
         static string openglErrorToString( GLenum );
+
+
+
+        /*
+            Set Terminate signal for main loop
+            Main loop will be terminated with setTerminate( true );
+        */
+        Scene& setTerminate
+        (
+            bool
+        );
+
+
+        Scene& drawGreedIdentity();
+        Scene& drawAxisIdentity();
 };
-
-
-
-
-
-
-
-
-
-
-
-//// постараюсь описать вопрос:
-//
-//class Scene{...}; // класс сцены
-//
-//class Payload
-//{
-//    private:
-//        ScenePayload* payload; ... // <—— вот тут надо что то другое
-//    public:
-//    /*
-//        Set payload
-//    */
-//    Scene& setPayload
-//    (
-//        ScenePayload&       /* Argument for setting */
-//    );
-//};
-//
-//class UserPayload : public Payload {...} ; // это юзерский код наследник Payload
-//
-//
-//// далее main
-//
-//UserPayload form = UserPayload(); // создали юзерский модуль
-//Scene().setPayload( form ).run(); // создали сцену, установили ей юдерский модуль, запустили.
-//
-//// в методе Scene::run мне надо вызывать из UserPayload метод draw
-//
-//// как?

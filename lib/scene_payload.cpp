@@ -81,3 +81,7 @@ Log& ScenePayload::getLog()
 {
     return log;
 }
+
+
+
+

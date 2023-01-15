@@ -31,39 +31,11 @@ void Form::draw
 
     aScene
     .cameraLocation( Point3( 1,1,1 ), Point3( 0,0,0 ), VECTOR_3D_Y )
-    .cameraApply()
+//    .cameraApply()
 
     .clearColor()
-    .begin( LINE )
-    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_X )
-    .color( RGBA_BLUE ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Y )
-    .color( RGBA_RED ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Z )
-    .end()
-    ;
-
-    aScene.begin( LINE );
-    for( double l = -1; l<=1; l+=0.1 )
-    {
-        aScene
-        .color( Rgba( 1,0,0,0.5 ))
-        .vertex( Point3( l, 0, -1 ))
-        .vertex( Point3( l, 0, 1 ))
-        .vertex( Point3( -1, 0, l ))
-        .vertex( Point3( 1, 0, l ))
-
-        .color( Rgba( 0,1,0,0.5 ))
-        .vertex( Point3( 0, l, -1 ))
-        .vertex( Point3( 0, l, 1 ))
-        .vertex( Point3( 0, -1, l ))
-        .vertex( Point3( 0, 1, l ))
-
-        .color( Rgba( 0,0,1,0.5 ))
-        .vertex( Point3( -1, l, 0 ))
-        .vertex( Point3( 1, l, 0 ))
-        .vertex( Point3( l, -1, 0 ))
-        .vertex( Point3( l, 1, 0 ));
-    }
-    aScene.end();
+    .drawAxisIdentity()
+    .drawGreedIdentity();
 
     aScene.getLog().trace();
     LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );

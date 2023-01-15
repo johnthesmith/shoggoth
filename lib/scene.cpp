@@ -90,6 +90,8 @@ Scene& Scene::init
                     /* Get scene object in lambda */
                     Scene& scene = *(Scene*)glfwGetWindowUserPointer( aWin );
 
+                    scene.setResult( "stop", "user press the keyh" );
+
                     scene.getLog()
                     .info( "" )
                     .prm( "key", aKey )
@@ -145,7 +147,16 @@ Scene& Scene::draw()
         payload -> draw( *this );
         /* Draw buffer to window */
         glfwSwapBuffers( win );
+
+        auto code = glGetError();
+        if( code != GL_NO_ERROR )
+        {
+            auto message = Scene::openglErrorToString( code );
+            getLog().warning( "opengl error" ).prm( "code", code ).prm( "message", message );
+            setResult( "opengl_error", message );
+        }
     }
+
     return *this;
 }
 
@@ -160,6 +171,7 @@ Scene& Scene::loop()
     {
         while
         (
+            isOk() &&                       /* Scene isOk */
             !terminated  &&                 /* Not scene terminated */
             !glfwWindowShouldClose( win )   /* Window is not open */
         )
@@ -188,6 +200,7 @@ Scene& Scene::loop()
             /* Get cursor positions */
             double xpos;
             double ypos;
+
             glfwGetCursorPos( win, &xpos, &ypos);
             mouseDelta.set( mousePos );
             mousePos.set( xpos, ypos, 0 );
@@ -308,15 +321,15 @@ Scene& Scene::begin
 {
     switch( a )
     {
-        case POINT  : glBegin( GL_POINTS ); break;
-        case LINE   : glBegin( GL_LINES ); break;
-        case LINES  : glBegin( GL_LINE_STRIP ); break;
-    }
-
-    auto e = glGetError();
-    if( e != GL_NO_ERROR )
-    {
-        getLog().warning( "glBegin" ).prm( "message", Scene::openglErrorToString( e ) );
+        case POINT      : glBegin( GL_POINTS ); break;
+        case LINE       : glBegin( GL_LINES ); break;
+        case LINES      : glBegin( GL_LINE_STRIP ); break;
+        case LOOP       : glBegin( GL_LINE_LOOP ); break;
+        case QUAD       : glBegin( GL_QUADS ); break;
+        case QUADS      : glBegin( GL_QUAD_STRIP ); break;
+        case TRIANGLE   : glBegin( GL_TRIANGLES ); break;
+        case TRIANGLES  : glBegin( GL_TRIANGLE_STRIP ); break;
+        case FAN        : glBegin( GL_TRIANGLE_FAN ); break;
     }
     return *this;
 }
@@ -326,12 +339,6 @@ Scene& Scene::begin
 Scene& Scene::end()
 {
     glEnd();
-
-//    auto e = glGetError();
-//    if( e != GL_NO_ERROR )
-//    {
-//        getLog().warning( "glEnd" ).prm( "message", Scene::openglErrorToString( e ) );
-//    }
     return *this;
 }
 
@@ -375,11 +382,11 @@ LogPoints::write( getLog(), rotate, "" );
 
     auto view = Matrix4().dot( rotate, translate );
 
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     glFrustum (-1, 1, -1, 1, -1, 1);
 //    glMultMatrixd( (GLdouble*)&translate );
-    glMatrixMode(GL_MODELVIEW);
+    glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
     glLoadMatrixd( (GLdouble*)&view );
 
@@ -421,4 +428,68 @@ string Scene::openglErrorToString
         case GL_STACK_UNDERFLOW: return "An attempt has been made to perform an operation that would cause an internal stack to underflow."; break;
         case GL_STACK_OVERFLOW: return "An attempt has been made to perform an operation that would cause an internal stack to overflow."; break;
     }
+}
+
+
+
+Scene& Scene::setTerminate
+(
+    bool a
+)
+{
+    terminated = a;
+    return *this;
+}
+
+
+
+/*
+    Draw primitives
+*/
+
+/*
+    Draw greed for all axisfrom -1 to 1
+*/
+Scene& Scene::drawGreedIdentity()
+{
+    begin( LINE );
+    for( double l = -1; l<=1; l+=0.1 )
+    {
+        color( Rgba( 1,0,0,0.5 ));
+        vertex( Point3( l, 0, -1 ));
+        vertex( Point3( l, 0, 1 ));
+        vertex( Point3( -1, 0, l ));
+        vertex( Point3( 1, 0, l ));
+
+        color( Rgba( 0,1,0,0.5 ));
+        vertex( Point3( 0, l, -1 ));
+        vertex( Point3( 0, l, 1 ));
+        vertex( Point3( 0, -1, l ));
+        vertex( Point3( 0, 1, l ));
+
+        color( Rgba( 0,0,1,0.5 ));
+        vertex( Point3( -1, l, 0 ));
+        vertex( Point3( 1, l, 0 ));
+        vertex( Point3( l, -1, 0 ));
+        vertex( Point3( l, 1, 0 ));
+    }
+    end();
+    return *this;
+}
+
+
+
+/*
+    Draw axis from -1 to 1
+*/
+Scene& Scene::drawAxisIdentity()
+{
+    begin( LINE );
+    {
+        color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_X );
+        color( RGBA_BLUE ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Y );
+        color( RGBA_RED ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Z );
+    }
+    end();
+    return *this;
 }

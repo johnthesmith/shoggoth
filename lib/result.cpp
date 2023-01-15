@@ -8,24 +8,31 @@ using namespace std; // для того что бы std:: не приходил�
 
 
 
-Result* Result::setCode
+Result& Result::setCode
 (
     string a  /* String for Text */
 )
 {
     code = a;
-    return this;
+    return *this;
 }
 
 
 
-Result* Result::setMessage
+string Result::getCode()
+{
+    return code;
+}
+
+
+
+Result& Result::setMessage
 (
     string a  /* String for Text */
 )
 {
     message = a;
-    return this;
+    return *this;
 }
 
 
@@ -33,7 +40,7 @@ Result* Result::setMessage
 /*
     Set result and message
 */
-Result* Result::setResult
+Result& Result::setResult
 (
     string aCode,   /* Code value */
     string aMessage /* Message value */
@@ -41,12 +48,42 @@ Result* Result::setResult
 {
     setCode( aCode );
     setMessage( aMessage );
-    return this;
+    return *this;
 }
 
 
 
 bool Result::isOk()
 {
-    return code == "";
+    return code == RESULT_OK;
+}
+
+
+
+/*
+    Set result and message
+*/
+Result& Result::resultFrom
+(
+    Result& a
+)
+{
+    setCode( a.code );
+    setMessage( a.message );
+    return *this;
+}
+
+
+
+/*
+    Set result and message
+*/
+Result& Result::resultTo
+(
+    Result& a
+)
+{
+    a.setCode( code );
+    a.setMessage( message );
+    return *this;
 }
