@@ -49,6 +49,8 @@ Point4 -.-> math
 math -.-> Scene
 ```
 
+1. Solid line - extends class
+0. Dotted line - uses class
 
 # Core
 
