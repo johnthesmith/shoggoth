@@ -196,7 +196,7 @@ Scene& Scene::loop()
             drawEvent();
             auto stopDraw = now();
 
-            /* Calculate dalta draw */
+            /* Calculate delta draw */
             auto delta = ( stopDraw - startDraw );
 
             if( delta > 0 )
@@ -292,12 +292,19 @@ Scene& Scene::mouseEvent
 {
     if( isOk() && payload != NULL && isInit() )
     {
-        getLog()
-        .info( "" )
-        .prm( "key", aButton )
-        .prm( "scancode", aAction )
-        .prm( "scancode", aMods )
-        ;
+        switch( aButton )
+        {
+            case 0:break;
+            case 1:break;
+            case 2:break;
+        }
+
+//        getLog()
+//        .trace( "" )
+//        .prm( "key", aButton )
+//        .prm( "scancode", aAction )
+//        .prm( "scancode", aMods )
+//        ;
     }
     return *this;
 }

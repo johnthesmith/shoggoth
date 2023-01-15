@@ -39,7 +39,6 @@ class Scene : public Result
         int             height      = 0;        /* Scene window height */
         float           ratio       = 0;        /* Radio window width / height */
 
-
         /* Camera settings */
         Point3          eye         = VECTOR_3D_I;
         Point3          top         = VECTOR_3D_Y;
