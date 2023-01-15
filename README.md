@@ -9,7 +9,7 @@
 
 # Run
 
-./make
+[./make](./make)
 
 
 
