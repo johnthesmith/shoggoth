@@ -1,3 +1,6 @@
 # Ignore file
+
+# Exclude execute file
+hello
 *.swp
 *~
