@@ -21,7 +21,7 @@ class ScenePayload : public Payload
 
         ScenePayload& defaultMouseEventInformation
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const string,
             const Point3&,  /* MousePosition */
             const Point3&,  /* MousePosition */
@@ -61,7 +61,7 @@ class ScenePayload : public Payload
         */
         virtual void onDraw
         (
-            Scene& aScene   /* Scene object */
+            Scene&    /* Scene object */
         );
 
 
@@ -71,7 +71,7 @@ class ScenePayload : public Payload
         */
         virtual void onCalc
         (
-            Scene& aScene   /* Scene object */
+            Scene&    /* Scene object */
         );
 
 
@@ -81,7 +81,7 @@ class ScenePayload : public Payload
         */
         virtual void onLeftUp
         (
-            const Scene&,     /* Scene object */
+            Scene&,     /* Scene object */
             const Point3&,    /* Mouse position */
             const Point3&,    /* Mouse delta */
             const int         /* Key mode */
@@ -94,10 +94,10 @@ class ScenePayload : public Payload
         */
         virtual void onLeftDown
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -107,10 +107,10 @@ class ScenePayload : public Payload
         */
         virtual void onLeftClick
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -120,10 +120,10 @@ class ScenePayload : public Payload
         */
         virtual void onLeftDblClick
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene& ,        /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -133,10 +133,10 @@ class ScenePayload : public Payload
         */
         virtual void onRightUp
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene& ,        /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -146,10 +146,10 @@ class ScenePayload : public Payload
         */
         virtual void onRightDown
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -159,10 +159,10 @@ class ScenePayload : public Payload
         */
         virtual void onRightClick
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -172,10 +172,10 @@ class ScenePayload : public Payload
         */
         virtual void onRightDblClick
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -185,10 +185,10 @@ class ScenePayload : public Payload
         */
         virtual void onMiddleUp
         (
-            const Scene& aScene,  /* Scene object */
-            const Point3&,        /* Mouse position */
-            const Point3&,        /* Mouse delta */
-            const int             /* Key mode */
+            Scene&,         /* Scene object */
+            const Point3&,  /* Mouse position */
+            const Point3&,  /* Mouse delta */
+            const int       /* Key mode */
         );
 
 
@@ -198,7 +198,7 @@ class ScenePayload : public Payload
         */
         virtual void onMiddleDown
         (
-            const Scene&,   /* Scene object */
+            Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
             const Point3&,  /* Mouse delta */
             const int       /* Key mode */
@@ -211,7 +211,7 @@ class ScenePayload : public Payload
         */
         virtual void onMiddleClick
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const Point3&,  /* Mouse position */
             const Point3&,  /* Mouse delta */
             const int       /* Key mode */
@@ -224,7 +224,7 @@ class ScenePayload : public Payload
         */
         virtual void onMiddleDblClick
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const Point3&,  /* Mouse position */
             const Point3&,  /* Mouse delta */
             const int       /* Key mode */
@@ -237,7 +237,7 @@ class ScenePayload : public Payload
         */
         virtual void onMouseWheel
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const double,   /* x scroll value */
             const double    /* y scroll value */
         );
@@ -249,7 +249,7 @@ class ScenePayload : public Payload
         */
         virtual void onKeyUp
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const int,      /* Key */
             const int,      /* Scan code*/
             const int       /* Mode */
@@ -262,7 +262,7 @@ class ScenePayload : public Payload
         */
         virtual void onKeyDown
         (
-            const Scene&,   /* Scene object */
+            Scene&,   /* Scene object */
             const int,      /* Key */
             const int,      /* Scan code*/
             const int       /* Mode */

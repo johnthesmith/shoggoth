@@ -190,34 +190,7 @@ Scene& Scene::loop()
         )
         {
             /* Run draw function */
-            auto startDraw = now();
-
-            /* Get window size */
-            glfwGetFramebufferSize( win, &width, &height);
-            /* Set opengl viewport default */
-            glViewport( 0, 0, width, height );
-            /* Calculate ratio */
-            if( height > 0 )
-            {
-                ratio = width / (float) height;
-            }
-            else
-            {
-                ratio = 0;
-            }
-
-
-            /* Pulling event for keyboard and mouse*/
-            glfwPollEvents();
-
-            /* Get cursor positions */
-            double xpos;
-            double ypos;
-
-            glfwGetCursorPos( win, &xpos, &ypos);
-            mouseDelta.set( mousePos );
-            mousePos.set( xpos, ypos, 0 );
-            mouseDelta.subFrom( mousePos );
+            auto current = now();
 
             /* Draw frame */
             calcEvent();
@@ -225,12 +198,12 @@ Scene& Scene::loop()
             auto stopDraw = now();
 
             /* Calculate delta draw */
-            auto delta = ( stopDraw - startDraw );
+            auto delta = ( stopDraw - current );
 
             if( delta > 0 )
             {
                 /* Calculate idel time */
-                idle = 1000000 / fpsLimit - delta;
+                idle = 1000000 / fpsDrawLimit - delta;
 
                 /* Sleep idle time */
                 if( idle > 0 )
@@ -243,8 +216,9 @@ Scene& Scene::loop()
                 }
 
                 /* Calculate fps */
-                fps = 1000000 / ( stopDraw - startDraw );
+                fps = 1000000 / ( stopDraw - current );
             }
+
         }
     }
 
@@ -265,6 +239,32 @@ Scene& Scene::drawEvent()
 {
     if( isOk() && payload != NULL && isInit() )
     {
+        /* Get window size */
+        glfwGetFramebufferSize( win, &width, &height);
+        /* Set opengl viewport default */
+        glViewport( 0, 0, width, height );
+        /* Calculate ratio */
+        if( height > 0 )
+        {
+            ratio = width / (float) height;
+        }
+        else
+        {
+            ratio = 0;
+        }
+
+        /* Pulling event for keyboard and mouse*/
+        glfwPollEvents();
+
+        /* Get cursor positions */
+        double xpos;
+        double ypos;
+
+        glfwGetCursorPos( win, &xpos, &ypos);
+        mouseDelta.set( mousePos );
+        mousePos.set( xpos, ypos, 0 );
+        mouseDelta.subFrom( mousePos );
+
         payload -> onDraw( *this );
         /* Draw buffer to window */
         glfwSwapBuffers( win );

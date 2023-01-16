@@ -43,3 +43,37 @@ void Form::onDraw
 //    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
 }
 
+
+
+/*
+    Keyboard up event
+*/
+void Form::onKeyUp
+(
+    Scene&    aScene, /* Scene object */
+    const int       aKey,   /* Key */
+    const int       aCode,  /* Scan code*/
+    const int       aMode   /* Mode */
+)
+{
+    switch( aCode )
+    {
+        case 9:
+            aScene.setTerminate( true );
+        break;
+        case 54:
+            if( aMode == 2 )
+            {
+                aScene.setTerminate( true );
+            }
+        break;
+    }
+
+    getLog()
+    .trace( "Key up" )
+    .prm( "key", aKey )
+    .prm( "code", aCode )
+    .prm( "mode", aMode )
+    .lineEnd();
+}
+

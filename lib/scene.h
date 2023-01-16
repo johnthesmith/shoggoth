@@ -51,20 +51,21 @@ class Scene : public Result
         int             height      = 0;        /* Scene window height */
         float           ratio       = 0;        /* Radio window width / height */
 
-        long long       lastLeftMouse   = 0;
-        long long       lastRightMouse  = 0;
-        long long       lastMiddleMouse = 0;
-        short           leftClickCount  = 0;
-        short           rightClickCount  = 0;
-        short           middleClickCount  = 0;
+        long long       lastLeftMouse       = 0;
+        long long       lastRightMouse      = 0;
+        long long       lastMiddleMouse     = 0;
+        short           leftClickCount      = 0;
+        short           rightClickCount     = 0;
+        short           middleClickCount    = 0;
 
         /* Camera settings */
-        Point3          eye         = VECTOR_3D_I;
-        Point3          top         = VECTOR_3D_Y;
-        Point3          target      = VECTOR_3D_0;
+        Point3          eye                 = VECTOR_3D_I;
+        Point3          top                 = VECTOR_3D_Y;
+        Point3          target              = VECTOR_3D_0;
 
         /* Settings */
-        int         fpsLimit    = 10;       /* FPS limit */
+        int         fpsDrawLimit            = 10;       /* FPS limit */
+        int         fpsCalcLimit            = 10;       /* FPS limit */
 
     public:
 

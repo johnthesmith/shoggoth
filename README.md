@@ -27,29 +27,28 @@ Run:
 flowchart
 
 ScenePayload
-Log
 Camera
+Log
 
 math((math<br>libs))
 
-Result --> Camera
-Result --> Scene
-Result --> Payload
 
 Payload --> ScenePayload
 Camera -.-> UserPayload
-Log -.-> UserPayload
 
-ScenePayload -->  UserPayload 
-Log -.-> Scene
+
+ScenePayload -->  UserPayload
 ScenePayload-.-> Scene
+
+Result --> Camera
+Result --> Payload
+Result --> Scene
+
 
 Log -.-> main
 
-
 UserPayload -.-> main
 Scene -.-> main
-
 
 Point3 -.-> math
 Matrix4 -.-> math

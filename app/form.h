@@ -27,4 +27,14 @@ class Form : public ScenePayload
         (
             Scene& aScene   /* Scene object */
         );
+
+
+
+        virtual void onKeyUp
+        (
+            Scene&,   /* Scene object */
+            const int,      /* Key */
+            const int,      /* Scan code*/
+            const int       /* Mode */
+        );
 };

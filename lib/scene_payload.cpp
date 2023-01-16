@@ -76,9 +76,9 @@ void ScenePayload::onCalc
 */
 void ScenePayload::onLeftUp
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -100,9 +100,9 @@ void ScenePayload::onLeftUp
 */
 void ScenePayload::onLeftDown
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -123,9 +123,9 @@ void ScenePayload::onLeftDown
 */
 void ScenePayload::onLeftClick
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -146,9 +146,9 @@ void ScenePayload::onLeftClick
 */
 void ScenePayload::onLeftDblClick
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -169,9 +169,9 @@ void ScenePayload::onLeftDblClick
 */
 void ScenePayload::onRightUp
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -192,9 +192,9 @@ void ScenePayload::onRightUp
 */
 void ScenePayload::onRightDown
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -215,9 +215,9 @@ void ScenePayload::onRightDown
 */
 void ScenePayload::onRightClick
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -239,9 +239,9 @@ void ScenePayload::onRightClick
 void ScenePayload::onRightDblClick
 
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -261,9 +261,9 @@ void ScenePayload::onRightDblClick
 */
 void ScenePayload::onMiddleUp
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -284,9 +284,9 @@ void ScenePayload::onMiddleUp
 */
 void ScenePayload::onMiddleDown
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -307,9 +307,9 @@ void ScenePayload::onMiddleDown
 */
 void ScenePayload::onMiddleClick
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -330,9 +330,9 @@ void ScenePayload::onMiddleClick
 */
 void ScenePayload::onMiddleDblClick
 (
-    const Scene& aScene,          /* Scene object */
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    Scene& aScene,              /* Scene object */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -353,9 +353,9 @@ void ScenePayload::onMiddleDblClick
 */
 void ScenePayload::onMouseWheel
 (
-    const Scene& aScene,  /* Scene object */
-    const double aX,      /* x scroll value */
-    const double aY      /* y scroll value */
+    Scene& aScene,      /* Scene object */
+    const double aX,    /* x scroll value */
+    const double aY     /* y scroll value */
 )
 {
     getLog()
@@ -372,10 +372,10 @@ void ScenePayload::onMouseWheel
 */
 void ScenePayload::onKeyUp
 (
-    const Scene&    aScene, /* Scene object */
-    const int       aKey,   /* Key */
-    const int       aCode,  /* Scan code*/
-    const int       aMode   /* Mode */
+    Scene&      aScene, /* Scene object */
+    const int   aKey,   /* Key */
+    const int   aCode,  /* Scan code*/
+    const int   aMode   /* Mode */
 )
 {
     getLog()
@@ -393,10 +393,10 @@ void ScenePayload::onKeyUp
 */
 void ScenePayload::onKeyDown
 (
-    const Scene&    aScene, /* Scene object */
-    const int       aKey,   /* Key */
-    const int       aCode,  /* Scan code*/
-    const int       aMode   /* Mode */
+    Scene&      aScene, /* Scene object */
+    const int   aKey,   /* Key */
+    const int   aCode,  /* Scan code*/
+    const int   aMode   /* Mode */
 )
 {
     getLog()
@@ -415,10 +415,10 @@ void ScenePayload::onKeyDown
 */
 ScenePayload& ScenePayload::defaultMouseEventInformation
 (
-    const Scene& aScene,          /* Scene object */
+    Scene& aScene,              /* Scene object */
     const string aEvent,
-    const Point3& aMousePos,      /* MousePosition */
-    const Point3& aMouseDelta,    /* MousePosition */
+    const Point3& aMousePos,    /* MousePosition */
+    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
