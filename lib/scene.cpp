@@ -220,6 +220,7 @@ Scene& Scene::loop()
             mouseDelta.subFrom( mousePos );
 
             /* Draw frame */
+            calcEvent();
             drawEvent();
             auto stopDraw = now();
 
@@ -283,6 +284,22 @@ Scene& Scene::drawEvent()
 
 
 /*
+    Internal draw event method
+    Call payload draw method
+*/
+Scene& Scene::calcEvent()
+{
+    if( isOk() && payload != NULL )
+    {
+        payload -> onCalc( *this );
+    }
+    return *this;
+}
+
+
+
+
+/*
     Internal keyboard event
 */
 Scene& Scene::keyboardEvent
@@ -295,15 +312,15 @@ Scene& Scene::keyboardEvent
 {
     if( isOk() && payload != NULL && isInit() )
     {
-
-        getLog()
-        .info( "" )
-        .prm( "key", aKey )
-        .prm( "scancode", aScancode )
-        .prm( "payload", aAction )
-        .prm( "mode", aMods )
-        ;
-//        payload -> onLeftUp( *this, mousePos, mouseDelta, keyMode );
+        switch( aAction )
+        {
+            case 0:
+                payload -> onKeyUp( *this, aKey, aScancode, aMods );
+            break;
+            case 1:
+                payload -> onKeyDown( *this, aKey, aScancode, aMods );
+            break;
+        }
     }
     return *this;
 }
@@ -715,5 +732,3 @@ Scene& Scene::drawAxisIdentity()
     end();
     return *this;
 }
-
-

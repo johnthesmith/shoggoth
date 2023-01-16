@@ -121,6 +121,11 @@ class Scene : public Result
         */
         Scene& drawEvent();
 
+        /*
+            Internal calc method
+        */
+        Scene& calcEvent();
+
 
         /*
             Internal keyboard event

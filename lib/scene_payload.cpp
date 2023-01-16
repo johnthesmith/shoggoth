@@ -57,6 +57,19 @@ void ScenePayload::onDraw
 
 
 
+/*
+    Main calc method
+*/
+void ScenePayload::onCalc
+(
+    Scene& aScene   /* Scene object */
+)
+{
+    aScene.getLog().trace( "Calculate event" );
+}
+
+
+
 
 /*
     Main draw method
@@ -357,7 +370,7 @@ void ScenePayload::onMouseWheel
 /*
     Keyboard up event
 */
-virtual void onKeyUp
+void ScenePayload::onKeyUp
 (
     const Scene&    aScene, /* Scene object */
     const int       aKey,   /* Key */
@@ -378,7 +391,7 @@ virtual void onKeyUp
 /*
     Keyboard down event
 */
-virtual void onKeyDown
+void ScenePayload::onKeyDown
 (
     const Scene&    aScene, /* Scene object */
     const int       aKey,   /* Key */
@@ -387,7 +400,7 @@ virtual void onKeyDown
 )
 {
     getLog()
-    .trace( "Key up" )
+    .trace( "Key down" )
     .prm( "key", aKey )
     .prm( "code", aCode )
     .prm( "mode", aMode )

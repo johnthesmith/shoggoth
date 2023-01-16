@@ -55,10 +55,21 @@ class ScenePayload : public Payload
         Scene& getScene();
 
 
+
         /*
             Draw method
         */
         virtual void onDraw
+        (
+            Scene& aScene   /* Scene object */
+        );
+
+
+
+        /*
+            Calc event method
+        */
+        virtual void onCalc
         (
             Scene& aScene   /* Scene object */
         );
