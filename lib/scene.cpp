@@ -116,7 +116,10 @@ Scene& Scene::init
                 }
             );
 
-            /* Set keyboard event in lambda */
+            /*
+                Set keyboard event in lambda
+                https://www.glfw.org/docs/3.3/group__input.html#ga1caf18159767e761185e49a3be019f8d
+            */
             glfwSetKeyCallback
             (
                 win,
@@ -292,12 +295,15 @@ Scene& Scene::keyboardEvent
 {
     if( isOk() && payload != NULL && isInit() )
     {
+
         getLog()
         .info( "" )
         .prm( "key", aKey )
         .prm( "scancode", aScancode )
+        .prm( "payload", aAction )
         .prm( "mode", aMods )
         ;
+//        payload -> onLeftUp( *this, mousePos, mouseDelta, keyMode );
     }
     return *this;
 }
@@ -507,6 +513,7 @@ bool Scene::isWindow()
 */
 
 
+
 /*
     Clear color
 */
@@ -529,8 +536,6 @@ Scene& Scene::clearColor()
 /*
     API commands
 */
-
-
 Scene& Scene::begin
 (
     const DrawMode a
@@ -712,14 +717,3 @@ Scene& Scene::drawAxisIdentity()
 }
 
 
-
-/*
-    Convert id glfw to KeyMode
-*/
-KeyMode Scene::keyModeById
-(
-    int a
-)
-{
-    return ALT;
-}

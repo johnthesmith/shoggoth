@@ -170,7 +170,7 @@ class ScenePayload : public Payload
 
 
         /*
-            Draw method
+            Mouse middle button up event
         */
         virtual void onMiddleUp
         (
@@ -183,7 +183,7 @@ class ScenePayload : public Payload
 
 
         /*
-            Draw method
+            Mouse middle button down event
         */
         virtual void onMiddleDown
         (
@@ -196,7 +196,7 @@ class ScenePayload : public Payload
 
 
         /*
-            Draw method
+            Mouse click middle button event
         */
         virtual void onMiddleClick
         (
@@ -209,7 +209,7 @@ class ScenePayload : public Payload
 
 
         /*
-            Draw method
+            Mouse double click middle button event
         */
         virtual void onMiddleDblClick
         (
@@ -229,5 +229,31 @@ class ScenePayload : public Payload
             const Scene&,   /* Scene object */
             const double,   /* x scroll value */
             const double    /* y scroll value */
+        );
+
+
+
+        /*
+            Keyboard up event
+        */
+        virtual void onKeyUp
+        (
+            const Scene&,   /* Scene object */
+            const int,      /* Key */
+            const int,      /* Scan code*/
+            const int       /* Mode */
+        );
+
+
+
+        /*
+            Keyboard down event
+        */
+        virtual void onKeyDown
+        (
+            const Scene&,   /* Scene object */
+            const int,      /* Key */
+            const int,      /* Scan code*/
+            const int       /* Mode */
         );
 };

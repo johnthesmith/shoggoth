@@ -268,13 +268,5 @@ class Scene : public Result
 
         Scene& drawGreedIdentity();
         Scene& drawAxisIdentity();
-
-        /*
-            Convert id glfw to KeyMode
-        */
-        static KeyMode keyModeById
-        (
-            int
-        );
 };
 

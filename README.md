@@ -9,8 +9,16 @@
 
 # Run
 
-[./make](./make)
+Install 
 
+```
+sudo apt-get install libglfw3 libglfw3-dev
+```
+
+Run:
+```
+./make
+```
 
 
 # Current objects scheme

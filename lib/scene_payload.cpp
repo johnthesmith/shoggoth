@@ -355,6 +355,49 @@ void ScenePayload::onMouseWheel
 
 
 /*
+    Keyboard up event
+*/
+virtual void onKeyUp
+(
+    const Scene&    aScene, /* Scene object */
+    const int       aKey,   /* Key */
+    const int       aCode,  /* Scan code*/
+    const int       aMode   /* Mode */
+)
+{
+    getLog()
+    .trace( "Key up" )
+    .prm( "key", aKey )
+    .prm( "code", aCode )
+    .prm( "mode", aMode )
+    .lineEnd();
+}
+
+
+
+/*
+    Keyboard down event
+*/
+virtual void onKeyDown
+(
+    const Scene&    aScene, /* Scene object */
+    const int       aKey,   /* Key */
+    const int       aCode,  /* Scan code*/
+    const int       aMode   /* Mode */
+)
+{
+    getLog()
+    .trace( "Key up" )
+    .prm( "key", aKey )
+    .prm( "code", aCode )
+    .prm( "mode", aMode )
+    .lineEnd();
+}
+
+
+
+
+/*
     Private methods
 */
 ScenePayload& ScenePayload::defaultMouseEventInformation
