@@ -145,6 +145,9 @@ class Camera : Result
 
 
 
+        /*
+            Set far clipping
+        */
         Camera& setFar
         (
             double
@@ -152,10 +155,16 @@ class Camera : Result
 
 
 
-        double getFar()
+        /*
+            Return far clipping
+        */
+        double getFar();
 
 
 
+        /*
+            Set near clipping
+        */
         Camera& setNear
         (
             double
@@ -163,16 +172,25 @@ class Camera : Result
 
 
 
+        /*
+            Return near clipping
+        */
         double getNear();
 
 
 
-        Camera& angleView
+        /*
+             Set angle of view in radians
+        */
+        Camera& setAngleView
         (
-            double
+            double  /* */
         );
 
 
 
+        /*
+             Return angle of view in radians
+        */
         double getAngleView();
 };
