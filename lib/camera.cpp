@@ -217,6 +217,8 @@ Camera& Camera::shift
     return *this;
 }
 
+
+
 /*
     Set far clipping
 */
@@ -230,6 +232,7 @@ Camera& Camera::setFar
 }
 
 
+
 /*
     Return far clipping
 */
@@ -237,6 +240,8 @@ double Camera::getFar()
 {
     return far;
 }
+
+
 
 /*
     Set near clipping
@@ -250,6 +255,8 @@ Camera& Camera::setNear
     return *this;
 }
 
+
+
 /*
     Return near clipping
 */
@@ -257,6 +264,8 @@ double Camera::getNear()
 {
     return near;
 }
+
+
 
 /*
     Set angle of view in radians
@@ -269,6 +278,8 @@ Camera& Camera::setAngleView
     viewAngle = a;
     return *this;
 }
+
+
 
 /*
     Return angle of view in radians
