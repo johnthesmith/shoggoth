@@ -117,9 +117,9 @@ class Camera : Result
         */
         Camera& place
         (
-            const Point3& aEye = VECTOR_3D_X,
-            const Point3& aTarget = VECTOR_3D_0,
-            const Point3& aTop  = VECTOR_3D_Y
+            const Point3& = VECTOR_3D_X,    /* Eye */
+            const Point3& = VECTOR_3D_0,    /* Target */
+            const Point3& = VECTOR_3D_Y     /* Top */
         );
 
 
@@ -135,7 +135,7 @@ class Camera : Result
 
 
         /*
-            Shift camera at screen
+            Shift camera at the screen
         */
         Camera& shift
         (
@@ -150,7 +150,7 @@ class Camera : Result
         */
         Camera& setFar
         (
-            double
+            const double /* value */
         );
 
 
@@ -167,7 +167,7 @@ class Camera : Result
         */
         Camera& setNear
         (
-            double
+            const double /* value */
         );
 
 
@@ -184,7 +184,7 @@ class Camera : Result
         */
         Camera& setAngleView
         (
-            double  /* */
+            const double /* value */
         );
 
 
