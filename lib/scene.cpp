@@ -1,3 +1,8 @@
+/*
+    Look at scene.h
+*/
+
+
 #include <iostream>
 #include <string>
 #include <unistd.h>         /* usleep */
@@ -9,6 +14,8 @@
 #include "scene_payload.h"
 #include "log_points.h"
 #include "moment.h"
+
+
 
 using namespace std;
 
@@ -55,7 +62,7 @@ Scene& Scene::init
 (
     int aWidth,     /* Window width */
     int aHeight,    /* Window height */
-    string title    /* Window title */
+    string aTitle   /* Window title */
 )
 {
     glInit = glfwInit();
@@ -67,7 +74,7 @@ Scene& Scene::init
         .lineEnd();
 
         /* Window create */
-        win = glfwCreateWindow( aWidth, aHeight, "Hello World", NULL, NULL );
+        win = glfwCreateWindow( aWidth, aHeight, aTitle, NULL, NULL );
         if( isWindow() )
         {
             glfwMakeContextCurrent( win );
@@ -529,8 +536,6 @@ bool Scene::isWindow()
     Opengl API simple functions
 */
 
-
-
 /*
     API commands
 */
@@ -617,6 +622,7 @@ Scene& Scene::clearColor()
 
 /*
     Apply the camera to the scene
+    https://vk.com/@bleenchiki-opengl-3
 */
 Scene& Scene::cameraApply
 (

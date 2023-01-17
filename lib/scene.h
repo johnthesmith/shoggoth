@@ -18,7 +18,7 @@ using namespace std;
 
 
 
-/* Predeclaration ScenePayload from scene_payload.h */
+/* Predeclaration */
 class ScenePayload;
 class Camera;
 
@@ -228,11 +228,11 @@ class Scene : public Result
 
 
         /*
-            Apply camera settings to matrix
+            Apply the camera settings to the scene
         */
         Scene& cameraApply
         (
-            const Camera&
+            const Camera&   /* Camera */
         );
 
 
