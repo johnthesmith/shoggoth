@@ -30,8 +30,8 @@ void Form::onDraw
     aScene.mouseDelta;
 
     aScene
-    .cameraLocation( Point3( 1,1,1 ), Point3( 0,0,0 ), VECTOR_3D_Y )
-//    .cameraApply()
+//    .cameraLocation( Point3( 1,1,1 ), Point3( 0,0,0 ), VECTOR_3D_Y )
+    .cameraApply( camera )
 
     .clearColor()
     .drawAxisIdentity()

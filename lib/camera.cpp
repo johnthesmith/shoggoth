@@ -37,7 +37,7 @@ Camera& Camera::moveEye
 {
     if( !eyeLock )
     {
-        eye = a;
+        setEye( a );
         norm();
     }
     return *this;
@@ -79,7 +79,7 @@ Camera& Camera::moveTop
 {
     if( !topLock )
     {
-        top = a;
+        setTop( a );
         norm();
     }
     return *this;
@@ -121,7 +121,7 @@ Camera& Camera::moveTarget
 {
     if( !targetLock )
     {
-        target = a;
+        setTarget( a );
         norm();
     }
     return *this;
@@ -141,19 +141,20 @@ Point3& Camera::getTarget()
 
 /*
     Shift camera at 3d
+    TODO VectorUP and Gase does not equal
 */
 Camera& Camera::norm()
 {
     auto gaze = ( eye - target ).norm(); /* Camera gase direction */
     auto left = gaze % top;
-    top = gaze % left;
+    setTop( gaze % left );
     return *this;
 }
 
 
 
 /*
-    Set top normal vector
+    Set camera to new place
 */
 Camera& Camera::place
 (
@@ -204,6 +205,7 @@ Camera& Camera::shift
 
 /*
     Shift camera at 2d screen
+    TODO
 */
 Camera& Camera::shift
 (
@@ -211,6 +213,7 @@ Camera& Camera::shift
     const double ay
 )
 {
+    shift( Point3( ax, ay, 0 ));
     return *this;
 }
 

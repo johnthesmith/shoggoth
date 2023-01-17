@@ -2,6 +2,7 @@
 
 /* Local libraries */
 #include "../lib/scene_payload.h"
+#include "../lib/camera.h"
 
 
 
@@ -11,6 +12,10 @@ using namespace std;
 
 class Form : public ScenePayload
 {
+    private:
+
+        Camera camera = Camera();   /* Default camera */
+
     public:
         /*
             Constructor

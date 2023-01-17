@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "result.h"
 #include "point3.h"
 
@@ -8,14 +10,18 @@ class Camera : Result
     private:
 
         /* Camera settings */
-        Point3          eye             = VECTOR_3D_I;
-        Point3          top             = VECTOR_3D_Y;
-        Point3          target          = VECTOR_3D_0;
+        Point3          eye             = VECTOR_3D_0;  /* Set on begin of coordinates */
+        Point3          target          = VECTOR_3D_Z;  /* Look at far */
+        Point3          top             = VECTOR_3D_Y;  /* And top on top */
+
+        double          near            = 0.0;
+        double          far             = 1.0;
+        double          viewAngle       = M_PI * 0.5;
 
         bool            eyeLock         = false;    /* Lock eye position */
         bool            topLock         = false;    /* Lock top direction */
         bool            targetLock      = false;    /* Lock target position */
-        bool            distanceLock    = true;     /* Lock distance between eye and target*/
+        bool            gazeLock        = true;     /* Lock distance between eye and target*/
 
     public:
 
@@ -137,4 +143,36 @@ class Camera : Result
             const double
         );
 
+
+
+        Camera& setFar
+        (
+            double
+        );
+
+
+
+        double getFar()
+
+
+
+        Camera& setNear
+        (
+            double
+        );
+
+
+
+        double getNear();
+
+
+
+        Camera& angleView
+        (
+            double
+        );
+
+
+
+        double getAngleView();
 };

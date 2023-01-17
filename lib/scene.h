@@ -20,6 +20,7 @@ using namespace std;
 
 /* Predeclaration ScenePayload from scene_payload.h */
 class ScenePayload;
+class Camera;
 
 
 
@@ -57,11 +58,6 @@ class Scene : public Result
         short           leftClickCount      = 0;
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
-
-        /* Camera settings */
-        Point3          eye                 = VECTOR_3D_I;
-        Point3          top                 = VECTOR_3D_Y;
-        Point3          target              = VECTOR_3D_0;
 
         /* Settings */
         int         fpsDrawLimit            = 10;       /* FPS limit */
@@ -234,28 +230,11 @@ class Scene : public Result
         /*
             Apply camera settings to matrix
         */
-        Scene& cameraApply();
-
-
-        /*
-            Set camera to Eye position. Camera look at Target.
-        */
-        Scene& cameraLocation
+        Scene& cameraApply
         (
-            const Point3&,  /* Eye camera position */
-            const Point3&,  /* Target for camera gaze */
-            const Point3&   /* Top of camera */
+            const Camera&
         );
 
-
-
-        /*
-            Shift camera
-        */
-        Scene& shift
-        (
-            const Point3*   /* Delta */
-        );
 
 
         static string openglErrorToString( GLenum );

@@ -611,39 +611,26 @@ Scene& Scene::vertex
 
 
 
-Scene& Scene::cameraApply()
-{
-    Point3 gaze = ( target - eye ).norm();
-    auto rotate = Matrix4().look( gaze, top );
-    auto translate = Matrix4().shift( eye.toPoint4() );
-
-LogPoints::write( getLog(), rotate, "" );
-
-    auto view = Matrix4().dot( rotate, translate );
-
-	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glFrustum (-1, 1, -1, 1, -1, 1);
-//    glMultMatrixd( (GLdouble*)&translate );
-    glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
-    glLoadMatrixd( (GLdouble*)&view );
-
-    return *this;
-}
-
-
-
-Scene& Scene::cameraLocation
+Scene& Scene::cameraApply
 (
-    const Point3& aEye,
-    const Point3& aTarget,
-    const Point3& aTop
+    const Camera& aCamera
 )
 {
-    eye = aEye;
-    target = aTarget;
-    top = aTop;
+//    Point3 gaze = ( target - eye ).norm();
+//    auto rotate = Matrix4().look( gaze, top );
+//    auto translate = Matrix4().shift( eye.toPoint4() );
+//
+//LogPoints::write( getLog(), rotate, "" );
+//
+//    auto view = Matrix4().dot( rotate, translate );
+//
+//	glMatrixMode( GL_PROJECTION );
+//    glLoadIdentity();
+//    glFrustum (-1, 1, -1, 1, -1, 1);
+////    glMultMatrixd( (GLdouble*)&translate );
+//    glMatrixMode( GL_MODELVIEW );
+//	glLoadIdentity();
+//    glLoadMatrixd( (GLdouble*)&view );
 
     return *this;
 }
