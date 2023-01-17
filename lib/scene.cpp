@@ -629,9 +629,30 @@ Scene& Scene::cameraApply
     const Camera& a
 )
 {
-//    Point3 gaze = ( target - eye ).norm();
-//    auto rotate = Matrix4().look( gaze, top );
-//    auto translate = Matrix4().shift( eye.toPoint4() );
+//
+//
+//    viewMatrix.l1 = ( a.target - a.eye ).norm().toPoint4();
+//    viewMatrix.l2 = ( a.top % a.eye ).toPoint4();
+//    viewMatrix.l3 = a.top.toPoint4( a.eye );
+//    viewMatrix.l4 = VECTOR_4D_W
+//
+//
+//
+//
+//float z𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑒𝑦𝑒 − 𝑡𝑎𝑟𝑔𝑒𝑡)
+//float x𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑢𝑝 × z𝐴𝑥𝑖𝑠)
+//float y𝐴𝑥𝑖𝑠 = 𝑢𝑝
+//
+//Кроме того, нужно найти скалярные произведения между
+//векторами осей и вектором позиции камеры.
+//
+//Готово! Все необходимые данные получены. Остаётся только заполнить матрицу:
+//
+//mat4 lookat =
+//| x𝐴𝑥𝑖𝑠.𝑥, x𝐴𝑥𝑖𝑠.𝑦, x𝐴𝑥𝑖𝑠.𝑧, −(x𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| y𝐴𝑥𝑖𝑠.𝑥, y𝐴𝑥𝑖𝑠.𝑦, y𝐴𝑥𝑖𝑠.𝑧, −(y𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| z𝐴𝑥𝑖𝑠.𝑥, z𝐴𝑥𝑖𝑠.𝑦, z𝐴𝑥𝑖𝑠.𝑧, −(z𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| 0, 0, 0, 1                              |
 //
 //LogPoints::write( getLog(), rotate, "" );
 //
