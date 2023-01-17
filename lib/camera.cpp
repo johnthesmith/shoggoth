@@ -1,7 +1,4 @@
 /*
-
-
-
     Camera
 
     Class has:
