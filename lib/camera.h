@@ -1,5 +1,12 @@
 #pragma once
 
+/*
+    The Camera
+
+    Class is describe the camera for payload.
+    The camera can be applied to the Scene and changed the scenes's matrixes.
+*/
+
 #include <math.h>
 
 #include "result.h"

@@ -58,3 +58,6 @@ int main
 //        p2.add1( VECTOR_3D_X ).add1( VECTOR_3D_Y );
 //    }
 //    log -> end() -> lineEnd();
+
+
+

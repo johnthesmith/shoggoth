@@ -526,27 +526,8 @@ bool Scene::isWindow()
 
 
 /******************************************************************************
-    Opengl API
+    Opengl API simple functions
 */
-
-
-
-/*
-    Clear color
-*/
-Scene& Scene::clearColor()
-{
-    /* Очистка буффера */
-    glClearColor
-    (
-        backgroundColor.red,
-        backgroundColor.green,
-        backgroundColor.blue,
-        backgroundColor.alpha
-    );
-    glClear( GL_COLOR_BUFFER_BIT );
-    return *this;
-}
 
 
 
@@ -611,9 +592,35 @@ Scene& Scene::vertex
 
 
 
+/******************************************************************************
+    OpenGL complex functions
+*/
+
+/*
+    Clear color
+*/
+Scene& Scene::clearColor()
+{
+    /* Очистка буффера */
+    glClearColor
+    (
+        backgroundColor.red,
+        backgroundColor.green,
+        backgroundColor.blue,
+        backgroundColor.alpha
+    );
+    glClear( GL_COLOR_BUFFER_BIT );
+    return *this;
+}
+
+
+
+/*
+    Apply the camera to the scene
+*/
 Scene& Scene::cameraApply
 (
-    const Camera& aCamera
+    const Camera& a
 )
 {
 //    Point3 gaze = ( target - eye ).norm();
@@ -623,7 +630,7 @@ Scene& Scene::cameraApply
 //LogPoints::write( getLog(), rotate, "" );
 //
 //    auto view = Matrix4().dot( rotate, translate );
-//
+
 //	glMatrixMode( GL_PROJECTION );
 //    glLoadIdentity();
 //    glFrustum (-1, 1, -1, 1, -1, 1);

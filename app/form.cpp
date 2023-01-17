@@ -27,12 +27,10 @@ void Form::onDraw
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable( GL_BLEND );
 
-    aScene.mouseDelta;
+//    camera.shift( aScene.mouseDelta );
 
     aScene
-//    .cameraLocation( Point3( 1,1,1 ), Point3( 0,0,0 ), VECTOR_3D_Y )
     .cameraApply( camera )
-
     .clearColor()
     .drawAxisIdentity()
     .drawGreedIdentity();
