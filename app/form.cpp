@@ -28,9 +28,9 @@ void Form::onDraw
     glEnable( GL_BLEND );
 
 //    camera.shift( aScene.mouseDelta );
+    applyCameraToScene( camera, aScene );
 
     aScene
-    .cameraApply( camera )
     .clearColor()
     .drawAxisIdentity()
     .drawGreedIdentity();

@@ -10,6 +10,7 @@
 /* Local libraries */
 #include "utils.h"
 #include "scene.h"
+//#include "camera.h"
 #include "matrix.h"
 #include "scene_payload.h"
 #include "log_points.h"
@@ -74,7 +75,7 @@ Scene& Scene::init
         .lineEnd();
 
         /* Window create */
-        win = glfwCreateWindow( aWidth, aHeight, aTitle, NULL, NULL );
+        win = glfwCreateWindow( aWidth, aHeight, aTitle.c_str(), NULL, NULL );
         if( isWindow() )
         {
             glfwMakeContextCurrent( win );
@@ -246,6 +247,8 @@ Scene& Scene::drawEvent()
 {
     if( isOk() && payload != NULL && isInit() )
     {
+        LogPoints::write( getLog(), viewMatrix, "view matrix" );
+
         /* Get window size */
         glfwGetFramebufferSize( win, &width, &height);
         /* Set opengl viewport default */
@@ -272,7 +275,18 @@ Scene& Scene::drawEvent()
         mousePos.set( xpos, ypos, 0 );
         mouseDelta.subFrom( mousePos );
 
+        /* Projection matrrix load */
+        glMatrixMode( GL_PROJECTION );
+        glLoadIdentity();
+//        glFrustum( -10.5, 10.5, -10.5, 10.5, 0, 30.0);
+
+        /* Modelview matrrix load */
+        glMatrixMode( GL_MODELVIEW );
+        glLoadMatrixd( (GLdouble*)&viewMatrix );
+
+        /* Payload draw event */
         payload -> onDraw( *this );
+
         /* Draw buffer to window */
         glfwSwapBuffers( win );
 
@@ -620,57 +634,6 @@ Scene& Scene::clearColor()
 
 
 
-/*
-    Apply the camera to the scene
-    https://vk.com/@bleenchiki-opengl-3
-*/
-Scene& Scene::cameraApply
-(
-    const Camera& a
-)
-{
-//
-//
-//    viewMatrix.l1 = ( a.target - a.eye ).norm().toPoint4();
-//    viewMatrix.l2 = ( a.top % a.eye ).toPoint4();
-//    viewMatrix.l3 = a.top.toPoint4( a.eye );
-//    viewMatrix.l4 = VECTOR_4D_W
-//
-//
-//
-//
-//float z𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑒𝑦𝑒 − 𝑡𝑎𝑟𝑔𝑒𝑡)
-//float x𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑢𝑝 × z𝐴𝑥𝑖𝑠)
-//float y𝐴𝑥𝑖𝑠 = 𝑢𝑝
-//
-//Кроме того, нужно найти скалярные произведения между
-//векторами осей и вектором позиции камеры.
-//
-//Готово! Все необходимые данные получены. Остаётся только заполнить матрицу:
-//
-//mat4 lookat =
-//| x𝐴𝑥𝑖𝑠.𝑥, x𝐴𝑥𝑖𝑠.𝑦, x𝐴𝑥𝑖𝑠.𝑧, −(x𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| y𝐴𝑥𝑖𝑠.𝑥, y𝐴𝑥𝑖𝑠.𝑦, y𝐴𝑥𝑖𝑠.𝑧, −(y𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| z𝐴𝑥𝑖𝑠.𝑥, z𝐴𝑥𝑖𝑠.𝑦, z𝐴𝑥𝑖𝑠.𝑧, −(z𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| 0, 0, 0, 1                              |
-//
-//LogPoints::write( getLog(), rotate, "" );
-//
-//    auto view = Matrix4().dot( rotate, translate );
-
-//	glMatrixMode( GL_PROJECTION );
-//    glLoadIdentity();
-//    glFrustum (-1, 1, -1, 1, -1, 1);
-////    glMultMatrixd( (GLdouble*)&translate );
-//    glMatrixMode( GL_MODELVIEW );
-//	glLoadIdentity();
-//    glLoadMatrixd( (GLdouble*)&view );
-
-    return *this;
-}
-
-
-
 string Scene::openglErrorToString
 (
     GLenum a
@@ -752,4 +715,14 @@ Scene& Scene::drawAxisIdentity()
     }
     end();
     return *this;
+}
+
+
+
+/*
+    return view matrix reference
+*/
+Matrix4& Scene::getViewMatrixRef()
+{
+    return viewMatrix;
 }

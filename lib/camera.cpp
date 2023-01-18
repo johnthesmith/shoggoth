@@ -9,8 +9,10 @@
     Each point and vector can blocked
 */
 
-#include "camera.h"
+#include <iostream>
 
+#include "camera.h"
+#include "matrix.h"
 
 
 /*
@@ -287,4 +289,47 @@ Camera& Camera::setAngleView
 double Camera::getAngleView()
 {
     return viewAngle;
+}
+
+
+
+/*
+    Return the gaze direction
+*/
+Point3 Camera::getGaze()
+{
+    return ( target - eye ).norm();
+}
+
+
+
+/*
+    Return the left direction
+*/
+Point3 Camera::getRight()
+{
+    return (top % getGaze()).norm();
+}
+
+
+
+/*
+    Apply the camera to the scene
+    https://vk.com/@bleenchiki-opengl-3
+*/
+Camera& Camera::setViewMatrixTo
+(
+    Matrix4& a
+)
+{
+    auto z = getGaze().negative();
+    auto x = (top % z).norm();
+    auto y = (z % x).norm();
+
+    a.l1.set( x.x, x.y, x.z, -( x * eye ));
+    a.l2.set( y.x, y.y, y.z, -( y * eye ));
+    a.l3.set( z.x, z.y, z.z, -( z * eye ));
+    a.l4.set( VECTOR_4D_W );
+
+    return *this;
 }

@@ -20,7 +20,7 @@ using namespace std;
 
 /* Predeclaration */
 class ScenePayload;
-class Camera;
+//class Camera;
 
 
 
@@ -59,12 +59,14 @@ class Scene : public Result
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
 
+        Matrix4         projectionMatrix;
+        Matrix4         viewMatrix;
+
         /* Settings */
         int         fpsDrawLimit            = 10;       /* FPS limit */
         int         fpsCalcLimit            = 10;       /* FPS limit */
 
     public:
-
         int clickTimeoutMls     = 200;                          /* Click and double click timeoud in milliseconds */
         Point3  mousePos        = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position */
         Point3  mouseDelta      = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position delta */
@@ -227,16 +229,6 @@ class Scene : public Result
 
 
 
-        /*
-            Apply the camera settings to the scene
-        */
-        Scene& cameraApply
-        (
-            const Camera&   /* Camera */
-        );
-
-
-
         static string openglErrorToString( GLenum );
 
 
@@ -253,5 +245,34 @@ class Scene : public Result
 
         Scene& drawGreedIdentity();
         Scene& drawAxisIdentity();
+
+        /*
+            return view matrix reference
+        */
+        Matrix4& getViewMatrixRef();
 };
+
+
+//
+//float z𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑒𝑦𝑒 − 𝑡𝑎𝑟𝑔𝑒𝑡)
+//float x𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑢𝑝 × z𝐴𝑥𝑖𝑠)
+//float y𝐴𝑥𝑖𝑠 = 𝑢𝑝
+//
+//mat4 lookat =
+//| x𝐴𝑥𝑖𝑠.𝑥, x𝐴𝑥𝑖𝑠.𝑦, x𝐴𝑥𝑖𝑠.𝑧, −(x𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| y𝐴𝑥𝑖𝑠.𝑥, y𝐴𝑥𝑖𝑠.𝑦, y𝐴𝑥𝑖𝑠.𝑧, −(y𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| z𝐴𝑥𝑖𝑠.𝑥, z𝐴𝑥𝑖𝑠.𝑦, z𝐴𝑥𝑖𝑠.𝑧, −(z𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
+//| 0, 0, 0, 1                              |
+//
+
+
+
+
+
+
+
+
+
+
+
 

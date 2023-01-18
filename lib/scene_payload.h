@@ -5,6 +5,7 @@
 //#include "log.h"
 //#include "scene.h"
 #include "point3.h"
+#include "camera.h"
 
 
 using namespace std;
@@ -49,10 +50,23 @@ class ScenePayload : public Payload
             Scene&
         );
 
+
+
         /*
             Get scene value
         */
         Scene& getScene();
+
+
+
+        /*
+            Apply camera to scene
+        */
+        ScenePayload& applyCameraToScene
+        (
+            Camera&,    /* Camera object */
+            Scene&      /* Scene object */
+        );
 
 
 

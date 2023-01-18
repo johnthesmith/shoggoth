@@ -17,9 +17,12 @@ class Camera : Result
     private:
 
         /* Camera settings */
-        Point3          eye             = VECTOR_3D_0;  /* Set on begin of coordinates */
-        Point3          target          = VECTOR_3D_Z;  /* Look at far */
-        Point3          top             = VECTOR_3D_Y;  /* And top on top */
+//        Point3          eye             = VECTOR_3D_0;  /* Set on begin of coordinates */
+//        Point3          target          = VECTOR_3D_Z;  /* Look at far */
+//        Point3          top             = VECTOR_3D_Y;  /* And top on top */
+        Point3          eye             = Point3( 1, 1, 1);
+        Point3          target          = Point3( 0, 0, 0);
+        Point3          top             = Point3( 0, 1, 0);
 
         double          near            = 0.0;
         double          far             = 1.0;
@@ -200,4 +203,14 @@ class Camera : Result
              Return angle of view in radians
         */
         double getAngleView();
+
+
+        Point3 getGaze();
+        Point3 getRight();
+
+
+        Camera& setViewMatrixTo
+        (
+            Matrix4& a
+        );
 };

@@ -119,6 +119,30 @@ Point3 operator%
 
 
 /*
+    Cross vproduct
+*/
+Point3& Point3::cross
+(
+    const Point3& a
+)
+{
+    auto dx = y * a.z - z * a.y;
+    auto dy = z * a.x - x * a.z;
+    auto dz = x * a.y - y * a.x;
+
+    x = dx;
+    y = dy;
+    z = dz;
+
+    return *this;
+}
+
+
+
+
+
+
+/*
     Set vector coordinates
 */
 Point3& Point3::get()
@@ -375,27 +399,6 @@ double Point3::dist
     auto dy = a.y - y;
     auto dz = a.z - z;
     return sqrt( dx * dx + dy * dy + dz * dz );
-}
-
-
-
-/*
-    Cross vproduct
-*/
-Point3& Point3::cross
-(
-    const Point3& a
-)
-{
-    auto dx = y * a.z - z * a.y;
-    auto dy = z * a.x - x * a.z;
-    auto dz = x * a.y - y * a.x;
-
-    x = dx;
-    y = dy;
-    z = dz;
-
-    return *this;
 }
 
 

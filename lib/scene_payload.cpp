@@ -38,6 +38,22 @@ Scene& ScenePayload::getScene()
 
 
 /*
+    Apply camera to scene
+*/
+ScenePayload& ScenePayload::applyCameraToScene
+(
+    Camera& aCamera,    /* Camera object */
+    Scene& aScene       /* Scene object */
+)
+{
+    Matrix4& m = aScene.getViewMatrixRef();
+    aCamera.setViewMatrixTo( m );
+    return *this;
+}
+
+
+
+/*
     Main draw method
 */
 void ScenePayload::onDraw
