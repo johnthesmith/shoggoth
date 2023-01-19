@@ -272,9 +272,6 @@ Scene& Scene::drawEvent()
         /* Get window size */
         glfwGetFramebufferSize( win, &width, &height);
 
-        /* Set opengl viewport default */
-        glViewport( 0, 0, width, height );
-
         /* Calculate ratio */
         if( height > 0 )
         {
@@ -297,14 +294,19 @@ Scene& Scene::drawEvent()
         mousePos.set( xpos, ypos, 0 );
         mouseDelta.subFrom( mousePos );
 
+
+        /* Set opengl viewport default */
+        glViewport( 0, 0, width, height );
+
         /* Projection matrrix load */
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-//        glFrustum( -10.5, 10.5, -10.5, 10.5, 0, 30.0);
+        glLoadMatrixd( (GLdouble*)&viewMatrix );
+
 
         /* Modelview matrrix load */
         glMatrixMode( GL_MODELVIEW );
-        glLoadMatrixd( (GLdouble*)&viewMatrix );
+        glLoadIdentity();
 
         /* Payload draw event */
         payload -> onDraw( *this );
