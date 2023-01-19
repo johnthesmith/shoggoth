@@ -2,7 +2,6 @@
     Look at scene.h
 */
 
-
 #include <iostream>
 #include <string>
 #include <unistd.h>         /* usleep */
@@ -10,6 +9,7 @@
 /* Local libraries */
 #include "utils.h"
 #include "scene.h"
+
 //#include "camera.h"
 #include "matrix.h"
 #include "scene_payload.h"
@@ -121,6 +121,26 @@ Scene& Scene::init
                     /* Get scene object in lambda and call method */
                     ((Scene*)glfwGetWindowUserPointer( aWin ))
                     -> mouseWheelEvent( aX, aY );
+                }
+            );
+
+            /*
+                Set mouse move event in lambda
+                https://www.glfw.org/docs/latest/group__input.html#gac1f879ab7435d54d4d79bb469fe225d7
+            */
+            glfwSetCursorPosCallback
+            (
+                win,
+                []
+                (
+                    GLFWwindow* aWin,
+                    double aX,
+                    double aY
+                )
+                {
+                    /* Get scene object in lambda and call method */
+                    ((Scene*)glfwGetWindowUserPointer( aWin ))
+                    -> mouseMoveEvent( aX, aY );
                 }
             );
 
@@ -247,12 +267,14 @@ Scene& Scene::drawEvent()
 {
     if( isOk() && payload != NULL && isInit() )
     {
-        LogPoints::write( getLog(), viewMatrix, "view matrix" );
+//        LogPoints::write( getLog(), viewMatrix, "view matrix" );
 
         /* Get window size */
         glfwGetFramebufferSize( win, &width, &height);
+
         /* Set opengl viewport default */
         glViewport( 0, 0, width, height );
+
         /* Calculate ratio */
         if( height > 0 )
         {
@@ -365,6 +387,7 @@ Scene& Scene::mouseEvent
         auto currentMoment = now();
         auto keyMode = aMods;
 
+
         /* Controller */
         switch( aButton )
         {
@@ -373,6 +396,12 @@ Scene& Scene::mouseEvent
                 {
                     case 0: /* Left button Up */
                         payload -> onLeftUp( *this, mousePos, mouseDelta, keyMode );
+                        if( mouseLeftDrag )
+                        {
+                            /* Left mouse drag end */
+                            mouseLeftDrag = false;
+                            payload -> onLeftDragEnd( *this, mousePos );
+                        }
                     break;
                     case 1: /* Left button Down */
                         payload -> onLeftDown( *this, mousePos, mouseDelta, keyMode );
@@ -490,9 +519,41 @@ Scene& Scene::mouseWheelEvent
     const double aY
 )
 {
-    payload -> onMouseWheel( *this, aX, aY );
+    payload -> onMouseWheel( *this, Point3( aX, aY ));
     return *this;
 }
+
+
+
+/*
+    Internal mouse move event controller
+    This method generate users event for mouse wheel
+*/
+Scene& Scene::mouseMoveEvent
+(
+    const double aX,
+    const double aY
+)
+{
+    if( isOk() && payload != NULL && isInit() )
+    {
+        if( isMouseButton( MB_LEFT ) )
+        {
+            if( mouseLeftDrag )
+            {
+                payload -> onLeftDrag( *this, Point3( aX, aY ));
+            }
+            else
+            {
+                payload -> onLeftDragBegin( *this, Point3( aX, aY ));
+                mouseLeftDrag = true;
+            }
+        }
+        payload -> onMouseMove( *this, Point3( aX, aY ));
+    }
+    return *this;
+}
+
 
 
 /******************************************************************************
@@ -725,4 +786,32 @@ Scene& Scene::drawAxisIdentity()
 Matrix4& Scene::getViewMatrixRef()
 {
     return viewMatrix;
+}
+
+
+
+
+/*
+    Return true if key is pressed
+*/
+bool Scene::isKey
+(
+    Key a
+)
+{
+    return isWindow() ? glfwGetKey( win, a) == GLFW_PRESS : false;
+}
+
+
+
+
+/*
+    Return true if mouse button is pressed
+*/
+bool Scene::isMouseButton
+(
+    MouseButton a
+)
+{
+    return isWindow() ? glfwGetMouseButton( win, a ) == GLFW_PRESS : false;
 }

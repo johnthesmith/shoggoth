@@ -42,4 +42,14 @@ class Form : public ScenePayload
             const int,      /* Scan code*/
             const int       /* Mode */
         );
+
+
+         /*
+             Mouse left drag
+         */
+         virtual void onLeftDrag
+         (
+             Scene&,             /* Scene object */
+             const Point3&
+         );
 };

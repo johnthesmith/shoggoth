@@ -62,6 +62,14 @@ struct Point3
 
 
 
+    friend Point3 operator*
+    (
+        const Point3&,  /* First operand */
+        double /* Scalar operand */
+    );
+
+
+
     friend Point3 operator%
     (
         const Point3&,  /* First operand */

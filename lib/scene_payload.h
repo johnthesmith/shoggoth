@@ -251,9 +251,52 @@ class ScenePayload : public Payload
         */
         virtual void onMouseWheel
         (
-            Scene&,   /* Scene object */
-            const double,   /* x scroll value */
-            const double    /* y scroll value */
+            Scene&,         /* Scene object */
+            const Point3&
+        );
+
+
+
+        /*
+            Mouse move event
+        */
+        virtual void onMouseMove
+        (
+            Scene&,             /* Scene object */
+            const Point3&
+        );
+
+
+
+        /*
+            Mouse left drag begin
+        */
+        virtual void onLeftDragBegin
+        (
+            Scene&,             /* Scene object */
+            const Point3&
+        );
+
+
+
+        /*
+            Mouse left drag end
+        */
+        virtual void onLeftDragEnd
+        (
+            Scene&,             /* Scene object */
+            const Point3&
+        );
+
+
+
+        /*
+            Mouse left drag
+        */
+        virtual void onLeftDrag
+        (
+            Scene&,             /* Scene object */
+            const Point3&
         );
 
 

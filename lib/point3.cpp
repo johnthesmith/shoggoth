@@ -100,6 +100,25 @@ double operator*
 
 
 /*
+    Operator scale r = a * b
+*/
+Point3 operator*
+(
+    const Point3& a,    /* First operand */
+    double b            /* Scalar operand */
+)
+{
+    return Point3
+    (
+        a.x * b,
+        a.y * b,
+        a.z * b
+    );
+}
+
+
+
+/*
     Operator cross r = a x b
 */
 Point3 operator%

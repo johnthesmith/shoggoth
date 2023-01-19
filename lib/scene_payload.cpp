@@ -81,7 +81,7 @@ void ScenePayload::onCalc
     Scene& aScene   /* Scene object */
 )
 {
-    aScene.getLog().trace( "Calculate event" );
+//    aScene.getLog().trace( "Calculate event" );
 }
 
 
@@ -370,16 +370,101 @@ void ScenePayload::onMiddleDblClick
 void ScenePayload::onMouseWheel
 (
     Scene& aScene,      /* Scene object */
-    const double aX,    /* x scroll value */
-    const double aY     /* y scroll value */
+    const Point3& aPoint
 )
 {
     getLog()
     .trace( "Mouse wheel" )
-    .prm( "x", aX )
-    .prm( "y", aY )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
     .lineEnd();
 }
+
+
+
+/*
+    Mouse move event
+*/
+void ScenePayload::onMouseMove
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse move" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
+
+/*
+    Mouse left drag begin
+*/
+void ScenePayload::onLeftDragBegin
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse left drag begin" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
+/*
+    Mouse left drag end
+*/
+void ScenePayload::onLeftDragEnd
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse left drag end" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
+/*
+    Mouse left drag
+*/
+void ScenePayload::onLeftDrag
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse left drag" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
 
 
 

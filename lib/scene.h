@@ -11,7 +11,7 @@
 #include "point4.h"
 #include "matrix.h"
 #include "draw_mode.h"
-//#include "scene_payload.h"
+#include "scene_key.h"
 
 
 using namespace std;
@@ -58,6 +58,7 @@ class Scene : public Result
         short           leftClickCount      = 0;
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
+        bool            mouseLeftDrag       = 0;
 
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;
@@ -159,6 +160,18 @@ class Scene : public Result
         );
 
 
+
+
+        /*
+            Internal mouse move event
+        */
+        Scene& mouseMoveEvent
+        (
+            const double, /* x offset */
+            const double  /* y offset */
+        );
+
+
         /******************************************************************************
             Services
         */
@@ -250,29 +263,23 @@ class Scene : public Result
             return view matrix reference
         */
         Matrix4& getViewMatrixRef();
+
+
+        /*
+            Return true if key is pressed
+        */
+        bool isKey
+        (
+            Key /* Key name from scene_key.h*/
+        );
+
+
+
+        /*
+            Return true if mouse bugtton is pressed
+        */
+        bool isMouseButton
+        (
+            MouseButton /* Key name from scene_key.h*/
+        );
 };
-
-
-//
-//float z𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑒𝑦𝑒 − 𝑡𝑎𝑟𝑔𝑒𝑡)
-//float x𝐴𝑥𝑖𝑠 = 𝑛𝑜𝑟𝑚𝑎𝑙𝑖𝑧𝑒(𝑢𝑝 × z𝐴𝑥𝑖𝑠)
-//float y𝐴𝑥𝑖𝑠 = 𝑢𝑝
-//
-//mat4 lookat =
-//| x𝐴𝑥𝑖𝑠.𝑥, x𝐴𝑥𝑖𝑠.𝑦, x𝐴𝑥𝑖𝑠.𝑧, −(x𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| y𝐴𝑥𝑖𝑠.𝑥, y𝐴𝑥𝑖𝑠.𝑦, y𝐴𝑥𝑖𝑠.𝑧, −(y𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| z𝐴𝑥𝑖𝑠.𝑥, z𝐴𝑥𝑖𝑠.𝑦, z𝐴𝑥𝑖𝑠.𝑧, −(z𝐴𝑥𝑖𝑠 ⋅ 𝑒𝑦𝑒) |
-//| 0, 0, 0, 1                              |
-//
-
-
-
-
-
-
-
-
-
-
-
-

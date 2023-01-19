@@ -75,3 +75,19 @@ void Form::onKeyUp
     .lineEnd();
 }
 
+
+
+/*
+    Mouse left drag
+*/
+void Form::onLeftDrag
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
+Point3 a=aScene.mouseDelta * 0.001;
+    LogPoints::write( aScene.getLog(), a, "delta" );
+    camera.shift( aScene.mouseDelta * 0.01 );
+}
+
