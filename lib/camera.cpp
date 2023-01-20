@@ -147,9 +147,9 @@ Point3& Camera::getTarget()
 */
 Camera& Camera::norm()
 {
-    auto gaze = ( eye - target ).norm(); /* Camera gase direction */
-    auto left = gaze % top;
-    setTop( gaze % left );
+    auto z = getGaze(); /* Camera gase direction */
+    auto x = (top % z).norm();
+    setTop( (z % x).norm());
     return *this;
 }
 

@@ -87,7 +87,12 @@ void Form::onLeftDrag
 )
 {
 Point3 a=aScene.mouseDelta * 0.001;
-    LogPoints::write( aScene.getLog(), a, "delta" );
     camera.shift( aScene.mouseDelta * 0.01 );
+
+    LogPoints::write( getLog(), camera.getEye(), "eye" );
+    LogPoints::write( getLog(), camera.getTarget(), "target" );
+    LogPoints::write( getLog(), camera.getGaze(), "gaze" );
+    LogPoints::write( getLog(), camera.getTop(), "top" );
+    LogPoints::write( getLog(), camera.getRight(), "right" );
 }
 

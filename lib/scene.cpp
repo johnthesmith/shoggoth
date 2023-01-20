@@ -301,12 +301,14 @@ Scene& Scene::drawEvent()
         /* Projection matrrix load */
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-        glLoadMatrixd( (GLdouble*)&viewMatrix );
 
 
         /* Modelview matrrix load */
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();
+        glLoadMatrixd( (GLdouble*)&viewMatrix );
+
+LogPoints::write( getLog(), viewMatrix, "");
 
         /* Payload draw event */
         payload -> onDraw( *this );

@@ -20,8 +20,8 @@ class Camera : Result
 //        Point3          eye             = VECTOR_3D_0;  /* Set on begin of coordinates */
 //        Point3          target          = VECTOR_3D_Z;  /* Look at far */
 //        Point3          top             = VECTOR_3D_Y;  /* And top on top */
-        Point3          eye             = Point3( 5, 5, 5);
-        Point3          target          = Point3( 1, 1, 1);
+        Point3          eye             = Point3( 1, 0, 0);
+        Point3          target          = Point3( 0, 0, 0);
         Point3          top             = Point3( 0, 1, 0);
 
         double          near            = 0.0;
