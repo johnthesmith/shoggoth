@@ -200,35 +200,20 @@ Camera& Camera::place
 
 
 /*
-    Shift camera at 3d
+    Shift eye and target at 3d
 */
 Camera& Camera::shift
 (
     const Point3& a
 )
 {
+    Point3 s = a * sensivity;
     place
     (
-        eye + a,
-        target + a,
+        eye + s,
+        target + s,
         top
     );
-    return *this;
-}
-
-
-
-/*
-    Shift camera at 2d screen
-    TODO
-*/
-Camera& Camera::shift
-(
-    const double ax,
-    const double ay
-)
-{
-    shift( Point3( ax, ay, 0 ));
     return *this;
 }
 

@@ -124,6 +124,16 @@ struct Matrix4
     string toString();
 
 
+
+    Matrix4& perspective
+    (
+        double aAngle,  /* Vertical Angle in degrees */
+        double aRatio,
+        double aNear,
+        double aFar
+    );
+
+
 };
 
 
@@ -143,3 +153,5 @@ static Matrix4 MATRIX_4D_0 = Matrix4
     0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0
 );
+
+

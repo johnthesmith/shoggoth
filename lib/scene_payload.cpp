@@ -94,7 +94,6 @@ void ScenePayload::onLeftUp
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -103,7 +102,6 @@ void ScenePayload::onLeftUp
         aScene,
         "left up",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -118,7 +116,6 @@ void ScenePayload::onLeftDown
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -127,7 +124,6 @@ void ScenePayload::onLeftDown
         aScene,
         "left down",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -141,7 +137,6 @@ void ScenePayload::onLeftClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -150,7 +145,6 @@ void ScenePayload::onLeftClick
         aScene,
         "left click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -164,7 +158,6 @@ void ScenePayload::onLeftDblClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -173,7 +166,6 @@ void ScenePayload::onLeftDblClick
         aScene,
         "left double click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -187,7 +179,6 @@ void ScenePayload::onRightUp
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -196,7 +187,6 @@ void ScenePayload::onRightUp
         aScene,
         "right up",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -210,7 +200,6 @@ void ScenePayload::onRightDown
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -219,7 +208,6 @@ void ScenePayload::onRightDown
         aScene,
         "right down",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -233,7 +221,6 @@ void ScenePayload::onRightClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -242,7 +229,6 @@ void ScenePayload::onRightClick
         aScene,
         "right click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -257,7 +243,6 @@ void ScenePayload::onRightDblClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -266,7 +251,6 @@ void ScenePayload::onRightDblClick
         aScene,
         "right double click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -279,7 +263,6 @@ void ScenePayload::onMiddleUp
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -288,7 +271,6 @@ void ScenePayload::onMiddleUp
         aScene,
         "middle up",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -302,7 +284,6 @@ void ScenePayload::onMiddleDown
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -311,7 +292,6 @@ void ScenePayload::onMiddleDown
         aScene,
         "middle down",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -325,7 +305,6 @@ void ScenePayload::onMiddleClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -334,7 +313,6 @@ void ScenePayload::onMiddleClick
         aScene,
         "middle click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -348,7 +326,6 @@ void ScenePayload::onMiddleDblClick
 (
     Scene& aScene,              /* Scene object */
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {
@@ -357,7 +334,6 @@ void ScenePayload::onMiddleDblClick
         aScene,
         "middle double click",
         aMousePos,
-        aMouseDelta,
         aKeyMode
     );
 }
@@ -519,7 +495,6 @@ ScenePayload& ScenePayload::defaultMouseEventInformation
     Scene& aScene,              /* Scene object */
     const string aEvent,
     const Point3& aMousePos,    /* MousePosition */
-    const Point3& aMouseDelta,  /* MousePosition */
     const int aKeyMode
 )
 {

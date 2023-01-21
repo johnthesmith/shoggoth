@@ -25,7 +25,6 @@ class ScenePayload : public Payload
             Scene&,   /* Scene object */
             const string,
             const Point3&,  /* MousePosition */
-            const Point3&,  /* MousePosition */
             const int
         );
 
@@ -97,7 +96,6 @@ class ScenePayload : public Payload
         (
             Scene&,     /* Scene object */
             const Point3&,    /* Mouse position */
-            const Point3&,    /* Mouse delta */
             const int         /* Key mode */
         );
 
@@ -110,7 +108,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -123,7 +120,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -136,7 +132,6 @@ class ScenePayload : public Payload
         (
             Scene& ,        /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -149,7 +144,6 @@ class ScenePayload : public Payload
         (
             Scene& ,        /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -162,7 +156,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -175,7 +168,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -188,7 +180,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -201,7 +192,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -214,7 +204,6 @@ class ScenePayload : public Payload
         (
             Scene&,         /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -227,7 +216,6 @@ class ScenePayload : public Payload
         (
             Scene&,   /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 
@@ -240,7 +228,6 @@ class ScenePayload : public Payload
         (
             Scene&,   /* Scene object */
             const Point3&,  /* Mouse position */
-            const Point3&,  /* Mouse delta */
             const int       /* Key mode */
         );
 

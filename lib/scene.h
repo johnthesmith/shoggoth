@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>     /* https://www.glfw.org/docs/latest/input_guide.html */
 #include <string>
+#include <math.h>
 
 /* Local libraries */
 #include "result.h"
@@ -60,17 +61,21 @@ class Scene : public Result
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
 
+        Point3          mouseCurrent        = VECTOR_3D_0;  /* Current mouse cursor position */
+        Point3          mouseLast           = VECTOR_3D_0;  /* Last mouse cursot position */
+
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;
 
         /* Settings */
         int         fpsDrawLimit            = 10;       /* FPS limit */
         int         fpsCalcLimit            = 10;       /* FPS limit */
+        double      near            = 0.0;
+        double      far             = 1.0;
+        double      perspective     = M_PI * 0.5;   /* Perspective at rad*/
 
     public:
         int clickTimeoutMls     = 200;                          /* Click and double click timeoud in milliseconds */
-        Point3  mousePos        = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position */
-        Point3  mouseDelta      = Point3( 0.0, 0.0, 0.0 );      /* Mouse cursor position delta */
         Rgba    backgroundColor = Rgba( 0.2, 0.2, 0.2, 1.0 );   /* Bakcgound color */
 
         /*
@@ -282,8 +287,122 @@ class Scene : public Result
         (
             MouseButton /* Key name from scene_key.h*/
         );
+
+
+
+        /*
+            Return screen point by world point
+        */
+        Point3 getScreenByWorld
+        (
+            const Point3&
+        );
+
+
+
+        /*
+            Return world point by screen point
+        */
+        Point3 getWorldByScreen
+        (
+            const Point3&
+        );
+
+
+
+        /*
+            Return mouse current position at screen
+        */
+        Point3 getMouseCurrentScreen();
+
+
+
+        /*
+            Return mouse last position at screen
+        */
+        Point3 getMouseLastScreen();
+
+
+
+        /*
+            Return mouse current position in world
+        */
+        Point3 getMouseCurrentWorld();
+
+
+
+        /*
+            Return mouse last position in world
+        */
+        Point3 getMouseLastWorld();
+
+
+
+        /*
+            Set far clipping
+        */
+        Scene& setFar
+        (
+            const double /* value */
+        );
+
+
+
+        /*
+            Return far clipping
+        */
+        double getFar();
+
+
+
+        /*
+            Set near clipping
+        */
+        Scene& setNear
+        (
+            const double /* value */
+        );
+
+
+
+        /*
+            Return near clipping
+        */
+        double getNear();
+
+
 };
 
 
 
 // https://forum.sources.ru/index.php?showtopic=242739
+
+
+
+
+
+//glLoadMatrixd( (GLdouble*)&projectionMatrinx );
+
+
+
+//if (Width>0) and (Height>0) then begin
+// glViewPort(FViewLeft, FViewBottom, Width, Height);
+
+// glMatrixMode(GL_PROJECTION);
+// glLoadIdentity;
+// gluPerspective(FPerspective, Width / Height, FViewNear, FViewFar);
+//
+// glMatrixMode(GL_MODELVIEW);
+// glLoadMatrixD(@RotateMatrix);
+// glTranslateD(-Position.x + FZero3d.x, -Position.y + FZero3d.y, -Position.z + FZero3d.z);
+//end;
+//
+//glGetDoubleV(GL_MODELVIEW_MATRIX, @Matrixes.ModelviewMatrix);
+//glGetDoubleV(GL_PROJECTION_MATRIX, @Matrixes.ProjectionMatrix);
+//glGetIntegerv(GL_VIEWPORT, @Matrixes.ViewPort);
+//
+//
+//        glLoadIdentity();
+//        glOrtho( -2,2,-2,2,-10,10 );
+///        glFrustum( -1, 1, -1, 1, 0.1, 10.0 );
+

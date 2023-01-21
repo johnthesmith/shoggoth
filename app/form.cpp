@@ -109,6 +109,8 @@ void Form::onLeftDrag
     const Point3& aPoint
 )
 {
-Point3 a=aScene.mouseDelta * 0.0001;
-    camera.shift( aScene.mouseDelta * 0.0001 );
+    camera.shift
+    (
+        ( aScene.getMouseCurrentWorld() - aScene.getMouseLastWorld() )
+    );
 }

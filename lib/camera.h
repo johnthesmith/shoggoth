@@ -33,6 +33,8 @@ class Camera : Result
         bool            targetLock      = false;    /* Lock target position */
         bool            gazeLock        = true;     /* Lock distance between eye and target*/
 
+        double          sensivity       = 0.01;
+
     public:
 
         /*
@@ -135,23 +137,13 @@ class Camera : Result
 
 
         /*
-            Shift camera at 3d
+            Shift eye and target at 3d
         */
         Camera& shift
         (
             const Point3&
         );
 
-
-
-        /*
-            Shift camera at the screen
-        */
-        Camera& shift
-        (
-            const double,
-            const double
-        );
 
 
 

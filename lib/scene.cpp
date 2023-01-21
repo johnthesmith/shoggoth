@@ -267,62 +267,42 @@ Scene& Scene::drawEvent()
 {
     if( isOk() && payload != NULL && isInit() )
     {
-//        LogPoints::write( getLog(), viewMatrix, "view matrix" );
-
         /* Get window size */
         glfwGetFramebufferSize( win, &width, &height);
 
-        /* Calculate ratio */
-        if( height > 0 )
+        if( width > 0 && height > 0 && far != near )
         {
+            /* Set opengl viewport default */
+            glViewport( 0, 0, width, height );
+
+            /* Calculate ratio */
             ratio = width / (float) height;
-        }
-        else
-        {
-            ratio = 0;
-        }
+            projectionMatrix.perspective( perspective, ratio, near, far );
 
-        /* Pulling event for keyboard and mouse*/
-        glfwPollEvents();
+            /* Projection matrrix load */
+            glMatrixMode( GL_PROJECTION );
+            glLoadMatrixd( (GLdouble*)&projectionMatrix );
 
-        /* Get cursor positions */
-        double xpos;
-        double ypos;
+            /* Modelview matrrix load */
+            glMatrixMode( GL_MODELVIEW );
+            glLoadMatrixd( (GLdouble*)&viewMatrix );
 
-        glfwGetCursorPos( win, &xpos, &ypos);
-        mouseDelta.set( mousePos );
-        mousePos.set( xpos, ypos, 0 );
-        mouseDelta.subFrom( mousePos );
+            /* Pulling event for keyboard and mouse*/
+            glfwPollEvents();
 
+            /* Payload draw event */
+            payload -> onDraw( *this );
 
-        /* Set opengl viewport default */
-        glViewport( 0, 0, width, height );
+            /* Draw buffer to window */
+            glfwSwapBuffers( win );
 
-        /* Projection matrrix load */
-        glMatrixMode( GL_PROJECTION );
-        glLoadIdentity();
-        glOrtho( -2,2,-2,2,-10,10 );
-//        glFrustum( -1, 1, -1, 1, 0.1, 10.0 );
-
-        /* Modelview matrrix load */
-        glMatrixMode( GL_MODELVIEW );
-        glLoadIdentity();
-        glLoadMatrixd( (GLdouble*)&viewMatrix );
-
-LogPoints::write( getLog(), viewMatrix, "mv send");
-
-        /* Payload draw event */
-        payload -> onDraw( *this );
-
-        /* Draw buffer to window */
-        glfwSwapBuffers( win );
-
-        auto code = glGetError();
-        if( code != GL_NO_ERROR )
-        {
-            auto message = Scene::openglErrorToString( code );
-            getLog().warning( "opengl error" ).prm( "code", code ).prm( "message", message );
-            setResult( "opengl_error", message );
+            auto code = glGetError();
+            if( code != GL_NO_ERROR )
+            {
+                auto message = Scene::openglErrorToString( code );
+                getLog().warning( "opengl error" ).prm( "code", code ).prm( "message", message );
+                setResult( "opengl_error", message );
+            }
         }
     }
 
@@ -392,7 +372,6 @@ Scene& Scene::mouseEvent
         auto currentMoment = now();
         auto keyMode = aMods;
 
-
         /* Controller */
         switch( aButton )
         {
@@ -400,16 +379,16 @@ Scene& Scene::mouseEvent
                 switch( aAction )
                 {
                     case 0: /* Left button Up */
-                        payload -> onLeftUp( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onLeftUp( *this, mouseCurrent, keyMode );
                         if( mouseLeftDrag )
                         {
                             /* Left mouse drag end */
                             mouseLeftDrag = false;
-                            payload -> onLeftDragEnd( *this, mousePos );
+                            payload -> onLeftDragEnd( *this, mouseCurrent );
                         }
                     break;
                     case 1: /* Left button Down */
-                        payload -> onLeftDown( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onLeftDown( *this, mouseCurrent, keyMode );
                     break;
                 }
 
@@ -428,9 +407,9 @@ Scene& Scene::mouseEvent
                 switch( leftClickCount )
                 {
                     case 0: /* First down, begin of click */ break;
-                    case 1: payload -> onLeftClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 1: payload -> onLeftClick( *this, mouseCurrent, keyMode ); break;
                     case 2: /* Second down, begin of dbl click */ break;
-                    case 3: payload -> onLeftDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 3: payload -> onLeftDblClick( *this, mouseCurrent, keyMode); break;
                     case 4: leftClickCount = 0; break;
                 }
 
@@ -441,10 +420,10 @@ Scene& Scene::mouseEvent
                 switch( aAction )
                 {
                     case 0: /* Right button Up */
-                        payload -> onRightUp( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onRightUp( *this, mouseCurrent, keyMode );
                     break;
                     case 1: /* Right button Down */
-                        payload -> onRightDown( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onRightDown( *this, mouseCurrent, keyMode );
                     break;
                 }
 
@@ -463,9 +442,9 @@ Scene& Scene::mouseEvent
                 switch( rightClickCount )
                 {
                     case 0: /* First down, begin of click */ break;
-                    case 1: payload -> onRightClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 1: payload -> onRightClick( *this, mouseCurrent, keyMode ); break;
                     case 2: /* Second down, begin of dbl click */ break;
-                    case 3: payload -> onRightDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 3: payload -> onRightDblClick( *this, mouseCurrent, keyMode); break;
                     case 4: rightClickCount = 0; break;
                 }
 
@@ -476,10 +455,10 @@ Scene& Scene::mouseEvent
                 switch( aAction )
                 {
                     case 0: /* Middle button Up */
-                        payload -> onMiddleUp( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onMiddleUp( *this, mouseCurrent, keyMode );
                     break;
                     case 1: /* Middle button Down */
-                        payload -> onMiddleDown( *this, mousePos, mouseDelta, keyMode );
+                        payload -> onMiddleDown( *this, mouseCurrent, keyMode );
                     break;
                 }
 
@@ -498,9 +477,9 @@ Scene& Scene::mouseEvent
                 switch( middleClickCount )
                 {
                     case 0: /* First down, begin of click */ break;
-                    case 1: payload -> onMiddleClick( *this, mousePos, mouseDelta, keyMode ); break;
+                    case 1: payload -> onMiddleClick( *this, mouseCurrent, keyMode ); break;
                     case 2: /* Second down, begin of dbl click */ break;
-                    case 3: payload -> onMiddleDblClick( *this, mousePos, mouseDelta, keyMode); break;
+                    case 3: payload -> onMiddleDblClick( *this, mouseCurrent, keyMode); break;
                     case 4: middleClickCount = 0; break;
                 }
 
@@ -542,6 +521,11 @@ Scene& Scene::mouseMoveEvent
 {
     if( isOk() && payload != NULL && isInit() )
     {
+        /* Calculate mouse delta position */
+        mouseLast = mouseCurrent;
+        mouseCurrent.set( aX, aY, 0 );
+
+        /* Mouse drag control */
         if( isMouseButton( MB_LEFT ) )
         {
             if( mouseLeftDrag )
@@ -819,3 +803,119 @@ bool Scene::isMouseButton
 {
     return isWindow() ? glfwGetMouseButton( win, a ) == GLFW_PRESS : false;
 }
+
+
+
+/*
+    return screen point by world point
+    TODO
+*/
+Point3 Scene::getScreenByWorld
+(
+    const Point3& a
+)
+{
+    return a;
+}
+
+
+
+/*
+    return world point by screen point
+    TODO
+*/
+Point3 Scene::getWorldByScreen
+(
+    const Point3& a
+)
+{
+    return a;
+}
+
+
+
+
+/*
+    Return mouse current position at screen
+*/
+Point3 Scene::getMouseCurrentScreen()
+{
+    return mouseCurrent;
+}
+
+
+
+/*
+    Return mouse last position at screen
+*/
+Point3 Scene::getMouseLastScreen()
+{
+    return mouseLast;
+}
+
+
+
+/*
+    Return mouse current position in world
+*/
+Point3 Scene::getMouseCurrentWorld()
+{
+    return getWorldByScreen( mouseCurrent );
+}
+
+
+
+/*
+    Return mouse last position in world
+*/
+Point3 Scene::getMouseLastWorld()
+{
+    return getWorldByScreen( mouseLast );
+}
+
+
+
+Scene& Scene::setFar
+(
+    const double a
+)
+{
+    far = a;
+    return *this;
+}
+
+
+
+/*
+    Return far clipping
+*/
+double Scene::getFar()
+{
+    return far;
+}
+
+
+
+/*
+    Set near clipping
+*/
+Scene& Scene::setNear
+(
+    const double a
+)
+{
+    near = a;
+    return *this;
+}
+
+
+
+/*
+    Return near clipping
+*/
+double Scene::getNear()
+{
+    return near;
+}
+
+

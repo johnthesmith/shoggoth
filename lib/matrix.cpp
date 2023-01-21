@@ -275,3 +275,41 @@ string Matrix4::toString()
 //    l3.toString() + "\n" +
 //    l4.toString();
 }
+
+
+
+/*
+    https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml
+*/
+Matrix4& Matrix4::perspective
+(
+    double aAngle,
+    double aRatio,
+    double aNear,
+    double aFar
+)
+{
+    double f = cosf( aAngle * 0.5 ) / sinf( aAngle * 0.5);
+
+    m[ M_AX ] = f/aRatio;
+    m[ M_BX ] = 0.0;
+    m[ M_CX ] = 0.0;
+    m[ M_DX ] = 0.0;
+
+    m[ M_AY ] = 0.0;
+    m[ M_BY ] = f;
+    m[ M_CY ] = 0.0;
+    m[ M_DY ] = 0.0;
+
+    m[ M_AZ ] = 0.0;
+    m[ M_BZ ] = 0.0;
+    m[ M_CZ ] = (aFar + aNear) / ( aNear - aFar );
+    m[ M_DZ ] = ( 2.0 * aFar * aNear ) / ( aNear - aFar );
+
+    m[ M_AW ] = 0.0;
+    m[ M_BW ] = 0.0;
+    m[ M_CW ] = -1.0;
+    m[ M_DW ] = 0.0;
+
+   return *this;
+}
