@@ -44,6 +44,25 @@ class Form : public ScenePayload
         );
 
 
+
+
+        virtual void onKeyDown
+        (
+            Scene&,   /* Scene object */
+            const int,      /* Key */
+            const int,      /* Scan code*/
+            const int       /* Mode */
+        );
+
+
+
+        virtual void onMouseMove
+        (
+            Scene&,      /* Scene object */
+            const Point3&
+        );
+
+
          /*
              Mouse left drag
          */

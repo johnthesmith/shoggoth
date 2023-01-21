@@ -301,14 +301,15 @@ Scene& Scene::drawEvent()
         /* Projection matrrix load */
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-
+        glOrtho( -2,2,-2,2,-10,10 );
+//        glFrustum( -1, 1, -1, 1, 0.1, 10.0 );
 
         /* Modelview matrrix load */
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();
         glLoadMatrixd( (GLdouble*)&viewMatrix );
 
-LogPoints::write( getLog(), viewMatrix, "");
+LogPoints::write( getLog(), viewMatrix, "mv send");
 
         /* Payload draw event */
         payload -> onDraw( *this );
@@ -743,23 +744,22 @@ Scene& Scene::drawGreedIdentity()
     begin( LINE );
     for( double l = -1; l<=1; l+=0.1 )
     {
-        color( Rgba( 1,0,0,0.5 ));
-        vertex( Point3( l, 0, -1 ));
-        vertex( Point3( l, 0, 1 ));
-        vertex( Point3( -1, 0, l ));
-        vertex( Point3( 1, 0, l ));
+        /* f(x) z */
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3( l, 0, -1 ));
+        color( Rgba( 1,0,0,0.5 )); vertex( Point3( l, 0, 0 ));
+        color( Rgba( 1,0,0,0.5 )); vertex( Point3( l, 0, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3( l, 0, 1 ));
 
-        color( Rgba( 0,1,0,0.5 ));
-        vertex( Point3( 0, l, -1 ));
-        vertex( Point3( 0, l, 1 ));
-        vertex( Point3( 0, -1, l ));
-        vertex( Point3( 0, 1, l ));
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3( l, -1, 0));
+        color( Rgba( 0,1,0,0.5 )); vertex( Point3( l, 0, 0 ));
+        color( Rgba( 0,1,0,0.5 )); vertex( Point3( l, 0, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3( l, 1, 0 ));
 
-        color( Rgba( 0,0,1,0.5 ));
-        vertex( Point3( -1, l, 0 ));
-        vertex( Point3( 1, l, 0 ));
-        vertex( Point3( l, -1, 0 ));
-        vertex( Point3( l, 1, 0 ));
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3( 0, l, -1));
+        color( Rgba( 0,0,1,0.5 )); vertex( Point3( 0, l, 0 ));
+        color( Rgba( 0,0,1,0.5 )); vertex( Point3( 0, l, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3( 0, l, 1 ));
+
     }
     end();
     return *this;
@@ -774,9 +774,9 @@ Scene& Scene::drawAxisIdentity()
 {
     begin( LINE );
     {
-        color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_X );
-        color( RGBA_BLUE ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Y );
-        color( RGBA_RED ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Z );
+        color( RGBA_WHITE ).vertex( VECTOR_3D_0 ).color( RGBA_GREEN ).vertex( VECTOR_3D_X );
+        color( RGBA_WHITE ).vertex( VECTOR_3D_0 ).color( RGBA_BLUE ).vertex( VECTOR_3D_Y );
+        color( RGBA_WHITE ).vertex( VECTOR_3D_0 ).color( RGBA_RED ).vertex( VECTOR_3D_Z );
     }
     end();
     return *this;

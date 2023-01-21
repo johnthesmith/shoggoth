@@ -283,3 +283,7 @@ class Scene : public Result
             MouseButton /* Key name from scene_key.h*/
         );
 };
+
+
+
+// https://forum.sources.ru/index.php?showtopic=242739

@@ -3,10 +3,23 @@
 
     Class has:
     - eye - point of view
-    - target - point for gaze direction
+    - target - point for Front direction
     - top - normalized vector for top directio
 
     Each point and vector can blocked
+
+                     O target
+                    /
+           top o   /
+               |  o front
+               | /
+               |/eye
+    left o-----O-----o right
+              /|
+             / |
+       back o  |
+               o bottom
+
 */
 
 #include <iostream>
@@ -142,12 +155,12 @@ Point3& Camera::getTarget()
 
 
 /*
-    Shift camera at 3d
-    TODO VectorUP and Gase does not equal
+    Normalize camera at 3d
+    TODO Vectors Top and Front must not equal
 */
 Camera& Camera::norm()
 {
-    auto z = getGaze(); /* Camera gase direction */
+    auto z = getFront(); /* Camera Front direction */
     auto x = (top % z).norm();
     setTop( (z % x).norm());
     return *this;
@@ -269,6 +282,55 @@ double Camera::getNear()
 
 
 
+
+/*
+    Set eye lock
+*/
+Camera& Camera::setEyeLock
+(
+    const bool a /* value */
+)
+{
+    eyeLock = a;
+    return *this;
+}
+
+
+
+/*
+    Return near clipping
+*/
+bool Camera::getEyeLock()
+{
+    return eyeLock;
+}
+
+
+
+/*
+    Set eye lock
+*/
+Camera& Camera::setTargetLock
+(
+    const bool a /* value */
+)
+{
+    targetLock = a;
+    return *this;
+}
+
+
+
+/*
+    Return target lock
+*/
+bool Camera::getTargetLock()
+{
+    return targetLock;
+}
+
+
+
 /*
     Set angle of view in radians
 */
@@ -294,9 +356,9 @@ double Camera::getAngleView()
 
 
 /*
-    Return the gaze direction
+    Return the Front direction
 */
-Point3 Camera::getGaze()
+Point3 Camera::getFront()
 {
     return ( target - eye ).norm();
 }
@@ -304,11 +366,21 @@ Point3 Camera::getGaze()
 
 
 /*
-    Return the left direction
+    Return the Back direction
+*/
+Point3 Camera::getBack()
+{
+    return ( eye - target ).norm();
+}
+
+
+
+/*
+    Return the Right direction
 */
 Point3 Camera::getRight()
 {
-    return (top % getGaze()).norm();
+    return (top % getFront()).norm();
 }
 
 
@@ -322,14 +394,14 @@ Camera& Camera::setViewMatrixTo
     Matrix4& a
 )
 {
-    auto z = getGaze().negative();
+    auto z = getBack();
     auto x = (top % z).norm();
     auto y = (z % x).norm();
 
-    a.l1.set( x.x, x.y, x.z, -( x * eye ));
-    a.l2.set( y.x, y.y, y.z, -( y * eye ));
-    a.l3.set( z.x, z.y, z.z, -( z * eye ));
-    a.l4.set( VECTOR_4D_W );
+    a.m[M_AX] = x.x;            a.m[M_BX] = y.x;           a.m[M_CX] = z.x;           a.m[M_DX] = 0.0;
+    a.m[M_AY] = x.y;            a.m[M_BY] = y.y;           a.m[M_CY] = z.y;           a.m[M_DY] = 0.0;
+    a.m[M_AZ] = x.z;            a.m[M_BZ] = y.z;           a.m[M_CZ] = z.z;           a.m[M_DZ] = 0.0;
+    a.m[M_AW] = -( x * eye );   a.m[M_BW] = -( y * eye );  a.m[M_CW] = -( z * eye );  a.m[M_DW] = 1.0;
 
     return *this;
 }

@@ -33,12 +33,8 @@ void Form::onDraw
     aScene
     .clearColor()
     .drawAxisIdentity()
-    .drawGreedIdentity();
-
-//    aScene.getLog().trace();
-//    LogPoints::write( aScene.getLog(), aScene.mousePos, "point" );
-//    aScene.getLog().trace();
-//    LogPoints::write( aScene.getLog(), aScene.mouseDelta, "delta" );
+//    .drawGreedIdentity()
+    ;
 }
 
 
@@ -48,31 +44,58 @@ void Form::onDraw
 */
 void Form::onKeyUp
 (
-    Scene&    aScene, /* Scene object */
-    const int       aKey,   /* Key */
-    const int       aCode,  /* Scan code*/
-    const int       aMode   /* Mode */
+    Scene&      aScene, /* Scene object */
+    const int   aKey,   /* Key */
+    const int   aCode,  /* Scan code*/
+    const int   aMode   /* Mode */
 )
 {
-    switch( aCode )
+    switch( aKey )
     {
-        case 9:
+        case KEY_ESCAPE:
             aScene.setTerminate( true );
         break;
-        case 54:
-            if( aMode == 2 )
-            {
-                aScene.setTerminate( true );
-            }
+        case KEY_LEFT_CONTROL:
+            camera.setEyeLock( false );
+        break;
+        case KEY_LEFT_SHIFT:
+            camera.setTargetLock( false );
         break;
     }
+}
 
-    getLog()
-    .trace( "Key up" )
-    .prm( "key", aKey )
-    .prm( "code", aCode )
-    .prm( "mode", aMode )
-    .lineEnd();
+
+
+/*
+    Keyboard up event
+*/
+void Form::onKeyDown
+(
+    Scene&      aScene, /* Scene object */
+    const int   aKey,   /* Key */
+    const int   aCode,  /* Scan code*/
+    const int   aMode   /* Mode */
+)
+{
+    switch( aKey )
+    {
+        case KEY_LEFT_CONTROL:
+            camera.setEyeLock( true );
+        break;
+        case KEY_LEFT_SHIFT:
+            camera.setTargetLock( true );
+        break;
+    }
+}
+
+
+
+void Form::onMouseMove
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aPoint
+)
+{
 }
 
 
@@ -86,13 +109,6 @@ void Form::onLeftDrag
     const Point3& aPoint
 )
 {
-Point3 a=aScene.mouseDelta * 0.001;
-    camera.shift( aScene.mouseDelta * 0.01 );
-
-    LogPoints::write( getLog(), camera.getEye(), "eye" );
-    LogPoints::write( getLog(), camera.getTarget(), "target" );
-    LogPoints::write( getLog(), camera.getGaze(), "gaze" );
-    LogPoints::write( getLog(), camera.getTop(), "top" );
-    LogPoints::write( getLog(), camera.getRight(), "right" );
+Point3 a=aScene.mouseDelta * 0.0001;
+    camera.shift( aScene.mouseDelta * 0.0001 );
 }
-

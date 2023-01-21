@@ -118,10 +118,11 @@ Point4 operator*
 {
     return Point4
     (
-        aMatrix.l1 * aPoint,
-        aMatrix.l2 * aPoint,
-        aMatrix.l3 * aPoint,
-        aMatrix.l4 * aPoint
+//    TODO
+//        aMatrix.l1 * aPoint,
+//        aMatrix.l2 * aPoint,
+//        aMatrix.l3 * aPoint,
+//        aMatrix.l4 * aPoint
     );
 }
 
@@ -438,10 +439,11 @@ Point4& Point4::dot
     const Matrix4& a
 )
 {
-    x = x * a.l1.x + y * a.l1.y + z * a.l1.z + w * a.l1.w;
-    y = x * a.l2.x + y * a.l2.y + z * a.l2.z + w * a.l2.w;
-    z = x * a.l3.x + y * a.l3.y + z * a.l3.z + w * a.l3.w;
-    w = x * a.l4.x + y * a.l4.y + z * a.l4.z + w * a.l4.w;
+// TODO
+//    x = x * a.l1.x + y * a.l1.y + z * a.l1.z + w * a.l1.w;
+//    y = x * a.l2.x + y * a.l2.y + z * a.l2.z + w * a.l2.w;
+//    z = x * a.l3.x + y * a.l3.y + z * a.l3.z + w * a.l3.w;
+//    w = x * a.l4.x + y * a.l4.y + z * a.l4.z + w * a.l4.w;
     return *this;
 }
 

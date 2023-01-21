@@ -11,51 +11,35 @@
 /*
     4d matrix
 
-       |  x   y   z   w
-    ---|-----------------
-    l1 | ax, ay, az, aw
-    l2 | bx, by, bz, bw
-    l3 | cx, cy, cz, cw
-    l4 | dx, dy, dz, dw
+       | A     | B     | C     | D
+    ---|----------------------------
+     x | ax  0 | bx  1 | cx  2 | dx  3
+     y | ay  4 | by  5 | cy  6 | dy  7
+     z | az  8 | bz  9 | cz 10 | dz 11
+     t | aw 12 | bw 13 | cw 14 | dw 15
 */
+
 
 Matrix4::Matrix4
 (
-    Point4 a1,
-    Point4 a2,
-    Point4 a3,
-    Point4 a4
+    double ax, double bx, double cx, double dx,
+    double ay, double by, double cy, double dy,
+    double az, double bz, double cz, double dz,
+    double aw, double bw, double cw, double dw
 )
 {
-    l1 = a1;
-    l2 = a2;
-    l3 = a3;
-    l4 = a4;
+    m[ M_AX ] = ax; m[ M_BX ] = bx; m[ M_CX ] = cx; m[ M_DX ] = dx;
+    m[ M_AY ] = ay; m[ M_BY ] = by; m[ M_CY ] = cy; m[ M_DY ] = dy;
+    m[ M_AZ ] = az; m[ M_BZ ] = bz; m[ M_CZ ] = cz; m[ M_DZ ] = dz;
+    m[ M_AW ] = aw; m[ M_BW ] = bw; m[ M_CW ] = cw; m[ M_DW ] = dw;
 }
+
 
 
 
 Matrix4& Matrix4::identity()
 {
-    l1.x = 1.0;
-    l1.y = 0.0;
-    l1.z = 0.0;
-    l1.w = 0.0;
-
-    l2.x = 0.0;
-    l2.y = 1.0;
-    l2.z = 0.0;
-    l2.w = 0.0;
-
-    l3.x = 0.0;
-    l3.y = 0.0;
-    l3.z = 1.0;
-    l3.w = 0.0;
-
-    l4.x = 0.0;
-    l4.y = 0.0;
-    l4.z = 0.0;
-    l4.w = 1.0;
+    from( MATRIX_4D_I );
 
     return *this;
 }
@@ -68,25 +52,7 @@ Matrix4& Matrix4::from
     Matrix4& a
 )
 {
-    l1.x = a.l1.x;
-    l1.y = a.l1.y;
-    l1.z = a.l1.z;
-    l1.w = a.l1.w;
-
-    l2.x = a.l2.x;
-    l2.y = a.l2.y;
-    l2.z = a.l2.z;
-    l2.w = a.l2.w;
-
-    l3.x = a.l3.x;
-    l3.y = a.l3.y;
-    l3.z = a.l3.z;
-    l3.w = a.l3.w;
-
-    l4.x = a.l4.x;
-    l4.y = a.l4.y;
-    l4.z = a.l4.z;
-    l4.w = a.l4.w;
+    std::copy( std::begin( m ), std::end( m ), std::begin( a.m ) );
 
     return *this;
 }
@@ -101,26 +67,10 @@ Matrix4& Matrix4::shift
     const Point4& a
 )
 {
-    l1.x = 1.0;
-    l1.y = 0.0;
-    l1.z = 0.0;
-    l1.w = a.x;
-
-    l2.x = 0.0;
-    l2.y = 1.0;
-    l2.z = 0.0;
-    l2.w = a.y;
-
-    l3.x = 0.0;
-    l3.y = 0.0;
-    l3.z = 1.0;
-    l3.w = a.z;
-
-    l4.x = 0.0;
-    l4.y = 0.0;
-    l4.z = 0.0;
-    l4.w = 1;
-
+    m[ M_AX ] = 1.0; m[ M_BX ] = 0.0; m[ M_CX ] = 0.0; m[ M_DX ] = 0.0;
+    m[ M_AY ] = 0.0; m[ M_BY ] = 1.0; m[ M_CY ] = 0.0; m[ M_DY ] = 0.0;
+    m[ M_AZ ] = 0.0; m[ M_BZ ] = 0.0; m[ M_CZ ] = 1.0; m[ M_DZ ] = 0.0;
+    m[ M_AW ] = a.x; m[ M_BW ] = a.y; m[ M_CW ] = a.z; m[ M_DW ] = 1.0;
     return *this;
 }
 
@@ -134,25 +84,10 @@ Matrix4& Matrix4::scale
     const Point4& a
 )
 {
-    l1.x = a.x;
-    l1.y = 0.0;
-    l1.z = 0.0;
-    l1.w = 0.0;
-
-    l2.x = 0.0;
-    l2.y = a.y;
-    l2.z = 0.0;
-    l2.w = 0.0;
-
-    l3.x = 0.0;
-    l3.y = 0.0;
-    l3.z = a.z;
-    l3.w = 0.0;
-
-    l4.x = 0.0;
-    l4.y = 0.0;
-    l4.z = 0.0;
-    l4.w = 1.0;
+    m[ M_AX ] = a.x; m[ M_BX ] = 0.0; m[ M_CX ] = 0.0; m[ M_DX ] = 0.0;
+    m[ M_AY ] = 0.0; m[ M_BY ] = a.y; m[ M_CY ] = 0.0; m[ M_DY ] = 0.0;
+    m[ M_AZ ] = 0.0; m[ M_BZ ] = 0.0; m[ M_CZ ] = a.z; m[ M_DZ ] = 0.0;
+    m[ M_AW ] = 0.0; m[ M_BW ] = 0.0; m[ M_CW ] = 0.0; m[ M_DW ] = 1.0;
 
     return *this;
 }
@@ -167,25 +102,10 @@ Matrix4& Matrix4::scale
     const double a
 )
 {
-    l1.x = a;
-    l1.y = 0.0;
-    l1.z = 0.0;
-    l1.w = 0.0;
-
-    l2.x = 0.0;
-    l2.y = a;
-    l2.z = 0.0;
-    l2.w = 0.0;
-
-    l3.x = 0.0;
-    l3.y = 0.0;
-    l3.z = a;
-    l3.w = 0.0;
-
-    l4.x = 0.0;
-    l4.y = 0.0;
-    l4.z = 0.0;
-    l4.w = 1.0;
+    m[ M_AX ] = a;   m[ M_BX ] = 0.0; m[ M_CX ] = 0.0; m[ M_DX ] = 0.0;
+    m[ M_AY ] = 0.0; m[ M_BY ] = a;   m[ M_CY ] = 0.0; m[ M_DY ] = 0.0;
+    m[ M_AZ ] = 0.0; m[ M_BZ ] = 0.0; m[ M_CZ ] = a;   m[ M_DZ ] = 0.0;
+    m[ M_AW ] = 0.0; m[ M_BW ] = 0.0; m[ M_CW ] = 0.0; m[ M_DW ] = 1.0;
 
     return *this;
 }
@@ -203,25 +123,25 @@ Matrix4& Matrix4::rotate
     float sinA = sinf( aAngle );
     float cosA1 = 1 - cosA;
 
-    l1.x = cosA + cosA1 * aBase.x * aBase.x;
-    l1.y = cosA1 * aBase.x * aBase.y - sinA * aBase.z;
-    l1.z = cosA1 * aBase.x * aBase.z + sinA * aBase.y;
-    l1.w = 0;
+    m[ M_AX ] = cosA + cosA1 * aBase.x * aBase.x;
+    m[ M_AY ] = cosA1 * aBase.x * aBase.y - sinA * aBase.z;
+    m[ M_AZ ] = cosA1 * aBase.x * aBase.z + sinA * aBase.y;
+    m[ M_AW ] = 0;
 
-    l2.x = cosA1 * aBase.y * aBase.x + sinA * aBase.z;
-    l2.y = cosA + cosA1 * aBase.y * aBase.y;
-    l2.z = cosA1 * aBase.y * aBase.z - sinA * aBase.x;
-    l2.w = 0;
+    m[ M_BX ] = cosA1 * aBase.y * aBase.x + sinA * aBase.z;
+    m[ M_BY ] = cosA + cosA1 * aBase.y * aBase.y;
+    m[ M_BZ ] = cosA1 * aBase.y * aBase.z - sinA * aBase.x;
+    m[ M_BW ] = 0;
 
-    l3.x = cosA1 * aBase.z * aBase.x - sinA * aBase.y;
-    l3.y = cosA1 * aBase.z * aBase.y + sinA * aBase.x;
-    l3.z = cosA + cosA1 * aBase.z * aBase.z;
-    l3.x = 0;
+    m[ M_CX ] = cosA1 * aBase.z * aBase.x - sinA * aBase.y;
+    m[ M_CY ] = cosA1 * aBase.z * aBase.y + sinA * aBase.x;
+    m[ M_CZ ] = cosA + cosA1 * aBase.z * aBase.z;
+    m[ M_CW ] = 0;
 
-    l4.x = 0;
-    l4.y = 0;
-    l4.z = 0;
-    l4.w = 1;
+    m[ M_DX ] = 0;
+    m[ M_DY ] = 0;
+    m[ M_DZ ] = 0;
+    m[ M_DW ] = 1;
 
     return *this;
 }
@@ -242,25 +162,25 @@ Matrix4& Matrix4::rotate
     auto sinZ = sinf( z );
     auto cosZ = cosf( z );
 
-    l1.x = cosX * cosY;
-    l1.y = cosX * sinY * sinZ - sinX * cosZ;
-    l1.z = cosX * sinY * cosZ + sinX * sinZ;
-    l1.w = 0.0;
+    m[ M_AX ] = cosX * cosY;
+    m[ M_AY ] = cosX * sinY * sinZ - sinX * cosZ;
+    m[ M_AZ ] = cosX * sinY * cosZ + sinX * sinZ;
+    m[ M_AW ] = 0.0;
 
-    l2.x = sinX * cosY;
-    l2.y = sinX * sinY * sinZ + cosX * cosZ;
-    l2.z = sinX * sinY * cosZ - cosX * sinZ;
-    l2.w = 0.0;
+    m[ M_BX ] = sinX * cosY;
+    m[ M_BY ] = sinX * sinY * sinZ + cosX * cosZ;
+    m[ M_BZ ] = sinX * sinY * cosZ - cosX * sinZ;
+    m[ M_BW ] = 0.0;
 
-    l3.x = -sinY;
-    l3.y = cosY * sinZ;
-    l3.z = cosY * cosZ;
-    l4.w = 0.0;
+    m[ M_CX ] = -sinY;
+    m[ M_CY ] = cosY * sinZ;
+    m[ M_CZ ] = cosY * cosZ;
+    m[ M_CW ] = 0.0;
 
-    l4.x = 0;
-    l4.y = 0;
-    l4.z = 0;
-    l4.w = 1;
+    m[ M_DX ] = 0;
+    m[ M_DY ] = 0;
+    m[ M_DZ ] = 0;
+    m[ M_DW ] = 1;
 
     return *this;
 }
@@ -277,12 +197,10 @@ Matrix4& Matrix4::look
     auto vy = Point3( vx ).cross( aGaze ).toPoint4( 0 );
     auto vz = Point3( aGaze ).negative().toPoint4( 0 );
 
-    auto vx4 = vx.toPoint4( 0 );
-
-    l1.set( vx4 );
-    l2.set( vy );
-    l3.set( vz );
-    l4.set( VECTOR_4D_W );
+    m[ M_AX ] = vx.x; m[ M_BX ] = vy.x; m[ M_CX ] = vz.x; m[ M_DX ] = 0.0;
+    m[ M_AY ] = vx.y; m[ M_BY ] = vy.y; m[ M_CY ] = vz.y; m[ M_DY ] = 0.0;
+    m[ M_AZ ] = vx.z; m[ M_BZ ] = vy.x; m[ M_CZ ] = vz.z; m[ M_DZ ] = 0.0;
+    m[ M_AW ] = 0.0;  m[ M_BW ] = 0.0;  m[ M_CW ] = 0.0;  m[ M_DW ] = 1.0;
 
     return *this;
 }
@@ -299,19 +217,19 @@ Matrix4& Matrix4::ortho
     double f
 )
 {
-	l1.x = 2.0 / (r-l);
-	l1.y = l1.z = l1.w = 0.0;
-
-	l2.y = 2.0 / (t-b);
-	l2.x = l2.z = l2.w = 0.0;
-
-	l3.z = -2.0 / (f-n);
-	l3.x = l3.y = l3.w = 0.0;
-
-	l4.x = -( r+l ) / ( r-l );
-	l4.y = -( t+b ) / ( t-b );
-    l4.z = -( f+n )/( f-n );
-    l4.w = 1.0;
+//	l1.x = 2.0 / (r-l);
+//	l1.y = l1.z = l1.w = 0.0;
+//
+//	l2.y = 2.0 / (t-b);
+//	l2.x = l2.z = l2.w = 0.0;
+//
+//	l3.z = -2.0 / (f-n);
+//	l3.x = l3.y = l3.w = 0.0;
+//
+//	l4.x = -( r+l ) / ( r-l );
+//	l4.y = -( t+b ) / ( t-b );
+//    l4.z = -( f+n )/( f-n );
+//    l4.w = 1.0;
 
     return *this;
 }
@@ -324,25 +242,25 @@ Matrix4& Matrix4::dot
     Matrix4& b
 )
 {
-    l1.x = a.l1.x * b.l1.x + a.l1.y * b.l2.x + a.l1.z * b.l3.x + a.l1.w * b.l4.x;
-    l1.y = a.l1.x * b.l1.y + a.l1.y * b.l2.y + a.l1.z * b.l3.y + a.l1.w * b.l4.y;
-    l1.z = a.l1.x * b.l1.z + a.l1.y * b.l2.z + a.l1.z * b.l3.z + a.l1.w * b.l4.z;
-    l1.w = a.l1.x * b.l1.w + a.l1.y * b.l2.w + a.l1.z * b.l3.w + a.l1.w * b.l4.w;
-
-    l2.x = a.l2.x * b.l1.x + a.l2.y * b.l2.x + a.l2.z * b.l3.x + a.l2.w * b.l4.x;
-    l2.y = a.l2.x * b.l1.y + a.l2.y * b.l2.y + a.l2.z * b.l3.y + a.l2.w * b.l4.y;
-    l2.z = a.l2.x * b.l1.z + a.l2.y * b.l2.z + a.l2.z * b.l3.z + a.l2.w * b.l4.z;
-    l2.w = a.l2.x * b.l1.w + a.l2.y * b.l2.w + a.l2.z * b.l3.w + a.l2.w * b.l4.w;
-
-    l3.x = a.l3.x * b.l1.x + a.l3.y * b.l2.x + a.l3.z * b.l3.x + a.l3.w * b.l4.x;
-    l3.y = a.l3.x * b.l1.y + a.l3.y * b.l2.y + a.l3.z * b.l3.y + a.l3.w * b.l4.y;
-    l3.z = a.l3.x * b.l1.z + a.l3.y * b.l2.z + a.l3.z * b.l3.z + a.l3.w * b.l4.z;
-    l3.w = a.l3.x * b.l1.w + a.l3.y * b.l2.w + a.l3.z * b.l3.w + a.l3.w * b.l4.w;
-
-    l4.x = a.l4.x * b.l1.x + a.l4.y * b.l2.x + a.l4.z * b.l3.x + a.l4.w * b.l4.x;
-    l4.y = a.l4.x * b.l1.y + a.l4.y * b.l2.y + a.l4.z * b.l3.y + a.l4.w * b.l4.y;
-    l4.z = a.l4.x * b.l1.z + a.l4.y * b.l2.z + a.l4.z * b.l3.z + a.l4.w * b.l4.z;
-    l4.w = a.l4.x * b.l1.w + a.l4.y * b.l2.w + a.l4.z * b.l3.w + a.l4.w * b.l4.w;
+//    l1.x = a.l1.x * b.l1.x + a.l1.y * b.l2.x + a.l1.z * b.l3.x + a.l1.w * b.l4.x;
+//    l1.y = a.l1.x * b.l1.y + a.l1.y * b.l2.y + a.l1.z * b.l3.y + a.l1.w * b.l4.y;
+//    l1.z = a.l1.x * b.l1.z + a.l1.y * b.l2.z + a.l1.z * b.l3.z + a.l1.w * b.l4.z;
+//    l1.w = a.l1.x * b.l1.w + a.l1.y * b.l2.w + a.l1.z * b.l3.w + a.l1.w * b.l4.w;
+//
+//    l2.x = a.l2.x * b.l1.x + a.l2.y * b.l2.x + a.l2.z * b.l3.x + a.l2.w * b.l4.x;
+//    l2.y = a.l2.x * b.l1.y + a.l2.y * b.l2.y + a.l2.z * b.l3.y + a.l2.w * b.l4.y;
+//    l2.z = a.l2.x * b.l1.z + a.l2.y * b.l2.z + a.l2.z * b.l3.z + a.l2.w * b.l4.z;
+//    l2.w = a.l2.x * b.l1.w + a.l2.y * b.l2.w + a.l2.z * b.l3.w + a.l2.w * b.l4.w;
+//
+//    l3.x = a.l3.x * b.l1.x + a.l3.y * b.l2.x + a.l3.z * b.l3.x + a.l3.w * b.l4.x;
+//    l3.y = a.l3.x * b.l1.y + a.l3.y * b.l2.y + a.l3.z * b.l3.y + a.l3.w * b.l4.y;
+//    l3.z = a.l3.x * b.l1.z + a.l3.y * b.l2.z + a.l3.z * b.l3.z + a.l3.w * b.l4.z;
+//    l3.w = a.l3.x * b.l1.w + a.l3.y * b.l2.w + a.l3.z * b.l3.w + a.l3.w * b.l4.w;
+//
+//    l4.x = a.l4.x * b.l1.x + a.l4.y * b.l2.x + a.l4.z * b.l3.x + a.l4.w * b.l4.x;
+//    l4.y = a.l4.x * b.l1.y + a.l4.y * b.l2.y + a.l4.z * b.l3.y + a.l4.w * b.l4.y;
+//    l4.z = a.l4.x * b.l1.z + a.l4.y * b.l2.z + a.l4.z * b.l3.z + a.l4.w * b.l4.z;
+//    l4.w = a.l4.x * b.l1.w + a.l4.y * b.l2.w + a.l4.z * b.l3.w + a.l4.w * b.l4.w;
 
     return *this;
 }
@@ -351,9 +269,9 @@ Matrix4& Matrix4::dot
 
 string Matrix4::toString()
 {
-    return
-    l1.toString() + "\n" +
-    l2.toString() + "\n" +
-    l3.toString() + "\n" +
-    l4.toString();
+    return "";
+//    l1.toString() + "\n" +
+//    l2.toString() + "\n" +
+//    l3.toString() + "\n" +
+//    l4.toString();
 }

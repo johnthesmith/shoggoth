@@ -3,13 +3,34 @@
 /*
     4d matrix
 
-       |  x   y   z   w
-    ---|-----------------
-    l1 | ax, ay, az, aw
-    l2 | bx, by, bz, bw
-    l3 | cx, cy, cz, cw
-    l4 | dx, dy, dz, dw
+       | A     | B     | C     | D
+    ---|----------------------------
+     x | ax  0 | bx  1 | cx  2 | dx  3
+     y | ay  4 | by  5 | cy  6 | dy  7
+     z | az  8 | bz  9 | cz 10 | dz 11
+     t | aw 12 | bw 13 | cw 14 | dw 15
 */
+
+
+#define M_AX 0
+#define M_AY 4
+#define M_AZ 8
+#define M_AW 12
+
+#define M_BX 1
+#define M_BY 5
+#define M_BZ 9
+#define M_BW 13
+
+#define M_CX 2
+#define M_CY 6
+#define M_CZ 10
+#define M_CW 14
+
+#define M_DX 3
+#define M_DY 7
+#define M_DZ 11
+#define M_DW 15
 
 
 struct Point4;
@@ -17,18 +38,17 @@ struct Point4;
 
 struct Matrix4
 {
-    Point4 l1;
-    Point4 l2;
-    Point4 l3;
-    Point4 l4;
+    double m[16];
+
 
     Matrix4
     (
-        Point4 = Point4(),
-        Point4 = Point4(),
-        Point4 = Point4(),
-        Point4 = Point4()
+        double = 0, double = 0, double = 0, double = 0,
+        double = 0, double = 0, double = 0, double = 0,
+        double = 0, double = 0, double = 0, double = 0,
+        double = 0, double = 0, double = 0, double = 0
     );
+
 
     Matrix4& identity();
 
@@ -105,3 +125,21 @@ struct Matrix4
 
 
 };
+
+
+static Matrix4 MATRIX_4D_I = Matrix4
+(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+);
+
+
+static Matrix4 MATRIX_4D_0 = Matrix4
+(
+    0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0
+);
