@@ -279,6 +279,8 @@ Scene& Scene::drawEvent()
             ratio = width / (float) height;
             projectionMatrix.perspective( perspective, ratio, near, far );
 
+LogPoints::write( getLog(), projectionMatrix, "PM" );
+
             /* Projection matrrix load */
             glMatrixMode( GL_PROJECTION );
             glLoadMatrixd( (GLdouble*)&projectionMatrix );
