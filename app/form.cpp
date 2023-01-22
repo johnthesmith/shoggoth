@@ -111,6 +111,6 @@ void Form::onLeftDrag
 {
     camera.shift
     (
-        ( aScene.getMouseCurrentWorld() - aScene.getMouseLastWorld() )
+        ( aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld() )
     );
 }

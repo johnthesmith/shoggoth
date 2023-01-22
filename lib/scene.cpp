@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>         /* usleep */
+#include <GL/glu.h>
 
 /* Local libraries */
 #include "utils.h"
@@ -268,22 +269,19 @@ Scene& Scene::drawEvent()
     if( isOk() && payload != NULL && isInit() )
     {
         /* Get window size */
-        glfwGetFramebufferSize( win, &width, &height);
+        glfwGetFramebufferSize( win, &(viewport.width), &(viewport.height) );
 
-        if( width > 0 && height > 0 && far != near )
+        if( viewport.width > 0 && viewport.height > 0 && far != near )
         {
             /* Set opengl viewport default */
-            glViewport( 0, 0, width, height );
-
-            /* Calculate ratio */
-            ratio = width / (float) height;
-            projectionMatrix.perspective( perspective, ratio, near, far );
-
-LogPoints::write( getLog(), projectionMatrix, "PM" );
+            glViewport( viewport.left, viewport.top, viewport.width, viewport.height );
+//            projectionMatrix.perspective( perspective, (float) viewport.width / (float) viewport.height, near, far );
 
             /* Projection matrrix load */
             glMatrixMode( GL_PROJECTION );
-            glLoadMatrixd( (GLdouble*)&projectionMatrix );
+            glLoadIdentity();
+            gluPerspective( 45, viewport.width / (float) viewport.height, near, far );
+            glGetDoublev( GL_PROJECTION_MATRIX, (GLdouble*)&projectionMatrix );
 
             /* Modelview matrrix load */
             glMatrixMode( GL_MODELVIEW );
@@ -810,28 +808,50 @@ bool Scene::isMouseButton
 
 /*
     return screen point by world point
-    TODO
+    https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluUnProject.xml
 */
 Point3 Scene::getScreenByWorld
 (
     const Point3& a
 )
 {
-    return a;
+    auto r = Point3();
+    gluProject
+    (
+        a.x, a.y, a.z,
+        (GLdouble*)&viewMatrix,
+        (GLdouble*)&projectionMatrix,
+        (GLint*)&viewport,
+        (GLdouble*)&r.x,
+        (GLdouble*)&r.y,
+        (GLdouble*)&r.z
+    );
+    return r;
 }
 
 
 
 /*
     return world point by screen point
-    TODO
+    https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluProject.xml
 */
 Point3 Scene::getWorldByScreen
 (
     const Point3& a
 )
 {
-    return a;
+    auto r = Point3();
+    gluUnProject
+    (
+        a.x, a.y, a.z,
+        (GLdouble*)&viewMatrix,
+        (GLdouble*)&projectionMatrix,
+        (GLint*)&viewport,
+        (GLdouble*)&r.x,
+        (GLdouble*)&r.y,
+        (GLdouble*)&r.z
+    );
+    return r;
 }
 
 

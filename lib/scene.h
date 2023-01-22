@@ -37,6 +37,16 @@ enum KeyMode
 
 
 
+struct Ltwh
+{
+    int left = 0;
+    int top = 0;
+    int width = 0;
+    int height = 0;
+};
+
+
+
 class Scene : public Result
 {
     private:
@@ -49,8 +59,6 @@ class Scene : public Result
         int             fps         = 0;        /* FPS */
         int             idle        = 0;        /* Idle time in microseconds */
         bool            terminated  = false;    /* Terminated flag */
-        int             width       = 0;        /* Scene window width */
-        int             height      = 0;        /* Scene window height */
         float           ratio       = 0;        /* Radio window width / height */
 
         long long       lastLeftMouse       = 0;
@@ -60,18 +68,19 @@ class Scene : public Result
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
-
+þ
         Point3          mouseCurrent        = VECTOR_3D_0;  /* Current mouse cursor position */
         Point3          mouseLast           = VECTOR_3D_0;  /* Last mouse cursot position */
 
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;
+        Ltwh            viewport;           /* Viewport */
 
         /* Settings */
         int         fpsDrawLimit            = 10;       /* FPS limit */
         int         fpsCalcLimit            = 10;       /* FPS limit */
-        double      near            = 0.0;
-        double      far             = 1.0;
+        double      near            = 0.1;
+        double      far             = 3.0;
         double      perspective     = M_PI * 0.5;   /* Perspective at rad*/
 
     public:
@@ -376,33 +385,5 @@ class Scene : public Result
 
 
 // https://forum.sources.ru/index.php?showtopic=242739
-
-
-
-
-
 //glLoadMatrixd( (GLdouble*)&projectionMatrinx );
-
-
-
-//if (Width>0) and (Height>0) then begin
-// glViewPort(FViewLeft, FViewBottom, Width, Height);
-
-// glMatrixMode(GL_PROJECTION);
-// glLoadIdentity;
-// gluPerspective(FPerspective, Width / Height, FViewNear, FViewFar);
-//
-// glMatrixMode(GL_MODELVIEW);
-// glLoadMatrixD(@RotateMatrix);
-// glTranslateD(-Position.x + FZero3d.x, -Position.y + FZero3d.y, -Position.z + FZero3d.z);
-//end;
-//
-//glGetDoubleV(GL_MODELVIEW_MATRIX, @Matrixes.ModelviewMatrix);
-//glGetDoubleV(GL_PROJECTION_MATRIX, @Matrixes.ProjectionMatrix);
-//glGetIntegerv(GL_VIEWPORT, @Matrixes.ViewPort);
-//
-//
-//        glLoadIdentity();
-//        glOrtho( -2,2,-2,2,-10,10 );
-///        glFrustum( -1, 1, -1, 1, 0.1, 10.0 );
-
+//glGetDoublev( GL_PROJECTION_MATRIX, (GLdouble*)&projectionMatrix );

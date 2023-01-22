@@ -17,15 +17,10 @@ class Camera : Result
     private:
 
        /* Camera settings */
-        Point3          eye             = VECTOR_3D_0;  /* Set on begin of coordinates */
-        Point3          target          = VECTOR_3D_Z;  /* Look at far */
+        Point3          eye             = VECTOR_3D_I;  /* Set on begin of coordinates */
+        Point3          target          = VECTOR_3D_0;  /* Look at far */
         Point3          top             = VECTOR_3D_Y;  /* And top on top */
-//        Point3          eye             = Point3( 1, 1, 1);
-//        Point3          target          = Point3( 0, 0, 0);
-//        Point3          top             = Point3( 0, 1, 0);
 
-        double          near            = 0.0;
-        double          far             = 1.0;
         double          viewAngle       = M_PI * 0.5;
 
         bool            eyeLock         = false;    /* Lock eye position */
@@ -33,7 +28,7 @@ class Camera : Result
         bool            targetLock      = false;    /* Lock target position */
         bool            gazeLock        = true;     /* Lock distance between eye and target*/
 
-        double          sensivity       = 0.01;
+        double          sensivity       = 1.0;
 
     public:
 
@@ -142,34 +137,6 @@ class Camera : Result
         Camera& shift
         (
             const Point3&
-        );
-
-
-
-
-        /*
-            Set far clipping
-        */
-        Camera& setFar
-        (
-            const double /* value */
-        );
-
-
-
-        /*
-            Return far clipping
-        */
-        double getFar();
-
-
-
-        /*
-            Set near clipping
-        */
-        Camera& setNear
-        (
-            const double /* value */
         );
 
 

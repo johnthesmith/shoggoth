@@ -9,5 +9,5 @@ g++ \
 hello.cpp \
 lib/*.cpp \
 app/*.cpp \
--lGL -lX11 -lXrandr -lpthread -lm -lglfw -o hello && \
+-lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw -o hello && \
 ./hello

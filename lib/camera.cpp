@@ -222,51 +222,6 @@ Camera& Camera::shift
 /*
     Set far clipping
 */
-Camera& Camera::setFar
-(
-    const double a
-)
-{
-    far = a;
-    return *this;
-}
-
-
-
-/*
-    Return far clipping
-*/
-double Camera::getFar()
-{
-    return far;
-}
-
-
-
-/*
-    Set near clipping
-*/
-Camera& Camera::setNear
-(
-    const double a
-)
-{
-    near = a;
-    return *this;
-}
-
-
-
-/*
-    Return near clipping
-*/
-double Camera::getNear()
-{
-    return near;
-}
-
-
-
 
 /*
     Set eye lock
