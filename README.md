@@ -12,7 +12,7 @@
 Install 
 
 ```
-sudo apt-get install libglfw3 libglfw3-dev
+sudo apt-get install libglfw3 libglfw3-dev libglu1-mesa-dev
 ```
 
 Run:
