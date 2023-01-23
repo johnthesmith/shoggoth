@@ -161,27 +161,29 @@ void Form::onMouseWheel
     const Point3& aDelta
 )
 {
-    if( aScene.isKey( KEY_LEFT_SHIFT ))
+    bool rotation = false;
+
+    if( aScene.isKey( KEY_LEFT_CONTROL ))
     {
         camera.rotateEye( camera.getRight(), aDelta.y * 0.1 );
+        rotation = true;
     }
-    else
+
+    if( aScene.isKey( KEY_LEFT_SHIFT ))
     {
-        if( aScene.isKey( KEY_LEFT_CONTROL ))
-        {
-            camera.rotateEye( camera.getTop(), aDelta.y * 0.1 );
-        }
-        else
-        {
-            if( aScene.isKey( KEY_LEFT_ALT ))
-            {
-                camera.rotateTop( camera.getFront(), aDelta.y * 0.1 );
-            }
-            else
-            {
-                camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
-            }
-        }
+        camera.rotateEye( camera.getTop(), aDelta.y * 0.1 );
+        rotation = true;
+    }
+
+    if( aScene.isKey( KEY_LEFT_ALT ))
+    {
+        camera.rotateTop( camera.getFront(), aDelta.y * 0.1 );
+        rotation = true;
+    }
+
+    if( !rotation )
+    {
+        camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
     }
 }
 

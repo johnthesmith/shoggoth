@@ -381,7 +381,8 @@ Camera& Camera::rotateEye
     const double aAngleRad  /* Rotation angle at radians */
 )
 {
-    moveEye( ( eye - target ).rotate( aBase, aAngleRad ) + target );
+    setEye( ( eye - target ).rotate( aBase, aAngleRad ) + target );
+    norm();
     return *this;
 }
 
@@ -396,7 +397,8 @@ Camera& Camera::rotateTop
     const double aAngleRad  /* Rotation angle at radians */
 )
 {
-    moveTop( top.rotate( aBase, aAngleRad ));
+    setTop( top.rotate( aBase, aAngleRad ));
+    norm();
     return *this;
 }
 
