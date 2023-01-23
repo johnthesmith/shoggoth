@@ -230,6 +230,15 @@ struct Point3
     Point3& norm();
 
 
+    /*
+        Rotate current point around vector
+    */
+    Point3& rotate
+    (
+        const Point3,
+        const double    /* Angle at radians */
+    );
+
 
     /*
         Distance between this Point3

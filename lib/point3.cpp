@@ -405,6 +405,34 @@ Point3& Point3::norm()
 }
 
 
+/*
+    Rotate current point around vector
+
+     Point
+     o
+     |  o Result
+     |a/
+     |/
+     O---------> aBase
+*/
+Point3& Point3::rotate
+(
+    const Point3 aBase,
+    const double aAngleRad
+)
+{
+    auto sn = sinf( aAngleRad );
+    auto cs = cosf( aAngleRad );
+
+    auto dz = aBase * ( *this * aBase );
+    auto dx = *this - dz;
+    auto dy = dx % aBase;
+
+    set( dx.scale( cs ) + dy.scale( sn ) + dz );
+    return *this;
+}
+
+
 
 /*
     Distance between this Point3
@@ -466,3 +494,7 @@ string Point3::toString() const
     "[" + to_string( z ) + "]"
     ;
 }
+
+
+
+

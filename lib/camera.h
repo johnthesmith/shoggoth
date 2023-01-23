@@ -238,4 +238,38 @@ class Camera : Result
         (
             double
         );
+
+
+
+
+        /*
+            Rotate eye around vector
+        */
+        Camera& rotateEye
+        (
+            const Point3& aBase,    /* Base */
+            const double aAngleRad  /* Rotation angle at radians */
+        );
+
+
+
+        /*
+            Rotate top around vector
+        */
+        Camera& rotateTop
+        (
+            const Point3& aBase,    /* Base */
+            const double aAngleRad  /* Rotation angle at radians */
+        );
+
+
+
+        /*
+            Rotate target around vector
+        */
+        Camera& rotateTarget
+        (
+            const Point3& aBase,    /* Base */
+            const double aAngleRad  /* Rotation angle at radians */
+        );
 };

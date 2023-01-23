@@ -201,26 +201,6 @@ Camera& Camera::place
 
 
 /*
-    Shift eye and target at 3d
-*/
-Camera& Camera::shift
-(
-    const Point3& a
-)
-{
-    Point3 s = a * sensivity;
-    place
-    (
-        eye + s,
-        target + s,
-        top
-    );
-    return *this;
-}
-
-
-
-/*
     Set far clipping
 */
 
@@ -367,6 +347,71 @@ Camera& Camera::zoom
 )
 {
     setEye( getTarget() - getGaze().scale( a ));
+    return *this;
+}
+
+
+
+/*
+    Shift eye and target at 3d
+*/
+Camera& Camera::shift
+(
+    const Point3& a
+)
+{
+    Point3 s = a * sensivity;
+    place
+    (
+        eye + s,
+        target + s,
+        top
+    );
+    return *this;
+}
+
+
+
+/*
+    Rotate eye around vector
+*/
+Camera& Camera::rotateEye
+(
+    const Point3& aBase,    /* Base */
+    const double aAngleRad  /* Rotation angle at radians */
+)
+{
+    moveEye( ( eye - target ).rotate( aBase, aAngleRad ) + target );
+    return *this;
+}
+
+
+
+/*
+    Rotate top around vector
+*/
+Camera& Camera::rotateTop
+(
+    const Point3& aBase,    /* Base */
+    const double aAngleRad  /* Rotation angle at radians */
+)
+{
+    moveTop( top.rotate( aBase, aAngleRad ));
+    return *this;
+}
+
+
+
+/*
+    Rotate target around vector
+*/
+Camera& Camera::rotateTarget
+(
+    const Point3& aBase,    /* Base */
+    const double aAngleRad  /* Rotation angle at radians */
+)
+{
+//    target - eye
     return *this;
 }
 
