@@ -48,7 +48,35 @@ ScenePayload& ScenePayload::applyCameraToScene
 {
     Matrix4& m = aScene.getViewMatrixRef();
     aCamera.setViewMatrixTo( m );
+    aScene.switchToWorld();
     return *this;
+}
+
+
+
+/*
+    Apply screen to scene
+*/
+ScenePayload& ScenePayload::applyScreenToScene
+(
+    Scene& aScene       /* Scene object */
+)
+{
+    aScene.switchToScreen();
+    return *this;
+}
+
+
+
+/*
+    On activate event
+*/
+void ScenePayload::onActivate
+(
+    Scene& aScene   /* Scene object */
+)
+{
+    getLog().trace( "Scene activate" );
 }
 
 
@@ -505,3 +533,6 @@ ScenePayload& ScenePayload::defaultMouseEventInformation
     .lineEnd();
     return *this;
 }
+
+
+

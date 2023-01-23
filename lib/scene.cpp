@@ -275,17 +275,6 @@ Scene& Scene::drawEvent()
         {
             /* Set opengl viewport default */
             glViewport( viewport.left, viewport.top, viewport.width, viewport.height );
-//            projectionMatrix.perspective( perspective, (float) viewport.width / (float) viewport.height, near, far );
-
-            /* Projection matrrix load */
-            glMatrixMode( GL_PROJECTION );
-            glLoadIdentity();
-            gluPerspective( 45, viewport.width / (float) viewport.height, near, far );
-            glGetDoublev( GL_PROJECTION_MATRIX, (GLdouble*)&projectionMatrix );
-
-            /* Modelview matrrix load */
-            glMatrixMode( GL_MODELVIEW );
-            glLoadMatrixd( (GLdouble*)&viewMatrix );
 
             /* Pulling event for keyboard and mouse*/
             glfwPollEvents();
@@ -305,6 +294,54 @@ Scene& Scene::drawEvent()
             }
         }
     }
+
+    return *this;
+}
+
+
+
+/*
+    World matrixes is loading to opengl
+    Modelview matrix must prepared before thos operation
+*/
+Scene& Scene::switchToWorld()
+{
+    /* Projection matrrix load */
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    gluPerspective( 45, viewport.width / (float) viewport.height, near, far );
+    glGetDoublev( GL_PROJECTION_MATRIX, (GLdouble*)&projectionMatrix );
+
+    /* Modelview matrrix load */
+    glMatrixMode( GL_MODELVIEW );
+    glLoadMatrixd( (GLdouble*)&viewMatrix );
+
+    return *this;
+}
+
+
+
+/*
+    Ortho screen matrixes is loading to opengl
+*/
+Scene& Scene::switchToScreen()
+{
+    /* Projection matrrix load */
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho
+    (
+        viewport.left,
+        viewport.left + viewport.width,
+        viewport.top + viewport.height,
+        viewport.top,
+        0,
+        1
+    );
+
+    /* Modelview matrrix load */
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
 
     return *this;
 }
@@ -560,6 +597,11 @@ Scene& Scene::setPayload
 {
     payload = &a;
     payload -> setScene( *this );
+
+    if( isOk() && payload != NULL && isInit() )
+    {
+        payload -> onActivate( *this );
+    }
 
     return *this;
 }
@@ -843,7 +885,7 @@ Point3 Scene::getWorldByScreen
     auto r = Point3();
     gluUnProject
     (
-        a.x, a.y, a.z,
+        a.x, viewport.height - a.y, a.z,
         (GLdouble*)&viewMatrix,
         (GLdouble*)&projectionMatrix,
         (GLint*)&viewport,

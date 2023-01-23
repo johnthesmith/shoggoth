@@ -28,9 +28,17 @@ class Form : public ScenePayload
         {};
 
 
+
+        virtual void onActivate
+        (
+            Scene&  /* Scene object */
+        );
+
+
+
         virtual void onDraw
         (
-            Scene& aScene   /* Scene object */
+            Scene&  /* Scene object */
         );
 
 
@@ -71,4 +79,15 @@ class Form : public ScenePayload
              Scene&,             /* Scene object */
              const Point3&
          );
+
+
+
+        /*
+            Mouse wheel event
+        */
+        virtual void onMouseWheel
+        (
+            Scene&, /* Scene object */
+            const Point3&
+        );
 };

@@ -52,14 +52,14 @@ class Scene : public Result
     private:
 
         /* States */
-        Log& log;                               /* Log object defined at constructor */
-        ScenePayload*   payload     = NULL;     /* Payload */
-        GLFWwindow*     win         = NULL;     /* Window handle */
-        bool            glInit      = false;    /* opengl init flag */
-        int             fps         = 0;        /* FPS */
-        int             idle        = 0;        /* Idle time in microseconds */
-        bool            terminated  = false;    /* Terminated flag */
-        float           ratio       = 0;        /* Radio window width / height */
+        Log&            log;                            /* Log object defined at constructor */
+        ScenePayload*   payload             = NULL;     /* Payload */
+        GLFWwindow*     win                 = NULL;     /* Window handle */
+        bool            glInit              = false;    /* opengl init flag */
+        int             fps                 = 0;        /* FPS */
+        int             idle                = 0;        /* Idle time in microseconds */
+        bool            terminated          = false;    /* Terminated flag */
+        float           ratio               = 0;        /* Radio window width / height */
 
         long long       lastLeftMouse       = 0;
         long long       lastRightMouse      = 0;
@@ -68,7 +68,7 @@ class Scene : public Result
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
-þ
+
         Point3          mouseCurrent        = VECTOR_3D_0;  /* Current mouse cursor position */
         Point3          mouseLast           = VECTOR_3D_0;  /* Last mouse cursot position */
 
@@ -77,7 +77,7 @@ class Scene : public Result
         Ltwh            viewport;           /* Viewport */
 
         /* Settings */
-        int         fpsDrawLimit            = 10;       /* FPS limit */
+        int         fpsDrawLimit            = 50;       /* FPS limit */
         int         fpsCalcLimit            = 10;       /* FPS limit */
         double      near            = 0.1;
         double      far             = 3.0;
@@ -380,6 +380,9 @@ class Scene : public Result
         double getNear();
 
 
+
+        Scene& switchToWorld();
+        Scene& switchToScreen();
 };
 
 

@@ -70,6 +70,26 @@ class ScenePayload : public Payload
 
 
         /*
+            Apply screen to scene
+        */
+        ScenePayload& applyScreenToScene
+        (
+            Scene&      /* Scene object */
+        );
+
+
+
+        /*
+            On activate event
+        */
+        virtual void onActivate
+        (
+            Scene&  /* Scene object */
+        );
+
+
+
+        /*
             Draw method
         */
         virtual void onDraw

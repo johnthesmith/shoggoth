@@ -127,7 +127,7 @@ struct Matrix4
 
     Matrix4& perspective
     (
-        double aAngle,  /* Vertical Angle in degrees */
+        double aAngle,  /* Vertical Angle in rad */
         double aRatio,
         double aNear,
         double aFar

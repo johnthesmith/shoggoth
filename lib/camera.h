@@ -220,6 +220,13 @@ class Camera : Result
 
 
 
+        /*
+            Return the Gaze vector
+        */
+        Point3 getGaze();
+
+
+
 
         Camera& setViewMatrixTo
         (
@@ -227,5 +234,8 @@ class Camera : Result
         );
 
 
-        
+        Camera& zoom
+        (
+            double
+        );
 };

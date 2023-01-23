@@ -8,13 +8,14 @@
 
     Each point and vector can blocked
 
-                     O target
-                    /
-           top o   /
-               |  o front
-               | /
-               |/eye
-    left o-----O-----o right
+                      O target         o
+                     /                /
+                    /                /
+           top o   /                /
+               |  o front          / gase
+               | /                /
+               |/eye             /
+    left o-----0-----o right    0
               /|
              / |
        back o  |
@@ -326,6 +327,18 @@ Point3 Camera::getRight()
 
 
 /*
+    Return the gase
+*/
+Point3 Camera::getGaze()
+{
+    return target - eye;
+}
+
+
+
+
+
+/*
     Apply the camera to the scene
     https://vk.com/@bleenchiki-opengl-3
 */
@@ -346,5 +359,15 @@ Camera& Camera::setViewMatrixTo
     return *this;
 }
 
+
+
+Camera& Camera::zoom
+(
+    double a
+)
+{
+    setEye( getTarget() - getGaze().scale( a ));
+    return *this;
+}
 
 

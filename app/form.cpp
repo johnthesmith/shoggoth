@@ -16,6 +16,20 @@ using namespace std;
 
 
 
+
+/*
+    Activate payload
+*/
+void Form::onActivate
+(
+    Scene& aScene   /* Scene object */
+)
+{
+    aScene.setFar( 1000.0 );
+}
+
+
+
 /*
     Main draw method
 */
@@ -27,14 +41,32 @@ void Form::onDraw
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable( GL_BLEND );
 
-//    camera.shift( aScene.mouseDelta );
+
     applyCameraToScene( camera, aScene );
+
 
     aScene
     .clearColor()
     .drawAxisIdentity()
-//    .drawGreedIdentity()
+    .drawGreedIdentity()
     ;
+
+
+    aScene
+    .begin( LINE )
+    .color( RGBA_RED ).vertex( VECTOR_3D_X ).vertex( aScene.getMouseCurrentWorld() )
+    .color( RGBA_RED ).vertex( VECTOR_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
+    .color( RGBA_RED ).vertex( VECTOR_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
+    .end();
+
+    /* Switch to flat screen */
+    applyScreenToScene( aScene );
+
+    aScene
+    .begin( LINE )
+    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+    .end();
 }
 
 
@@ -109,8 +141,26 @@ void Form::onLeftDrag
     const Point3& aPoint
 )
 {
+    double k = camera.getGaze().magn() / aScene.getNear();
     camera.shift
     (
-        ( aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld() )
+        (
+            (aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()) * k
+        )
     );
 }
+
+
+
+/*
+    Mouse wheel event
+*/
+void Form::onMouseWheel
+(
+    Scene& aScene,      /* Scene object */
+    const Point3& aDelta
+)
+{
+    camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
+}
+
