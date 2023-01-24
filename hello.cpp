@@ -6,6 +6,7 @@
 #include "./lib/scene.h"
 #include "./lib/matrix.h"
 #include "./lib/log_points.h"
+#include "./lib/neuron/neuron.h"
 
 /* Application libraryes */
 #include "./app/form.h"
