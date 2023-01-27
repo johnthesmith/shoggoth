@@ -7,11 +7,9 @@
 #include "../point3i.h"
 
 #include "layer.h"
+#include "neuron_list.h"
 
 using namespace std;
-
-
-class Neuron;
 
 
 
@@ -20,14 +18,14 @@ class Neuron;
 */
 struct Neuron
 {
-    Layer layer;
+    Layer* layer = NULL;
 
-    vector<Neuron> children;    /* List of children */
+    NeuronList children;    /* List of children */
     vector<double> weights;     /* Binds weights for children */
-    vector<Neuron> parents;     /* List of parents */
+    NeuronList parents;     /* List of parents */
+
 
     double value;
-
 
 
     /*
@@ -53,9 +51,18 @@ struct Neuron
 
 
     /*
+        Return null neuron
+    */
+    virtual bool isNull();
+
+
+
+    /*
         Return Name of neuron
     */
     virtual string getName();
+
+
 
     /*
         Draw neuron
@@ -63,32 +70,3 @@ struct Neuron
     virtual Neuron& draw();
 };
 
-
-
-/*
-    Neuron in 3d
-*/
-struct Neuron3 : public Neuron
-{
-    Point3 point;
-
-    /*
-        Draw neuron
-    */
-    virtual Neuron3& draw();
-};
-
-
-
-/*
-    Named neuron
-*/
-struct NeuronNamed : public Neuron3
-{
-    string name;
-
-    /*
-        Return Name of neuron
-    */
-    virtual string getName();
-};

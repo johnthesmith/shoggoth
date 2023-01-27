@@ -17,6 +17,7 @@ class Result
 
     public:
 
+
         Result& setCode
         (
             string /* String for Text */

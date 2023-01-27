@@ -8,6 +8,7 @@ echo -e '\033[0;32m=============================================================
 g++ \
 hello.cpp \
 lib/*.cpp \
+lib/neuron/*.cpp \
 app/*.cpp \
 -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw -o hello && \
 ./hello

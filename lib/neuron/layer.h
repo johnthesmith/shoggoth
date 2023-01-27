@@ -3,85 +3,70 @@
 #include <string>
 #include <vector>
 
+#include "../log.h"
 #include "../point3.h"
 #include "../point3i.h"
+#include "../object.h"
+
+#include "neuron_list.h"
 
 using namespace std;
+
 
 
 class Neuron;
 
 
 
-struct Layer
+class Layer : public Object
 {
-    Point3i dim = Point3i( 0, 0, 0 );   /* Dimention size */
+    private:
+
+        Log& log;
+
+    public:
+
+        NeuronList neurons;                /* List of neurons */
+        Point3i size = Point3i( 0, 0, 0 );   /* Dimention size */
+
+        Layer
+        (
+            Log&
+        );
+
+
+        ~Layer();
+
+
+        /*
+            Add new neuron and return it
+        */
+        Layer& addNeuron
+        (
+            Neuron&
+        );
 
 
 
-    vector<Neuron> children;    /* List of children */
-
-    /*
-        Add exists neuron
-    */
-    Layer& add
-    (
-        Neuron&,        /* Parent neuron */
-        const Point3i&  /* Point */
-    );
+        int indexByPos
+        (
+            const Point3i&
+        );
 
 
 
-    /*
-        Create new neuron and return it
-    */
-    Neuron& newNeuron();
+        Neuron& neuronByPos
+        (
+            const Point3i&
+        );
 
 
 
-    int indexByPos
-    (
-        const Point3i*
-    );
-
-
-
-    Neuron& neuronByPos
-    (
-        const Point3i&
-    );
-
-
-
-    Neuron& neuronByName
-    (
-        const string
-    );
-
-
-
-    int indexByNeuron
-    (
-        Neuron&
-    );
-
-
-
-    int neuronByIndex
-    (
-        Neuron&
-    );
-
-
-    Neuron& setDim
-    (
-        const Point3i&
-    );
-
-
-
-    /*
-        Draw neurons
-    */
-    virtual Layer& draw();
+        /*
+            Set dimations size
+        */
+        Layer& setSize
+        (
+            const Point3i&
+        );
 };
