@@ -49,7 +49,6 @@ int NeuronList::indexByNeuron
 
 /*
     Return index by neuron
-    TODO items.size - multiple call
 */
 Neuron* NeuronList::getByIndex
 (
@@ -71,7 +70,6 @@ Neuron* NeuronList::getByIndex
 
 /*
     Return index by neuron
-    TODO items.size - multiple call
 */
 NeuronList& NeuronList::setByIndex
 (

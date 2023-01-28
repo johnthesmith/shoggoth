@@ -32,8 +32,9 @@ int main
 
     auto scene      = Scene( log );
     auto payload    = Form( log );
-    auto layer      = Layer( log ).setSize( Point3i( 1000,1000,100) );
+    auto layer      = Layer( log );
 
+    layer.setSize( Point3i( 1000,1000,100) );
 
     scene.init().setPayload( payload ).loop().finit();
 

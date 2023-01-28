@@ -79,7 +79,11 @@ Layer& Layer::setSize
     auto currentSize = neurons.getSize();
     auto newSize = a.x * a.y * a.z;
 
-    getLog().begin( "Layer resize" ).prm( "current size", currentSize );
+    getLog()
+    .begin( "Layer resize" )
+    .prm( "from", currentSize )
+    .prm( "to", newSize )
+    .lineEnd();
 
     if( newSize > currentSize )
     {
@@ -111,14 +115,8 @@ Layer& Layer::setSize
 
     size = a;
 
-    getLog().end().prm( "new size", neurons.getSize() );
+    getLog().end();
 
     return *this;
 }
-
-
-
-
-
-
 
