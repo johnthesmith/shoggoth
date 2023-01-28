@@ -17,6 +17,7 @@ Layer::Layer
 
 Layer::~Layer()
 {
+    setSize();
     log.trace( "Layer destroy" );
 }
 
@@ -64,7 +65,6 @@ Neuron* Layer::newNeuron()
     result -> setLayer( this );
     return result;
 }
-
 
 
 
