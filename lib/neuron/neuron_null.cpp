@@ -2,7 +2,6 @@
 
 
 
-
 /*
     Neuron is null
 */

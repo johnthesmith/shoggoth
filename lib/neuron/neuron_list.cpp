@@ -2,6 +2,14 @@
 #include "neuron_null.h"
 
 
+
+int NeuronList::getSize()
+{
+    return items.size();
+}
+
+
+
 /*
     Add exists neuron
 */
@@ -41,20 +49,43 @@ int NeuronList::indexByNeuron
 
 /*
     Return index by neuron
+    TODO items.size - multiple call
 */
-Neuron& NeuronList::neuronByIndex
+Neuron* NeuronList::getByIndex
 (
     int a
 )
 {
-    Neuron* result = &NEURON_NULL;
-    int c = items.size();
-    if( a > 0 && a < c )
+    if( a > 0 && a < items.size() )
     {
-        result = items[ a ];
+        return items[ a ];
     }
-    return *result;
+    else
+    {
+        return &NEURON_NULL;
+    }
 }
+
+
+
+
+/*
+    Return index by neuron
+    TODO items.size - multiple call
+*/
+NeuronList& NeuronList::setByIndex
+(
+    int aIndex,
+    Neuron* aNeuron
+)
+{
+    if( aIndex > 0 && aIndex < items.size() )
+    {
+        items[ aIndex ] = aNeuron;
+    }
+    return *this;
+}
+
 
 
 
@@ -76,4 +107,19 @@ Neuron& NeuronList::neuronByName
         }
     }
     return *result;
+}
+
+
+
+/*
+    Resize
+    Warning!!! this method can not call directly.
+*/
+NeuronList& NeuronList::resize
+(
+    int a
+)
+{
+    items.resize( a, &NEURON_NULL );
+    return *this;
 }

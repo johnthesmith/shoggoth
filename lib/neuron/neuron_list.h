@@ -22,6 +22,13 @@ struct NeuronList
 
 
     /*
+        Return Neurons list count elements
+    */
+    int getSize();
+
+
+
+    /*
         Add exists neuron
     */
     NeuronList& add
@@ -54,7 +61,29 @@ struct NeuronList
     /*
         Return neuron by index
     */
-    Neuron& neuronByIndex
+    Neuron* getByIndex
+    (
+        int
+    );
+
+
+
+    /*
+        Return neuron by index
+    */
+    NeuronList& setByIndex
+    (
+        int,
+        Neuron*
+    );
+
+
+
+    /*
+        Resize
+        Warning!!! this method can not call directly.
+    */
+    NeuronList& resize
     (
         int
     );

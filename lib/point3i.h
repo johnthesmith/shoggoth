@@ -13,3 +13,6 @@ struct Point3i
         int = 0
     );
 };
+
+
+static Point3i VECTOR_3I_0 = Point3i( 0, 0, 0 );

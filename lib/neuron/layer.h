@@ -1,3 +1,13 @@
+/*
+    Layer
+
+    This is a container for neurons with 3D adressing.
+    Contains the NeuronList object.
+
+    The layer creates new neurons or removes them when resized.
+    Layer has reflection at 3D world like Object and it can be moved, rotated etc.
+*/
+
 #pragma once
 
 #include <string>
@@ -14,7 +24,7 @@ using namespace std;
 
 
 
-class Neuron;
+struct Neuron;
 
 
 
@@ -24,18 +34,35 @@ class Layer : public Object
 
         Log& log;
 
+        virtual Neuron* newNeuron();
+
     public:
 
         NeuronList neurons;                /* List of neurons */
         Point3i size = Point3i( 0, 0, 0 );   /* Dimention size */
 
+
+        /*
+            Constructor
+        */
         Layer
         (
             Log&
         );
 
 
+
+        /*
+            Destructor
+        */
         ~Layer();
+
+
+
+        /*
+            Return the log object
+        */
+        Log& getLog();
 
 
         /*
@@ -48,6 +75,8 @@ class Layer : public Object
 
 
 
+        /*
+        */
         int indexByPos
         (
             const Point3i&
@@ -67,6 +96,6 @@ class Layer : public Object
         */
         Layer& setSize
         (
-            const Point3i&
+            const Point3i& = VECTOR_3I_0
         );
 };

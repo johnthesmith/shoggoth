@@ -1,3 +1,7 @@
+/*
+    Neurons can not be created directly. You must use Layer.setSize();
+*/
+
 #pragma once
 
 #include <string>
@@ -6,11 +10,16 @@
 #include "../point3.h"
 #include "../point3i.h"
 
-#include "layer.h"
+
+
 #include "neuron_list.h"
+
+
 
 using namespace std;
 
+
+class Layer;
 
 
 /*
@@ -18,14 +27,30 @@ using namespace std;
 */
 struct Neuron
 {
-    Layer* layer = NULL;
+    Layer* layer = NULL;        /* Neuron layer */
 
-    NeuronList children;    /* List of children */
+    NeuronList children;        /* List of children */
     vector<double> weights;     /* Binds weights for children */
-    NeuronList parents;     /* List of parents */
+    NeuronList parents;         /* List of parents */
 
 
     double value;
+
+
+
+    Neuron& setLayer
+    (
+        Layer*
+    );
+
+
+
+    /*
+        Return neuron layer
+    */
+    Layer& getLayer();
+
+
 
 
     /*

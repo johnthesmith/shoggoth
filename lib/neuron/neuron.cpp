@@ -6,6 +6,25 @@ using namespace std;
 
 
 
+
+Neuron& Neuron::setLayer
+(
+    Layer* a
+)
+{
+    layer = a;
+    return *this;
+}
+
+
+
+Layer& Neuron::getLayer()
+{
+    return *layer;
+}
+
+
+
 /*
     this -> parent
 */
@@ -68,7 +87,6 @@ bool Neuron::isNull()
 
 
 
-
 /*
     Return Name of neuron
 */
@@ -78,6 +96,7 @@ string Neuron::getName()
 }
 
 
+
 /*
     Draw neuron
 */
@@ -85,6 +104,3 @@ Neuron& Neuron::draw()
 {
     return *this;
 }
-
-
-
