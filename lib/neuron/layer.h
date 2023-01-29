@@ -34,6 +34,8 @@ class Layer : public Object
 
         Log& log;
 
+        Point3 drawSize = POINT_3D_I;
+
         virtual Neuron* newNeuron();
 
     public:
@@ -96,6 +98,6 @@ class Layer : public Object
         */
         Layer& setSize
         (
-            const Point3i& = VECTOR_3I_0
+            const Point3i& = POINT_3I_0
         );
 };

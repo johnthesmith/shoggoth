@@ -17,9 +17,9 @@ class Object : public Result
     private:
 
        /* Object settings */
-        Point3          eye             = VECTOR_3D_I;  /* Set on begin of coordinates */
-        Point3          target          = VECTOR_3D_0;  /* Look at far */
-        Point3          top             = VECTOR_3D_Y;  /* And top on top */
+        Point3          eye             = POINT_3D_I;  /* Set on begin of coordinates */
+        Point3          target          = POINT_3D_0;  /* Look at far */
+        Point3          top             = POINT_3D_Y;  /* And top on top */
 
         bool            eyeLock         = false;    /* Lock eye position */
         bool            topLock         = false;    /* Lock top direction */
@@ -122,9 +122,9 @@ class Object : public Result
         */
         Object& place
         (
-            const Point3& = VECTOR_3D_X,    /* Eye */
-            const Point3& = VECTOR_3D_0,    /* Target */
-            const Point3& = VECTOR_3D_Y     /* Top */
+            const Point3& = POINT_3D_X,    /* Eye */
+            const Point3& = POINT_3D_0,    /* Target */
+            const Point3& = POINT_3D_Y     /* Top */
         );
 
 

@@ -254,8 +254,8 @@ struct Point4
 /*
     Define static constatns
 */
-static Point4 VECTOR_4D_0 = Point4( 0.0, 0.0, 0.0, 0.0 );
-static Point4 VECTOR_4D_X = Point4( 1.0, 0.0, 0.0, 0.0 );
-static Point4 VECTOR_4D_Y = Point4( 0.0, 1.0, 0.0, 0.0 );
-static Point4 VECTOR_4D_Z = Point4( 0.0, 0.0, 1.0, 0.0 );
-static Point4 VECTOR_4D_W = Point4( 0.0, 0.0, 0.0, 1.0 );
+static Point4 POINT_4D_0 = Point4( 0.0, 0.0, 0.0, 0.0 );
+static Point4 POINT_4D_X = Point4( 1.0, 0.0, 0.0, 0.0 );
+static Point4 POINT_4D_Y = Point4( 0.0, 1.0, 0.0, 0.0 );
+static Point4 POINT_4D_Z = Point4( 0.0, 0.0, 1.0, 0.0 );
+static Point4 POINT_4D_W = Point4( 0.0, 0.0, 0.0, 1.0 );

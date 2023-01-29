@@ -54,9 +54,9 @@ void Form::onDraw
 
     aScene
     .begin( LINE )
-    .color( RGBA_RED ).vertex( VECTOR_3D_X ).vertex( aScene.getMouseCurrentWorld() )
-    .color( RGBA_RED ).vertex( VECTOR_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
-    .color( RGBA_RED ).vertex( VECTOR_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
+    .color( RGBA_RED ).vertex( POINT_3D_X ).vertex( aScene.getMouseCurrentWorld() )
+    .color( RGBA_RED ).vertex( POINT_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
+    .color( RGBA_RED ).vertex( POINT_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
     .end();
 
     /* Switch to flat screen */
@@ -64,8 +64,8 @@ void Form::onDraw
 
     aScene
     .begin( LINE )
-    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
-    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
     .end();
 }
 

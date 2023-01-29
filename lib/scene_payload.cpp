@@ -92,9 +92,9 @@ void ScenePayload::onDraw
     aScene
     .clearColor()
     .begin( LINE )
-    .color( RGBA_GREEN ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_X )
-    .color( RGBA_BLUE ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Y )
-    .color( RGBA_RED ).vertex( VECTOR_3D_0 ).vertex( VECTOR_3D_Z )
+    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( POINT_3D_X )
+    .color( RGBA_BLUE ).vertex( POINT_3D_0 ).vertex( POINT_3D_Y )
+    .color( RGBA_RED ).vertex( POINT_3D_0 ).vertex( POINT_3D_Z )
     .end()
     ;
 }

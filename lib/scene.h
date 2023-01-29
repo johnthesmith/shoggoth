@@ -69,8 +69,8 @@ class Scene : public Result
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
 
-        Point3          mouseCurrent        = VECTOR_3D_0;  /* Current mouse cursor position */
-        Point3          mouseLast           = VECTOR_3D_0;  /* Last mouse cursot position */
+        Point3          mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
+        Point3          mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
 
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;

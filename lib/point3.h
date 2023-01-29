@@ -291,8 +291,8 @@ struct Point3
 /*
     Define static constatns
 */
-static Point3 VECTOR_3D_0 = Point3( 0.0, 0.0, 0.0 );
-static Point3 VECTOR_3D_I = Point3( 1.0, 1.0, 1.0 );
-static Point3 VECTOR_3D_X = Point3( 1.0, 0.0, 0.0 );
-static Point3 VECTOR_3D_Y = Point3( 0.0, 1.0, 0.0 );
-static Point3 VECTOR_3D_Z = Point3( 0.0, 0.0, 1.0 );
+static Point3 POINT_3D_0 = Point3( 0.0, 0.0, 0.0 );
+static Point3 POINT_3D_I = Point3( 1.0, 1.0, 1.0 );
+static Point3 POINT_3D_X = Point3( 1.0, 0.0, 0.0 );
+static Point3 POINT_3D_Y = Point3( 0.0, 1.0, 0.0 );
+static Point3 POINT_3D_Z = Point3( 0.0, 0.0, 1.0 );
