@@ -3,7 +3,7 @@
 #include <tgmath.h>
 #include "math.h"
 #include "point3.h"
-#include "point4.h"
+#include "point4d.h"
 
 
 
@@ -14,7 +14,7 @@ using namespace std;
 /*
   Constructor
 */
-Point3::Point3
+Point3d::Point3d
 (
     double ax,
     double ay,
@@ -31,9 +31,9 @@ Point3::Point3
 /*
   Constructor
 */
-Point3::Point3
+Point3d::Point3d
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     x = a.x;
@@ -46,13 +46,13 @@ Point3::Point3
 /*
     Plus Operator r = a + b
 */
-Point3 operator+
+Point3d operator+
 (
-    const Point3& a,    /* First operand */
-    const Point3& b     /* Second operand */
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
 )
 {
-    return Point3
+    return Point3d
     (
         a.x + b.x,
         a.y + b.y,
@@ -65,13 +65,13 @@ Point3 operator+
 /*
     Minus Operator r = a - b
 */
-Point3 operator-
+Point3d operator-
 (
-    const Point3& a,    /* First operand */
-    const Point3& b     /* Second operand */
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
 )
 {
-    return Point3
+    return Point3d
     (
         a.x - b.x,
         a.y - b.y,
@@ -86,8 +86,8 @@ Point3 operator-
 */
 double operator*
 (
-    const Point3& a,    /* First operand */
-    const Point3& b     /* Second operand */
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
 )
 {
     return
@@ -102,13 +102,13 @@ double operator*
 /*
     Operator scale r = a * b
 */
-Point3 operator*
+Point3d operator*
 (
-    const Point3& a,    /* First operand */
+    const Point3d& a,    /* First operand */
     double b            /* Scalar operand */
 )
 {
-    return Point3
+    return Point3d
     (
         a.x * b,
         a.y * b,
@@ -121,13 +121,13 @@ Point3 operator*
 /*
     Operator cross r = a x b
 */
-Point3 operator%
+Point3d operator%
 (
-    const Point3& a,    /* First operand */
-    const Point3& b     /* Second operand */
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
 )
 {
-    return Point3
+    return Point3d
     (
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
@@ -140,9 +140,9 @@ Point3 operator%
 /*
     Cross vproduct
 */
-Point3& Point3::cross
+Point3d& Point3d::cross
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     auto dx = y * a.z - z * a.y;
@@ -164,7 +164,7 @@ Point3& Point3::cross
 /*
     Set vector coordinates
 */
-Point3& Point3::get()
+Point3d& Point3d::get()
 {
     return *this;
 }
@@ -174,7 +174,7 @@ Point3& Point3::get()
 /*
     Set vector coordinates
 */
-Point3& Point3::set
+Point3d& Point3d::set
 (
     double ax,
     double ay,
@@ -192,9 +192,9 @@ Point3& Point3::set
 /*
     Set point3 from point3
 */
-Point3& Point3::set
+Point3d& Point3d::set
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     x = a.x;
@@ -206,11 +206,11 @@ Point3& Point3::set
 
 
 /*
-    Set point3 from point4
+    Set point3 from Point4dd
 */
-Point3& Point3::set
+Point3d& Point3d::set
 (
-    Point4& a
+    Point4d& a
 )
 {
     x = a.x;
@@ -224,7 +224,7 @@ Point3& Point3::set
 /*
     Set X component
 */
-Point3& Point3::setX
+Point3d& Point3d::setX
 (
     double a
 )
@@ -238,7 +238,7 @@ Point3& Point3::setX
 /*
     Set Y component
 */
-Point3& Point3::setY
+Point3d& Point3d::setY
 (
     double a
 )
@@ -252,7 +252,7 @@ Point3& Point3::setY
 /*
     Set Z component
 */
-Point3& Point3::setZ
+Point3d& Point3d::setZ
 (
     double a
 )
@@ -264,14 +264,14 @@ Point3& Point3::setZ
 
 
 /*
-    Conver to Point4 object
+    Conver to Point4d object
 */
-Point4 Point3::toPoint4
+Point4d Point3d::toPoint4d
 (
     const double w
 )
 {
-    return Point4( x, y, z, w );
+    return Point4d( x, y, z, w );
 }
 
 
@@ -279,7 +279,7 @@ Point4 Point3::toPoint4
 /*
     Negative vector
 */
-Point3& Point3::negative()
+Point3d& Point3d::negative()
 {
     x = -x;
     y = -y;
@@ -292,9 +292,9 @@ Point3& Point3::negative()
 /*
     Add
 */
-Point3& Point3::add
+Point3d& Point3d::add
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     x += a.x;
@@ -308,7 +308,7 @@ Point3& Point3::add
 /*
     Add
 */
-Point3& Point3::add
+Point3d& Point3d::add
 (
     double ax = 0.0,
     double ay = 0.0,
@@ -326,9 +326,9 @@ Point3& Point3::add
 /*
     Sub argument
 */
-Point3& Point3::sub
+Point3d& Point3d::sub
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     x -= a.x;
@@ -343,9 +343,9 @@ Point3& Point3::sub
     Sub current vector from argument
     and put result to this
 */
-Point3& Point3::subFrom
+Point3d& Point3d::subFrom
 (
-    Point3& a
+    Point3d& a
 )
 {
     x = a.x - x;
@@ -359,7 +359,7 @@ Point3& Point3::subFrom
 /*
     Scale
 */
-Point3& Point3::scale
+Point3d& Point3d::scale
 (
     double a    /* Scalar */
 )
@@ -375,7 +375,7 @@ Point3& Point3::scale
 /*
     Magnitude
 */
-double Point3::magn()
+double Point3d::magn()
 {
     return sqrt
     (
@@ -390,7 +390,7 @@ double Point3::magn()
 /*
     Normalize
 */
-Point3& Point3::norm()
+Point3d& Point3d::norm()
 {
     auto m = magn();
     if( m > EPSILON )
@@ -415,9 +415,9 @@ Point3& Point3::norm()
      |/
      O---------> aBase
 */
-Point3& Point3::rotate
+Point3d& Point3d::rotate
 (
-    const Point3 aBase,
+    const Point3d aBase,
     const double aAngleRad
 )
 {
@@ -435,11 +435,11 @@ Point3& Point3::rotate
 
 
 /*
-    Distance between this Point3
+    Distance between this Point3d
 */
-double Point3::dist
+double Point3d::dist
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     auto dx = a.x - x;
@@ -453,9 +453,9 @@ double Point3::dist
 /*
     Dot product
 */
-double Point3::dot
+double Point3d::dot
 (
-    Point3& a
+    Point3d& a
 )
 {
     return
@@ -469,9 +469,9 @@ double Point3::dot
 /*
     Compare vectors
 */
-double Point3::cmp
+double Point3d::cmp
 (
-    Point3& a
+    Point3d& a
 )
 {
     return
@@ -484,9 +484,9 @@ double Point3::cmp
 
 
 /*
-    Convert Point3 to string
+    Convert Point3d to string
 */
-string Point3::toString() const
+string Point3d::toString() const
 {
     return
     "[" + to_string( x ) + "]" +

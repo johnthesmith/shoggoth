@@ -34,7 +34,7 @@ class Layer : public Object
 
         Log& log;
 
-        Point3 drawSize = POINT_3D_I;
+        Point3d drawSize = POINT_3D_I;
 
         virtual Neuron* newNeuron();
 

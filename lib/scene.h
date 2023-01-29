@@ -9,7 +9,7 @@
 #include "log.h"
 #include "rgba.h"
 #include "point3.h"
-#include "point4.h"
+#include "point4d.h"
 #include "matrix.h"
 #include "draw_mode.h"
 #include "scene_key.h"
@@ -69,8 +69,8 @@ class Scene : public Result
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
 
-        Point3          mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
-        Point3          mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
+        Point3d          mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
+        Point3d          mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
 
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;
@@ -251,7 +251,7 @@ class Scene : public Result
         */
         Scene& vertex
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -302,9 +302,9 @@ class Scene : public Result
         /*
             Return screen point by world point
         */
-        Point3 getScreenByWorld
+        Point3d getScreenByWorld
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -312,9 +312,9 @@ class Scene : public Result
         /*
             Return world point by screen point
         */
-        Point3 getWorldByScreen
+        Point3d getWorldByScreen
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -322,28 +322,28 @@ class Scene : public Result
         /*
             Return mouse current position at screen
         */
-        Point3 getMouseCurrentScreen();
+        Point3d getMouseCurrentScreen();
 
 
 
         /*
             Return mouse last position at screen
         */
-        Point3 getMouseLastScreen();
+        Point3d getMouseLastScreen();
 
 
 
         /*
             Return mouse current position in world
         */
-        Point3 getMouseCurrentWorld();
+        Point3d getMouseCurrentWorld();
 
 
 
         /*
             Return mouse last position in world
         */
-        Point3 getMouseLastWorld();
+        Point3d getMouseLastWorld();
 
 
 

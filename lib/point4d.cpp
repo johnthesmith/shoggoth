@@ -2,7 +2,7 @@
 #include <iostream>
 #include <tgmath.h>
 #include "math.h"
-#include "point4.h"
+#include "point4d.h"
 #include "point3.h"
 #include "matrix.h"
 
@@ -15,7 +15,7 @@ using namespace std;
 /*
   Constructor
 */
-Point4::Point4
+Point4d::Point4d
 (
     double ax,
     double ay,
@@ -31,13 +31,13 @@ Point4::Point4
 
 
 
-Point4 operator+
+Point4d operator+
 (
-    const Point4& a,
-    const Point4& b
+    const Point4d& a,
+    const Point4d& b
 )
 {
-    return Point4
+    return Point4d
     (
         a.x + b.x,
         a.y + b.y,
@@ -48,13 +48,13 @@ Point4 operator+
 
 
 
-Point4 operator-
+Point4d operator-
 (
-    const Point4& a,
-    const Point4& b
+    const Point4d& a,
+    const Point4d& b
 )
 {
-    return Point4
+    return Point4d
     (
         a.x - b.x,
         a.y - b.y,
@@ -70,8 +70,8 @@ Point4 operator-
 */
 double operator*
 (
-    const Point4& a,
-    const Point4& b
+    const Point4d& a,
+    const Point4d& b
 )
 {
     return
@@ -86,13 +86,13 @@ double operator*
 /*
     Scale vector
 */
-Point4 operator*
+Point4d operator*
 (
-    const Point4& a,
+    const Point4d& a,
     double aScalar
 )
 {
-    return Point4
+    return Point4d
     (
         a.x * aScalar,
         a.y * aScalar,
@@ -110,13 +110,13 @@ Point4 operator*
     [i j k l ]   [ z ]   [ ix + jy + kz + lw ]
     [m n o p ]   [ w ]   [ mx + ny + oz + pw ]
 */
-Point4 operator*
+Point4d operator*
 (
     const Matrix4& aMatrix,
-    const Point4& aPoint
+    const Point4d& aPoint
 )
 {
-    return Point4
+    return Point4d
     (
 //    TODO
 //        aMatrix.l1 * aPoint,
@@ -131,7 +131,7 @@ Point4 operator*
 /*
     Set vector coordinates
 */
-Point4& Point4::set
+Point4d& Point4d::set
 (
     double ax,
     double ay,
@@ -151,9 +151,9 @@ Point4& Point4::set
 /*
     Set vector from vector
 */
-Point4& Point4::set
+Point4d& Point4d::set
 (
-    Point4& a
+    Point4d& a
 )
 {
     x = a.x;
@@ -166,11 +166,11 @@ Point4& Point4::set
 
 
 /*
-    Set Point4 components from Point3 and 4 compoent
+    Set Point4d components from Point3d and 4 compoent
 */
-Point4& Point4::set
+Point4d& Point4d::set
 (
-    Point3& a,
+    Point3d& a,
     double aW
 )
 {
@@ -186,7 +186,7 @@ Point4& Point4::set
 /*
     Set X component
 */
-Point4& Point4::setX
+Point4d& Point4d::setX
 (
     double a
 )
@@ -200,7 +200,7 @@ Point4& Point4::setX
 /*
     Set Y component
 */
-Point4& Point4::setY
+Point4d& Point4d::setY
 (
     double a
 )
@@ -214,7 +214,7 @@ Point4& Point4::setY
 /*
     Set Z component
 */
-Point4& Point4::setZ
+Point4d& Point4d::setZ
 (
     double a
 )
@@ -228,7 +228,7 @@ Point4& Point4::setZ
 /*
     Set W component
 */
-Point4& Point4::setW
+Point4d& Point4d::setW
 (
     double a
 )
@@ -242,7 +242,7 @@ Point4& Point4::setW
 /*
     Negative vector
 */
-Point4& Point4::negative()
+Point4d& Point4d::negative()
 {
     x = -x;
     y = -y;
@@ -256,9 +256,9 @@ Point4& Point4::negative()
 /*
     Add
 */
-Point4& Point4::add
+Point4d& Point4d::add
 (
-    Point4& a
+    Point4d& a
 )
 {
     x += a.x;
@@ -273,7 +273,7 @@ Point4& Point4::add
 /*
     Add
 */
-Point4& Point4::add
+Point4d& Point4d::add
 (
     double ax = 0.0,
     double ay = 0.0,
@@ -293,9 +293,9 @@ Point4& Point4::add
 /*
     Sub argument
 */
-Point4& Point4::sub
+Point4d& Point4d::sub
 (
-    Point4& a
+    Point4d& a
 )
 {
     x -= a.x;
@@ -311,9 +311,9 @@ Point4& Point4::sub
     Sub current vector from argument
     and put result to this
 */
-Point4& Point4::subFrom
+Point4d& Point4d::subFrom
 (
-    Point4& a
+    Point4d& a
 )
 {
     x = a.x - x;
@@ -328,7 +328,7 @@ Point4& Point4::subFrom
 /*
     Scale
 */
-Point4& Point4::scale
+Point4d& Point4d::scale
 (
     double a    /* Scalar */
 )
@@ -345,7 +345,7 @@ Point4& Point4::scale
 /*
     Magnitude
 */
-double Point4::magn()
+double Point4d::magn()
 {
     return sqrt
     (
@@ -361,7 +361,7 @@ double Point4::magn()
 /*
     Normalize
 */
-Point4& Point4::norm()
+Point4d& Point4d::norm()
 {
     auto m = magn();
     if( m > EPSILON )
@@ -378,11 +378,11 @@ Point4& Point4::norm()
 
 
 /*
-    Distance between this Point4
+    Distance between this Point4d
 */
-double Point4::dist
+double Point4d::dist
 (
-    Point4& a
+    Point4d& a
 )
 {
     auto dx = a.x - x;
@@ -396,9 +396,9 @@ double Point4::dist
 /*
     Cross vproduct
 */
-Point4& Point4::cross
+Point4d& Point4d::cross
 (
-    Point4& a
+    Point4d& a
 )
 {
     x = y * a.z - z * a.y;
@@ -412,9 +412,9 @@ Point4& Point4::cross
 /*
     Dot product
 */
-double Point4::dot
+double Point4d::dot
 (
-    const Point4& a
+    const Point4d& a
 )
 {
     return
@@ -434,7 +434,7 @@ double Point4::dot
     [ z ]   [ i j k l ]   [ ix + jy + kz + lw ]
     [ w ]   [ m n o p ]   [ mx + ny + oz + pw ]
 */
-Point4& Point4::dot
+Point4d& Point4d::dot
 (
     const Matrix4& a
 )
@@ -452,9 +452,9 @@ Point4& Point4::dot
 /*
     Compare vectors
 */
-double Point4::cmp
+double Point4d::cmp
 (
-    Point4& a
+    Point4d& a
 )
 {
     return
@@ -468,9 +468,9 @@ double Point4::cmp
 
 
 /*
-    Convert Point4 to string
+    Convert Point4d to string
 */
-string Point4::toString()
+string Point4d::toString()
 {
     return
     "[" + to_string( x ) + "]" +
@@ -483,9 +483,9 @@ string Point4::toString()
 
 
 /*
-    Convert Point4 to string
+    Convert Point4d to string
 */
-Point4& Point4::toConsole()
+Point4d& Point4d::toConsole()
 {
     cout << toString() << "\n";
     return *this;

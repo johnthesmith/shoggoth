@@ -67,7 +67,7 @@ class Form : public ScenePayload
         virtual void onMouseMove
         (
             Scene&,      /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 
@@ -77,7 +77,7 @@ class Form : public ScenePayload
          virtual void onLeftDrag
          (
              Scene&,             /* Scene object */
-             const Point3&
+             const Point3d&
          );
 
 
@@ -88,6 +88,6 @@ class Form : public ScenePayload
         virtual void onMouseWheel
         (
             Scene&, /* Scene object */
-            const Point3&
+            const Point3d&
         );
 };

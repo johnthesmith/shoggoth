@@ -24,7 +24,7 @@ class ScenePayload : public Payload
         (
             Scene&,   /* Scene object */
             const string,
-            const Point3&,  /* MousePosition */
+            const Point3d&,  /* MousePosition */
             const int
         );
 
@@ -115,7 +115,7 @@ class ScenePayload : public Payload
         virtual void onLeftUp
         (
             Scene&,     /* Scene object */
-            const Point3&,    /* Mouse position */
+            const Point3d&,    /* Mouse position */
             const int         /* Key mode */
         );
 
@@ -127,7 +127,7 @@ class ScenePayload : public Payload
         virtual void onLeftDown
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -139,7 +139,7 @@ class ScenePayload : public Payload
         virtual void onLeftClick
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -151,7 +151,7 @@ class ScenePayload : public Payload
         virtual void onLeftDblClick
         (
             Scene& ,        /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -163,7 +163,7 @@ class ScenePayload : public Payload
         virtual void onRightUp
         (
             Scene& ,        /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -175,7 +175,7 @@ class ScenePayload : public Payload
         virtual void onRightDown
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -187,7 +187,7 @@ class ScenePayload : public Payload
         virtual void onRightClick
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -199,7 +199,7 @@ class ScenePayload : public Payload
         virtual void onRightDblClick
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -211,7 +211,7 @@ class ScenePayload : public Payload
         virtual void onMiddleUp
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -223,7 +223,7 @@ class ScenePayload : public Payload
         virtual void onMiddleDown
         (
             Scene&,         /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -235,7 +235,7 @@ class ScenePayload : public Payload
         virtual void onMiddleClick
         (
             Scene&,   /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -247,7 +247,7 @@ class ScenePayload : public Payload
         virtual void onMiddleDblClick
         (
             Scene&,   /* Scene object */
-            const Point3&,  /* Mouse position */
+            const Point3d&,  /* Mouse position */
             const int       /* Key mode */
         );
 
@@ -259,7 +259,7 @@ class ScenePayload : public Payload
         virtual void onMouseWheel
         (
             Scene&,         /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 
@@ -270,7 +270,7 @@ class ScenePayload : public Payload
         virtual void onMouseMove
         (
             Scene&,             /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 
@@ -281,7 +281,7 @@ class ScenePayload : public Payload
         virtual void onLeftDragBegin
         (
             Scene&,             /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 
@@ -292,7 +292,7 @@ class ScenePayload : public Payload
         virtual void onLeftDragEnd
         (
             Scene&,             /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 
@@ -303,7 +303,7 @@ class ScenePayload : public Payload
         virtual void onLeftDrag
         (
             Scene&,             /* Scene object */
-            const Point3&
+            const Point3d&
         );
 
 

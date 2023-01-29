@@ -7,12 +7,12 @@ using namespace std;
 
 
 struct Matrix4;
-struct Point3;
+struct Point3d;
 
 
 
 
-struct Point4
+struct Point4d
 {
     double x = 0;
     double y = 0;
@@ -23,7 +23,7 @@ struct Point4
     /*
       Constructor
     */
-    Point4
+    Point4d
     (
         double = 0.0, /* x */
         double = 0.0, /* y */
@@ -33,20 +33,20 @@ struct Point4
 
 
 
-    friend Point4 operator+( const Point4&, const Point4& );
-    friend Point4 operator-( const Point4&, const Point4& );
+    friend Point4d operator+( const Point4d&, const Point4d& );
+    friend Point4d operator-( const Point4d&, const Point4d& );
     /* Dot product */
-    friend double operator*( const Point4&, const Point4& );
+    friend double operator*( const Point4d&, const Point4d& );
     /* Scale vector */
-    friend Point4 operator*( const Point4&, const double );
+    friend Point4d operator*( const Point4d&, const double );
     /* Multiplex matrix to vector */
-    friend Point4 operator*( const Matrix4&, const Point4& );
+    friend Point4d operator*( const Matrix4&, const Point4d& );
 
 
     /*
         Set vector coordinates
     */
-    Point4& set
+    Point4d& set
     (
         double = 0.0, /* x */
         double = 0.0, /* y */
@@ -57,21 +57,21 @@ struct Point4
 
 
     /*
-        Set Point4 components from Point4
+        Set Point4d components from Point4d
     */
-    Point4& set
+    Point4d& set
     (
-        Point4&
+        Point4d&
     );
 
 
 
     /*
-        Set Point4 components from Point3 and 4 compoent
+        Set Point4d components from Point3d and 4 compoent
     */
-    Point4& set
+    Point4d& set
     (
-        Point3&,
+        Point3d&,
         double aW = 0
     );
 
@@ -80,7 +80,7 @@ struct Point4
     /*
         Set X component
     */
-    Point4& setX
+    Point4d& setX
     (
         double = 0
     );
@@ -90,7 +90,7 @@ struct Point4
     /*
         Set Y component
     */
-    Point4& setY
+    Point4d& setY
     (
         double = 0
     );
@@ -100,7 +100,7 @@ struct Point4
     /*
         Set Z component
     */
-    Point4& setZ
+    Point4d& setZ
     (
         double = 0
     );
@@ -110,7 +110,7 @@ struct Point4
     /*
         Set W component
     */
-    Point4& setW
+    Point4d& setW
     (
         double = 0
     );
@@ -120,24 +120,24 @@ struct Point4
     /*
         Negative vector
     */
-    Point4& negative();
+    Point4d& negative();
 
 
 
     /*
-        Add Point4 to Point4
+        Add Point4d to Point4d
     */
-    Point4& add
+    Point4d& add
     (
-        Point4&
+        Point4d&
     );
 
 
 
     /*
-        Add components to Point4
+        Add components to Point4d
     */
-    Point4& add
+    Point4d& add
     (
         double, /* x */
         double, /* y */
@@ -150,9 +150,9 @@ struct Point4
     /*
         Sub
     */
-    Point4& sub
+    Point4d& sub
     (
-        Point4&
+        Point4d&
     );
 
 
@@ -161,9 +161,9 @@ struct Point4
         Sub current vector from argument
         and put result to this
     */
-    Point4& subFrom
+    Point4d& subFrom
     (
-        Point4&
+        Point4d&
     );
 
 
@@ -171,7 +171,7 @@ struct Point4
     /*
         Scale
     */
-    Point4& scale
+    Point4d& scale
     (
         double  /* Scalar */
     );
@@ -188,16 +188,16 @@ struct Point4
     /*
         Normalize
     */
-    Point4& norm();
+    Point4d& norm();
 
 
 
     /*
-        Distance between this Point4
+        Distance between this Point4d
     */
     double dist
     (
-        Point4&
+        Point4d&
     );
 
 
@@ -205,27 +205,27 @@ struct Point4
     /*
         Cross vproduct
     */
-    Point4& cross
+    Point4d& cross
     (
-        Point4&
+        Point4d&
     );
 
 
 
     /*
-        Dot product this Point4 and argument Point4
+        Dot product this Point4d and argument Point4d
     */
     double dot
     (
-        const Point4&
+        const Point4d&
     );
 
 
 
     /*
-        Dot product this Point4 and argument Matrix4
+        Dot product this Point4d and argument Matrix4
     */
-    Point4& dot
+    Point4d& dot
     (
         const Matrix4&
     );
@@ -237,16 +237,16 @@ struct Point4
     */
     double cmp
     (
-        Point4&
+        Point4d&
     );
 
 
 
     /*
-        Convert Point4 to string
+        Convert Point4d to string
     */
     string toString();
-    Point4& toConsole();
+    Point4d& toConsole();
 
 };
 
@@ -254,8 +254,8 @@ struct Point4
 /*
     Define static constatns
 */
-static Point4 POINT_4D_0 = Point4( 0.0, 0.0, 0.0, 0.0 );
-static Point4 POINT_4D_X = Point4( 1.0, 0.0, 0.0, 0.0 );
-static Point4 POINT_4D_Y = Point4( 0.0, 1.0, 0.0, 0.0 );
-static Point4 POINT_4D_Z = Point4( 0.0, 0.0, 1.0, 0.0 );
-static Point4 POINT_4D_W = Point4( 0.0, 0.0, 0.0, 1.0 );
+static Point4d POINT_4D_0 = Point4d( 0.0, 0.0, 0.0, 0.0 );
+static Point4d POINT_4D_X = Point4d( 1.0, 0.0, 0.0, 0.0 );
+static Point4d POINT_4D_Y = Point4d( 0.0, 1.0, 0.0, 0.0 );
+static Point4d POINT_4D_Z = Point4d( 0.0, 0.0, 1.0, 0.0 );
+static Point4d POINT_4D_W = Point4d( 0.0, 0.0, 0.0, 1.0 );

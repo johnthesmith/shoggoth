@@ -3,7 +3,7 @@
 #include <tgmath.h>
 #include "math.h"
 #include "point3.h"
-#include "point4.h"
+#include "point4d.h"
 #include "matrix.h"
 
 
@@ -64,7 +64,7 @@ Matrix4& Matrix4::from
 */
 Matrix4& Matrix4::shift
 (
-    const Point4& a
+    const Point4d& a
 )
 {
     m[ M_AX ] = 1.0; m[ M_BX ] = 0.0; m[ M_CX ] = 0.0; m[ M_DX ] = 0.0;
@@ -81,7 +81,7 @@ Matrix4& Matrix4::shift
 */
 Matrix4& Matrix4::scale
 (
-    const Point4& a
+    const Point4d& a
 )
 {
     m[ M_AX ] = a.x; m[ M_BX ] = 0.0; m[ M_CX ] = 0.0; m[ M_DX ] = 0.0;
@@ -115,7 +115,7 @@ Matrix4& Matrix4::scale
 
 Matrix4& Matrix4::rotate
 (
-    const Point4& aBase,
+    const Point4d& aBase,
     const float aAngle
 )
 {
@@ -189,13 +189,13 @@ Matrix4& Matrix4::rotate
 
 Matrix4& Matrix4::look
 (
-    const Point3& aGaze,    /* Normailized gaze direction */
-    const Point3& aTop      /* Top vector */
+    const Point3d& aGaze,    /* Normailized gaze direction */
+    const Point3d& aTop      /* Top vector */
 )
 {
-    auto vx = Point3( aGaze ).cross( aTop );
-    auto vy = Point3( vx ).cross( aGaze ).toPoint4( 0 );
-    auto vz = Point3( aGaze ).negative().toPoint4( 0 );
+    auto vx = Point3d( aGaze ).cross( aTop );
+    auto vy = Point3d( vx ).cross( aGaze ).toPoint4d( 0 );
+    auto vz = Point3d( aGaze ).negative().toPoint4d( 0 );
 
     m[ M_AX ] = vx.x; m[ M_BX ] = vy.x; m[ M_CX ] = vz.x; m[ M_DX ] = 0.0;
     m[ M_AY ] = vx.y; m[ M_BY ] = vy.y; m[ M_CY ] = vz.y; m[ M_DY ] = 0.0;

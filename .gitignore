@@ -4,3 +4,6 @@
 hello
 *.swp
 *~
+*.o
+cache
+obj

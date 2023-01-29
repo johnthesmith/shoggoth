@@ -34,7 +34,7 @@
 */
 Object& Object::setEye
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     eye = a;
@@ -48,7 +48,7 @@ Object& Object::setEye
 */
 Object& Object::moveEye
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     if( !eyeLock )
@@ -64,7 +64,7 @@ Object& Object::moveEye
 /*
     Return eye position
 */
-Point3& Object::getEye()
+Point3d& Object::getEye()
 {
     return eye;
 }
@@ -76,7 +76,7 @@ Point3& Object::getEye()
 */
 Object& Object::setTop
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     top = a;
@@ -90,7 +90,7 @@ Object& Object::setTop
 */
 Object& Object::moveTop
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     if( !topLock )
@@ -106,7 +106,7 @@ Object& Object::moveTop
 /*
     Set eye position
 */
-Point3& Object::getTop()
+Point3d& Object::getTop()
 {
     return top;
 }
@@ -118,7 +118,7 @@ Point3& Object::getTop()
 */
 Object& Object::setTarget
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     target = a;
@@ -132,7 +132,7 @@ Object& Object::setTarget
 */
 Object& Object::moveTarget
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     if( !targetLock )
@@ -148,7 +148,7 @@ Object& Object::moveTarget
 /*
     Seteye position
 */
-Point3& Object::getTarget()
+Point3d& Object::getTarget()
 {
     return target;
 }
@@ -174,9 +174,9 @@ Object& Object::norm()
 */
 Object& Object::place
 (
-    const Point3& aEye,
-    const Point3& aTarget,
-    const Point3& aTop
+    const Point3d& aEye,
+    const Point3d& aTarget,
+    const Point3d& aTop
 )
 {
     if( !eyeLock )
@@ -255,7 +255,7 @@ bool Object::getTargetLock()
 /*
     Return the Front direction
 */
-Point3 Object::getFront()
+Point3d Object::getFront()
 {
     return ( target - eye ).norm();
 }
@@ -265,7 +265,7 @@ Point3 Object::getFront()
 /*
     Return the Back direction
 */
-Point3 Object::getBack()
+Point3d Object::getBack()
 {
     return ( eye - target ).norm();
 }
@@ -275,7 +275,7 @@ Point3 Object::getBack()
 /*
     Return the Right direction
 */
-Point3 Object::getRight()
+Point3d Object::getRight()
 {
     return (top % getFront()).norm();
 }
@@ -285,7 +285,7 @@ Point3 Object::getRight()
 /*
     Return the gase
 */
-Point3 Object::getGaze()
+Point3d Object::getGaze()
 {
     return target - eye;
 }
@@ -331,10 +331,10 @@ Object& Object::zoom
 */
 Object& Object::shift
 (
-    const Point3& a
+    const Point3d& a
 )
 {
-    Point3 s = a * sensivity;
+    Point3d s = a * sensivity;
     place
     (
         eye + s,
@@ -351,7 +351,7 @@ Object& Object::shift
 */
 Object& Object::rotateEye
 (
-    const Point3& aBase,    /* Base */
+    const Point3d& aBase,    /* Base */
     const double aAngleRad  /* Rotation angle at radians */
 )
 {
@@ -367,7 +367,7 @@ Object& Object::rotateEye
 */
 Object& Object::rotateTop
 (
-    const Point3& aBase,    /* Base */
+    const Point3d& aBase,    /* Base */
     const double aAngleRad  /* Rotation angle at radians */
 )
 {
@@ -383,7 +383,7 @@ Object& Object::rotateTop
 */
 Object& Object::rotateTarget
 (
-    const Point3& aBase,    /* Base */
+    const Point3d& aBase,    /* Base */
     const double aAngleRad  /* Rotation angle at radians */
 )
 {

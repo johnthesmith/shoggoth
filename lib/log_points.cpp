@@ -4,14 +4,14 @@
 #include "log_points.h"
 #include "log.h"
 #include "point3.h"
-#include "point4.h"
+#include "point4d.h"
 #include "matrix.h"
 
 
 void LogPoints::write
 (
     Log& aLog,
-    const Point3& aPoint,
+    const Point3d& aPoint,
     const string aTitle
 )
 {
@@ -61,7 +61,7 @@ void LogPoints::write
 void LogPoints::write
 (
     Log& aLog,
-    const Point4& aPoint,
+    const Point4d& aPoint,
     const string aTitle
 )
 {

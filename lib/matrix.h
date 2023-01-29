@@ -33,7 +33,7 @@
 #define M_DW 15
 
 
-struct Point4;
+struct Point4d;
 
 
 struct Matrix4
@@ -59,12 +59,12 @@ struct Matrix4
 
     Matrix4& shift
     (
-        const Point4&
+        const Point4d&
     );
 
     Matrix4& scale
     (
-        const Point4&
+        const Point4d&
     );
 
     Matrix4& scale
@@ -78,7 +78,7 @@ struct Matrix4
     */
     Matrix4& rotate
     (
-        const Point4& aBase,    /* Base axis for rotation, must be norm */
+        const Point4d& aBase,    /* Base axis for rotation, must be norm */
         const float aAngle      /* Angle of rotation */
     );
 
@@ -107,8 +107,8 @@ struct Matrix4
 
     Matrix4& look
     (
-        const Point3&,
-        const Point3&
+        const Point3d&,
+        const Point3d&
     );
 
 

@@ -9,7 +9,7 @@
 */
 struct Neuron3 : public Neuron
 {
-    Point3 point;
+    Point3d point;
 
     /*
         Draw neuron

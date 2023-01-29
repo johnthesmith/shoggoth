@@ -1,14 +1,14 @@
 #pragma once
 
 #include <string>
-#include "point4.h"
+#include "point4d.h"
 
 using namespace std;
 
 
-struct Point4;
+struct Point4d;
 
-struct Point3
+struct Point3d
 {
     double x = 0;
     double y = 0;
@@ -19,7 +19,7 @@ struct Point3
     /*
       Constructor
     */
-    Point3
+    Point3d
     (
         double = 0.0, /* x */
         double = 0.0, /* y */
@@ -31,49 +31,49 @@ struct Point3
     /*
       Constructor
     */
-    Point3
+    Point3d
     (
-        const Point3&
+        const Point3d&
     );
 
 
 
-    friend Point3 operator+
+    friend Point3d operator+
     (
-        const Point3&,  /* First operand */
-        const Point3&   /* Second operand */
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
     );
 
 
 
-    friend Point3 operator-
+    friend Point3d operator-
     (
-        const Point3&,  /* First operand */
-        const Point3&   /* Second operand */
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
     );
 
 
 
     friend double operator*
     (
-        const Point3&,  /* First operand */
-        const Point3&   /* Second operand */
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
     );
 
 
 
-    friend Point3 operator*
+    friend Point3d operator*
     (
-        const Point3&,  /* First operand */
+        const Point3d&,  /* First operand */
         double /* Scalar operand */
     );
 
 
 
-    friend Point3 operator%
+    friend Point3d operator%
     (
-        const Point3&,  /* First operand */
-        const Point3&   /* Second operand */
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
     );
 
 
@@ -81,13 +81,13 @@ struct Point3
     /*
         Return vector
     */
-    Point3& get();
+    Point3d& get();
 
 
     /*
         Set vector coordinates
     */
-    Point3& set
+    Point3d& set
     (
         double = 0.0, /* x */
         double = 0.0, /* y */
@@ -99,9 +99,9 @@ struct Point3
     /*
         Set point3 from point3
     */
-    Point3& set
+    Point3d& set
     (
-        const Point3&
+        const Point3d&
     );
 
 
@@ -109,9 +109,9 @@ struct Point3
     /*
         Set point3 from point4
     */
-    Point3& set
+    Point3d& set
     (
-        Point4&
+        Point4d&
     );
 
 
@@ -119,7 +119,7 @@ struct Point3
     /*
         Set X component
     */
-    Point3& setX
+    Point3d& setX
     (
         double = 0
     );
@@ -129,7 +129,7 @@ struct Point3
     /*
         Set Y component
     */
-    Point3& setY
+    Point3d& setY
     (
         double = 0
     );
@@ -139,7 +139,7 @@ struct Point3
     /*
         Set Z component
     */
-    Point3& setZ
+    Point3d& setZ
     (
         double = 0
     );
@@ -147,9 +147,9 @@ struct Point3
 
 
     /*
-        Conver to Point4 object
+        Conver to Point4d object
     */
-    Point4 toPoint4
+    Point4d toPoint4d
     (
         const double = 0
     );
@@ -159,24 +159,24 @@ struct Point3
     /*
         Negative vector
     */
-    Point3& negative();
+    Point3d& negative();
 
 
 
     /*
-        Add Point3 to Point3
+        Add Point3d to Point3d
     */
-    Point3& add
+    Point3d& add
     (
-        const Point3&
+        const Point3d&
     );
 
 
 
     /*
-        Add components to Point3
+        Add components to Point3d
     */
-    Point3& add
+    Point3d& add
     (
         double, /* x */
         double, /* y */
@@ -189,9 +189,9 @@ struct Point3
     /*
         Sub
     */
-    Point3& sub
+    Point3d& sub
     (
-        const Point3&
+        const Point3d&
     );
 
 
@@ -200,9 +200,9 @@ struct Point3
         Sub current vector from argument
         and put result to this
     */
-    Point3& subFrom
+    Point3d& subFrom
     (
-        Point3&
+        Point3d&
     );
 
 
@@ -210,7 +210,7 @@ struct Point3
     /*
         Scale
     */
-    Point3& scale
+    Point3d& scale
     (
         double  /* Scalar */
     );
@@ -227,25 +227,25 @@ struct Point3
     /*
         Normalize
     */
-    Point3& norm();
+    Point3d& norm();
 
 
     /*
         Rotate current point around vector
     */
-    Point3& rotate
+    Point3d& rotate
     (
-        const Point3,
+        const Point3d,
         const double    /* Angle at radians */
     );
 
 
     /*
-        Distance between this Point3
+        Distance between this Point3d
     */
     double dist
     (
-        const Point3&
+        const Point3d&
     );
 
 
@@ -253,9 +253,9 @@ struct Point3
     /*
         Cross vproduct
     */
-    Point3& cross
+    Point3d& cross
     (
-        const Point3&
+        const Point3d&
     );
 
 
@@ -265,7 +265,7 @@ struct Point3
     */
     double dot
     (
-        Point3&
+        Point3d&
     );
 
 
@@ -275,13 +275,13 @@ struct Point3
     */
     double cmp
     (
-        Point3&
+        Point3d&
     );
 
 
 
     /*
-        Convert Point3 to string
+        Convert Point3d to string
     */
     string toString() const;
 };
@@ -291,8 +291,8 @@ struct Point3
 /*
     Define static constatns
 */
-static Point3 POINT_3D_0 = Point3( 0.0, 0.0, 0.0 );
-static Point3 POINT_3D_I = Point3( 1.0, 1.0, 1.0 );
-static Point3 POINT_3D_X = Point3( 1.0, 0.0, 0.0 );
-static Point3 POINT_3D_Y = Point3( 0.0, 1.0, 0.0 );
-static Point3 POINT_3D_Z = Point3( 0.0, 0.0, 1.0 );
+static Point3d POINT_3D_0 = Point3d( 0.0, 0.0, 0.0 );
+static Point3d POINT_3D_I = Point3d( 1.0, 1.0, 1.0 );
+static Point3d POINT_3D_X = Point3d( 1.0, 0.0, 0.0 );
+static Point3d POINT_3D_Y = Point3d( 0.0, 1.0, 0.0 );
+static Point3d POINT_3D_Z = Point3d( 0.0, 0.0, 1.0 );

@@ -17,9 +17,9 @@ class Object : public Result
     private:
 
        /* Object settings */
-        Point3          eye             = POINT_3D_I;  /* Set on begin of coordinates */
-        Point3          target          = POINT_3D_0;  /* Look at far */
-        Point3          top             = POINT_3D_Y;  /* And top on top */
+        Point3d          eye             = POINT_3D_I;  /* Set on begin of coordinates */
+        Point3d          target          = POINT_3D_0;  /* Look at far */
+        Point3d          top             = POINT_3D_Y;  /* And top on top */
 
         bool            eyeLock         = false;    /* Lock eye position */
         bool            topLock         = false;    /* Lock top direction */
@@ -35,7 +35,7 @@ class Object : public Result
         */
         Object& setEye
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -45,7 +45,7 @@ class Object : public Result
         */
         Object& moveEye
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -53,7 +53,7 @@ class Object : public Result
         /*
             Return eye position
         */
-        Point3& getEye();
+        Point3d& getEye();
 
 
 
@@ -62,7 +62,7 @@ class Object : public Result
         */
         Object& setTop
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -72,7 +72,7 @@ class Object : public Result
         */
         Object& moveTop
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -80,7 +80,7 @@ class Object : public Result
         /*
             Seteye position
         */
-        Point3& getTop();
+        Point3d& getTop();
 
 
 
@@ -89,7 +89,7 @@ class Object : public Result
         */
         Object& setTarget
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -99,14 +99,14 @@ class Object : public Result
         */
         Object& moveTarget
         (
-            const Point3&
+            const Point3d&
         );
 
 
         /*
             Seteye position
         */
-        Point3& getTarget();
+        Point3d& getTarget();
 
 
 
@@ -122,9 +122,9 @@ class Object : public Result
         */
         Object& place
         (
-            const Point3& = POINT_3D_X,    /* Eye */
-            const Point3& = POINT_3D_0,    /* Target */
-            const Point3& = POINT_3D_Y     /* Top */
+            const Point3d& = POINT_3D_X,    /* Eye */
+            const Point3d& = POINT_3D_0,    /* Target */
+            const Point3d& = POINT_3D_Y     /* Top */
         );
 
 
@@ -134,7 +134,7 @@ class Object : public Result
         */
         Object& shift
         (
-            const Point3&
+            const Point3d&
         );
 
 
@@ -177,28 +177,28 @@ class Object : public Result
         /*
             Return Front direction
         */
-        Point3 getFront();
+        Point3d getFront();
 
 
 
         /*
             Return Back direction
         */
-        Point3 getBack();
+        Point3d getBack();
 
 
 
         /*
             Return the Right direction
         */
-        Point3 getRight();
+        Point3d getRight();
 
 
 
         /*
             Return the Gaze vector
         */
-        Point3 getGaze();
+        Point3d getGaze();
 
 
 
@@ -223,7 +223,7 @@ class Object : public Result
         */
         Object& rotateEye
         (
-            const Point3& aBase,    /* Base */
+            const Point3d& aBase,    /* Base */
             const double aAngleRad  /* Rotation angle at radians */
         );
 
@@ -234,7 +234,7 @@ class Object : public Result
         */
         Object& rotateTop
         (
-            const Point3& aBase,    /* Base */
+            const Point3d& aBase,    /* Base */
             const double aAngleRad  /* Rotation angle at radians */
         );
 
@@ -245,7 +245,7 @@ class Object : public Result
         */
         Object& rotateTarget
         (
-            const Point3& aBase,    /* Base */
+            const Point3d& aBase,    /* Base */
             const double aAngleRad  /* Rotation angle at radians */
         );
 };

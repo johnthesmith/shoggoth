@@ -540,7 +540,7 @@ Scene& Scene::mouseWheelEvent
     const double aY
 )
 {
-    payload -> onMouseWheel( *this, Point3( aX, aY ));
+    payload -> onMouseWheel( *this, Point3d( aX, aY ));
     return *this;
 }
 
@@ -567,15 +567,15 @@ Scene& Scene::mouseMoveEvent
         {
             if( mouseLeftDrag )
             {
-                payload -> onLeftDrag( *this, Point3( aX, aY ));
+                payload -> onLeftDrag( *this, Point3d( aX, aY ));
             }
             else
             {
-                payload -> onLeftDragBegin( *this, Point3( aX, aY ));
+                payload -> onLeftDragBegin( *this, Point3d( aX, aY ));
                 mouseLeftDrag = true;
             }
         }
-        payload -> onMouseMove( *this, Point3( aX, aY ));
+        payload -> onMouseMove( *this, Point3d( aX, aY ));
     }
     return *this;
 }
@@ -694,7 +694,7 @@ Scene& Scene::color
 */
 Scene& Scene::vertex
 (
-    const Point3& a
+    const Point3d& a
 )
 {
     glVertex3dv( (GLdouble*)&a );
@@ -771,20 +771,20 @@ Scene& Scene::drawGreedIdentity()
     for( double l = -1; l<=1; l+=0.1 )
     {
         /* f(x) z */
-        color( Rgba( 0,0,0,0.5 )); vertex( Point3( l, 0, -1 ));
-        color( Rgba( 1,0,0,0.5 )); vertex( Point3( l, 0, 0 ));
-        color( Rgba( 1,0,0,0.5 )); vertex( Point3( l, 0, 0 ));
-        color( Rgba( 1,1,1,0.5 )); vertex( Point3( l, 0, 1 ));
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3d( l, 0, -1 ));
+        color( Rgba( 1,0,0,0.5 )); vertex( Point3d( l, 0, 0 ));
+        color( Rgba( 1,0,0,0.5 )); vertex( Point3d( l, 0, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3d( l, 0, 1 ));
 
-        color( Rgba( 0,0,0,0.5 )); vertex( Point3( l, -1, 0));
-        color( Rgba( 0,1,0,0.5 )); vertex( Point3( l, 0, 0 ));
-        color( Rgba( 0,1,0,0.5 )); vertex( Point3( l, 0, 0 ));
-        color( Rgba( 1,1,1,0.5 )); vertex( Point3( l, 1, 0 ));
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3d( l, -1, 0));
+        color( Rgba( 0,1,0,0.5 )); vertex( Point3d( l, 0, 0 ));
+        color( Rgba( 0,1,0,0.5 )); vertex( Point3d( l, 0, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3d( l, 1, 0 ));
 
-        color( Rgba( 0,0,0,0.5 )); vertex( Point3( 0, l, -1));
-        color( Rgba( 0,0,1,0.5 )); vertex( Point3( 0, l, 0 ));
-        color( Rgba( 0,0,1,0.5 )); vertex( Point3( 0, l, 0 ));
-        color( Rgba( 1,1,1,0.5 )); vertex( Point3( 0, l, 1 ));
+        color( Rgba( 0,0,0,0.5 )); vertex( Point3d( 0, l, -1));
+        color( Rgba( 0,0,1,0.5 )); vertex( Point3d( 0, l, 0 ));
+        color( Rgba( 0,0,1,0.5 )); vertex( Point3d( 0, l, 0 ));
+        color( Rgba( 1,1,1,0.5 )); vertex( Point3d( 0, l, 1 ));
 
     }
     end();
@@ -852,12 +852,12 @@ bool Scene::isMouseButton
     return screen point by world point
     https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluUnProject.xml
 */
-Point3 Scene::getScreenByWorld
+Point3d Scene::getScreenByWorld
 (
-    const Point3& a
+    const Point3d& a
 )
 {
-    auto r = Point3();
+    auto r = Point3d();
     gluProject
     (
         a.x, a.y, a.z,
@@ -877,12 +877,12 @@ Point3 Scene::getScreenByWorld
     return world point by screen point
     https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluProject.xml
 */
-Point3 Scene::getWorldByScreen
+Point3d Scene::getWorldByScreen
 (
-    const Point3& a
+    const Point3d& a
 )
 {
-    auto r = Point3();
+    auto r = Point3d();
     gluUnProject
     (
         a.x, viewport.height - a.y, a.z,
@@ -902,7 +902,7 @@ Point3 Scene::getWorldByScreen
 /*
     Return mouse current position at screen
 */
-Point3 Scene::getMouseCurrentScreen()
+Point3d Scene::getMouseCurrentScreen()
 {
     return mouseCurrent;
 }
@@ -912,7 +912,7 @@ Point3 Scene::getMouseCurrentScreen()
 /*
     Return mouse last position at screen
 */
-Point3 Scene::getMouseLastScreen()
+Point3d Scene::getMouseLastScreen()
 {
     return mouseLast;
 }
@@ -922,7 +922,7 @@ Point3 Scene::getMouseLastScreen()
 /*
     Return mouse current position in world
 */
-Point3 Scene::getMouseCurrentWorld()
+Point3d Scene::getMouseCurrentWorld()
 {
     return getWorldByScreen( mouseCurrent );
 }
@@ -932,7 +932,7 @@ Point3 Scene::getMouseCurrentWorld()
 /*
     Return mouse last position in world
 */
-Point3 Scene::getMouseLastWorld()
+Point3d Scene::getMouseLastWorld()
 {
     return getWorldByScreen( mouseLast );
 }

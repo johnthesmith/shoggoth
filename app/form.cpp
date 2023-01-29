@@ -125,7 +125,7 @@ void Form::onKeyDown
 void Form::onMouseMove
 (
     Scene& aScene,      /* Scene object */
-    const Point3& aPoint
+    const Point3d& aPoint
 )
 {
 }
@@ -138,7 +138,7 @@ void Form::onMouseMove
 void Form::onLeftDrag
 (
     Scene& aScene,      /* Scene object */
-    const Point3& aPoint
+    const Point3d& aPoint
 )
 {
     double k = camera.getGaze().magn() / aScene.getNear();
@@ -158,7 +158,7 @@ void Form::onLeftDrag
 void Form::onMouseWheel
 (
     Scene& aScene,      /* Scene object */
-    const Point3& aDelta
+    const Point3d& aDelta
 )
 {
     bool rotation = false;
