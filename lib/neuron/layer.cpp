@@ -120,3 +120,29 @@ Layer& Layer::setSize
     return *this;
 }
 
+
+
+/*
+    Connect all neurons from current layer to argument
+    (i) -> (j)
+*/
+Layer& Layer::connectTo
+(
+    Layer& a
+)
+{
+    auto si = neurons.getSize();
+    auto sj = a.neurons.getSize();
+
+    for( int i = 0; i < si; i++ )
+    {
+        auto iNeuron = neurons.getByIndex( i );
+
+        for( int j = 0; j < sj; i++ )
+        {
+            auto jNeuron = neurons.getByIndex( i );
+            iNeuron -> addParent( *jNeuron );
+        }
+    }
+    return *this;
+}

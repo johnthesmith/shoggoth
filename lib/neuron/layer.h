@@ -100,4 +100,27 @@ class Layer : public Object
         (
             const Point3i& = POINT_3I_0
         );
+
+
+
+        Layer& connectTo
+        (
+            Layer&
+        );
+
+
+
+        Layer& disconnectFrom
+        (
+            Layer&
+        );
+
+
+
+        Layer& noiseFor
+        (
+            Layer&,
+            double,  /* Minimum noise */
+            double   /* Maximum noise */
+        );
 };

@@ -235,7 +235,7 @@ case $1 in
         fi
     ;;
     *)
-        echo -e "Unknown command$COLOR_RED $1$COLOR_DEFAULT at first parameter"
+        echo -e "Unknown command $COLOR_RED\"$1\"$COLOR_DEFAULT at first parameter"
         echo -e "You can use:"
         echo -e "  $COLOR_GREEN begin$COLOR_DEFAULT it can be first command at make file. example:$COLOR_GOLD ./shab begin$COLOR_DEFAULT"
         echo -e "  $COLOR_GREEN header$COLOR_DEFAULT for header output. example:$COLOR_GOLD ./shab header Hello$COLOR_DEFAULT"
