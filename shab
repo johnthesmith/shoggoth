@@ -41,7 +41,7 @@ ObjPath="$Shab/obj"
 
 
 # Compiler
-CPP="g++ -c SOURCE_FILE -o $ObjPath/OBJECT_FILE"
+CPP="g++ -O3 -c SOURCE_FILE -o $ObjPath/OBJECT_FILE"
 
 
 
