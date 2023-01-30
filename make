@@ -10,15 +10,10 @@
 ./shab build "app/*.cpp"
 
 ./shab header "make"
+./shab execute "g++ -O3 -o hello OBJECT_PATH/*.o -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw"
 
-./shab execute
-g++ \
--O3 \
--o \
-hello \
-.shab/obj/*.o \
--lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw
-
+./shab header "compress"
 ./shab execute "upx -9 hello"
 
+./shab header "run"
 ./shab execute "./hello"

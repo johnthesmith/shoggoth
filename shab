@@ -1,12 +1,22 @@
 #!/bin/bash
 
-# This is simple maker for Shabnigroth project
+#==============================================================================
+# This is the simple maker for Shabnigroth project
+# 2023.01.30
+#
+# still@itserv.ru
+# igorptx@gmail.com
 
+
+
+#==============================================================================
+# Constants
 
 # Colors
 COLOR_DEFAULT="\033[0m"
 COLOR_RED="\033[0;31m"
 COLOR_GREEN="\033[0;32m"
+COLOR_GOLD="\033[0;33m"
 
 
 
@@ -16,12 +26,7 @@ Shab="./.shab"
 
 
 # Error file
-Error=$Shab/err
-
-
-
-# Execute
-Execute="true"
+Error="$Shab/err"
 
 
 
@@ -40,12 +45,19 @@ CPP="g++ -c SOURCE_FILE -o $ObjPath/OBJECT_FILE"
 
 
 
+
+#==============================================================================
+# Functions
+
+
+# Set error flag-file
 function error {
     touch $Error
 }
 
 
 
+# Output information about file change
 function info {
     if [ $2 = "CHANGE" ]
     then
@@ -58,6 +70,7 @@ function info {
 }
 
 
+# Check control summ at md5
 function checkControlSumm {
     if [ -f $1 ]
     then
@@ -86,7 +99,7 @@ function checkControlSumm {
 }
 
 
-
+# Store control sum to file
 function storeControlSumm {
     # Get cache file name
     FileName=`basename $1`
@@ -144,11 +157,9 @@ function build {
 
 # Header output
 function header {
-    echo -e $COLOR_GREEN
-    echo =================================================================
-    echo $1
-    echo =================================================================
-    echo -e $COLOR_DEFAULT
+    echo -e $COLOR_GREEN=================================================================
+    echo -e $1
+    echo -e =================================================================$COLOR_DEFAULT
 }
 
 
@@ -164,13 +175,13 @@ function begin {
 
 
 # Remove bash folder
-function begin {
+function rebuild {
     rm -rf $Shab
 }
 
 
 
-
+#==============================================================================
 # Main
 
 # Create cache path for md5
@@ -179,11 +190,15 @@ then
     mkdir $CachePath
 fi
 
+
+
 # Create obj path
 if [ ! -d $ObjPath ]
 then
     mkdir $ObjPath
 fi
+
+
 
 # Create shab path
 if [ ! -d $Shab ]
@@ -191,9 +206,11 @@ then
     mkdir $Shab
 fi
 
+
+# Commands execute
 case $1 in
-    "clear")
-        clear
+    "rebuild")
+        rebuild
     ;;
     "begin")
         begin
@@ -205,14 +222,25 @@ case $1 in
         build "$2"
     ;;
     "execute")
-        [ ! -f "$Error" ] && $2
+        if [ ! -f "$Error" ]
+        then
+            Source=$2
+            Line=${Source/OBJECT_PATH/$ObjPath}
+            echo -e "$COLOR_GOLD$Line$COLOR_DEFAULT"
+            $Line
+            if [ ! $? -eq 0 ]
+            then
+                error
+            fi
+        fi
     ;;
     *)
         echo -e "Unknown command$COLOR_RED $1$COLOR_DEFAULT at first parameter"
         echo -e "You can use:"
-        echo -e "  $COLOR_GREEN header$COLOR_DEFAULT for header output. example: shab header Hello"
-        echo -e "  $COLOR_GREEN build$COLOR_DEFAULT for cpp files. example: shab build hello.cpp"
-        echo -e "  $COLOR_GREEN execute$COLOR_DEFAULT execute bash command. example: shab execute ls"
-        echo -e "  $COLOR_GREEN clear$COLOR_DEFAULT remove shab folder. example: shab clear"
+        echo -e "  $COLOR_GREEN begin$COLOR_DEFAULT it can be first command at make file. example:$COLOR_GOLD ./shab begin$COLOR_DEFAULT"
+        echo -e "  $COLOR_GREEN header$COLOR_DEFAULT for header output. example:$COLOR_GOLD ./shab header Hello$COLOR_DEFAULT"
+        echo -e "  $COLOR_GREEN build$COLOR_DEFAULT for cpp files. example:$COLOR_GOLD ./shab build hello.cpp$COLOR_DEFAULT"
+        echo -e "  $COLOR_GREEN execute$COLOR_DEFAULT execute bash command. example:$COLOR_GOLD ./shab execute ls$COLOR_DEFAULT"
+        echo -e "  $COLOR_GREEN rebuild$COLOR_DEFAULT remove the shab folder and full rebuilding project. example:$COLOR_GOLD ./shab rebuild$COLOR_DEFAULT"
     ;;
 esac
