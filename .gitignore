@@ -5,5 +5,4 @@ hello
 *.swp
 *~
 *.o
-cache
-obj
+.shab
