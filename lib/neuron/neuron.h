@@ -52,7 +52,6 @@ struct Neuron
 
 
 
-
     /*
         this -> parent
     */
@@ -71,6 +70,28 @@ struct Neuron
     (
         Neuron&,    /* Child neuron */
         double = 0  /* Weight */
+    );
+
+
+
+
+    /*
+        Add all neurons from NeuronList to Children of this neuron
+    */
+    Neuron& addChildren
+    (
+        NeuronList&,    /* Child neuron list */
+        double = 0      /* Weight */
+    );
+
+
+
+    /*
+        Add all neurons from NeuronList to Partnts of this neuron
+    */
+    Neuron& addParents
+    (
+        NeuronList&    /* Parents neuron list */
     );
 
 

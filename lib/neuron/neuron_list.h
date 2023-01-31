@@ -39,6 +39,16 @@ struct NeuronList
 
 
     /*
+        Add neurons from argument list to this list
+    */
+    NeuronList& add
+    (
+        NeuronList&
+    );
+
+
+
+    /*
         Return neuron by name
     */
     Neuron& neuronByName

@@ -41,7 +41,13 @@ ObjPath="$Shab/obj"
 
 
 # Compiler
-CPP="g++ -O3 -c SOURCE_FILE -o $ObjPath/OBJECT_FILE"
+
+Compiler="g++"
+
+
+
+# Compiler
+CPP="$Compiler -O3 -c SOURCE_FILE -o $ObjPath/OBJECT_FILE"
 
 
 
@@ -224,8 +230,9 @@ case $1 in
     "execute")
         if [ ! -f "$Error" ]
         then
-            Source=$2
-            Line=${Source/OBJECT_PATH/$ObjPath}
+            Line=$2
+            Line=${Line/OBJECT_PATH/$ObjPath}
+            Line=${Line/COMPILER/$Compiler}
             echo -e "$COLOR_GOLD$Line$COLOR_DEFAULT"
             $Line
             if [ ! $? -eq 0 ]
@@ -242,5 +249,6 @@ case $1 in
         echo -e "  $COLOR_GREEN build$COLOR_DEFAULT for cpp files. example:$COLOR_GOLD ./shab build hello.cpp$COLOR_DEFAULT"
         echo -e "  $COLOR_GREEN execute$COLOR_DEFAULT execute bash command. example:$COLOR_GOLD ./shab execute ls$COLOR_DEFAULT"
         echo -e "  $COLOR_GREEN rebuild$COLOR_DEFAULT remove the shab folder and full rebuilding project. example:$COLOR_GOLD ./shab rebuild$COLOR_DEFAULT"
+        error
     ;;
 esac

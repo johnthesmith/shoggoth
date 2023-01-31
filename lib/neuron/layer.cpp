@@ -131,18 +131,27 @@ Layer& Layer::connectTo
     Layer& a
 )
 {
-    auto si = neurons.getSize();
-    auto sj = a.neurons.getSize();
+    getLog()
+    .begin( "Layer connecting" )
+    .lineEnd();
 
+    /* Create children binds */
+    auto si = neurons.getSize();
     for( int i = 0; i < si; i++ )
     {
         auto iNeuron = neurons.getByIndex( i );
-
-        for( int j = 0; j < sj; i++ )
-        {
-            auto jNeuron = neurons.getByIndex( i );
-            iNeuron -> addParent( *jNeuron );
-        }
+        iNeuron -> addChildren( a.neurons, 0 ); /* TODO rnd min max */
     }
+
+    /* Create parnet binds */
+    auto sj = a.neurons.getSize();
+    for( int j = 0; j < sj; j++ )
+    {
+        auto jNeuron = a.neurons.getByIndex( j );
+        jNeuron -> addParents( neurons );
+    }
+
+    getLog().end();
+
     return *this;
 }

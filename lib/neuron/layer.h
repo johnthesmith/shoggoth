@@ -35,8 +35,11 @@ class Layer : public Object
         Log& log;
 
         Point3d drawSize = POINT_3D_I;
-
         virtual Neuron* newNeuron();
+
+        /* Settings */
+//        double defaultBindWeightMin = 0.0;
+//        double defaultBindWeightMax = 1.0;
 
     public:
 

@@ -25,6 +25,30 @@ NeuronList& NeuronList::add
 
 
 /*
+    Add neurons from argument list to this list
+*/
+NeuronList& NeuronList::add
+(
+    NeuronList& a
+)
+{
+    auto currentSize = getSize();
+    auto sourceSize = a.getSize();
+    auto newSize = currentSize + sourceSize;
+
+    resize( newSize );
+
+    for( int i = 0; i < sourceSize; i++ )
+    {
+        setByIndex( currentSize + i, a.getByIndex( i ));
+    }
+    return *this;
+}
+
+
+
+
+/*
     Return index by neuron
 */
 int NeuronList::indexByNeuron
