@@ -39,9 +39,16 @@ int main
     auto layer2     = Layer( log );
 
     layer1.setSize( Point3i( 640, 480, 1 ));
-    layer2.setSize( Point3i( 50, 50, 1 ));
 
-   layer1.connectTo(layer2);
+    layer2.setSize( Point3i( 50, 50, 1 ));
+    layer3.setSize( Point3i( 50, 50, 1 ));
+    layer4.setSize( Point3i( 50, 50, 1 ));
+    layer5.setSize( Point3i( 50, 50, 1 ));
+
+    layer1.connectTo(layer2);
+    layer2.connectTo(layer3);
+    layer3.connectTo(layer4);
+    layer4.connectTo(layer5);
 
     scene.init().setPayload( payload ).loop().finit();
 
