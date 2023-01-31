@@ -37,6 +37,9 @@ int main
 
     auto layer1     = Layer( log );
     auto layer2     = Layer( log );
+    auto layer3     = Layer( log );
+    auto layer4     = Layer( log );
+    auto layer5     = Layer( log );
 
     layer1.setSize( Point3i( 640, 480, 1 ));
 
