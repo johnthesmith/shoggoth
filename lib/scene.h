@@ -273,6 +273,22 @@ class Scene : public Result
         Scene& drawGreedIdentity();
         Scene& drawAxisIdentity();
 
+
+        /*
+            Draw qube
+        */
+        Scene& sendQube
+        (
+            Point3d&    /* Qube center */
+        );
+
+
+        Scene& polygonMode
+        (
+            PolygonMode
+        );
+
+
         /*
             return view matrix reference
         */

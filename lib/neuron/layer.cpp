@@ -137,43 +137,59 @@ Layer* Layer::draw
     Scene& aScene
 )
 {
-    auto p1 = Point3d( getTarget()).add( POINT_3D_Z_05 ).sub( POINT_3D_X_05 ).sub( POINT_3D_Y_05 );
-    auto p2 = Point3d( p1 ).add( POINT_3D_Y );
-    auto p3 = Point3d( p2 ).add( POINT_3D_X );
-    auto p4 = Point3d( p1 ).add( POINT_3D_X );
+    auto c = Rgba( 0.5, 0.7, 1.0, 0.1 );
 
-    auto p5 = Point3d( p1 ).sub( POINT_3D_Z );
-    auto p6 = Point3d( p2 ).sub( POINT_3D_Z );
-    auto p7 = Point3d( p3 ).sub( POINT_3D_Z );
-    auto p8 = Point3d( p4 ).sub( POINT_3D_Z );
+    aScene
 
-    auto c = Rgba( 0.5, 0.7, 1.0, 0.3 );
+    .polygonMode( POLYGON_FILL )
 
-     aScene
-     .begin( QUAD )
-     .color( c )
-     .vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 )
-     .vertex( p4 ).vertex( p3 ).vertex( p7 ).vertex( p8 )
-     .vertex( p5 ).vertex( p8 ).vertex( p7 ).vertex( p6 )
-     .vertex( p1 ).vertex( p5 ).vertex( p6 ).vertex( p2 )
-     .vertex( p2 ).vertex( p6 ).vertex( p7 ).vertex( p3 )
-     .vertex( p1 ).vertex( p4 ).vertex( p8 ).vertex( p5 )
-     .end();
+    .begin( QUAD )
+    .color( c )
+    .sendQube( getTarget() )
+    .end()
 
-glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    .polygonMode( POLYGON_LINE )
 
-     aScene
-     .begin( QUAD )
-     .color( c )
-     .vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 )
-     .vertex( p4 ).vertex( p3 ).vertex( p7 ).vertex( p8 )
-     .vertex( p5 ).vertex( p8 ).vertex( p7 ).vertex( p6 )
-     .vertex( p1 ).vertex( p5 ).vertex( p6 ).vertex( p2 )
-     .vertex( p2 ).vertex( p6 ).vertex( p7 ).vertex( p3 )
-     .vertex( p1 ).vertex( p4 ).vertex( p8 ).vertex( p5 )
-     .end();
+    .begin( QUAD )
+    .color( c )
+    .sendQube( getTarget() )
+    .end()
 
-glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    ;
+
+
+
+    glPointSize( 4 );
+    aScene.begin( POINT ).color( Rgba( RGBA_WHITE )).vertex( getTarget()).end();
+
+
+    Point3d p = Point3d( getTarget() ).sub( POINT_3D_Z_05 ).sub( POINT_3D_X_05 ).sub( POINT_3D_Y_05 );
+    Point3d r = p;
+
+    double sx = 1.0 / size.x;
+    double sy = 1.0 / size.y;
+    double sz = 1.0 / size.z;
+
+    aScene.color( Rgba( 1.0, 0.7, 0.0, 0.5 ));
+glPointSize( 2 );
+
+    aScene.begin( POINT );
+    for( int z = 0; z < size.z; z++ )
+    {
+        for( int y = 0; y < size.y; y++ )
+        {
+            for( int x = 0; x < size.x; x++ )
+            {
+                aScene.vertex( p );
+                p.x += sx;
+            }
+            p.y += sy;
+            p.x = r.x;
+        }
+        p.z += sz;
+        p.y = r.y;
+    }
+    aScene.end();
 
     return this;
 }

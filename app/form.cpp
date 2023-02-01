@@ -24,19 +24,22 @@ Form::Form
 )
 : ScenePayload( aLog ) /* Call parent constructor */
 {
-    layer1 = Layer::create( getLog() ) -> setName( "Screen" ) -> setSize( Point3i( 64, 48, 1 ));
+    layer1 = Layer::create( getLog() ) -> setName( "Screen" ) -> setSize( Point3i( 640, 480, 1 ));
     layer2 = Layer::create( getLog() ) -> setName( "One" ) -> setSize( Point3i( 50, 50, 1 ));
-    layer3 = Layer::create( getLog() ) -> setName( "Two" ) -> setSize( Point3i( 50, 50, 1 ));
-    layer4 = Layer::create( getLog() ) -> setName( "Three" ) -> setSize( Point3i( 50, 50, 1 ));
-    layer5 = Layer::create( getLog() ) -> setName( "For" ) -> setSize( Point3i( 50, 50, 1 ));
+    layer3 = Layer::create( getLog() ) -> setName( "Two" ) -> setSize( Point3i( 50, 50, 20 ));
+    layer4 = Layer::create( getLog() ) -> setName( "Three" ) -> setSize( Point3i( 10, 50, 1 ));
+    layer5 = Layer::create( getLog() ) -> setName( "For" ) -> setSize( Point3i( 50, 10, 2 ));
 
-    layer1 -> setTarget( POINT_3D_X * 2 );
-    layer2 -> setTarget( POINT_3D_X * 4 );
+    layer1 -> setTarget( POINT_3D_Z * 2 );
+    layer2 -> setTarget( POINT_3D_Z * 4 );
+    layer3 -> setTarget( POINT_3D_Z * 6 );
+    layer4 -> setTarget( POINT_3D_Z * 8 );
+    layer5 -> setTarget( POINT_3D_Z * 10 );
 
-    layer1 -> connectTo( layer2 );
-    layer2 -> connectTo( layer3 );
-    layer3 -> connectTo( layer4 );
-    layer4 -> connectTo( layer5 );
+//    layer1 -> connectTo( layer2 );
+//    layer2 -> connectTo( layer3 );
+//    layer3 -> connectTo( layer4 );
+//    layer4 -> connectTo( layer5 );
 }
 
 
@@ -116,31 +119,34 @@ void Form::onDraw
     aScene
     .clearColor()
     .drawAxisIdentity()
-    .drawGreedIdentity()
+//    .drawGreedIdentity()
     ;
 
 
-    aScene
-    .begin( LINE )
-    .color( RGBA_RED ).vertex( POINT_3D_X ).vertex( aScene.getMouseCurrentWorld() )
-    .color( RGBA_RED ).vertex( POINT_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
-    .color( RGBA_RED ).vertex( POINT_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
-    .end();
+//    aScene
+//    .begin( LINE )
+//    .color( RGBA_RED ).vertex( POINT_3D_X ).vertex( aScene.getMouseCurrentWorld() )
+//    .color( RGBA_RED ).vertex( POINT_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
+//    .color( RGBA_RED ).vertex( POINT_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
+//    .end();
 
 
     /* Draw Layer */
     layer1 -> draw( aScene );
     layer2 -> draw( aScene );
+    layer3 -> draw( aScene );
+    layer4 -> draw( aScene );
+    layer5 -> draw( aScene );
 
 
     /* Switch to flat screen */
     applyScreenToScene( aScene );
 
-    aScene
-    .begin( LINE )
-    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
-    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
-    .end();
+//    aScene
+//    .begin( LINE )
+//    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+//    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
+//    .end();
 }
 
 

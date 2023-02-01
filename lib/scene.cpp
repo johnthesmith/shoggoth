@@ -800,6 +800,37 @@ Scene& Scene::drawGreedIdentity()
 
 
 /*
+    Draw qube
+*/
+Scene& Scene::sendQube
+(
+    Point3d& a
+)
+{
+    auto p1 = Point3d( a ).add( POINT_3D_Z_05 ).sub( POINT_3D_X_05 ).sub( POINT_3D_Y_05 );
+    auto p2 = Point3d( p1 ).add( POINT_3D_Y );
+    auto p3 = Point3d( p2 ).add( POINT_3D_X );
+    auto p4 = Point3d( p1 ).add( POINT_3D_X );
+
+    auto p5 = Point3d( p1 ).sub( POINT_3D_Z );
+    auto p6 = Point3d( p2 ).sub( POINT_3D_Z );
+    auto p7 = Point3d( p3 ).sub( POINT_3D_Z );
+    auto p8 = Point3d( p4 ).sub( POINT_3D_Z );
+
+    vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 )
+    .vertex( p4 ).vertex( p3 ).vertex( p7 ).vertex( p8 )
+    .vertex( p5 ).vertex( p8 ).vertex( p7 ).vertex( p6 )
+    .vertex( p1 ).vertex( p5 ).vertex( p6 ).vertex( p2 )
+    .vertex( p2 ).vertex( p6 ).vertex( p7 ).vertex( p3 )
+    .vertex( p1 ).vertex( p4 ).vertex( p8 ).vertex( p5 );
+
+    return *this;
+}
+
+
+
+
+/*
     Draw axis from -1 to 1
 */
 Scene& Scene::drawAxisIdentity()
@@ -823,6 +854,23 @@ Matrix4& Scene::getViewMatrixRef()
 {
     return viewMatrix;
 }
+
+
+
+Scene& Scene::polygonMode
+(
+    PolygonMode a
+)
+{
+    switch( a )
+    {
+        case POLYGON_LINE    : glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); break;
+        case POLYGON_POINT   : glPolygonMode( GL_FRONT_AND_BACK, GL_POINT ); break;
+        case POLYGON_FILL    : glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); break;
+    }
+    return *this;
+}
+
 
 
 

@@ -16,3 +16,12 @@ enum DrawMode
     TRIANGLES,
     FAN
 };
+
+
+
+enum PolygonMode
+{
+    POLYGON_POINT,
+    POLYGON_LINE,
+    POLYGON_FILL
+};

@@ -20,7 +20,7 @@
 #include "../object.h"
 
 
-#include "../scene.h"   /* Layer draw */
+#include "../scene.h"   /*LOOP*/
 
 #include "neuron_list.h"
 
