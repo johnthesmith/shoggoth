@@ -24,6 +24,7 @@ class Payload : public Result
         Log& log;   /* Log object*/
 
     public:
+
         /*
             Constructor
         */
@@ -32,7 +33,27 @@ class Payload : public Result
             Log&
         );
 
+
+
         ~Payload();
+
+
+        /*
+            Creator
+        */
+        static Payload* create
+        (
+            Log&
+        );
+
+
+
+        /*
+            Destructor
+        */
+        void destroy();
+
+
 
         /*
             Get scene value

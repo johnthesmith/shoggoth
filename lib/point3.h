@@ -293,6 +293,11 @@ struct Point3d
 */
 static Point3d POINT_3D_0 = Point3d( 0.0, 0.0, 0.0 );
 static Point3d POINT_3D_I = Point3d( 1.0, 1.0, 1.0 );
+
 static Point3d POINT_3D_X = Point3d( 1.0, 0.0, 0.0 );
 static Point3d POINT_3D_Y = Point3d( 0.0, 1.0, 0.0 );
 static Point3d POINT_3D_Z = Point3d( 0.0, 0.0, 1.0 );
+
+static Point3d POINT_3D_X_05 = Point3d( 0.5, 0.0, 0.0 );
+static Point3d POINT_3D_Y_05 = Point3d( 0.0, 0.5, 0.0 );
+static Point3d POINT_3D_Z_05 = Point3d( 0.0, 0.0, 0.5 );

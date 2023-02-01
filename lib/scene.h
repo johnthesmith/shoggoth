@@ -69,8 +69,8 @@ class Scene : public Result
         short           middleClickCount    = 0;
         bool            mouseLeftDrag       = 0;
 
-        Point3d          mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
-        Point3d          mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
+        Point3d         mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
+        Point3d         mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
 
         Matrix4         projectionMatrix;
         Matrix4         viewMatrix;
@@ -202,7 +202,7 @@ class Scene : public Result
         */
         Scene& setPayload
         (
-            ScenePayload&       /* Argument for setting */
+            ScenePayload*       /* Argument for setting */
         );
 
 

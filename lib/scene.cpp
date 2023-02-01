@@ -276,6 +276,12 @@ Scene& Scene::drawEvent()
             /* Set opengl viewport default */
             glViewport( viewport.left, viewport.top, viewport.width, viewport.height );
 
+
+//glEnable(GL_DEPTH_TEST);
+//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+//
+
+
             /* Pulling event for keyboard and mouse*/
             glfwPollEvents();
 
@@ -592,10 +598,10 @@ Scene& Scene::mouseMoveEvent
 */
 Scene& Scene::setPayload
 (
-    ScenePayload& a
+    ScenePayload* a
 )
 {
-    payload = &a;
+    payload = a;
     payload -> setScene( *this );
 
     if( isOk() && payload != NULL && isInit() )

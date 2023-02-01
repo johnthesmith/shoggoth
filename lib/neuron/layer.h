@@ -13,10 +13,14 @@
 #include <string>
 #include <vector>
 
+#include "../utils.h"
 #include "../log.h"
 #include "../point3.h"
 #include "../point3i.h"
 #include "../object.h"
+
+
+#include "../scene.h"   /* Layer draw */
 
 #include "neuron_list.h"
 
@@ -24,6 +28,17 @@ using namespace std;
 
 
 
+enum ConnectType
+{
+    ONE_TO_ONE, /* Connection type = */
+    ALL_TO_ALL  /* Connection type x */
+};
+
+
+
+/*
+    Predescription of neuron
+*/
 struct Neuron;
 
 
@@ -32,19 +47,24 @@ class Layer : public Object
 {
     private:
 
-        Log& log;
-
-        Point3d drawSize = POINT_3D_I;
-        virtual Neuron* newNeuron();
+        /* States */
+        Log& log;                                   /* Log object */
+        virtual Neuron* newNeuron();                /* Internal method for neuron creation */
 
         /* Settings */
-//        double defaultBindWeightMin = 0.0;
-//        double defaultBindWeightMax = 1.0;
+        Point3d drawSize            = POINT_3D_I;   /* Visual draw saze at GL units*/
+
+        double defaultBindWeightMin = 0.0;          /* Default bind weight for new binds */
+        double defaultBindWeightMax = 0.0;
+
+        string id                   = getUuid();    /* Id of layer */
+        string name                 = "";           /* Name of layer */
 
     public:
 
-        NeuronList neurons;                /* List of neurons */
-        Point3i size = Point3i( 0, 0, 0 );   /* Dimention size */
+        NeuronList* neurons;                        /* List of neurons */
+        Point3i size                = POINT_3I_0;   /* Dimention size */
+
 
 
         /*
@@ -58,22 +78,33 @@ class Layer : public Object
 
 
         /*
-            Destructor
+            Internal destructor
         */
         ~Layer();
 
 
 
         /*
-            Return the log object
+            Creator
         */
-        Log& getLog();
+        static Layer* create
+        (
+            Log&
+        );
+
+
+
+        /*
+            Destructor
+        */
+        void destroy();
+
 
 
         /*
             Add new neuron and return it
         */
-        Layer& addNeuron
+        Layer* addNeuron
         (
             Neuron&
         );
@@ -81,6 +112,7 @@ class Layer : public Object
 
 
         /*
+            Return index by point 3i at layer
         */
         int indexByPos
         (
@@ -96,34 +128,72 @@ class Layer : public Object
 
 
 
-        /*
-            Set dimations size
-        */
-        Layer& setSize
+        Layer* connectTo
         (
-            const Point3i& = POINT_3I_0
+            Layer*
         );
 
 
 
-        Layer& connectTo
+        Layer* disconnectFrom
         (
             Layer&
         );
 
 
 
-        Layer& disconnectFrom
-        (
-            Layer&
-        );
-
-
-
-        Layer& noiseFor
+        Layer* noiseFor
         (
             Layer&,
             double,  /* Minimum noise */
             double   /* Maximum noise */
         );
+
+
+
+        /*
+            Draw layer
+        */
+        Layer* draw
+        (
+            Scene& aScene   /* Scene object */
+        );
+
+
+
+
+        /***********************************************************************
+            Setters and getters
+        */
+
+
+
+        /*
+            Return the log object
+        */
+        Log& getLog();
+
+
+
+        string getName();
+
+        Layer* setName
+        (
+            string
+        );
+
+        string getId();
+
+
+        string getNameOrId();
+
+
+        /*
+            Set dimations size
+        */
+        Layer* setSize
+        (
+            const Point3i& = POINT_3I_0
+        );
+
 };

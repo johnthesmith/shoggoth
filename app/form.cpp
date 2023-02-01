@@ -15,6 +15,73 @@
 using namespace std;
 
 
+/*
+    Constructor
+*/
+Form::Form
+(
+    Log& aLog   /* Log */
+)
+: ScenePayload( aLog ) /* Call parent constructor */
+{
+    layer1 = Layer::create( getLog() ) -> setName( "Screen" ) -> setSize( Point3i( 64, 48, 1 ));
+    layer2 = Layer::create( getLog() ) -> setName( "One" ) -> setSize( Point3i( 50, 50, 1 ));
+    layer3 = Layer::create( getLog() ) -> setName( "Two" ) -> setSize( Point3i( 50, 50, 1 ));
+    layer4 = Layer::create( getLog() ) -> setName( "Three" ) -> setSize( Point3i( 50, 50, 1 ));
+    layer5 = Layer::create( getLog() ) -> setName( "For" ) -> setSize( Point3i( 50, 50, 1 ));
+
+    layer1 -> setTarget( POINT_3D_X * 2 );
+    layer2 -> setTarget( POINT_3D_X * 4 );
+
+    layer1 -> connectTo( layer2 );
+    layer2 -> connectTo( layer3 );
+    layer3 -> connectTo( layer4 );
+    layer4 -> connectTo( layer5 );
+}
+
+
+
+/*
+    Destructor
+*/
+Form::~Form()
+{
+    layer1 -> destroy();
+    layer2 -> destroy();
+    layer3 -> destroy();
+    layer4 -> destroy();
+    layer5 -> destroy();
+}
+
+
+
+/*
+    Creator
+*/
+Form* Form::create
+(
+    Log& aLog
+)
+{
+    return new Form( aLog );
+}
+
+
+
+/*
+    Destructor
+*/
+void Form::destroy()
+{
+    delete this;
+}
+
+
+
+/******************************************************************************
+    Methods
+*/
+
 
 
 /*
@@ -27,6 +94,7 @@ void Form::onActivate
 {
     aScene.setFar( 1000.0 );
 }
+
 
 
 
@@ -58,6 +126,12 @@ void Form::onDraw
     .color( RGBA_RED ).vertex( POINT_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
     .color( RGBA_RED ).vertex( POINT_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
     .end();
+
+
+    /* Draw Layer */
+    layer1 -> draw( aScene );
+    layer2 -> draw( aScene );
+
 
     /* Switch to flat screen */
     applyScreenToScene( aScene );
@@ -186,4 +260,3 @@ void Form::onMouseWheel
         camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
     }
 }
-

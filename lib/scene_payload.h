@@ -35,16 +35,42 @@ class ScenePayload : public Payload
         */
         ScenePayload
         (
-            Log& aLog   /* Log */
-        )
-        : Payload( aLog ) /* Call parent constructor */
-        {};
+            Log& /* Log */
+        );
+
+
+
+        /*
+            Transparent destructor
+        */
+        ~ScenePayload();
+
+
+
+        /*
+            Creator
+        */
+        static ScenePayload* create
+        (
+            Log& aLog
+        );
+
+
+
+        /*
+            Destructor
+        */
+        void destroy();
+
+
+        /**********************************************************************
+        */
 
 
         /*
             Set scene value
         */
-        ScenePayload& setScene
+        ScenePayload* setScene
         (
             Scene&
         );
@@ -61,7 +87,7 @@ class ScenePayload : public Payload
         /*
             Apply camera to scene
         */
-        ScenePayload& applyCameraToScene
+        ScenePayload* applyCameraToScene
         (
             Camera&,    /* Camera object */
             Scene&      /* Scene object */
@@ -72,15 +98,20 @@ class ScenePayload : public Payload
         /*
             Apply screen to scene
         */
-        ScenePayload& applyScreenToScene
+        ScenePayload* applyScreenToScene
         (
             Scene&      /* Scene object */
         );
 
 
 
+        /*****************************************************************************
+            Events
+        */
+
+
         /*
-            On activate event
+            On activate event when payload set to scene
         */
         virtual void onActivate
         (

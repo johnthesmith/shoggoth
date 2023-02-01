@@ -34,6 +34,29 @@ Payload::~Payload()
 
 
 /*
+    Creator
+*/
+Payload* Payload::create
+(
+    Log& aLog
+)
+{
+    return new Payload( aLog );
+}
+
+
+
+/*
+    Destructor
+*/
+void Payload::destroy()
+{
+    delete this;
+}
+
+
+
+/*
     Get scene value
 */
 Log& Payload::getLog()

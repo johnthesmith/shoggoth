@@ -10,15 +10,14 @@
 
 #include "./lib/neuron/neuron.h"
 #include "./lib/neuron/layer.h"
+#include "./lib/utils.h"
 
 /* Application libraryes */
 #include "./app/form.h"
 
 
 
-
 using namespace std;
-
 
 
 
@@ -33,27 +32,11 @@ int main
     log.begin( "Application start" );
 
     auto scene      = Scene( log );
-    auto payload    = Form( log );
-
-    auto layer1     = Layer( log );
-    auto layer2     = Layer( log );
-    auto layer3     = Layer( log );
-    auto layer4     = Layer( log );
-    auto layer5     = Layer( log );
-
-    layer1.setSize( Point3i( 640, 480, 1 ));
-
-    layer2.setSize( Point3i( 50, 50, 1 ));
-    layer3.setSize( Point3i( 50, 50, 1 ));
-    layer4.setSize( Point3i( 50, 50, 1 ));
-    layer5.setSize( Point3i( 50, 50, 1 ));
-
-    layer1.connectTo(layer2);
-    layer2.connectTo(layer3);
-    layer3.connectTo(layer4);
-    layer4.connectTo(layer5);
+    auto payload    = Form::create( log );
 
     scene.init().setPayload( payload ).loop().finit();
+
+    payload -> destroy();
 
     log.end( "Application stop" );
 

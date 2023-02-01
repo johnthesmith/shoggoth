@@ -3,6 +3,7 @@
 /* Local libraries */
 #include "../lib/scene_payload.h"
 #include "../lib/camera.h"
+#include "../lib/neuron/layer.h"
 
 
 
@@ -16,17 +17,50 @@ class Form : public ScenePayload
 
         Camera camera = Camera();   /* Default camera */
 
+        Layer* layer1  = NULL;
+        Layer* layer2  = NULL;
+        Layer* layer3  = NULL;
+        Layer* layer4  = NULL;
+        Layer* layer5  = NULL;
+
     public:
+
         /*
             Constructor
         */
         Form
         (
-            Log& aLog   /* Log */
-        )
-        : ScenePayload( aLog ) /* Call parent constructor */
-        {};
+            Log& /* Log */
+        );
 
+
+
+        /*
+            Destructor
+        */
+        ~Form();
+
+
+
+        /*
+            Creator
+        */
+        static Form* create
+        (
+            Log& aLog
+        );
+
+
+
+        /*
+            Destructor
+        */
+        void destroy();
+
+
+
+        /******************************************************************************
+        */
 
 
         virtual void onActivate
@@ -64,6 +98,9 @@ class Form : public ScenePayload
 
 
 
+        /*
+            Custom on mouse move event
+        */
         virtual void onMouseMove
         (
             Scene&,      /* Scene object */
@@ -71,14 +108,15 @@ class Form : public ScenePayload
         );
 
 
-         /*
-             Mouse left drag
-         */
-         virtual void onLeftDrag
-         (
-             Scene&,             /* Scene object */
-             const Point3d&
-         );
+
+        /*
+            Mouse left drag
+        */
+        virtual void onLeftDrag
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
 
 
 

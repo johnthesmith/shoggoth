@@ -14,15 +14,63 @@ using namespace std;
 
 
 /*
+    Transparent constructor
+*/
+ScenePayload::ScenePayload
+(
+    Log& aLog   /* Log */
+)
+: Payload( aLog ) /* Call parent constructor */
+{
+}
+
+
+
+ScenePayload::~ScenePayload()
+{
+}
+
+
+
+/*
+    Creator
+*/
+ScenePayload* ScenePayload::create
+(
+    Log& aLog
+)
+{
+    return new ScenePayload( aLog );
+}
+
+
+
+/*
+    Destructor
+*/
+void ScenePayload::destroy()
+{
+    delete this;
+}
+
+
+
+/******************************************************************************
+    Methods
+*/
+
+
+
+/*
     Set scene value
 */
-ScenePayload& ScenePayload::setScene
+ScenePayload* ScenePayload::setScene
 (
     Scene& a
 )
 {
     scene = &a;
-    return *this;
+    return this;
 }
 
 
@@ -40,7 +88,7 @@ Scene& ScenePayload::getScene()
 /*
     Apply camera to scene
 */
-ScenePayload& ScenePayload::applyCameraToScene
+ScenePayload* ScenePayload::applyCameraToScene
 (
     Camera& aCamera,    /* Camera object */
     Scene& aScene       /* Scene object */
@@ -49,7 +97,7 @@ ScenePayload& ScenePayload::applyCameraToScene
     Matrix4& m = aScene.getViewMatrixRef();
     aCamera.setViewMatrixTo( m );
     aScene.switchToWorld();
-    return *this;
+    return this;
 }
 
 
@@ -57,14 +105,21 @@ ScenePayload& ScenePayload::applyCameraToScene
 /*
     Apply screen to scene
 */
-ScenePayload& ScenePayload::applyScreenToScene
+ScenePayload* ScenePayload::applyScreenToScene
 (
     Scene& aScene       /* Scene object */
 )
 {
     aScene.switchToScreen();
-    return *this;
+    return this;
 }
+
+
+
+
+/*****************************************************************************
+    Events
+*/
 
 
 
