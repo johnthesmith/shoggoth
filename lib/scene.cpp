@@ -804,18 +804,19 @@ Scene& Scene::drawGreedIdentity()
 */
 Scene& Scene::sendQube
 (
-    Point3d& a
+    Point3d& aCenter,
+    Point3d& aSize
 )
 {
-    auto p1 = Point3d( a ).add( POINT_3D_Z_05 ).sub( POINT_3D_X_05 ).sub( POINT_3D_Y_05 );
-    auto p2 = Point3d( p1 ).add( POINT_3D_Y );
-    auto p3 = Point3d( p2 ).add( POINT_3D_X );
-    auto p4 = Point3d( p1 ).add( POINT_3D_X );
+    auto p1 = Point3d( aCenter ).sub( aSize );
+    auto p2 = Point3d( p1 ).add( Point3d( 0.0, aSize.y * 2, 0.0 ));
+    auto p3 = Point3d( p2 ).add( Point3d( aSize.x * 2, 0.0, 0.0 ));
+    auto p4 = Point3d( p1 ).add( Point3d( aSize.x * 2, 0.0, 0.0 ));
 
-    auto p5 = Point3d( p1 ).sub( POINT_3D_Z );
-    auto p6 = Point3d( p2 ).sub( POINT_3D_Z );
-    auto p7 = Point3d( p3 ).sub( POINT_3D_Z );
-    auto p8 = Point3d( p4 ).sub( POINT_3D_Z );
+    auto p5 = Point3d( p1 ).add( Point3d( 0.0, 0.0, aSize.z * 2 ));
+    auto p6 = Point3d( p2 ).add( Point3d( 0.0, 0.0, aSize.z * 2 ));
+    auto p7 = Point3d( p3 ).add( Point3d( 0.0, 0.0, aSize.z * 2 ));
+    auto p8 = Point3d( p4 ).add( Point3d( 0.0, 0.0, aSize.z * 2));
 
     vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 )
     .vertex( p4 ).vertex( p3 ).vertex( p7 ).vertex( p8 )

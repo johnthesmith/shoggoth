@@ -364,7 +364,7 @@ double Point4d::magn()
 Point4d& Point4d::norm()
 {
     auto m = magn();
-    if( m > EPSILON )
+    if( m > EPSILON_D )
     {
         scale( m );
     }
@@ -458,10 +458,10 @@ double Point4d::cmp
 )
 {
     return
-    abs( x - a.x ) < EPSILON &&
-    abs( y - a.y ) < EPSILON &&
-    abs( z - a.z ) < EPSILON &&
-    abs( w - a.w ) < EPSILON
+    abs( x - a.x ) < EPSILON_D &&
+    abs( y - a.y ) < EPSILON_D &&
+    abs( z - a.z ) < EPSILON_D &&
+    abs( w - a.w ) < EPSILON_D
     ;
 }
 

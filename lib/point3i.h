@@ -22,6 +22,23 @@ struct Point3i
         int = 0,
         int = 0
     );
+
+
+
+    friend Point3i operator-
+    (
+        const Point3i&,  /* First operand */
+        const Point3i&   /* Second operand */
+    );
+
+
+
+    friend Point3i operator-
+    (
+        const Point3i&,  /* First operand */
+        const int        /* Second operand */
+    );
+
 };
 
 

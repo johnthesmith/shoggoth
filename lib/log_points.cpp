@@ -61,6 +61,56 @@ void LogPoints::write
 void LogPoints::write
 (
     Log& aLog,
+    const Point3i& aPoint,
+    const string aTitle
+)
+{
+    aLog
+    .pushColor()
+    .pushAlign()
+
+    .setColor( aLog.colorLabel )
+    .text( "[" )
+    .text( aTitle )
+    .space()
+
+    .setAlign( ALIGN_RIGHT )
+    .setWidth( 12 )
+    .value( aPoint.x )
+
+    .setAlign()
+    .setWidth( 0 )
+    .setColor( aLog.colorLabel )
+    .text( "|" )
+
+    .setAlign( ALIGN_RIGHT )
+    .setWidth( 12 )
+    .value( aPoint.y )
+
+    .setAlign()
+    .setWidth( 0 )
+    .setColor( aLog.colorLabel )
+    .text( "|" )
+
+    .setAlign( ALIGN_RIGHT )
+    .setWidth( 12 )
+    .value( aPoint.z )
+
+    .setAlign()
+    .setWidth( 0 )
+    .setColor( aLog.colorLabel )
+    .text( "]" )
+
+    .popAlign()
+    .popColor()
+    ;
+}
+
+
+
+void LogPoints::write
+(
+    Log& aLog,
     const Point4d& aPoint,
     const string aTitle
 )

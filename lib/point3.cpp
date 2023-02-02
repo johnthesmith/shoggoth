@@ -100,6 +100,44 @@ double operator*
 
 
 /*
+    Operator div r = a / b
+*/
+Point3d operator/
+(
+    const Point3d& a,   /* First operand */
+    const Point3d& b    /* Second operand */
+)
+{
+    return Point3d
+    (
+        abs( a.x - b.x ) < EPSILON_D ? 0 : a.x / b.x,
+        abs( a.y - b.y ) < EPSILON_D ? 0 : a.y / b.y,
+        abs( a.z - b.z ) < EPSILON_D ? 0 : a.z / b.z
+    );
+}
+
+
+
+/*
+    Operator div r = a / b
+*/
+Point3d operator/
+(
+    const Point3d& a,   /* First operand */
+    const Point3i& b    /* Second operand */
+)
+{
+    return Point3d
+    (
+        b.x == 0 ? 0 : a.x / b.x,
+        b.y == 0 ? 0 : a.y / b.y,
+        b.z == 0 ? 0 : a.z / b.z
+    );
+}
+
+
+
+/*
     Operator scale r = a * b
 */
 Point3d operator*
@@ -393,7 +431,7 @@ double Point3d::magn()
 Point3d& Point3d::norm()
 {
     auto m = magn();
-    if( m > EPSILON )
+    if( m > EPSILON_D )
     {
         scale( 1 / m );
     }
@@ -475,9 +513,9 @@ double Point3d::cmp
 )
 {
     return
-    abs( x - a.x ) < EPSILON &&
-    abs( y - a.y ) < EPSILON &&
-    abs( z - a.z ) < EPSILON
+    abs( x - a.x ) < EPSILON_D &&
+    abs( y - a.y ) < EPSILON_D &&
+    abs( z - a.z ) < EPSILON_D
     ;
 }
 

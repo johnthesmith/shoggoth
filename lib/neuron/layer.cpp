@@ -1,4 +1,5 @@
 #include "layer.h"
+#include "../log_points.h"
 #include "neuron.h"
 #include "../point3.h"
 
@@ -137,41 +138,31 @@ Layer* Layer::draw
     Scene& aScene
 )
 {
-    auto c = Rgba( 0.5, 0.7, 1.0, 0.1 );
-
-    aScene
-
-    .polygonMode( POLYGON_FILL )
-
-    .begin( QUAD )
-    .color( c )
-    .sendQube( getTarget() )
-    .end()
-
-    .polygonMode( POLYGON_LINE )
-
-    .begin( QUAD )
-    .color( c )
-    .sendQube( getTarget() )
-    .end()
-
-    ;
-
-
-
+    /* Draw center point */
     glPointSize( 4 );
-    aScene.begin( POINT ).color( Rgba( RGBA_WHITE )).vertex( getTarget()).end();
+    aScene
+    .begin( POINT )
+    .color( Rgba( RGBA_WHITE ))
+    .vertex( getTarget())
+    .end();
+
+    /* Calculate box */
+    auto box = Point3d
+    (
+        drawSize.x == 0 ? ( size.x - 1 ) * neuronDrawSize : drawSize.x,
+        drawSize.y == 0 ? ( size.y - 1 ) * neuronDrawSize : drawSize.y,
+        drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawSize : drawSize.z
+    );
+
+    auto step = box / ( size - POINT_3I_I );
 
 
-    Point3d p = Point3d( getTarget() ).sub( POINT_3D_Z_05 ).sub( POINT_3D_X_05 ).sub( POINT_3D_Y_05 );
-    Point3d r = p;
+    Point3d ege = box * -0.5 + getTarget();
+    Point3d p = ege;
 
-    double sx = 1.0 / size.x;
-    double sy = 1.0 / size.y;
-    double sz = 1.0 / size.z;
 
     aScene.color( Rgba( 1.0, 0.7, 0.0, 0.5 ));
-glPointSize( 2 );
+glPointSize( 6 );
 
     aScene.begin( POINT );
     for( int z = 0; z < size.z; z++ )
@@ -181,18 +172,48 @@ glPointSize( 2 );
             for( int x = 0; x < size.x; x++ )
             {
                 aScene.vertex( p );
-                p.x += sx;
+                p.x += step.x;
             }
-            p.y += sy;
-            p.x = r.x;
+            p.y += step.y;
+            p.x = ege.x;
         }
-        p.z += sz;
-        p.y = r.y;
+        p.z += step.z;
+        p.y = ege.y;
     }
     aScene.end();
 
+    auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
+
+    aScene
+    .polygonMode( POLYGON_LINE )
+    .begin( QUAD )
+    .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
+    .sendQube( getTarget(), outerBox )
+    .end()
+    .polygonMode( POLYGON_FILL )
+    .begin( QUAD )
+    .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
+    .sendQube( getTarget(), outerBox )
+    .end();
+
     return this;
 }
+
+
+
+//    drawSize
+//
+//
+//
+//    .polygonMode( POLYGON_FILL )
+//
+//    .begin( QUAD )
+//    .color( c )
+//    .sendQube( getTarget() )
+//    .end()
+//
+//    ;
+//
 
 
 /***********************************************************************

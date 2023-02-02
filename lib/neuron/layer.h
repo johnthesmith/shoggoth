@@ -52,7 +52,8 @@ class Layer : public Object
         virtual Neuron* newNeuron();                /* Internal method for neuron creation */
 
         /* Settings */
-        Point3d drawSize            = POINT_3D_I;   /* Visual draw saze at GL units*/
+        Point3d drawSize            = POINT_3D_0;   /* Visual draw saze at GL units*/
+        Point3i size                = POINT_3I_0;   /* Dimention size */
 
         double defaultBindWeightMin = 0.0;          /* Default bind weight for new binds */
         double defaultBindWeightMax = 0.0;
@@ -63,8 +64,8 @@ class Layer : public Object
     public:
 
         NeuronList* neurons;                        /* List of neurons */
-        Point3i size                = POINT_3I_0;   /* Dimention size */
-
+        double neuronDrawSize       = 0.1;          /* Neuron size in 3d space */
+        Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
 
 
         /*

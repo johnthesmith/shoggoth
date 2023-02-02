@@ -279,7 +279,8 @@ class Scene : public Result
         */
         Scene& sendQube
         (
-            Point3d&    /* Qube center */
+            Point3d&,    /* Qube center */
+            Point3d&
         );
 
 

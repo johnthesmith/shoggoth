@@ -2,6 +2,7 @@
 
 #include <string>
 #include "point4d.h"
+#include "point3i.h"
 
 using namespace std;
 
@@ -54,10 +55,23 @@ struct Point3d
 
 
 
-    friend double operator*
-    (
+    friend double operator* (
         const Point3d&,  /* First operand */
         const Point3d&   /* Second operand */
+    );
+
+
+
+    friend Point3d operator/ (
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
+    );
+
+
+
+    friend Point3d operator/ (
+        const Point3d&,  /* First operand */
+        const Point3i&   /* Second operand */
     );
 
 

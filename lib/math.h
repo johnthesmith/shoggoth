@@ -1,3 +1,7 @@
 #pragma once
 
-static const double EPSILON = 1e-6;
+static const double EPSILON_D = 1e-9;
+
+
+
+
