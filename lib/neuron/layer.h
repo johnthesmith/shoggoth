@@ -64,7 +64,8 @@ class Layer : public Object
     public:
 
         NeuronList* neurons;                        /* List of neurons */
-        double neuronDrawSize       = 0.1;          /* Neuron size in 3d space */
+        double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
+        double neuronDrawSize       = 2.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
 
 
@@ -195,6 +196,34 @@ class Layer : public Object
         Layer* setSize
         (
             const Point3i& = POINT_3I_0
+        );
+
+
+
+        Layer* setNeuronDrawBox
+        (
+            const double
+        );
+
+
+
+        Layer* setNeuronDrawSize
+        (
+            const double
+        );
+
+
+
+        Layer* setBorderSize
+        (
+            const Point3d&
+        );
+
+
+
+        Layer* setDrawSize
+        (
+            const Point3d&
         );
 
 };

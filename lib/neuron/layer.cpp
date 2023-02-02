@@ -149,9 +149,9 @@ Layer* Layer::draw
     /* Calculate box */
     auto box = Point3d
     (
-        drawSize.x == 0 ? ( size.x - 1 ) * neuronDrawSize : drawSize.x,
-        drawSize.y == 0 ? ( size.y - 1 ) * neuronDrawSize : drawSize.y,
-        drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawSize : drawSize.z
+        drawSize.x == 0 ? ( size.x - 1 ) * neuronDrawBox : drawSize.x,
+        drawSize.y == 0 ? ( size.y - 1 ) * neuronDrawBox : drawSize.y,
+        drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawBox : drawSize.z
     );
 
     auto step = box / ( size - POINT_3I_I );
@@ -160,9 +160,9 @@ Layer* Layer::draw
     Point3d ege = box * -0.5 + getTarget();
     Point3d p = ege;
 
-
     aScene.color( Rgba( 1.0, 0.7, 0.0, 0.5 ));
-glPointSize( 6 );
+
+glPointSize( neuronDrawSize );
 
     aScene.begin( POINT );
     for( int z = 0; z < size.z; z++ )
@@ -317,4 +317,45 @@ string Layer::getNameOrId()
 
 
 
+Layer* Layer::setNeuronDrawBox
+(
+    const double a
+)
+{
+    neuronDrawBox = a;
+    return this;
+}
+
+
+
+Layer* Layer::setNeuronDrawSize
+(
+    const double a
+)
+{
+    neuronDrawSize = a;
+    return this;
+}
+
+
+
+Layer* Layer::setBorderSize
+(
+    const Point3d& a
+)
+{
+    borderSize = a;
+    return this;
+}
+
+
+
+Layer* Layer::setDrawSize
+(
+    const Point3d& a
+)
+{
+    drawSize = a;
+    return this;
+}
 

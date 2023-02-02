@@ -24,11 +24,14 @@ Form::Form
 )
 : ScenePayload( aLog ) /* Call parent constructor */
 {
-    layer1 = Layer::create( getLog() ) -> setName( "Screen" ) -> setSize( Point3i( 50, 50, 1 ));
-    layer2 = Layer::create( getLog() ) -> setName( "One" ) -> setSize( Point3i( 5, 5, 2 ));
+    layer1 = Layer::create( getLog() ) -> setName( "Screen" ) -> setSize( Point3i( 20, 20, 1 ));
+    layer2 = Layer::create( getLog() ) -> setName( "One" ) -> setSize( Point3i( 100, 100, 2 ));
     layer3 = Layer::create( getLog() ) -> setName( "Two" ) -> setSize( Point3i( 60, 60, 1 ));
     layer4 = Layer::create( getLog() ) -> setName( "Three" ) -> setSize( Point3i( 60, 60, 1 ));
-    layer5 = Layer::create( getLog() ) -> setName( "For" ) -> setSize( Point3i( 3, 3, 1 ));
+    layer5 = Layer::create( getLog() ) -> setName( "For" ) -> setSize( Point3i( 1, 10, 1 ));
+
+    layer2 -> setDrawSize( Point3d( 1,1, 1 ));
+    layer5 -> setNeuronDrawSize( 6 );
 
     layer1 -> setTarget( POINT_3D_Z * 2 );
     layer2 -> setTarget( POINT_3D_Z * 4 );
