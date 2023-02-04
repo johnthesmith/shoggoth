@@ -21,6 +21,8 @@ class Object : public Result
         Point3d          target          = POINT_3D_0;  /* Look at far */
         Point3d          top             = POINT_3D_Y;  /* And top on top */
 
+        bool            changed         = false;
+
         bool            eyeLock         = false;    /* Lock eye position */
         bool            topLock         = false;    /* Lock top direction */
         bool            targetLock      = false;    /* Lock target position */
@@ -248,4 +250,16 @@ class Object : public Result
             const Point3d& aBase,    /* Base */
             const double aAngleRad  /* Rotation angle at radians */
         );
+
+
+
+        bool getChanged();
+
+
+
+        Object& setChanged
+        (
+            bool
+        );
+
 };

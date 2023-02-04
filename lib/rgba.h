@@ -10,6 +10,7 @@ struct Rgba
     float alpha = 0.0;
 
 
+
     /*
         Constructor
         Create RGBA component with new
@@ -22,6 +23,8 @@ struct Rgba
         float = 0.0  /* aAlpha */
     );
 
+
+
     /* Set vector coordinates */
     Rgba& set
     (
@@ -31,11 +34,15 @@ struct Rgba
         float = 0.0  /* aAlpha */
     );
 
+
+
     /* Set Red component */
     Rgba& setRed
     (
         float = 0.0 /* Red value */
     );
+
+
 
     /* Set Green component */
     Rgba& setGreen
@@ -43,16 +50,34 @@ struct Rgba
         float = 0.0 /* Green value */
     );
 
+
+
     /* Set Blue component */
     Rgba& setBlue
     (
         float = 0.0 /* Blue value */
     );
 
+
+
     /* Set Alpha component */
     Rgba& setAlpha
     (
         float = 0.0 /* Alpha value */
+    );
+
+
+
+    Rgba& Temperatura
+    (
+        double
+    );
+
+
+
+    Rgba& Landscape
+    (
+        double
     );
 };
 

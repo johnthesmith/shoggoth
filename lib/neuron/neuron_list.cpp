@@ -1,48 +1,23 @@
+#include <iostream>
+#include <cstring>
 #include "neuron_list.h"
 #include "neuron_null.h"
 
-
-
-int NeuronList::getSize()
-{
-    return items.size();
-}
-
-
-
-/*
-    Add exists neuron
-*/
-NeuronList& NeuronList::add
-(
-    Neuron& a /* Parent neuron */
-)
-{
-    items.push_back( &a );
-    return *this;
-}
+using namespace std;
 
 
 
 /*
     Add neurons from argument list to this list
 */
-NeuronList& NeuronList::add
+NeuronList* NeuronList::add
 (
-    NeuronList& a
+    NeuronList* a
 )
 {
-    auto currentSize = getSize();
-    auto sourceSize = a.getSize();
-    auto newSize = currentSize + sourceSize;
+    Heap::add(( Heap* ) a );
 
-    resize( newSize );
-
-    for( int i = 0; i < sourceSize; i++ )
-    {
-        setByIndex( currentSize + i, a.getByIndex( i ));
-    }
-    return *this;
+    return this;
 }
 
 
@@ -51,21 +26,12 @@ NeuronList& NeuronList::add
 /*
     Return index by neuron
 */
-int NeuronList::indexByNeuron
+int NeuronList::indexBy
 (
-    Neuron& a
+    Neuron* a
 )
 {
-    int r = -1;
-    int c = items.size();
-    for( int i = 0; i < c && r != -1; i++ )
-    {
-        if( items[ i ] == &a )
-        {
-            r = i;
-        }
-    }
-    return 0;
+    return Heap::indexBy(( void* ) a );
 }
 
 
@@ -79,69 +45,35 @@ Neuron* NeuronList::getByIndex
     int a
 )
 {
-    if( a > 0 && a < items.size() )
-    {
-        return items[ a ];
-    }
-    else
-    {
-        return &NEURON_NULL;
-    }
+    return ( Neuron* )Heap::getByIndex( a );
 }
 
 
 
 
 /*
-    Return index by neuron
+    Set value by index
 */
-NeuronList& NeuronList::setByIndex
+NeuronList* NeuronList::setByIndex
 (
     int aIndex,
     Neuron* aNeuron
 )
 {
-    if( aIndex > 0 && aIndex < items.size() )
-    {
-        items[ aIndex ] = aNeuron;
-    }
-    return *this;
-}
-
-
-
-
-/*
-    Return neuron by name
-*/
-Neuron& NeuronList::neuronByName
-(
-    const string a
-)
-{
-    Neuron* result = &NEURON_NULL;
-    int c = items.size();
-    for( int i = 0; i < c && result == &NEURON_NULL; i++ )
-    {
-        if( items[ i ] -> getName() == a )
-        {
-            result = items[ i ];
-        }
-    }
-    return *result;
+    Heap::setByIndex(aIndex, ( void* ) aNeuron );
+    return this;
 }
 
 
 
 /*
     Resize
-    Warning!!! this method can not call directly.
 */
-NeuronList& NeuronList::resize
+NeuronList* NeuronList::resize
 (
     int a
 )
 {
-    items.resize( a, &NEURON_NULL );
-    return *this;
+    Heap::resize( a );
+    return this;
 }

@@ -186,6 +186,8 @@ class Scene : public Result
         );
 
 
+
+
         /******************************************************************************
             Services
         */
@@ -255,6 +257,18 @@ class Scene : public Result
         );
 
 
+        /*
+            Set pointSize
+        */
+        Scene& setPointSize
+        (
+            const float     /* Point size at pixels */
+        );
+
+
+
+        /**********************************************************************
+        */
 
         static string openglErrorToString( GLenum );
 

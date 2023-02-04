@@ -1,29 +1,31 @@
 #pragma once
 
-#include <string>
-#include <vector>
 
-#include "../point3.h"
-#include "../point3i.h"
-#include "../object.h"
-#include "../heap.h"
 
 using namespace std;
 
 
 
-class Neuron;
-
-
-
-struct NeuronList : public Heap
+struct Heap
 {
+    void** items = NULL;
+    int count = 0;
+
+
+
+    /*
+        Return Neurons list count elements
+    */
+    virtual int getCount();
+
+
+
     /*
         Add neurons from argument list to this list
     */
-    NeuronList* add
+    Heap* add
     (
-        NeuronList*
+        Heap*
     );
 
 
@@ -33,7 +35,7 @@ struct NeuronList : public Heap
     */
     int indexBy
     (
-        Neuron*
+        void*
     );
 
 
@@ -41,7 +43,7 @@ struct NeuronList : public Heap
     /*
         Return neuron by index
     */
-    Neuron* getByIndex
+    void* getByIndex
     (
         int
     );
@@ -51,19 +53,18 @@ struct NeuronList : public Heap
     /*
         Return neuron by index
     */
-    NeuronList* setByIndex
+    Heap* setByIndex
     (
         int,
-        Neuron*
+        void*
     );
 
 
 
     /*
         Resize
-        Warning!!! this method can not call directly.
     */
-    NeuronList* resize
+    Heap* resize
     (
         int
     );

@@ -274,12 +274,21 @@ Scene& Scene::drawEvent()
         if( viewport.width > 0 && viewport.height > 0 && far != near )
         {
             /* Set opengl viewport default */
-            glViewport( viewport.left, viewport.top, viewport.width, viewport.height );
-
+            glViewport
+            (
+                viewport.left,
+                viewport.top,
+                viewport.width,
+                viewport.height
+            );
 
 //glEnable(GL_DEPTH_TEST);
-//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-//
+//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//glEnable( GL_BLEND);
+//glEnable( GL_LINE_SMOOTH);
+//glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 
             /* Pulling event for keyboard and mouse*/
@@ -704,6 +713,20 @@ Scene& Scene::vertex
 )
 {
     glVertex3dv( (GLdouble*)&a );
+    return *this;
+}
+
+
+
+/*
+    Set pointSize
+*/
+Scene& Scene::setPointSize
+(
+    const float a
+)
+{
+    glPointSize( a );
     return *this;
 }
 

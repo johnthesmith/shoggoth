@@ -17,6 +17,7 @@
 #include "../log.h"
 #include "../point3.h"
 #include "../point3i.h"
+#include "../points3d.h"
 #include "../object.h"
 
 
@@ -60,13 +61,17 @@ class Layer : public Object
 
         string id                   = getUuid();    /* Id of layer */
         string name                 = "";           /* Name of layer */
+        bool pointsRecalc           = true;         /* Recalculate points for Neurons */
 
     public:
 
         NeuronList* neurons;                        /* List of neurons */
+        Points3d* points;                           /* List of neurons points */
+
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
-        double neuronDrawSize       = 2.0;          /* Neuron size in scerrn pixels */
+        double neuronDrawSize       = 3.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
+
 
 
         /*
@@ -100,16 +105,6 @@ class Layer : public Object
             Destructor
         */
         void destroy();
-
-
-
-        /*
-            Add new neuron and return it
-        */
-        Layer* addNeuron
-        (
-            Neuron&
-        );
 
 
 
@@ -150,6 +145,10 @@ class Layer : public Object
             double,  /* Minimum noise */
             double   /* Maximum noise */
         );
+
+
+
+        Layer* neuronPointsCalc();
 
 
 
@@ -226,4 +225,10 @@ class Layer : public Object
             const Point3d&
         );
 
+
+
+        Layer* setPointsRecalc
+        (
+            bool a
+        );
 };

@@ -38,6 +38,7 @@ Object& Object::setEye
 )
 {
     eye = a;
+    changed = true;
     return *this;
 }
 
@@ -80,6 +81,7 @@ Object& Object::setTop
 )
 {
     top = a;
+    changed = true;
     return *this;
 }
 
@@ -122,6 +124,7 @@ Object& Object::setTarget
 )
 {
     target = a;
+    changed = true;
     return *this;
 }
 
@@ -388,5 +391,23 @@ Object& Object::rotateTarget
 )
 {
 //    target - eye
+    return *this;
+}
+
+
+
+bool Object::getChanged()
+{
+    return changed;
+}
+
+
+
+Object& Object::setChanged
+(
+    bool a
+)
+{
+    changed = a;
     return *this;
 }

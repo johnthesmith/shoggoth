@@ -27,7 +27,7 @@ class Layer;
 */
 struct Neuron
 {
-    Layer* layer = NULL;        /* Neuron layer */
+    Layer* layer   = NULL;        /* Neuron layer */
 
     NeuronList children;        /* List of children */
     vector<double> weights;     /* Binds weights for children */
@@ -52,37 +52,16 @@ struct Neuron
 
 
 
-    /*
-        this -> parent
-    */
-    Neuron& addParent
-    (
-        Neuron&,    /* Parent neuron */
-        double = 0  /* Weight */
-    );
-
-
-
-    /*
-        child -> this
-    */
-    Neuron& addChild
-    (
-        Neuron&,    /* Child neuron */
-        double = 0  /* Weight */
-    );
-
-
-
 
     /*
         Add all neurons from NeuronList to Children of this neuron
     */
     Neuron& addChildren
     (
-        NeuronList&,    /* Child neuron list */
+        NeuronList*,    /* Child neuron list */
         double = 0      /* Weight */
     );
+
 
 
 
