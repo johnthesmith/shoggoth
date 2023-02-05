@@ -63,10 +63,10 @@ class Layer : public Object
         string name                 = "";           /* Name of layer */
         bool pointsRecalc           = true;         /* Recalculate points for Neurons */
 
-        bool drawBox                = true;
-        bool drawNeurons            = true;
-        bool drawChildrenLink       = true;
-        bool drawParentsLink        = true;
+        bool showBox                = true;
+        bool showNeurons            = true;
+        bool showChildrenLink       = true;
+        bool showParentsLink        = true;
 
     public:
 

@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cstring>
+#include "layer_list.h"
+
+
+
+using namespace std;
+
+
+
+/*
+    Add Layers from argument list to this list
+*/
+LayerList* LayerList::add
+(
+    LayerList* a
+)
+{
+    Heap::add(( Heap* ) a );
+
+    return this;
+}
+
+
+
+
+/*
+    Return index by Layer
+*/
+int LayerList::indexBy
+(
+    Layer* a
+)
+{
+    return Heap::indexBy(( void* ) a );
+}
+
+
+
+
+/*
+    Return index by Layer
+*/
+Layer* LayerList::getByIndex
+(
+    int a
+)
+{
+    return ( Layer* )Heap::getByIndex( a );
+}
+
+
+
+
+/*
+    Set value by index
+*/
+LayerList* LayerList::setByIndex
+(
+    int aIndex,
+    Layer* aLayer
+)
+{
+    Heap::setByIndex(aIndex, ( void* ) aLayer );
+    return this;
+}
+
+
+
+/*
+    Resize
+*/
+LayerList* LayerList::resize
+(
+    int a
+)
+{
+    Heap::resize( a );
+    return this;
+}
