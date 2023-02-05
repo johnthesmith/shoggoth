@@ -91,6 +91,20 @@ struct Point3d
     );
 
 
+    friend bool operator==
+    (
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
+    );
+
+
+    friend bool operator!=
+    (
+        const Point3d&,  /* First operand */
+        const Point3d&   /* Second operand */
+    );
+
+
 
     /*
         Return vector

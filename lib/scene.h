@@ -67,7 +67,8 @@ class Scene : public Result
         short           leftClickCount      = 0;
         short           rightClickCount     = 0;
         short           middleClickCount    = 0;
-        bool            mouseLeftDrag       = 0;
+        bool            mouseLeftDrag       = false;
+        bool            mouseRightDrag      = false;
 
         Point3d         mouseCurrent        = POINT_3D_0;  /* Current mouse cursor position */
         Point3d         mouseLast           = POINT_3D_0;  /* Last mouse cursot position */
@@ -258,11 +259,21 @@ class Scene : public Result
 
 
         /*
-            Set pointSize
+            Set size of point
         */
         Scene& setPointSize
         (
-            const float     /* Point size at pixels */
+            const float /* Point size at pixels */
+        );
+
+
+
+        /*
+            Set width of the line
+        */
+        Scene& setLineWidth
+        (
+            const float /* Point size at pixels */
         );
 
 
@@ -296,6 +307,18 @@ class Scene : public Result
             Point3d&,    /* Qube center */
             Point3d&
         );
+
+
+
+        /*
+            Draw qube
+        */
+        Scene& sendRect
+        (
+            Point3d&,   /* left top */
+            Point3d&    /* bottom right */
+        );
+
 
 
         Scene& polygonMode

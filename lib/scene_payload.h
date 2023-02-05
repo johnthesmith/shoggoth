@@ -340,6 +340,39 @@ class ScenePayload : public Payload
 
 
         /*
+            Mouse right drag begin
+        */
+        virtual void onRightDragBegin
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+        /*
+            Mouse right drag end
+        */
+        virtual void onRightDragEnd
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+        /*
+            Mouse right drag
+        */
+        virtual void onRightDrag
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+        /*
             Keyboard up event
         */
         virtual void onKeyUp

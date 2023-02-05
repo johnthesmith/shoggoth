@@ -12,24 +12,6 @@ using namespace std;
 */
 
 
-Neuron& Neuron::setLayer
-(
-    Layer* a
-)
-{
-    layer = a;
-    return *this;
-}
-
-
-
-Layer& Neuron::getLayer()
-{
-    return *layer;
-}
-
-
-
 
 /*
     Return null neuron
@@ -101,3 +83,48 @@ Neuron& Neuron::draw()
 {
     return *this;
 }
+
+
+
+
+/******************************************************************************
+    Setters and getters
+*/
+
+
+Neuron& Neuron::setLayer
+(
+    Layer* a
+)
+{
+    layer = a;
+    return *this;
+}
+
+
+
+Layer& Neuron::getLayer()
+{
+    return *layer;
+}
+
+
+
+Neuron& Neuron::setValue
+(
+    double a
+)
+{
+    value = a;
+    return *this;
+}
+
+
+
+double Neuron::getValue()
+{
+    return value;
+}
+
+
+

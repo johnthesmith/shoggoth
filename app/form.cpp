@@ -28,19 +28,22 @@ Form::Form
     layer2 = Layer::create( getLog() ) -> setName( "One" )      -> setSize( Point3i( 10, 10, 1 ));
     layer3 = Layer::create( getLog() ) -> setName( "Two" )      -> setSize( Point3i( 5, 10, 1 ));
     layer4 = Layer::create( getLog() ) -> setName( "Three" )    -> setSize( Point3i( 20, 20, 1 ));
-    layer5 = Layer::create( getLog() ) -> setName( "For" )      -> setSize( Point3i( 1, 10, 1 ));
+    layer5 = Layer::create( getLog() ) -> setName( "Result1" )      -> setSize( Point3i( 1, 10, 1 ));
+    layer6 = Layer::create( getLog() ) -> setName( "Result2" )      -> setSize( Point3i( 1, 10, 1 ));
 
 
     layer1 -> setTarget( POINT_3D_Z * 0 );
     layer2 -> setTarget( POINT_3D_Z * 1 );
     layer3 -> setTarget( POINT_3D_Z * 2 );
     layer4 -> setTarget( POINT_3D_Z * 3 );
-    layer5 -> setTarget( POINT_3D_Z * 4 );
+    layer5 -> setTarget( POINT_3D_Z * 4 - POINT_3D_X );
+    layer6 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
 
     layer1 -> connectTo( layer2 );
     layer2 -> connectTo( layer3 );
     layer3 -> connectTo( layer4 );
     layer4 -> connectTo( layer5 );
+//    layer4 -> connectTo( layer6 );
 }
 
 
@@ -52,9 +55,10 @@ Form::~Form()
 {
     layer1 -> destroy();
     layer2 -> destroy();
-//    layer3 -> destroy();
-//    layer4 -> destroy();
-//    layer5 -> destroy();
+    layer3 -> destroy();
+    layer4 -> destroy();
+    layer5 -> destroy();
+    layer6 -> destroy();
 }
 
 
@@ -138,16 +142,26 @@ void Form::onDraw
     layer3 -> draw( aScene );
     layer4 -> draw( aScene );
     layer5 -> draw( aScene );
+    layer6 -> draw( aScene );
 
 
     /* Switch to flat screen */
     applyScreenToScene( aScene );
 
-//    aScene
-//    .begin( LINE )
-//    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
-//    .color( RGBA_GREEN ).vertex( POINT_3D_0 ).vertex( aScene.getMouseCurrentScreen() )
-//    .end();
+    if( selectTopLeft != selectBottomRight )
+    {
+        aScene
+        .color( interfaceColor )
+        .setLineWidth( 1 )
+        .begin( LOOP )
+        .sendRect( selectTopLeft, selectBottomRight )
+        .end()
+        .color( interfaceColorDark )
+        .setLineWidth( 2 )
+        .begin( QUAD )
+        .sendRect( selectTopLeft, selectBottomRight )
+        .end();
+    }
 }
 
 
@@ -214,9 +228,53 @@ void Form::onMouseMove
 
 
 /*
+    Mouse left drag begin
+*/
+void Form::onLeftDragBegin
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    selectTopLeft = aScene.getMouseCurrentScreen();
+    selectBottomRight = selectTopLeft;
+}
+
+
+
+/*
+    Mouse left drag begin
+*/
+void Form::onLeftDragEnd
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    selectTopLeft = POINT_3D_0;
+    selectBottomRight = POINT_3D_0;
+}
+
+
+
+/*
     Mouse left drag
 */
 void Form::onLeftDrag
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    selectBottomRight = aScene.getMouseCurrentScreen();
+}
+
+
+
+/*
+    Mouse rigth drag
+*/
+void Form::onRightDrag
 (
     Scene& aScene,      /* Scene object */
     const Point3d& aPoint

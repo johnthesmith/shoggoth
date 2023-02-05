@@ -38,21 +38,6 @@ struct Neuron
 
 
 
-    Neuron& setLayer
-    (
-        Layer*
-    );
-
-
-
-    /*
-        Return neuron layer
-    */
-    Layer& getLayer();
-
-
-
-
     /*
         Add all neurons from NeuronList to Children of this neuron
     */
@@ -93,5 +78,36 @@ struct Neuron
         Draw neuron
     */
     virtual Neuron& draw();
+
+
+
+    /**************************************************************************
+        Setters and getters
+    */
+
+    Neuron& setLayer
+    (
+        Layer*
+    );
+
+
+
+    /*
+        Return neuron layer
+    */
+    Layer& getLayer();
+
+
+    Neuron& setValue
+    (
+        double
+    );
+
+
+
+    double getValue();
+
+
 };
+
 

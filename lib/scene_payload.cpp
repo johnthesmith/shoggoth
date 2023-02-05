@@ -526,6 +526,66 @@ void ScenePayload::onLeftDrag
 
 
 
+/*
+    Mouse right drag begin
+*/
+void ScenePayload::onRightDragBegin
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse right drag begin" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
+/*
+    Mouse left drag end
+*/
+void ScenePayload::onRightDragEnd
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse right drag end" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
+/*
+    Mouse left drag
+*/
+void ScenePayload::onRightDrag
+(
+    Scene& aScene,      /* Scene object */
+    const Point3d& aPoint
+)
+{
+    getLog()
+    .trace( "Mouse right drag" )
+    .prm( "x", aPoint.x )
+    .prm( "y", aPoint.y )
+    .prm( "left shift", aScene.isKey( KEY_LEFT_SHIFT ))
+    .prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
+    .prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
+    .lineEnd();
+}
+
+
 
 /*
     Keyboard up event

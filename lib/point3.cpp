@@ -176,6 +176,41 @@ Point3d operator%
 
 
 /*
+    Operator equal for points
+*/
+bool operator==
+(
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
+)
+{
+    return
+    abs( a.x - b.x ) <= EPSILON_D ||
+    abs( a.y - b.y ) <= EPSILON_D ||
+    abs( a.z - b.z ) <= EPSILON_D;
+}
+
+
+
+
+/*
+    Operator equal for points
+*/
+bool operator!=
+(
+    const Point3d& a,    /* First operand */
+    const Point3d& b     /* Second operand */
+)
+{
+    return
+    abs( a.x - b.x ) > EPSILON_D ||
+    abs( a.y - b.y ) > EPSILON_D ||
+    abs( a.z - b.z ) > EPSILON_D;
+}
+
+
+
+/*
     Cross vproduct
 */
 Point3d& Point3d::cross

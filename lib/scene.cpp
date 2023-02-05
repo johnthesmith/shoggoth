@@ -473,6 +473,12 @@ Scene& Scene::mouseEvent
                 {
                     case 0: /* Right button Up */
                         payload -> onRightUp( *this, mouseCurrent, keyMode );
+                        if( mouseRightDrag )
+                        {
+                            /* Left mouse drag end */
+                            mouseRightDrag = false;
+                            payload -> onRightDragEnd( *this, mouseCurrent );
+                        }
                     break;
                     case 1: /* Right button Down */
                         payload -> onRightDown( *this, mouseCurrent, keyMode );
@@ -577,7 +583,7 @@ Scene& Scene::mouseMoveEvent
         mouseLast = mouseCurrent;
         mouseCurrent.set( aX, aY, 0 );
 
-        /* Mouse drag control */
+        /* Mouse left drag control */
         if( isMouseButton( MB_LEFT ) )
         {
             if( mouseLeftDrag )
@@ -590,6 +596,22 @@ Scene& Scene::mouseMoveEvent
                 mouseLeftDrag = true;
             }
         }
+
+        /* Mouse right drag control */
+        if( isMouseButton( MB_RIGHT ) )
+        {
+            if( mouseRightDrag )
+            {
+                payload -> onRightDrag( *this, Point3d( aX, aY ));
+            }
+            else
+            {
+                payload -> onRightDragBegin( *this, Point3d( aX, aY ));
+                mouseRightDrag = true;
+            }
+        }
+
+        /* Nouse move event */
         payload -> onMouseMove( *this, Point3d( aX, aY ));
     }
     return *this;
@@ -719,7 +741,7 @@ Scene& Scene::vertex
 
 
 /*
-    Set pointSize
+    Set size of point
 */
 Scene& Scene::setPointSize
 (
@@ -727,6 +749,20 @@ Scene& Scene::setPointSize
 )
 {
     glPointSize( a );
+    return *this;
+}
+
+
+
+/*
+    Set
+*/
+Scene& Scene::setLineWidth
+(
+    const float a
+)
+{
+    glLineWidth( a );
     return *this;
 }
 
@@ -852,6 +888,26 @@ Scene& Scene::sendQube
 }
 
 
+
+/*
+    Draw qube
+*/
+Scene& Scene::sendRect
+(
+    Point3d& aTopLeft,
+    Point3d& aBottomRight
+)
+{
+    double mx = min( aTopLeft.x, aBottomRight.x );
+    double my = min( aTopLeft.y, aBottomRight.y );
+    double w = abs( aTopLeft.x - aBottomRight.x );
+    double h = abs( aTopLeft.y - aBottomRight.y );
+    vertex( Point3d( mx, my, 0));
+    vertex( Point3d( mx + w, my, 0));
+    vertex( Point3d( mx + w, my + h, 0));
+    vertex( Point3d( mx, my + h, 0));
+    return *this;
+}
 
 
 /*

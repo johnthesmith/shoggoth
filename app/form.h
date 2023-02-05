@@ -22,6 +22,13 @@ class Form : public ScenePayload
         Layer* layer3  = NULL;
         Layer* layer4  = NULL;
         Layer* layer5  = NULL;
+        Layer* layer6  = NULL;
+
+        Point3d selectTopLeft = POINT_3D_0;
+        Point3d selectBottomRight = POINT_3D_0;
+
+        Rgba interfaceColor = Rgba( 0.5, 1.0, 0.5, 0.7 );
+        Rgba interfaceColorDark = Rgba( 0.1, 0.4, 0.1, 0.7 );
 
     public:
 
@@ -109,10 +116,48 @@ class Form : public ScenePayload
 
 
 
+
+        /*
+            Mouse left drag begin
+            Set left-top corner of selection box
+        */
+        virtual void onLeftDragBegin
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+        /*
+            Mouse left drag end
+            End selection box
+        */
+        virtual void onLeftDragEnd
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+
+
         /*
             Mouse left drag
         */
         virtual void onLeftDrag
+        (
+            Scene&,             /* Scene object */
+            const Point3d&
+        );
+
+
+
+        /*
+            Mouse right drag
+        */
+        virtual void onRightDrag
         (
             Scene&,             /* Scene object */
             const Point3d&

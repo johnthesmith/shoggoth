@@ -1,7 +1,10 @@
-#include "layer.h"
 #include "../log_points.h"
-#include "neuron.h"
 #include "../point3.h"
+#include "../rnd.h"
+
+#include "layer.h"
+#include "neuron.h"
+
 
 
 
@@ -19,6 +22,7 @@ Layer::Layer
     neurons = new NeuronList();
     /* Create neurons point list */
     points = new Points3d();
+    id = Rnd::getUuid();
 }
 
 
@@ -77,10 +81,14 @@ int Layer::indexByPos
 
 
 
+/*
+    New neoron method
+*/
 Neuron* Layer::newNeuron()
 {
     Neuron* result = new Neuron();
     result -> setLayer( this );
+    result -> setValue( Rnd::get( 0.0, 1.0 ) );
     return result;
 }
 
@@ -106,13 +114,10 @@ Layer* Layer::connectTo
     for( int i = 0; i < si; i++ )
     {
         Neuron* iNeuron = neurons -> getByIndex( i );
-        if( iNeuron )
-        {
-            iNeuron -> addChildren( a -> neurons, 0 ); /* TODO rnd min max */
-        }
+        iNeuron -> addChildren( a -> neurons, 0 ); /* TODO rnd min max */
     }
 
-    /* Create parnet binds */
+//    /* Create parnet binds */
 //    auto sj = a -> neurons -> getCount();
 //    for( int j = 0; j < sj; j++ )
 //    {
@@ -131,6 +136,8 @@ Layer* Layer::neuronPointsCalc()
 {
     if( pointsRecalc )
     {
+        getLog().begin( "Calculate neurons position" ).prm( "Layer", getNameOrId() );
+
         /* Calculate box */
         auto box = Point3d
         (
@@ -166,7 +173,13 @@ Layer* Layer::neuronPointsCalc()
             p.z += step.z;
             p.y = ege.y;
         }
+
+        /* */
+        setChanged( false );
+
+        getLog().end();
     }
+
 
     return this;
 }
@@ -184,8 +197,8 @@ Layer* Layer::draw
     }
 
     /* Draw center point */
-    glPointSize( 4 );
     aScene
+    .setPointSize( 4 )
     .begin( POINT )
     .color( Rgba( RGBA_WHITE ))
     .vertex( getTarget())
@@ -208,8 +221,6 @@ Layer* Layer::draw
 
     if( pointsRecalc )
     {
-        aScene.color( Rgba( 1.0, 0.7, 0.0, 0.5 ));
-
         int currentSize = neurons -> getCount();
 
         /* Draw nurons point */
@@ -219,6 +230,7 @@ Layer* Layer::draw
         for( int i = 0; i < currentSize; i++ )
         {
             Neuron* n = neurons -> getByIndex( i );
+            aScene.color( Rgba( 1.0, 0.7, 0.0, n -> getValue() ));
             aScene.vertex( points -> items[ i ] );
         }
         aScene.end();
@@ -243,8 +255,6 @@ Layer* Layer::draw
         aScene.end();
 
     }
-
-
 
 
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
@@ -318,6 +328,7 @@ Layer* Layer::setSize
         neurons -> resize( newSize );
         points -> resize( newSize );
 
+        /* Neurons create */
         for( int i = currentSize; i < newSize; i++ )
         {
             auto nNeuron = newNeuron();

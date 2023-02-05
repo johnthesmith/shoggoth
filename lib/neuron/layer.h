@@ -59,9 +59,14 @@ class Layer : public Object
         double defaultBindWeightMin = 0.0;          /* Default bind weight for new binds */
         double defaultBindWeightMax = 0.0;
 
-        string id                   = getUuid();    /* Id of layer */
+        string id                   = "";           /* Id of layer */
         string name                 = "";           /* Name of layer */
         bool pointsRecalc           = true;         /* Recalculate points for Neurons */
+
+        bool drawBox                = true;
+        bool drawNeurons            = true;
+        bool drawChildrenLink       = true;
+        bool drawParentsLink        = true;
 
     public:
 
@@ -69,7 +74,7 @@ class Layer : public Object
         Points3d* points;                           /* List of neurons points */
 
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
-        double neuronDrawSize       = 3.0;          /* Neuron size in scerrn pixels */
+        double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
 
 
