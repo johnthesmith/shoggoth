@@ -23,12 +23,15 @@ class Form : public ScenePayload
         Layer* layer4  = NULL;
         Layer* layer5  = NULL;
         Layer* layer6  = NULL;
+        Layer* layer7  = NULL;
+        Layer* layer8  = NULL;
+        Layer* layer9  = NULL;
 
         Point3d selectTopLeft = POINT_3D_0;
         Point3d selectBottomRight = POINT_3D_0;
 
-        Rgba interfaceColor = Rgba( 0.5, 1.0, 0.5, 0.7 );
-        Rgba interfaceColorDark = Rgba( 0.1, 0.4, 0.1, 0.7 );
+        Rgba interfaceColor = Rgba( 0.4, 1.0, 0.8, 0.7 );
+        Rgba interfaceColorDark = Rgba( 0.1, 0.4, 0.2, 0.7 );
 
     public:
 
@@ -73,6 +76,13 @@ class Form : public ScenePayload
         virtual void onActivate
         (
             Scene&  /* Scene object */
+        );
+
+
+
+        virtual void onCalc
+        (
+            Scene&  /* Scene calculate */
         );
 
 

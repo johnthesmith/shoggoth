@@ -1,4 +1,5 @@
 #include "neuron.h"
+#include "layer.h"
 
 
 using namespace std;
@@ -13,6 +14,28 @@ using namespace std;
 
 
 
+Neuron::Neuron
+(
+    Layer* aLayer,  /* Layer object */
+    int aLayerIndex /* Index in layer */
+)
+{
+    layer = aLayer;
+    layerIndex = aLayerIndex;
+    parentBinds = new BindList();
+    childrenBinds = new BindList();
+}
+
+
+
+Neuron::~Neuron()
+{
+    delete( childrenBinds );
+    delete( parentBinds );
+}
+
+
+
 /*
     Return null neuron
 */
@@ -20,43 +43,6 @@ bool Neuron::isNull()
 {
     return false;
 }
-
-
-
-/*
-    Add all neurons from NeuronList to Children of this neuron
-*/
-Neuron& Neuron::addChildren
-(
-    NeuronList* aList,  /* Child neuron list */
-    double      aWeight /* Weight */
-)
-{
-    /* Add childrens */
-    children.add( aList );
-    /* Add weights */
-//    weights.resize( weights.size() + aList.getCount(), aWeight );
-    return *this;
-}
-
-
-
-
-/*
-    Add all neurons from NeuronList to Partnts of this neuron
-*/
-Neuron& Neuron::addParents
-(
-    NeuronList& aList      /* Parents neuron list */
-)
-{
-    /* Add parents */
-    parents.add( &aList );
-    return *this;
-}
-
-
-
 
 
 
@@ -92,20 +78,16 @@ Neuron& Neuron::draw()
 */
 
 
-Neuron& Neuron::setLayer
-(
-    Layer* a
-)
+Layer& Neuron::getLayer()
 {
-    layer = a;
-    return *this;
+    return *layer;
 }
 
 
 
-Layer& Neuron::getLayer()
+int Neuron::getLayerIndex()
 {
-    return *layer;
+    return layerIndex;
 }
 
 
@@ -128,3 +110,10 @@ double Neuron::getValue()
 
 
 
+Point3d& Neuron::getWorldPoint()
+{
+    return
+    layer -> points -> getCount() > layerIndex
+    ? layer -> points -> items[ layerIndex ]
+    : POINT_3D_0;
+}

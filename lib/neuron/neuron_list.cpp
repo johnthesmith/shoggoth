@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstring>
 #include "neuron_list.h"
-#include "neuron_null.h"
 
 using namespace std;
 

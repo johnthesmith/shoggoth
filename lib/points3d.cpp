@@ -32,8 +32,8 @@ Points3d* Points3d::add
 
     memcpy
     (
-        a -> items,
         &items[ currentSize ],
+        a -> items,
         sourceSize * sizeof( Point3d )
     );
 
@@ -122,8 +122,8 @@ Points3d* Points3d::resize
             /* Copy */
             memcpy
             (
-                items,
-                newItems,
+                newItems,           /* Destination */
+                items,              /* Source */
                 min( currentSize, a ) * sizeof( Point3d )
             );
         }

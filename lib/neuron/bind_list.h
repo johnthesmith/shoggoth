@@ -1,31 +1,31 @@
 #pragma once
 
+#include <cstring>
+#include "bind.h"
+#include "neuron_list.h"
+#include "../heap.h"
+
+/*
+    List of Bind
+*/
 
 
 using namespace std;
 
 
 
-struct Heap
+struct BindList : public Heap
 {
-    void** items = NULL;
     int count = 0;
 
 
 
     /*
-        Return Neurons list count elements
+        Add points from argument list to this list
     */
-    virtual int getCount();
-
-
-
-    /*
-        Add neurons from argument list to this list
-    */
-    Heap* add
+    BindList* add
     (
-        Heap*
+        BindList*
     );
 
 
@@ -35,7 +35,7 @@ struct Heap
     */
     int indexBy
     (
-        void*
+        Bind*
     );
 
 
@@ -43,7 +43,7 @@ struct Heap
     /*
         Return neuron by index
     */
-    void* getByIndex
+    Bind* getByIndex
     (
         int
     );
@@ -53,10 +53,10 @@ struct Heap
     /*
         Return neuron by index
     */
-    Heap* setByIndex
+    BindList* setByIndex
     (
         int,
-        void*
+        Bind*
     );
 
 
@@ -64,7 +64,7 @@ struct Heap
     /*
         Resize
     */
-    Heap* resize
+    BindList* resize
     (
         int
     );
@@ -72,10 +72,10 @@ struct Heap
 
 
     /*
-        Expand the heap
+        Resize
     */
-    Heap* expand
+    BindList* expand
     (
-        int /* Size of expanding */
+        int
     );
 };

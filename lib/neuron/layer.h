@@ -50,7 +50,12 @@ class Layer : public Object
 
         /* States */
         Log& log;                                   /* Log object */
-        virtual Neuron* newNeuron();                /* Internal method for neuron creation */
+
+        /* Internal method for neuron creation */
+        virtual Neuron* newNeuron
+        (
+            int
+        );
 
         /* Settings */
         Point3d drawSize            = POINT_3D_0;   /* Visual draw saze at GL units*/
@@ -71,7 +76,7 @@ class Layer : public Object
     public:
 
         NeuronList* neurons;                        /* List of neurons */
-        Points3d* points;                           /* List of neurons points */
+        Points3d* points            = NULL;         /* List of neurons points in the world */
 
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
         double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
@@ -154,6 +159,16 @@ class Layer : public Object
 
 
         Layer* neuronPointsCalc();
+
+
+
+        /*
+            Calc layer
+        */
+        Layer* calc
+        (
+            Scene& aScene   /* Scene object */
+        );
 
 
 

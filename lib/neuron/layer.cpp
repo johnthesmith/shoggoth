@@ -84,10 +84,12 @@ int Layer::indexByPos
 /*
     New neoron method
 */
-Neuron* Layer::newNeuron()
+Neuron* Layer::newNeuron
+(
+    int a
+)
 {
-    Neuron* result = new Neuron();
-    result -> setLayer( this );
+    Neuron* result = new Neuron( this, a );
     result -> setValue( Rnd::get( 0.0, 1.0 ) );
     return result;
 }
@@ -97,6 +99,8 @@ Neuron* Layer::newNeuron()
 /*
     Connect all neurons from current layer to argument
     (i) -> (j)
+
+    
 */
 Layer* Layer::connectTo
 (
@@ -109,21 +113,75 @@ Layer* Layer::connectTo
     .prm( "to", a -> getNameOrId() )
     .lineEnd();
 
-    /* Create children binds */
-    auto si = neurons -> getCount();
-    for( int i = 0; i < si; i++ )
+    /* Create bind list */
+    int cFrom = neurons -> getCount();
+    int cTo = a -> neurons -> getCount();
+
+    BindList binds = BindList();
+    binds.resize( cFrom * cTo );
+
+    for( int iFrom = 0; iFrom < cFrom; iFrom++ )
     {
-        Neuron* iNeuron = neurons -> getByIndex( i );
-        iNeuron -> addChildren( a -> neurons, 0 ); /* TODO rnd min max */
+        for( int iTo = 0; iTo < cTo; iTo++ )
+        {
+            /* Create bind */
+            Bind* bind = new Bind();
+
+            /* Fill bind */
+            bind
+            -> setWeight( Rnd::get( 0.0, 1.0 ))
+            -> setParent( neurons -> getByIndex( iFrom ))
+            -> setChild( a -> neurons -> getByIndex( iTo ));
+
+            /* Store bind */
+            binds.setByIndex( iFrom * cTo + iTo, bind );
+        }
     }
 
-//    /* Create parnet binds */
-//    auto sj = a -> neurons -> getCount();
-//    for( int j = 0; j < sj; j++ )
-//    {
-//        Neuron* jNeuron = a -> neurons -> getByIndex( j );
-//        jNeuron -> addParents( *neurons );
-//    }
+    /* Resize children list in parent layer */
+    for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+    {
+        neurons                 /* for this layer */
+        -> getByIndex( iFrom )  /* get the next neuron */
+        -> childrenBinds        /* and him children list */
+        -> expand( cTo );       /* expand to count of childrens */
+    }
+
+    /* Resize parents list in child layer */
+    for( int iTo = 0; iTo < cTo; iTo++ )
+    {
+        a -> neurons            /* for child layer */
+        -> getByIndex( iTo )    /* get the next neuron */
+        -> parentBinds          /* and him parents list */
+        -> expand( cFrom );     /* expand to count of parents */
+    }
+
+    /* Run at binds */
+    int c = binds.getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Bind* iBind = binds.getByIndex( i );
+
+        Neuron* parent = iBind -> getParent();
+        Neuron* child = iBind -> getChild();
+
+        int parentChildIndex = parent -> childrenBinds -> getCount() - cTo + i % cTo;
+        int childParentIndex = child -> parentBinds -> getCount() - cFrom + i / cTo;
+
+//cout << i
+//<< " parent "
+//<< parent
+//<< ":"
+//<< parentChildIndex
+//<< " child "
+//<< child
+//<< ":"
+//<< childParentIndex
+//<< "\n";
+
+        parent -> childrenBinds -> setByIndex( parentChildIndex, iBind );
+        child -> parentBinds -> setByIndex( childParentIndex, iBind );
+    }
 
     getLog().end();
 
@@ -186,7 +244,7 @@ Layer* Layer::neuronPointsCalc()
 
 
 
-Layer* Layer::draw
+Layer* Layer::calc
 (
     Scene& aScene
 )
@@ -195,15 +253,17 @@ Layer* Layer::draw
     {
         neuronPointsCalc();
     }
+    return this;
+}
 
-    /* Draw center point */
-    aScene
-    .setPointSize( 4 )
-    .begin( POINT )
-    .color( Rgba( RGBA_WHITE ))
-    .vertex( getTarget())
-    .end();
 
+
+
+Layer* Layer::draw
+(
+    Scene& aScene
+)
+{
     /* Calculate box */
     auto box = Point3d
     (
@@ -236,25 +296,40 @@ Layer* Layer::draw
         aScene.end();
 
         /* Draw neuron links */
-        aScene.color( Rgba( 1.0, 1.0, 1.0, 0.1 ));
-
         aScene.begin( LINE );
         for( int i = 0; i < currentSize; i++ )
         {
             Neuron* iNeuron = neurons -> getByIndex( i );
-            auto countChildren = iNeuron -> children.getCount();
+            auto countChildren = iNeuron -> childrenBinds -> getCount();
             for( int c = 0; c < countChildren; c++ )
             {
-                Neuron* cNeuron = iNeuron -> children.getByIndex( c );
+                Bind* bind = iNeuron -> childrenBinds -> getByIndex( c );
+                Neuron* cNeuron = bind -> getChild();
+
                 /* Draw bind */
+
+                auto w = bind -> getWeight();
+
                 aScene
-                .vertex( points -> items[ i ] )
-                .vertex( cNeuron -> getLayer().points -> items[ c ] );
+                .color( Rgba( 0, 1, 0, w *0.1 ))
+                .vertex( iNeuron -> getWorldPoint() )
+                .vertex( cNeuron -> getWorldPoint() )
+                ;
             }
         }
         aScene.end();
 
     }
+
+
+    /* Draw center point */
+    aScene
+    .setPointSize( 4 )
+    .begin( POINT )
+    .color( Rgba( RGBA_WHITE ))
+    .vertex( getTarget())
+    .end();
+
 
 
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
@@ -321,7 +396,6 @@ Layer* Layer::setSize
     .prm( "from", currentSize )
     .prm( "to", newSize )
     .lineEnd();
-
     if( newSize > currentSize )
     {
         /* Size increase */
@@ -331,7 +405,7 @@ Layer* Layer::setSize
         /* Neurons create */
         for( int i = currentSize; i < newSize; i++ )
         {
-            auto nNeuron = newNeuron();
+            auto nNeuron = newNeuron( i );
             neurons -> setByIndex( i, nNeuron );
         }
     }

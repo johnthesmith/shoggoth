@@ -24,26 +24,39 @@ Form::Form
 )
 : ScenePayload( aLog ) /* Call parent constructor */
 {
-    layer1 = Layer::create( getLog() ) -> setName( "Screen" )   -> setSize( Point3i( 10, 10, 1 ));
-    layer2 = Layer::create( getLog() ) -> setName( "One" )      -> setSize( Point3i( 10, 10, 1 ));
-    layer3 = Layer::create( getLog() ) -> setName( "Two" )      -> setSize( Point3i( 5, 10, 1 ));
-    layer4 = Layer::create( getLog() ) -> setName( "Three" )    -> setSize( Point3i( 20, 20, 1 ));
-    layer5 = Layer::create( getLog() ) -> setName( "Result1" )      -> setSize( Point3i( 1, 10, 1 ));
-    layer6 = Layer::create( getLog() ) -> setName( "Result2" )      -> setSize( Point3i( 1, 10, 1 ));
+    layer1 = Layer::create( getLog() ) -> setName( "Screen" )   -> setSize( Point3i( 20, 20, 1 ));
+    layer2 = Layer::create( getLog() ) -> setName( "Left1" )    -> setSize( Point3i( 5, 5, 1 ));
+    layer3 = Layer::create( getLog() ) -> setName( "Right1" )   -> setSize( Point3i( 5, 5, 1 ));
+    layer4 = Layer::create( getLog() ) -> setName( "Left2" )    -> setSize( Point3i( 5, 5, 1 ));
+    layer5 = Layer::create( getLog() ) -> setName( "Right2" )   -> setSize( Point3i( 5, 5, 1 ));
+    layer6 = Layer::create( getLog() ) -> setName( "Left3" )    -> setSize( Point3i( 5, 5, 1 ));
+    layer7 = Layer::create( getLog() ) -> setName( "Right3" )   -> setSize( Point3i( 5, 5, 1 ));
+    layer8 = Layer::create( getLog() ) -> setName( "ResultLeft" )  -> setSize( Point3i( 2, 1, 1 ));
+    layer9 = Layer::create( getLog() ) -> setName( "ResultRight" )  -> setSize( Point3i( 2, 1, 1 ));
 
 
     layer1 -> setTarget( POINT_3D_Z * 0 );
-    layer2 -> setTarget( POINT_3D_Z * 1 );
-    layer3 -> setTarget( POINT_3D_Z * 2 );
-    layer4 -> setTarget( POINT_3D_Z * 3 );
-    layer5 -> setTarget( POINT_3D_Z * 4 - POINT_3D_X );
-    layer6 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
+    layer2 -> setTarget( POINT_3D_Z * 2 - POINT_3D_X );
+    layer3 -> setTarget( POINT_3D_Z * 2 + POINT_3D_X );
+    layer4 -> setTarget( POINT_3D_Z * 3 - POINT_3D_X );
+    layer5 -> setTarget( POINT_3D_Z * 3 + POINT_3D_X );
+    layer6 -> setTarget( POINT_3D_Z * 4 - POINT_3D_X );
+    layer7 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
+    layer8 -> setTarget( POINT_3D_Z * 5 - POINT_3D_X );
+    layer9 -> setTarget( POINT_3D_Z * 5 + POINT_3D_X );
+
 
     layer1 -> connectTo( layer2 );
-    layer2 -> connectTo( layer3 );
-    layer3 -> connectTo( layer4 );
-    layer4 -> connectTo( layer5 );
-//    layer4 -> connectTo( layer6 );
+    layer1 -> connectTo( layer3 );
+
+    layer2 -> connectTo( layer4 );
+    layer3 -> connectTo( layer5 );
+
+    layer4 -> connectTo( layer6 );
+    layer5 -> connectTo( layer7 );
+
+    layer6 -> connectTo( layer8 );
+    layer7 -> connectTo( layer9 );
 }
 
 
@@ -59,6 +72,9 @@ Form::~Form()
     layer4 -> destroy();
     layer5 -> destroy();
     layer6 -> destroy();
+    layer7 -> destroy();
+    layer8 -> destroy();
+    layer9 -> destroy();
 }
 
 
@@ -107,6 +123,27 @@ void Form::onActivate
 
 
 /*
+    Main calc method
+*/
+void Form::onCalc
+(
+    Scene& aScene   /* Scene object */
+)
+{
+    layer1 -> calc( aScene );
+    layer2 -> calc( aScene );
+    layer3 -> calc( aScene );
+    layer4 -> calc( aScene );
+    layer5 -> calc( aScene );
+    layer6 -> calc( aScene );
+    layer7 -> calc( aScene );
+    layer8 -> calc( aScene );
+    layer9 -> calc( aScene );
+}
+
+
+
+/*
     Main draw method
 */
 void Form::onDraw
@@ -143,6 +180,9 @@ void Form::onDraw
     layer4 -> draw( aScene );
     layer5 -> draw( aScene );
     layer6 -> draw( aScene );
+    layer7 -> draw( aScene );
+    layer8 -> draw( aScene );
+    layer9 -> draw( aScene );
 
 
     /* Switch to flat screen */
@@ -151,16 +191,17 @@ void Form::onDraw
     if( selectTopLeft != selectBottomRight )
     {
         aScene
+        .color( interfaceColorDark )
+        .setLineWidth( 2 )
+        .begin( QUAD )
+        .sendRect( selectTopLeft, selectBottomRight )
+        .end()
         .color( interfaceColor )
         .setLineWidth( 1 )
         .begin( LOOP )
         .sendRect( selectTopLeft, selectBottomRight )
         .end()
-        .color( interfaceColorDark )
-        .setLineWidth( 2 )
-        .begin( QUAD )
-        .sendRect( selectTopLeft, selectBottomRight )
-        .end();
+        ;
     }
 }
 

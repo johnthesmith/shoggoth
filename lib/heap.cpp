@@ -144,3 +144,18 @@ Heap* Heap::resize
     }
     return this;
 }
+
+
+
+
+/*
+    Resize
+*/
+Heap* Heap::expand
+(
+    int a
+)
+{
+    resize( count + a );
+    return this;
+}

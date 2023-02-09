@@ -10,9 +10,9 @@
 #include "../point3.h"
 #include "../point3i.h"
 
-
-
 #include "neuron_list.h"
+#include "bind_list.h"
+#include "bind.h"
 
 
 
@@ -27,36 +27,25 @@ class Layer;
 */
 struct Neuron
 {
-    Layer* layer   = NULL;        /* Neuron layer */
+    Layer* layer   = NULL;  /* Neuron layer */
+    int layerIndex = 0;
 
-    NeuronList children;        /* List of children */
-    vector<double> weights;     /* Binds weights for children */
-    NeuronList parents;         /* List of parents */
-
+    BindList* parentBinds;        /* Binds for parents */
+    BindList* childrenBinds;      /* Binds for children */
 
     double value;
 
 
 
-    /*
-        Add all neurons from NeuronList to Children of this neuron
-    */
-    Neuron& addChildren
+    Neuron
     (
-        NeuronList*,    /* Child neuron list */
-        double = 0      /* Weight */
+        Layer*,      /* Layer object */
+        int         /* Index in layer */
     );
 
 
 
-
-    /*
-        Add all neurons from NeuronList to Partnts of this neuron
-    */
-    Neuron& addParents
-    (
-        NeuronList&    /* Parents neuron list */
-    );
+    ~Neuron();
 
 
 
@@ -85,17 +74,18 @@ struct Neuron
         Setters and getters
     */
 
-    Neuron& setLayer
-    (
-        Layer*
-    );
-
-
 
     /*
         Return neuron layer
     */
     Layer& getLayer();
+
+
+
+    /*
+        Return neuron layer index
+    */
+    int getLayerIndex();
 
 
     Neuron& setValue
@@ -108,6 +98,7 @@ struct Neuron
     double getValue();
 
 
-};
 
+    Point3d& getWorldPoint();
+};
 
