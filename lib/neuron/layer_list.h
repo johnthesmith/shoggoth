@@ -21,6 +21,7 @@ class Layer;
 
 struct LayerList : public Heap
 {
+
     /*
         Add Layers from argument list to this list
     */
@@ -111,9 +112,9 @@ struct LayerList : public Heap
 
 
     /*
-        Return layer by id
+        Return layer index by id
     */
-    LayerList* byId
+    int getIndexById
     (
         string
     );

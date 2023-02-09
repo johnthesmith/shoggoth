@@ -78,3 +78,26 @@ LayerList* LayerList::resize
     Heap::resize( a );
     return this;
 }
+
+
+
+
+/*
+    Return layer index by id
+*/
+int LayerList::getIndexById
+(
+    string  a
+)
+{
+    int result = -1;
+    int c = getCount();
+    for( int i = 0; i < c && result == -1; i++ )
+    {
+        if( getByIndex( i ) -> getId() == a )
+        {
+            result = i;
+        }
+    }
+    return result;
+}

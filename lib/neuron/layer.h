@@ -77,6 +77,7 @@ class Layer : public Object
 
         NeuronList* neurons;                        /* List of neurons */
         Points3d* points            = NULL;         /* List of neurons points in the world */
+        Points3d* pointsAtScreen    = NULL;         /* List of neurons points at the screen */
 
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
         double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
@@ -167,7 +168,7 @@ class Layer : public Object
         */
         Layer* calc
         (
-            Scene& aScene   /* Scene object */
+            Scene* aScene   /* Scene object */
         );
 
 
@@ -177,7 +178,8 @@ class Layer : public Object
         */
         Layer* draw
         (
-            Scene& aScene   /* Scene object */
+            Scene* aScene,   /* Scene object */
+            bool calcScreenPos
         );
 
 

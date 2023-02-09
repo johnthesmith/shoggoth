@@ -22,6 +22,10 @@ Layer::Layer
     neurons = new NeuronList();
     /* Create neurons point list */
     points = new Points3d();
+
+    /* Create screen neurons point list */
+    pointsAtScreen = new Points3d();
+
     id = Rnd::getUuid();
 }
 
@@ -34,6 +38,9 @@ Layer::~Layer()
 {
     /* Destroy neurons */
     setSize();
+
+    /* Destroy the list of screen points for neurons */
+    delete pointsAtScreen;
 
     /* Destroy the list of points for neurons */
     delete points;
@@ -99,8 +106,6 @@ Neuron* Layer::newNeuron
 /*
     Connect all neurons from current layer to argument
     (i) -> (j)
-
-    
 */
 Layer* Layer::connectTo
 (
@@ -167,17 +172,6 @@ Layer* Layer::connectTo
 
         int parentChildIndex = parent -> childrenBinds -> getCount() - cTo + i % cTo;
         int childParentIndex = child -> parentBinds -> getCount() - cFrom + i / cTo;
-
-//cout << i
-//<< " parent "
-//<< parent
-//<< ":"
-//<< parentChildIndex
-//<< " child "
-//<< child
-//<< ":"
-//<< childParentIndex
-//<< "\n";
 
         parent -> childrenBinds -> setByIndex( parentChildIndex, iBind );
         child -> parentBinds -> setByIndex( childParentIndex, iBind );
@@ -246,7 +240,7 @@ Layer* Layer::neuronPointsCalc()
 
 Layer* Layer::calc
 (
-    Scene& aScene
+    Scene* aScene
 )
 {
     if( getChanged() )
@@ -261,7 +255,8 @@ Layer* Layer::calc
 
 Layer* Layer::draw
 (
-    Scene& aScene
+    Scene* aScene,
+    bool calcScreenPos
 )
 {
     /* Calculate box */
@@ -272,9 +267,10 @@ Layer* Layer::draw
         drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawBox : drawSize.z
     );
 
+    /* Calculate step between neurons */
     auto step = box / ( size - POINT_3I_I );
 
-
+    /* Calculate bound box for layer */
     Point3d ege = box * -0.5 + getTarget();
     Point3d p = ege;
 
@@ -283,20 +279,33 @@ Layer* Layer::draw
     {
         int currentSize = neurons -> getCount();
 
+        /* Recalculate screeen position */
+        if( calcScreenPos )
+        {
+            pointsAtScreen -> resize( currentSize );
+            for( int i = 0; i < currentSize; i++ )
+            {
+                Point3d& p = *points -> getByIndex( i );
+                Point3d s = aScene -> getScreenByWorld( p );
+                pointsAtScreen -> setByIndex( i, s );
+LogPoints::write( getLog().trace( "" ), s );
+            }
+        }
+
         /* Draw nurons point */
         aScene
-        .setPointSize( neuronDrawSize )
+        -> setPointSize( neuronDrawSize )
         .begin( POINT );
         for( int i = 0; i < currentSize; i++ )
         {
             Neuron* n = neurons -> getByIndex( i );
-            aScene.color( Rgba( 1.0, 0.7, 0.0, n -> getValue() ));
-            aScene.vertex( points -> items[ i ] );
+            aScene -> color( Rgba( 1.0, 0.7, 0.0, n -> getValue() ));
+            aScene -> vertex( points -> items[ i ] );
         }
-        aScene.end();
+        aScene -> end();
 
         /* Draw neuron links */
-        aScene.begin( LINE );
+        aScene -> begin( LINE );
         for( int i = 0; i < currentSize; i++ )
         {
             Neuron* iNeuron = neurons -> getByIndex( i );
@@ -311,20 +320,20 @@ Layer* Layer::draw
                 auto w = bind -> getWeight();
 
                 aScene
-                .color( Rgba( 0, 1, 0, w *0.1 ))
+                -> color( Rgba( 0, 1, 0, w *0.1 ))
                 .vertex( iNeuron -> getWorldPoint() )
                 .vertex( cNeuron -> getWorldPoint() )
                 ;
             }
         }
-        aScene.end();
+        aScene -> end();
 
     }
 
 
     /* Draw center point */
     aScene
-    .setPointSize( 4 )
+    -> setPointSize( 4 )
     .begin( POINT )
     .color( Rgba( RGBA_WHITE ))
     .vertex( getTarget())
@@ -334,7 +343,7 @@ Layer* Layer::draw
 
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
     aScene
-    .polygonMode( POLYGON_LINE )
+    -> polygonMode( POLYGON_LINE )
     .begin( QUAD )
     .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
     .sendQube( getTarget(), outerBox )

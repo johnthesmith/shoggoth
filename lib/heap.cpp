@@ -147,7 +147,6 @@ Heap* Heap::resize
 
 
 
-
 /*
     Resize
 */
@@ -159,3 +158,61 @@ Heap* Heap::expand
     resize( count + a );
     return this;
 }
+
+
+
+/*
+    Push elemen
+*/
+Heap* Heap::push
+(
+    void* a
+)
+{
+    expand( 1 );
+    items[ count - 1 ] = a;
+    return this;
+}
+
+
+
+/*
+    Remove one element and resize object
+*/
+void* Heap::remove
+(
+    int a
+)
+{
+    void* result = NULL;
+    if( a >= 0 && a < count )
+    {
+        result = items[ a ];
+        /* Create new element */
+        void** newItems = count == 1 ? NULL : new void*[ count - 1 ];
+        if( newItems != NULL )
+        {
+            /* Copy before */
+            memcpy
+            (
+                newItems,
+                items,
+                a * sizeof( void* )
+            );
+
+            if( a != count - 1 )
+            {
+                /* Copy after */
+                memcpy
+                (
+                    newItems,
+                    items[ a + 1],
+                    ( count - 1 - a ) * sizeof( void* )
+                );
+            }
+        }
+    }
+    return result;
+}
+
+

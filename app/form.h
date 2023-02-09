@@ -4,6 +4,7 @@
 #include "../lib/scene_payload.h"
 #include "../lib/camera.h"
 #include "../lib/neuron/layer.h"
+#include "../lib/neuron/net.h"
 
 
 
@@ -16,6 +17,8 @@ class Form : public ScenePayload
     private:
 
         Camera camera = Camera();   /* Default camera */
+
+        Net* net       = NULL;
 
         Layer* layer1  = NULL;
         Layer* layer2  = NULL;

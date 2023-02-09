@@ -24,16 +24,17 @@ Form::Form
 )
 : ScenePayload( aLog ) /* Call parent constructor */
 {
-    layer1 = Layer::create( getLog() ) -> setName( "Screen" )   -> setSize( Point3i( 20, 20, 1 ));
-    layer2 = Layer::create( getLog() ) -> setName( "Left1" )    -> setSize( Point3i( 5, 5, 1 ));
-    layer3 = Layer::create( getLog() ) -> setName( "Right1" )   -> setSize( Point3i( 5, 5, 1 ));
-    layer4 = Layer::create( getLog() ) -> setName( "Left2" )    -> setSize( Point3i( 5, 5, 1 ));
-    layer5 = Layer::create( getLog() ) -> setName( "Right2" )   -> setSize( Point3i( 5, 5, 1 ));
-    layer6 = Layer::create( getLog() ) -> setName( "Left3" )    -> setSize( Point3i( 5, 5, 1 ));
-    layer7 = Layer::create( getLog() ) -> setName( "Right3" )   -> setSize( Point3i( 5, 5, 1 ));
-    layer8 = Layer::create( getLog() ) -> setName( "ResultLeft" )  -> setSize( Point3i( 2, 1, 1 ));
-    layer9 = Layer::create( getLog() ) -> setName( "ResultRight" )  -> setSize( Point3i( 2, 1, 1 ));
+    net = Net::create( &getLog() );
 
+    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 2, 2, 1 ));
+    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 5, 5, 1 ));
+    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 5, 5, 1 ));
+    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 5, 5, 1 ));
+    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 5, 5, 1 ));
+    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 5, 5, 1 ));
+    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 5, 5, 1 ));
+    layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 ));
+    layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 ));
 
     layer1 -> setTarget( POINT_3D_Z * 0 );
     layer2 -> setTarget( POINT_3D_Z * 2 - POINT_3D_X );
@@ -66,15 +67,7 @@ Form::Form
 */
 Form::~Form()
 {
-    layer1 -> destroy();
-    layer2 -> destroy();
-    layer3 -> destroy();
-    layer4 -> destroy();
-    layer5 -> destroy();
-    layer6 -> destroy();
-    layer7 -> destroy();
-    layer8 -> destroy();
-    layer9 -> destroy();
+    net -> destroy();
 }
 
 
@@ -130,15 +123,7 @@ void Form::onCalc
     Scene& aScene   /* Scene object */
 )
 {
-    layer1 -> calc( aScene );
-    layer2 -> calc( aScene );
-    layer3 -> calc( aScene );
-    layer4 -> calc( aScene );
-    layer5 -> calc( aScene );
-    layer6 -> calc( aScene );
-    layer7 -> calc( aScene );
-    layer8 -> calc( aScene );
-    layer9 -> calc( aScene );
+    net -> calc( &aScene );
 }
 
 
@@ -157,7 +142,6 @@ void Form::onDraw
 
     applyCameraToScene( camera, aScene );
 
-
     aScene
     .clearColor()
     .drawAxisIdentity()
@@ -173,19 +157,19 @@ void Form::onDraw
 //    .end();
 
 
-    /* Draw Layer */
-    layer1 -> draw( aScene );
-    layer2 -> draw( aScene );
-    layer3 -> draw( aScene );
-    layer4 -> draw( aScene );
-    layer5 -> draw( aScene );
-    layer6 -> draw( aScene );
-    layer7 -> draw( aScene );
-    layer8 -> draw( aScene );
-    layer9 -> draw( aScene );
+    /* Draw Layers */
+    net -> draw
+    (
+        &aScene,
+        camera.getChanged()
+    );
 
+    /* Reset camera changed */
+    camera.setChanged( false );
 
-    /* Switch to flat screen */
+    /*
+        Switch to flat screen
+    */
     applyScreenToScene( aScene );
 
     if( selectTopLeft != selectBottomRight )
@@ -202,6 +186,15 @@ void Form::onDraw
         .sendRect( selectTopLeft, selectBottomRight )
         .end()
         ;
+
+//        NeuronList = net -> getNeuronsByRect
+//        (
+//            selectTopLeft,
+//            selectBottomRight
+//        );
+//        for()
+//        {
+//        }
     }
 }
 

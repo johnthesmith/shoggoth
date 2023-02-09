@@ -78,4 +78,25 @@ struct Heap
     (
         int /* Size of expanding */
     );
+
+
+
+    /*
+        Expand the heap
+    */
+    Heap* push
+    (
+        void*
+    );
+
+
+
+    /*
+        Remove one element and resize object
+    */
+    void* remove
+    (
+        int a
+    );
+
 };
