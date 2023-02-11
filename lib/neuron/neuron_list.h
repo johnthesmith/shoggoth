@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>   /* for lyambda */
 
 #include "../point3.h"
 #include "../point3i.h"
@@ -18,6 +19,13 @@ class Neuron;
 
 struct NeuronList : public Heap
 {
+    /*
+        Create and return list of neurons
+    */
+    static NeuronList* create();
+
+
+
     /*
         Add neurons from argument list to this list
     */
@@ -66,5 +74,15 @@ struct NeuronList : public Heap
     NeuronList* resize
     (
         int
+    );
+
+
+
+    /*
+        Loop with lyambda
+    */
+    NeuronList* loop
+    (
+        function <bool ( Neuron* )>
     );
 };

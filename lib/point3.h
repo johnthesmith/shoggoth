@@ -312,6 +312,14 @@ struct Point3d
         Convert Point3d to string
     */
     string toString() const;
+
+
+
+    bool testRectXY
+    (
+        Point3d&,   /* Top left */
+        Point3d     /* Bottom right */
+    );
 };
 
 

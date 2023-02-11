@@ -64,8 +64,17 @@ Layer* Net::getLayerById
     string a /* Id of layer */
 )
 {
-    // TODO
-    return NULL;
+    Layer* result = NULL;
+    int c = layers -> getCount();
+    for( int i=0; i < c && result == NULL; i++ )
+    {
+        Layer* iLayer = layers -> getByIndex( i );
+        if( iLayer -> getId() == a )
+        {
+            result = iLayer;
+        }
+    }
+    return result;
 }
 
 
@@ -171,3 +180,21 @@ Log* Net::getLog()
 
 
 
+/*
+    Return list of neurons in screen rect
+*/
+Net* Net::getNeuronsByScreenRect
+(
+    NeuronList* aList,
+    Point3d& aTopLeft,      /* Top left point */
+    Point3d& aBottomRight   /* Bottom right point */
+)
+{
+    int c = layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> getNeuronsByScreenRect( aList, aTopLeft, aBottomRight );
+    }
+    return this;
+}

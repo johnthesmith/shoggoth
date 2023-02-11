@@ -14,6 +14,7 @@ using namespace std; // для того что бы std:: не приходил�
 Log::Log()
 {
     cout << "Log create\n";
+    beginStack = new stack <long long>;
 }
 
 
@@ -23,10 +24,14 @@ Log::Log()
 Log::~Log()
 {
     lineEnd();
+
     if( isOpen() )
     {
         close();
     }
+
+    delete beginStack;
+
     cout << "Log destroy\n";
 }
 
@@ -315,6 +320,7 @@ Log& Log::prm
     setColor( colorLabel );
     text( "[" );
     text( "string " );
+    setColor( colorInfo );
     text( aTitle );
     space();
     setColor( colorValue );
@@ -338,6 +344,7 @@ Log& Log::prm
     setColor( colorLabel );
     text( "[" );
     text( "int " );
+    setColor( colorInfo );
     text( aTitle );
     space();
     setColor( colorValue );
@@ -361,6 +368,31 @@ Log& Log::prm
     setColor( colorLabel );
     text( "[" );
     text( "int " );
+    setColor( colorInfo );
+    text( aTitle );
+    space();
+    setColor( colorValue );
+    value ( aValue );
+    setColor( colorLabel );
+    text( "]" );
+    popColor();
+
+    return *this;
+}
+
+
+
+Log& Log::prm
+(
+    string aTitle,  /* Title for parameter */
+    long long aValue      /* Value */
+)
+{
+    pushColor();
+    setColor( colorLabel );
+    text( "[" );
+    text( "long long " );
+    setColor( colorInfo );
     text( aTitle );
     space();
     setColor( colorValue );
@@ -384,6 +416,7 @@ Log& Log::prm
     setColor( colorLabel );
     text( "[" );
     text( "double " );
+    setColor( colorInfo );
     text( aTitle );
     space();
     setColor( colorValue );
@@ -537,6 +570,9 @@ Log& Log::begin
 )
 {
     lineBegin( lrBegin );
+
+    beginStack -> push( momentLineBegin );
+
     write( message );
 
     depth++;
@@ -560,9 +596,18 @@ Log& Log::end
 {
     depth--;
 
-    if (depth<0) depth=0;
+    if( depth < 0 )
+    {
+        depth=0;
+    }
+
     lineBegin( lrEnd );
     write( aMessage );
+
+    long long momentBegin = beginStack -> top();
+    beginStack -> pop();
+    long long delta = momentLineBegin - momentBegin;
+    prm( "Length", delta );
 
     return *this;
 }

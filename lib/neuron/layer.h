@@ -51,12 +51,6 @@ class Layer : public Object
         /* States */
         Log& log;                                   /* Log object */
 
-        /* Internal method for neuron creation */
-        virtual Neuron* newNeuron
-        (
-            int
-        );
-
         /* Settings */
         Point3d drawSize            = POINT_3D_0;   /* Visual draw saze at GL units*/
         Point3i size                = POINT_3I_0;   /* Dimention size */
@@ -73,11 +67,12 @@ class Layer : public Object
         bool showChildrenLink       = true;
         bool showParentsLink        = true;
 
+        /* Internal method for neuron creation */
+        virtual Neuron* newNeuron();
+
     public:
 
         NeuronList* neurons;                        /* List of neurons */
-        Points3d* points            = NULL;         /* List of neurons points in the world */
-        Points3d* pointsAtScreen    = NULL;         /* List of neurons points at the screen */
 
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
         double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
@@ -161,6 +156,15 @@ class Layer : public Object
 
         Layer* neuronPointsCalc();
 
+
+
+        /*
+            Recalculate screeen position
+        */
+        Layer* neuronPointsScreenCalc
+        (
+            Scene*  /* Scene */
+        );
 
 
         /*
@@ -252,5 +256,17 @@ class Layer : public Object
         Layer* setPointsRecalc
         (
             bool a
+        );
+
+
+
+        /*
+            Return list of neurons in screen rect
+        */
+        Layer* getNeuronsByScreenRect
+        (
+            NeuronList* aList,
+            Point3d& aTopLeft,      /* Top left point */
+            Point3d& aBottomRight   /* Bottom right point */
         );
 };

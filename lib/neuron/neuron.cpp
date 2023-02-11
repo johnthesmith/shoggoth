@@ -16,12 +16,10 @@ using namespace std;
 
 Neuron::Neuron
 (
-    Layer* aLayer,  /* Layer object */
-    int aLayerIndex /* Index in layer */
+    Layer* aLayer   /* Layer object */
 )
 {
     layer = aLayer;
-    layerIndex = aLayerIndex;
     parentBinds = new BindList();
     childrenBinds = new BindList();
 }
@@ -30,6 +28,10 @@ Neuron::Neuron
 
 Neuron::~Neuron()
 {
+    if( extention != NULL )
+    {
+        destroyExtention();
+    }
     delete( childrenBinds );
     delete( parentBinds );
 }
@@ -85,13 +87,6 @@ Layer& Neuron::getLayer()
 
 
 
-int Neuron::getLayerIndex()
-{
-    return layerIndex;
-}
-
-
-
 Neuron& Neuron::setValue
 (
     double a
@@ -112,8 +107,69 @@ double Neuron::getValue()
 
 Point3d& Neuron::getWorldPoint()
 {
-    return
-    layer -> points -> getCount() > layerIndex
-    ? layer -> points -> items[ layerIndex ]
-    : POINT_3D_0;
+    return extention == NULL ? POINT_3D_0 : extention -> world;
+}
+
+
+
+Point3d& Neuron::getScreenPoint()
+{
+    return extention == NULL ? POINT_3D_0 : extention -> screen;
+}
+
+
+
+/*
+    Create extention for neuron
+*/
+Neuron* Neuron::createExtention()
+{
+    if( extention == NULL )
+    {
+        extention = new NeuronExtention();
+    }
+    return this;
+}
+
+
+
+/*
+    Destroy extention for neuron
+*/
+Neuron* Neuron::destroyExtention()
+{
+    delete extention;
+    extention = NULL;
+    return this;
+}
+
+
+
+/*
+    Set world point
+*/
+Neuron* Neuron::setWorldPoint
+(
+    Point3d& a
+)
+{
+    createExtention();
+    extention -> world = a;
+    return this;
+}
+
+
+
+
+/*
+    Set screen point
+*/
+Neuron* Neuron::setScreenPoint
+(
+    Point3d& a
+)
+{
+    createExtention();
+    extention -> screen = a;
+    return this;
 }

@@ -1,8 +1,20 @@
 #include <iostream>
 #include <cstring>
+
 #include "neuron_list.h"
 
 using namespace std;
+
+
+
+/*
+    Create and return list of neurons
+*/
+NeuronList* NeuronList::create()
+{
+    return new NeuronList();
+}
+
 
 
 
@@ -74,5 +86,23 @@ NeuronList* NeuronList::resize
 )
 {
     Heap::resize( a );
+    return this;
+}
+
+
+
+/*
+    Loop with lyambda
+*/
+NeuronList* NeuronList::loop
+(
+    function <bool ( Neuron* )> callback
+)
+{
+    bool stop = false;
+    for( int i = 0; i < count && !stop; i++ )
+    {
+        stop = callback( (Neuron*) items[ i ] );
+    }
     return this;
 }

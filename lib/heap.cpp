@@ -9,6 +9,37 @@ using namespace std;
 */
 
 
+
+/*
+    Destructor
+*/
+Heap::~Heap()
+{
+    resize( 0 );
+}
+
+
+
+/*
+    Create and return heap
+*/
+Heap* Heap::create()
+{
+    return new Heap();
+}
+
+
+
+/*
+    Destroy heap
+*/
+void Heap::destroy()
+{
+    delete( this );
+}
+
+
+
 /*
     Return count elements in heap
 */

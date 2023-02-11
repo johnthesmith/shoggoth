@@ -570,4 +570,19 @@ string Point3d::toString() const
 
 
 
+/*
+    Test this point at rect
+*/
+bool Point3d::testRectXY
+(
+    Point3d&    aTopLeft,       /* Top left */
+    Point3d     aBottomRight    /* Bottom right */
+)
+{
+    return
+    x >= min( aTopLeft.x, aBottomRight.x ) &&
+    x <= max( aBottomRight.x, aTopLeft.x ) &&
+    y >= min( aTopLeft.y, aBottomRight.y ) &&
+    y <= max( aBottomRight.y, aTopLeft.y );
+}
 

@@ -33,8 +33,8 @@ class Form : public ScenePayload
         Point3d selectTopLeft = POINT_3D_0;
         Point3d selectBottomRight = POINT_3D_0;
 
-        Rgba interfaceColor = Rgba( 0.4, 1.0, 0.8, 0.7 );
-        Rgba interfaceColorDark = Rgba( 0.1, 0.4, 0.2, 0.7 );
+        Rgba interfaceColor = Rgba( 0.4, 0.7, 1.0, 0.7 );
+        Rgba interfaceColorDark = Rgba( 0.1, 0.2, 0.4, 0.7 );
 
     public:
 

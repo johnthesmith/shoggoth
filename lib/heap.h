@@ -12,6 +12,25 @@ struct Heap
     int count = 0;
 
 
+    /*
+        Destructor
+    */
+    ~Heap();
+
+
+
+    /*
+        Create and return heap
+    */
+    static Heap* create();
+
+
+
+    /*
+        Destroy heap
+    */
+    void destroy();
+
 
     /*
         Return Neurons list count elements

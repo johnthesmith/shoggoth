@@ -348,8 +348,8 @@ Scene& Scene::switchToScreen()
     (
         viewport.left,
         viewport.left + viewport.width,
-        viewport.top + viewport.height,
         viewport.top,
+        viewport.top + viewport.height,
         0,
         1
     );
@@ -581,7 +581,7 @@ Scene& Scene::mouseMoveEvent
     {
         /* Calculate mouse delta position */
         mouseLast = mouseCurrent;
-        mouseCurrent.set( aX, aY, 0 );
+        mouseCurrent.set( aX, viewport.height - aY, 0 );
 
         /* Mouse left drag control */
         if( isMouseButton( MB_LEFT ) )
@@ -1002,6 +1002,7 @@ Point3d Scene::getScreenByWorld
         (GLdouble*)&r.y,
         (GLdouble*)&r.z
     );
+    r.z = 0.0;
     return r;
 }
 

@@ -9,6 +9,7 @@
 
 /* User libraries */
 #include "form.h"
+#include "../lib/neuron/neuron.h"
 
 
 
@@ -158,22 +159,28 @@ void Form::onDraw
 
 
     /* Draw Layers */
-    net -> draw
-    (
-        &aScene,
-        camera.getChanged()
-    );
+    net -> draw( &aScene, camera.getChanged() );
+    camera.setChanged( false );  /* Reset camera changed */
 
-    /* Reset camera changed */
-    camera.setChanged( false );
 
     /*
         Switch to flat screen
     */
     applyScreenToScene( aScene );
 
+
+    aScene
+    .setPointSize( 4 )
+    .begin( POINT )
+    .color( RGBA_GREEN ).vertex( aScene.getScreenByWorld( POINT_3D_X ))
+    .color( RGBA_BLUE ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
+    .color( RGBA_RED ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
+    .end();
+
+
     if( selectTopLeft != selectBottomRight )
     {
+        /* Draw selection rect */
         aScene
         .color( interfaceColorDark )
         .setLineWidth( 2 )
@@ -187,14 +194,38 @@ void Form::onDraw
         .end()
         ;
 
-//        NeuronList = net -> getNeuronsByRect
-//        (
-//            selectTopLeft,
-//            selectBottomRight
-//        );
-//        for()
-//        {
-//        }
+
+        /* Draw selected neurons */
+        NeuronList* list = new NeuronList();
+
+        net -> getNeuronsByScreenRect
+        (
+            list,
+            selectTopLeft,
+            selectBottomRight
+        );
+
+        aScene
+        .color( interfaceColor )
+        .setPointSize( 4 )
+        .begin( POINT );
+        list -> loop
+        (
+            [ &aScene ]
+            (
+                Neuron* neuron
+            ) -> bool
+            {
+                Point3d p = neuron -> getScreenPoint();
+                p.z = 0.0;
+//cout << p.x<<"\n";
+                aScene.vertex( p );
+                return false;
+            }
+        );
+        aScene.end();
+
+        delete list;
     }
 }
 
@@ -315,12 +346,8 @@ void Form::onRightDrag
 )
 {
     double k = camera.getGaze().magn() / aScene.getNear();
-    camera.shift
-    (
-        (
-            (aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()) * k
-        )
-    );
+    Point3d p = (aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()) * k;
+    camera.shift( p );
 }
 
 

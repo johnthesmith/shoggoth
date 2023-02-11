@@ -21,7 +21,7 @@ class Object : public Result
         Point3d          target          = POINT_3D_0;  /* Look at far */
         Point3d          top             = POINT_3D_Y;  /* And top on top */
 
-        bool            changed         = false;
+        bool            changed         = true;
 
         bool            eyeLock         = false;    /* Lock eye position */
         bool            topLock         = false;    /* Lock top direction */

@@ -121,4 +121,16 @@ class Net
             Return log object
         */
         Log* getLog();
+
+
+
+        /*
+            Return list of neurons in screen rect
+        */
+        Net* getNeuronsByScreenRect
+        (
+            NeuronList*,/* Neuron list */
+            Point3d&,   /* Top left point */
+            Point3d&    /* Bottom right point */
+        );
 };

@@ -11,6 +11,7 @@
 #include "../point3i.h"
 
 #include "neuron_list.h"
+#include "neuron_extention.h"
 #include "bind_list.h"
 #include "bind.h"
 
@@ -27,20 +28,17 @@ class Layer;
 */
 struct Neuron
 {
-    Layer* layer   = NULL;  /* Neuron layer */
-    int layerIndex = 0;
-
-    BindList* parentBinds;        /* Binds for parents */
-    BindList* childrenBinds;      /* Binds for children */
-
-    double value;
+    Layer* layer                = NULL; /* Neuron layer */
+    NeuronExtention* extention  = NULL; /* Neuron extention object */
+    BindList* parentBinds       = NULL; /* Binds for parents */
+    BindList* childrenBinds     = NULL; /* Binds for children */
+    double value;                       /* Neuron value */
 
 
 
     Neuron
     (
-        Layer*,      /* Layer object */
-        int         /* Index in layer */
+        Layer*  /* Layer object */
     );
 
 
@@ -99,6 +97,39 @@ struct Neuron
 
 
 
+    /*
+        Set world point
+    */
+    Neuron* setWorldPoint
+    (
+        Point3d&
+    );
+
     Point3d& getWorldPoint();
+
+
+    /*
+        Set screen point
+    */
+    Neuron* setScreenPoint
+    (
+        Point3d&
+    );
+
+    Point3d& getScreenPoint();
+
+
+
+    /*
+        Create extention for neuron
+    */
+    Neuron* createExtention();
+
+
+
+    /*
+        Destroy extention for neuron
+    */
+    Neuron* destroyExtention();
 };
 

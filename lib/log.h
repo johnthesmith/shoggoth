@@ -31,47 +31,47 @@ class Log
     private:
         /* Параметры журнала */
 
-        bool            enabled = true;                 /* активность лога влияет на команду Write */
-        int             depth = 0;                      /* глубина конструкций begin end */
-        string          fileName        = "";           /* имя файла */
-        LogRecord       typeLine        = lrNone;
-        int             tabSize         = 2;            /* Размер табулятора */
-        char            tabChar         = ' ';          /* Символ табулятора */
-
+        bool                enabled         = true;         /* активность лога влияет на команду Write */
+        int                 depth           = 0;            /* глубина конструкций begin end */
+        string              fileName        = "";           /* имя файла */
+        LogRecord           typeLine        = lrNone;
+        int                 tabSize         = 2;            /* Размер табулятора */
+        char                tabChar         = ' ';          /* Символ табулятора */
 
         /* Состояние журнала */
-        FILE            *fileHandle     = NULL;         /* указатель на объект файла для записи */
-        long long       momentLineBegin = 0;
-        string          colorLine       = INK_DEFAULT;
+        FILE                *fileHandle     = NULL;         /* указатель на объект файла для записи */
+        long long           momentLineBegin = 0;
+        string              colorLine       = INK_DEFAULT;
 
         /* Состояния текстового процессора */
-        string          buffer          = "";
-        stack <string>  colorStack;
-        stack <string>  alignStack;
+        string              buffer          = "";
+        stack <string>      colorStack;
+        stack <string>      alignStack;
+        stack <long long>*  beginStack;
 
         /* Настройки текстового процессора */
-        bool        colored             = true;         /* Цветной вывод */
-        string      color               = "";           /* Текущий цвет */
-        int         width               = 0;            /* ширина выводимого текста */
-        TextAlign   align               = ALIGN_LEFT;   /* ширина выводимого текста */
-        string      trueValue           = "true";       /* строковое значение для приведения true */
-        string      falseValue          = "false";      /* строковое значение для приведения false */
+        bool                colored         = true;         /* Цветной вывод */
+        string              color           = "";           /* Текущий цвет */
+        int                 width           = 0;            /* ширина выводимого текста */
+        TextAlign           align           = ALIGN_LEFT;   /* ширина выводимого текста */
+        string              trueValue       = "true";       /* строковое значение для приведения true */
+        string              falseValue      = "false";      /* строковое значение для приведения false */
 
     public:
 
-        string          colorError      = INK_RED;
-        string          colorWarning    = INK_YELLOW;
-        string          colorInfo       = INK_SILVER;
-        string          colorTrace      = INK_SKY;
-        string          colorDebug      = INK_AQUA;
+        string              colorError      = INK_RED;
+        string              colorWarning    = INK_YELLOW;
+        string              colorInfo       = INK_SILVER;
+        string              colorTrace      = INK_SKY;
+        string              colorDebug      = INK_AQUA;
 
-        string          tabColor        = INK_SILVER;
-        string          colorJob        = INK_GOLD;
-        string          colorValue      = INK_MAGENTA;
-        string          colorValueZero  = INK_CYAN;
-        string          colorValuePos   = INK_GREEN;
-        string          colorValueNeg   = INK_MAGENTA;
-        string          colorLabel      = INK_GREY;
+        string              tabColor        = INK_SILVER;
+        string              colorJob        = INK_GOLD;
+        string              colorValue      = INK_MAGENTA;
+        string              colorValueZero  = INK_CYAN;
+        string              colorValuePos   = INK_GREEN;
+        string              colorValueNeg   = INK_MAGENTA;
+        string              colorLabel      = INK_GREY;
 
         /*
             Maintaince
@@ -200,6 +200,13 @@ class Log
             unsigned int     /* Выводимое значение */
         );
 
+        /* Вывод целочисленного занчения в лог формате [ int title:value ] */
+        Log& prm
+        (
+            string, /* Коментарий к значению */
+            long long /* Выводимое значение */
+        );
+
         /* Вывод двойного занчения c плавающей точкой в лог формате [ int title:value ] */
         Log& prm
         (
@@ -228,11 +235,13 @@ class Log
         Log& lineEnd();
 
 
-        /*
+        /****************************************************************************
             Функционал работы с секциями
         */
 
-        /* Начало секции */
+        /*
+            Начало секции
+        */
         Log& begin();
 
         /* Начало секции с коментарием */

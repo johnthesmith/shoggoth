@@ -63,7 +63,7 @@ int Points3d::indexBy
 
 
 /*
-    Return index by neuron
+    Return point by index
 */
 Point3d* Points3d::getByIndex
 (
