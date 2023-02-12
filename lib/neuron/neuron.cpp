@@ -1,6 +1,6 @@
 #include "neuron.h"
 #include "layer.h"
-
+#include "../rnd.h"
 
 using namespace std;
 
@@ -171,5 +171,28 @@ Neuron* Neuron::setScreenPoint
 {
     createExtention();
     extention -> screen = a;
+    return this;
+}
+
+
+
+Neuron* Neuron::calc()
+{
+    if( childrenBinds -> getCount() != 0 )
+    {
+        double summ = Rnd::get(0.0, 1.0);
+
+        childrenBinds -> loop
+        (
+            [ summ ]( Bind* bind ) mutable -> bool
+            {
+//                summ = 1.0;//bind -> getParent() -> getValue() * bind -> getWeight();
+                cout << summ;
+                return false;
+            }
+        );
+        setValue( summ );
+//cout << summ;
+    }
     return this;
 }

@@ -7,6 +7,7 @@
 ./shab build "hello.cpp"
 ./shab build "lib/*.cpp"
 ./shab build "lib/neuron/*.cpp"
+./shab build "lib/graph/*.cpp"
 ./shab build "app/*.cpp"
 
 ./shab header "make"

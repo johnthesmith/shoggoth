@@ -9,6 +9,7 @@
 #include "log.h"
 #include "rgba.h"
 #include "point3.h"
+#include "./graph/point2d.h"
 #include "point4d.h"
 #include "matrix.h"
 #include "draw_mode.h"
@@ -245,6 +246,16 @@ class Scene : public Result
         Scene& color
         (
             const Rgba&
+        );
+
+
+
+        /*
+            Set vertex to canvas
+        */
+        Scene& vertex
+        (
+            const Point2d&
         );
 
 

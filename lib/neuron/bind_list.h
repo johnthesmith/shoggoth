@@ -78,4 +78,14 @@ struct BindList : public Heap
     (
         int
     );
+
+
+
+    /*
+        Loop with lyambda
+    */
+    BindList* loop
+    (
+        function <bool ( Bind* )>
+    );
 };

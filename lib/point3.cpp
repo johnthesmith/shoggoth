@@ -84,7 +84,7 @@ Point3d operator-
 /*
     Operator dot product r = a * b
 */
-double operator*
+double operator^
 (
     const Point3d& a,    /* First operand */
     const Point3d& b     /* Second operand */
@@ -497,7 +497,7 @@ Point3d& Point3d::rotate
     auto sn = sinf( aAngleRad );
     auto cs = cosf( aAngleRad );
 
-    auto dz = aBase * ( *this * aBase );
+    auto dz = aBase * ( *this ^ aBase );
     auto dx = *this - dz;
     auto dy = dx % aBase;
 

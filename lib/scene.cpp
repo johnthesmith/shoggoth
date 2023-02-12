@@ -731,6 +731,20 @@ Scene& Scene::color
 */
 Scene& Scene::vertex
 (
+    const Point2d& a
+)
+{
+    glVertex2dv( (GLdouble*)&a );
+    return *this;
+}
+
+
+
+/*
+    Set vertex to canvas
+*/
+Scene& Scene::vertex
+(
     const Point3d& a
 )
 {

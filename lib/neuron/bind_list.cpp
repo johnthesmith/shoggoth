@@ -88,3 +88,21 @@ BindList* BindList::expand
     Heap::expand( a );
     return this;
 }
+
+
+
+/*
+    Loop with lyambda
+*/
+BindList* BindList::loop
+(
+    function <bool ( Bind* )> callback
+)
+{
+    bool stop = false;
+    for( int i = 0; i < count && !stop; i++ )
+    {
+        stop = callback( (Bind*) items[ i ] );
+    }
+    return this;
+}

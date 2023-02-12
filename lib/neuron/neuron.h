@@ -131,5 +131,8 @@ struct Neuron
         Destroy extention for neuron
     */
     Neuron* destroyExtention();
-};
 
+
+
+    Neuron* calc();
+};

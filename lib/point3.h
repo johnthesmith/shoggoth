@@ -55,7 +55,10 @@ struct Point3d
 
 
 
-    friend double operator* (
+    /*
+        Operator dot product r = a * b
+    */
+    friend double operator^ (
         const Point3d&,  /* First operand */
         const Point3d&   /* Second operand */
     );

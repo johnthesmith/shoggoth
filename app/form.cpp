@@ -6,10 +6,11 @@
 #include "../lib/rgba.h"
 #include "../lib/log_points.h"
 #include "../lib/draw_mode.h"
+#include "../lib/neuron/neuron.h"
+#include "../lib/graph/chart.h"
 
 /* User libraries */
 #include "form.h"
-#include "../lib/neuron/neuron.h"
 
 
 
@@ -27,7 +28,7 @@ Form::Form
 {
     net = Net::create( &getLog() );
 
-    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 2, 2, 1 ));
+    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 ));
     layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 5, 5, 1 ));
     layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 5, 5, 1 ));
     layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 5, 5, 1 ));
@@ -146,7 +147,6 @@ void Form::onDraw
     aScene
     .clearColor()
     .drawAxisIdentity()
-//    .drawGreedIdentity()
     ;
 
 
@@ -168,7 +168,6 @@ void Form::onDraw
     */
     applyScreenToScene( aScene );
 
-
     aScene
     .setPointSize( 4 )
     .begin( POINT )
@@ -176,6 +175,17 @@ void Form::onDraw
     .color( RGBA_BLUE ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
     .color( RGBA_RED ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
     .end();
+
+
+    /*
+        Draw neuron chart
+    */
+    Chart2d::create()
+    -> setCenterSize( Point2d( 210,110 ), Point2d( 200, 100 ) )
+    -> setBackColor( interfaceColorDark )
+    -> setLineColor( interfaceColor )
+    -> draw( &aScene ) -> destroy();
+
 
 
     if( selectTopLeft != selectBottomRight )
@@ -194,16 +204,9 @@ void Form::onDraw
         .end()
         ;
 
-
         /* Draw selected neurons */
-        NeuronList* list = new NeuronList();
-
-        net -> getNeuronsByScreenRect
-        (
-            list,
-            selectTopLeft,
-            selectBottomRight
-        );
+        NeuronList* list = NeuronList::create();
+        net -> getNeuronsByScreenRect( list, selectTopLeft, selectBottomRight );
 
         aScene
         .color( interfaceColor )
@@ -211,21 +214,15 @@ void Form::onDraw
         .begin( POINT );
         list -> loop
         (
-            [ &aScene ]
-            (
-                Neuron* neuron
-            ) -> bool
+            [ &aScene ]( Neuron* neuron ) -> bool
             {
-                Point3d p = neuron -> getScreenPoint();
-                p.z = 0.0;
-//cout << p.x<<"\n";
-                aScene.vertex( p );
+                aScene.vertex( neuron -> getScreenPoint() );
                 return false;
             }
         );
         aScene.end();
 
-        delete list;
+        list -> destroy();
     }
 }
 

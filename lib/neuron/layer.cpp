@@ -261,6 +261,17 @@ Layer* Layer::calc
     Scene* aScene
 )
 {
+    /* Calculate neurons */
+    neurons -> loop
+    (
+        []( Neuron* neuron ) -> bool
+        {
+            neuron -> calc();
+            return false;
+        }
+    );
+
+    /**/
     if( getChanged() )
     {
         neuronPointsCalc();
@@ -314,6 +325,7 @@ Layer* Layer::draw
     aScene -> end();
 
     /* Draw neuron links */
+    aScene -> setLineWidth( 1 );
     aScene -> begin( LINE );
     for( int i = 0; i < currentSize; i++ )
     {
@@ -349,7 +361,8 @@ Layer* Layer::draw
     /* Draw layer box */
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
     aScene
-    -> polygonMode( POLYGON_LINE )
+    -> setLineWidth( 1 )
+    .polygonMode( POLYGON_LINE )
     .begin( QUAD )
     .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
     .sendQube( getTarget(), outerBox )
