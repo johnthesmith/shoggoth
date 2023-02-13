@@ -265,8 +265,19 @@ class Layer : public Object
         */
         Layer* getNeuronsByScreenRect
         (
-            NeuronList* aList,
-            Point3d& aTopLeft,      /* Top left point */
-            Point3d& aBottomRight   /* Bottom right point */
+            NeuronList*,
+            Point3d&,       /* Top left point */
+            Point3d&        /* Bottom right point */
+        );
+
+
+
+        /*
+            Return list of neurons around the screen poistion
+        */
+        Layer* getNeuronsByScreenPos
+        (
+            NeuronList*,
+            const Point3d&       /* Top left point */
         );
 };

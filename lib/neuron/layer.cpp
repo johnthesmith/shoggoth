@@ -83,7 +83,7 @@ int Layer::indexByPos
 Neuron* Layer::newNeuron()
 {
     Neuron* result = new Neuron( this );
-    result -> setValue( Rnd::get( 0.0, 1.0 ) );
+    result -> setValue( 0.0 );
     return result;
 }
 
@@ -575,6 +575,45 @@ Layer* Layer::getNeuronsByScreenRect
         ) -> bool
         {
             if( neuron -> getScreenPoint().testRectXY( aTopLeft, aBottomRight ))
+            {
+                buffer -> setByIndex( iBuffer, neuron );
+                iBuffer++;
+            }
+            return false;
+        }
+    );
+
+    buffer -> resize( iBuffer );
+    aList -> add( buffer );
+    buffer -> destroy();
+
+    return this;
+}
+
+
+
+/*
+    Return list of neurons around  the screen position
+*/
+Layer* Layer::getNeuronsByScreenPos
+(
+    NeuronList* aList,
+    const Point3d& aPosition
+)
+{
+    NeuronList* buffer = NeuronList::create();
+    buffer -> resize( neurons -> getCount() );
+
+    int iBuffer = 0;
+
+    neurons -> loop
+    (
+        [ buffer, &aPosition, &iBuffer ]
+        (
+            Neuron* neuron
+        ) -> bool
+        {
+            if( neuron -> getScreenPoint().distXY( aPosition ) < 10 )
             {
                 buffer -> setByIndex( iBuffer, neuron );
                 iBuffer++;

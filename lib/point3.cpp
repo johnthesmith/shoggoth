@@ -524,6 +524,21 @@ double Point3d::dist
 
 
 /*
+    Distance between this Point3d in XY surface
+*/
+double Point3d::distXY
+(
+    const Point3d& a
+)
+{
+    auto dx = a.x - x;
+    auto dy = a.y - y;
+    return sqrt( dx * dx + dy * dy );
+}
+
+
+
+/*
     Dot product
 */
 double Point3d::dot

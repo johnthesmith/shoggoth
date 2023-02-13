@@ -178,21 +178,22 @@ Neuron* Neuron::setScreenPoint
 
 Neuron* Neuron::calc()
 {
-    if( childrenBinds -> getCount() != 0 )
+    if( parentBinds -> getCount() != 0 )
     {
-        double summ = Rnd::get(0.0, 1.0);
+        double summ = 0;
 
-        childrenBinds -> loop
+        parentBinds -> loop
         (
-            [ summ ]( Bind* bind ) mutable -> bool
+            [ &summ ]( Bind* bind ) -> bool
             {
-//                summ = 1.0;//bind -> getParent() -> getValue() * bind -> getWeight();
-                cout << summ;
+                summ += bind -> getParent() -> getValue() * bind -> getWeight();
                 return false;
             }
         );
         setValue( summ );
-//cout << summ;
     }
     return this;
 }
+
+
+

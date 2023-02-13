@@ -198,3 +198,41 @@ Net* Net::getNeuronsByScreenRect
     }
     return this;
 }
+
+
+
+/*
+    Return neuron by screen position
+*/
+Net* Net::getNeuronsByScreenPos
+(
+    NeuronList* aList,
+    Point3d& aPosition
+)
+{
+    int c = layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> getNeuronsByScreenPos( aList, aPosition );
+    }
+    return this;
+}
+
+
+
+Net* Net::setSelected
+(
+    Neuron* a
+)
+{
+    selected = a;
+    return this;
+}
+
+
+
+Neuron* Net::getSelected()
+{
+    return selected;
+}

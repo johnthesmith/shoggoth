@@ -16,10 +16,6 @@ using namespace std;
 
 struct BindList : public Heap
 {
-    int count = 0;
-
-
-
     /*
         Add points from argument list to this list
     */

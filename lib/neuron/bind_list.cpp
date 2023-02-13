@@ -102,7 +102,7 @@ BindList* BindList::loop
     bool stop = false;
     for( int i = 0; i < count && !stop; i++ )
     {
-        stop = callback( (Bind*) items[ i ] );
+        stop = callback(( Bind*) items[ i ] );
     }
     return this;
 }

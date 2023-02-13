@@ -23,6 +23,7 @@ class Net
         Log* log            = NULL; /* The log object */
         LayerList* layers   = NULL; /* The layer list object */
 
+        Neuron* selected    = NULL; /* Selectrd neuron */
     public:
 
         /*
@@ -133,4 +134,25 @@ class Net
             Point3d&,   /* Top left point */
             Point3d&    /* Bottom right point */
         );
+
+
+        /*
+            Return neuron by screen position
+        */
+        Net* getNeuronsByScreenPos
+        (
+            NeuronList*,/* Neuron list */
+            Point3d&
+        );
+
+
+
+        Net* setSelected
+        (
+            Neuron*
+        );
+
+
+
+        Neuron* getSelected();
 };

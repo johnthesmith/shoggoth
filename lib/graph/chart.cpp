@@ -38,7 +38,7 @@ void Chart2d::destroy()
     *-----------------------------> x
 */
 
-Chart2d* Chart2d::draw
+Chart2d* Chart2d::drawBack
 (
     Scene* aScene
 )
@@ -52,13 +52,22 @@ Chart2d* Chart2d::draw
     aScene -> vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 );
     aScene -> end();
 
-
     aScene -> setLineWidth( 1 );
     aScene -> begin( LOOP ).color( lineColor );
     aScene -> vertex( p1 ).vertex( p2 ).vertex( p3 ).vertex( p4 );
     aScene -> end();
 
+    return this;
+}
 
+
+
+Chart2d* Chart2d::draw
+(
+    Scene* aScene,
+    function <double ( double )> aCalc
+)
+{
     double step = ( xMax - xMin ) / ( rect.size.x * 2 );
 
     aScene -> setLineWidth( 1 );
@@ -67,7 +76,7 @@ Chart2d* Chart2d::draw
     double x = xMin;
     while( x < xMax )
     {
-        double y = cos( x * 10 ) * Rnd::get( -0.2, 0.2 );
+        double y = aCalc( x );
         Point2d p = chartToScreen( Point2d( x, y ));
         aScene -> vertex( p );
         x = x + step;
@@ -102,10 +111,16 @@ Point2d Chart2d::chartToScreen
     double chartHeight  = yMax - yMin;
     double screenHeight = rect.size.y * 2;
 
+    double nx = ( a.x - xMin ) / chartWidth;
+    double ny = ( a.y - yMin ) / chartHeight;
+
+    nx = nx < xMin ? xMin : ( nx > xMax ? xMax : nx );
+    ny = ny < yMin ? yMin : ( ny > yMax ? yMax : ny );
+
     auto result = Point2d
     (
-        ( a.x - xMin ) / chartWidth * screenWidth + rect.center.x - rect.size.x,
-        ( a.y - yMin ) / chartHeight * screenHeight + rect.center.y - rect.size.y
+        nx * screenWidth + rect.center.x - rect.size.x,
+        ny * screenHeight + rect.center.y - rect.size.y
     );
 
     return result;
@@ -130,5 +145,49 @@ Chart2d* Chart2d::setLineColor
 )
 {
     lineColor = a;
+    return this;
+}
+
+
+
+Chart2d* Chart2d::setXMin
+(
+    double a
+)
+{
+    xMin = a;
+    return this;
+}
+
+
+
+Chart2d* Chart2d::setXMax
+(
+    double a
+)
+{
+    xMax = a;
+    return this;
+}
+
+
+
+Chart2d* Chart2d::setYMin
+(
+    double a
+)
+{
+    yMin = a;
+    return this;
+}
+
+
+
+Chart2d* Chart2d::setYMax
+(
+    double a
+)
+{
+    yMax = a;
     return this;
 }

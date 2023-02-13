@@ -8,6 +8,8 @@
 #include "../lib/draw_mode.h"
 #include "../lib/neuron/neuron.h"
 #include "../lib/graph/chart.h"
+#include "../lib/neuron/func.h"
+#include "../lib/rnd.h"
 
 /* User libraries */
 #include "form.h"
@@ -180,12 +182,19 @@ void Form::onDraw
     /*
         Draw neuron chart
     */
-    Chart2d::create()
-    -> setCenterSize( Point2d( 210,110 ), Point2d( 200, 100 ) )
-    -> setBackColor( interfaceColorDark )
-    -> setLineColor( interfaceColor )
-    -> draw( &aScene ) -> destroy();
-
+    if( net -> getSelected() != NULL )
+    {
+        Chart2d::create()
+        -> setXMin( -4.0 )
+        -> setXMax( 4.0 )
+        -> setCenterSize( Point2d( 210,110 ), Point2d( 200, 100 ) )
+        -> setBackColor( interfaceColorDark )
+        -> setLineColor( interfaceColor )
+        -> drawBack( &aScene )
+        -> draw( &aScene, FUNC_XX )
+        -> draw( &aScene, FUNC_SIGMOID )
+        -> destroy();
+    }
 
 
     if( selectTopLeft != selectBottomRight )
@@ -383,3 +392,33 @@ void Form::onMouseWheel
         camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
     }
 }
+
+
+
+/*
+    On mouse left click event
+*/
+void Form::onLeftClick
+(
+    Scene& aScene,          /* Scene object */
+    const Point3d& aMouse,  /* Mouse position */
+    const int aMode         /* Key mode */
+)
+{
+    auto neurons = NeuronList::create();
+    auto s = aScene.getMouseCurrentScreen();
+
+    net -> getNeuronsByScreenPos( neurons, s );
+    if( neurons -> getCount() > 0 )
+    {
+        net -> setSelected( neurons -> getByIndex( 0 ));
+        neurons -> getByIndex( 0 ) -> setValue( Rnd::get( 0.0, 0.1 ) );
+    }
+    else
+    {
+        net -> setSelected( NULL );
+    }
+
+    neurons -> destroy();
+}
+

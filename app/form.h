@@ -18,23 +18,23 @@ class Form : public ScenePayload
 
         Camera camera = Camera();   /* Default camera */
 
-        Net* net       = NULL;
+        Net* net                    = NULL;
 
-        Layer* layer1  = NULL;
-        Layer* layer2  = NULL;
-        Layer* layer3  = NULL;
-        Layer* layer4  = NULL;
-        Layer* layer5  = NULL;
-        Layer* layer6  = NULL;
-        Layer* layer7  = NULL;
-        Layer* layer8  = NULL;
-        Layer* layer9  = NULL;
+        Layer* layer1               = NULL;
+        Layer* layer2               = NULL;
+        Layer* layer3               = NULL;
+        Layer* layer4               = NULL;
+        Layer* layer5               = NULL;
+        Layer* layer6               = NULL;
+        Layer* layer7               = NULL;
+        Layer* layer8               = NULL;
+        Layer* layer9               = NULL;
 
-        Point3d selectTopLeft = POINT_3D_0;
-        Point3d selectBottomRight = POINT_3D_0;
+        Point3d selectTopLeft       = POINT_3D_0;
+        Point3d selectBottomRight   = POINT_3D_0;
 
-        Rgba interfaceColor = Rgba( 0.4, 0.7, 1.0, 0.7 );
-        Rgba interfaceColorDark = Rgba( 0.1, 0.2, 0.4, 0.7 );
+        Rgba interfaceColor         = Rgba( 0.4, 0.7, 1.0, 0.7 );
+        Rgba interfaceColorDark     = Rgba( 0.1, 0.2, 0.4, 0.7 );
 
     public:
 
@@ -185,5 +185,18 @@ class Form : public ScenePayload
         (
             Scene&, /* Scene object */
             const Point3d&
+        );
+
+
+
+
+        /*
+            On mouse left click event
+        */
+        virtual void onLeftClick
+        (
+            Scene&,         /* Scene object */
+            const Point3d&,  /* Mouse position */
+            const int       /* Key mode */
         );
 };

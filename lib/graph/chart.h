@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>   /* for lyambda */
+
 #include "rect2d.h"
 #include "../scene.h"
 #include "../rgba.h"
@@ -25,9 +27,19 @@ class Chart2d
         static Chart2d* create();
         void destroy();
 
-        Chart2d* draw   /* Draw method */
+
+
+        Chart2d* drawBack   /* Draw method */
         (
             Scene*
+        );
+
+
+
+        Chart2d* draw   /* Draw method */
+        (
+            Scene*,
+            function <double ( double )>    /* Lambda calculate function */
         );
 
 
@@ -39,19 +51,51 @@ class Chart2d
         );
 
 
+
         Point2d chartToScreen
         (
             const Point2d& a
         );
+
+
 
         Chart2d* setBackColor
         (
             Rgba&
         );
 
+
+
         Chart2d* setLineColor
         (
             Rgba&
         );
 
+
+
+        Chart2d* setXMin
+        (
+            double
+        );
+
+
+
+        Chart2d* setXMax
+        (
+            double
+        );
+
+
+
+        Chart2d* setYMin
+        (
+            double
+        );
+
+
+
+        Chart2d* setYMax
+        (
+            double
+        );
 };

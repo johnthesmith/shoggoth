@@ -282,6 +282,16 @@ struct Point3d
 
 
     /*
+        Distance between this Point3d in XY surface
+    */
+    double distXY
+    (
+        const Point3d&
+    );
+
+
+
+    /*
         Cross vproduct
     */
     Point3d& cross
