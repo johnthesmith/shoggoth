@@ -1,6 +1,8 @@
+#include "../rnd.h"
+
 #include "neuron.h"
 #include "layer.h"
-#include "../rnd.h"
+#include "func.h"
 
 using namespace std;
 
@@ -190,7 +192,7 @@ Neuron* Neuron::calc()
                 return false;
             }
         );
-        setValue( summ );
+        setValue( FUNC_SIGMOID( summ ));
     }
     return this;
 }

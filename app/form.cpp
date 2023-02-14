@@ -19,6 +19,7 @@
 using namespace std;
 
 
+
 /*
     Constructor
 */
@@ -49,7 +50,6 @@ Form::Form
     layer7 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
     layer8 -> setTarget( POINT_3D_Z * 5 - POINT_3D_X );
     layer9 -> setTarget( POINT_3D_Z * 5 + POINT_3D_X );
-
 
     layer1 -> connectTo( layer2 );
     layer1 -> connectTo( layer3 );
@@ -115,7 +115,6 @@ void Form::onActivate
 {
     aScene.setFar( 1000.0 );
 }
-
 
 
 
@@ -187,12 +186,13 @@ void Form::onDraw
         Chart2d::create()
         -> setXMin( -4.0 )
         -> setXMax( 4.0 )
+        -> setYMin( 0.0 )
         -> setCenterSize( Point2d( 210,110 ), Point2d( 200, 100 ) )
         -> setBackColor( interfaceColorDark )
         -> setLineColor( interfaceColor )
         -> drawBack( &aScene )
-        -> draw( &aScene, FUNC_XX )
         -> draw( &aScene, FUNC_SIGMOID )
+        -> draw( &aScene, FUNC_XX )
         -> destroy();
     }
 
@@ -421,4 +421,3 @@ void Form::onLeftClick
 
     neurons -> destroy();
 }
-
