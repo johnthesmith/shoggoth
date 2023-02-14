@@ -82,9 +82,9 @@ Neuron& Neuron::draw()
 */
 
 
-Layer& Neuron::getLayer()
+Layer* Neuron::getLayer()
 {
-    return *layer;
+    return layer;
 }
 
 
@@ -192,7 +192,7 @@ Neuron* Neuron::calc()
                 return false;
             }
         );
-        setValue( FUNC_SIGMOID( summ ));
+        setValue( FUNC_SIGMOID( summ, 10 ));//layer -> getSensivity() ));
     }
     return this;
 }

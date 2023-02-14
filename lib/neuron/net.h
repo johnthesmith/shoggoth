@@ -142,7 +142,7 @@ class Net
         Net* getNeuronsByScreenPos
         (
             NeuronList*,/* Neuron list */
-            Point3d&
+            const Point3d&
         );
 
 
@@ -150,6 +150,16 @@ class Net
         Net* setSelected
         (
             Neuron*
+        );
+
+
+
+        /*
+            Select neurn by MOUSE position
+        */
+        Net* setSelected
+        (
+            Scene&
         );
 
 

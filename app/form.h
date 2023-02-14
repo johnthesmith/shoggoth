@@ -196,7 +196,19 @@ class Form : public ScenePayload
         virtual void onLeftClick
         (
             Scene&,         /* Scene object */
-            const Point3d&,  /* Mouse position */
+            const Point3d&, /* Mouse position */
+            const int       /* Key mode */
+        );
+
+
+
+        /*
+            On mouse left click event
+        */
+        virtual void onLeftDblClick
+        (
+            Scene&,         /* Scene object */
+            const Point3d&, /* Mouse position */
             const int       /* Key mode */
         );
 };

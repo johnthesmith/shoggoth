@@ -207,7 +207,7 @@ Net* Net::getNeuronsByScreenRect
 Net* Net::getNeuronsByScreenPos
 (
     NeuronList* aList,
-    Point3d& aPosition
+    const Point3d& aPosition
 )
 {
     int c = layers -> getCount();
@@ -235,4 +235,32 @@ Net* Net::setSelected
 Neuron* Net::getSelected()
 {
     return selected;
+}
+
+
+
+
+/*
+    On mouse left click event
+*/
+Net* Net::setSelected
+(
+    Scene& aScene /* Scene object */
+)
+{
+    auto neurons = NeuronList::create();
+    getNeuronsByScreenPos( neurons, aScene.getMouseCurrentScreen() );
+
+    if( neurons -> getCount() > 0 )
+    {
+        setSelected( neurons -> getByIndex( 0 ));
+    }
+    else
+    {
+        setSelected( NULL );
+    }
+
+    neurons -> destroy();
+
+    return this;
 }

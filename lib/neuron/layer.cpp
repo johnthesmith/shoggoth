@@ -4,6 +4,7 @@
 
 #include "layer.h"
 #include "neuron.h"
+#include "func.h"
 
 
 
@@ -120,7 +121,7 @@ Layer* Layer::connectTo
 
             /* Fill bind */
             bind
-            -> setWeight( Rnd::get( 0.0, 1.0 ))
+            -> setWeight( Rnd::get( -1.0, 1.0 ))
             -> setParent( neurons -> getByIndex( iFrom ))
             -> setChild( a -> neurons -> getByIndex( iTo ));
 
@@ -627,4 +628,11 @@ Layer* Layer::getNeuronsByScreenPos
     buffer -> destroy();
 
     return this;
+}
+
+
+
+double Layer::getSensivity()
+{
+    return sensivity;
 }

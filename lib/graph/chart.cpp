@@ -65,7 +65,8 @@ Chart2d* Chart2d::drawBack
 Chart2d* Chart2d::draw
 (
     Scene* aScene,
-    function <double ( double )> aCalc
+    function <double ( double, double )> aCalc,
+    double a1
 )
 {
     double step = ( xMax - xMin ) / ( rect.size.x * 2 );
@@ -76,7 +77,7 @@ Chart2d* Chart2d::draw
     double x = xMin;
     while( x < xMax )
     {
-        double y = aCalc( x );
+        double y = aCalc( x, a1 );
         Point2d p = chartToScreen( Point2d( x, y ));
         aScene -> vertex( p );
         x = x + step;

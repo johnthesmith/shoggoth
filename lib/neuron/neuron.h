@@ -76,7 +76,7 @@ struct Neuron
     /*
         Return neuron layer
     */
-    Layer& getLayer();
+    Layer* getLayer();
 
 
 

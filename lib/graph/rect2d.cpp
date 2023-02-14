@@ -2,6 +2,8 @@
 
 
 
+
+
 Rect2d& Rect2d::setCenterSize
 (
     const Point2d& aCenter,
@@ -9,6 +11,20 @@ Rect2d& Rect2d::setCenterSize
 )
 {
     center = aCenter;
+    size = aSize;
+    return *this;
+}
+
+
+
+Rect2d& Rect2d::setCenterSize
+(
+    const Point3d& aCenter,
+    const Point2d& aSize
+)
+{
+    center.x = aCenter.x;
+    center.y = aCenter.y;
     size = aSize;
     return *this;
 }
@@ -46,6 +62,44 @@ Rect2d& Rect2d::setCorners
         aTopLeft.x + size.x,
         aTopLeft.y - size.y
     );
+
+    return *this;
+}
+
+
+
+
+/*
+    Calc corner points at CW
+
+    y
+    ^
+    |
+    |    left top      right top
+    |    *-------------*
+    |    |             |
+    |    |      *      |
+    |    |      center |
+    |    *-------------*
+    |    left bottom   right bottom
+    |
+    *-----------------------------> x
+*/
+
+const Rect2d& Rect2d::calcCorners
+(
+    Point2d& lb,    /* Left bottom */
+    Point2d& rb,    /* Right bottom */
+    Point2d& rt,    /* Right top */
+    Point2d& lt     /* Left top */
+) const
+{
+    lb = center - size;
+    rt = center + size;
+    lt.x = lb.x;
+    lt.y = rt.y;
+    rb.x = rt.x;
+    rb.y = lb.y;
 
     return *this;
 }

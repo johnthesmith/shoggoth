@@ -10,6 +10,7 @@
 #include "rgba.h"
 #include "point3.h"
 #include "./graph/point2d.h"
+#include "./graph/rect2d.h"
 #include "point4d.h"
 #include "matrix.h"
 #include "draw_mode.h"
@@ -328,6 +329,16 @@ class Scene : public Result
         (
             Point3d&,   /* left top */
             Point3d&    /* bottom right */
+        );
+
+
+
+        /*
+            Draw quad
+        */
+        Scene& sendRect
+        (
+            const Rect2d&
         );
 
 

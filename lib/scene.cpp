@@ -924,6 +924,29 @@ Scene& Scene::sendRect
 }
 
 
+
+/*
+    Draw quad
+*/
+Scene& Scene::sendRect
+(
+    const Rect2d& aRect
+)
+{
+    Point2d p1, p2, p3, p4;
+
+    aRect.calcCorners( p1, p2, p3, p4 );
+
+    vertex( p1 );
+    vertex( p2 );
+    vertex( p3 );
+    vertex( p4 );
+
+    return *this;
+}
+
+
+
 /*
     Draw axis from -1 to 1
 */

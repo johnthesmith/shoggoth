@@ -70,6 +70,8 @@ class Layer : public Object
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
+        double  sensivity           = 10;
+
     public:
 
         NeuronList* neurons;                        /* List of neurons */
@@ -77,8 +79,6 @@ class Layer : public Object
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
         double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
-
-
 
         /*
             Constructor
@@ -280,4 +280,7 @@ class Layer : public Object
             NeuronList*,
             const Point3d&       /* Top left point */
         );
+
+
+        double getSensivity();
 };

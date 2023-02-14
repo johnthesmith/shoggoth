@@ -2,10 +2,6 @@
 
 #include <functional>   /* for lyambda */
 
-function <double (double)> FUNC_SIGMOID = NULL;
+using namespace std;
 
-//function <double (double)> FUNC_SIGMOID =
-//[]( double x ) -> double
-//{
-//    return 1.0 / ( 1.0 + pow( M_E, -x ) );
-//};
+extern function <double (double, double)> FUNC_SIGMOID;

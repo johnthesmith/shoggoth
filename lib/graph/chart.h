@@ -39,7 +39,8 @@ class Chart2d
         Chart2d* draw   /* Draw method */
         (
             Scene*,
-            function <double ( double )>    /* Lambda calculate function */
+            function <double ( double, double )>,    /* Lambda calculate function */
+            double
         );
 
 
