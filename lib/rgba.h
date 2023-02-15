@@ -86,12 +86,17 @@ struct Rgba
 /*
     Define static constatns
 */
-static Rgba RGBA_BLACK    = Rgba( 0.0, 0.0, 0.0, 1.0 );
-static Rgba RGBA_WHITE    = Rgba( 1.0, 1.0, 1.0, 1.0 );
-static Rgba RGBA_RED      = Rgba( 1.0, 0.0, 0.0, 1.0 );
-static Rgba RGBA_GREEN    = Rgba( 0.0, 1.0, 0.0, 1.0 );
-static Rgba RGBA_BLUE     = Rgba( 0.0, 0.0, 1.0, 1.0 );
-static Rgba RGBA_YELLOW   = Rgba( 1.0, 1.0, 0.0, 1.0 );
-static Rgba RGBA_MAGENTA  = Rgba( 1.0, 0.0, 1.0, 1.0 );
-static Rgba RGBA_CYAN     = Rgba( 0.0, 1.0, 1.0, 1.0 );
+static Rgba RGBA_BLACK      = Rgba( 0.0, 0.0, 0.0, 1.0 );
+static Rgba RGBA_WHITE      = Rgba( 1.0, 1.0, 1.0, 1.0 );
+static Rgba RGBA_RED        = Rgba( 1.0, 0.0, 0.0, 1.0 );
+static Rgba RGBA_GREEN      = Rgba( 0.0, 1.0, 0.0, 1.0 );
+static Rgba RGBA_BLUE       = Rgba( 0.0, 0.0, 1.0, 1.0 );
+static Rgba RGBA_YELLOW     = Rgba( 1.0, 1.0, 0.0, 1.0 );
+static Rgba RGBA_MAGENTA    = Rgba( 1.0, 0.0, 1.0, 1.0 );
+static Rgba RGBA_ORANGE     = Rgba( 1.0, 1.0, 0.0, 1.0 );
+static Rgba RGBA_CYAN       = Rgba( 0.0, 1.0, 1.0, 1.0 );
+
+static Rgba RGBA_X          = RGBA_RED;
+static Rgba RGBA_Y          = RGBA_GREEN;
+static Rgba RGBA_Z          = RGBA_BLUE;
 

@@ -954,9 +954,9 @@ Scene& Scene::drawAxisIdentity()
 {
     begin( LINE );
     {
-        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_GREEN ).vertex( POINT_3D_X );
-        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_BLUE ).vertex( POINT_3D_Y );
-        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_RED ).vertex( POINT_3D_Z );
+        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_X ).vertex( POINT_3D_X );
+        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_Y ).vertex( POINT_3D_Y );
+        color( RGBA_WHITE ).vertex( POINT_3D_0 ).color( RGBA_Z ).vertex( POINT_3D_Z );
     }
     end();
     return *this;

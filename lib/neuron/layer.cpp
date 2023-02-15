@@ -257,10 +257,7 @@ Layer* Layer::neuronPointsScreenCalc
 
 
 
-Layer* Layer::calc
-(
-    Scene* aScene
-)
+Layer* Layer::calc()
 {
     /* Calculate neurons */
     neurons -> loop
@@ -278,6 +275,30 @@ Layer* Layer::calc
         neuronPointsCalc();
         setChanged( false );
     }
+
+    return this;
+}
+
+
+
+/*
+    Calculate neurons error for learning
+*/
+Layer* Layer::calcError()
+{
+    errorChange = false;
+
+    /* Calculate neurons */
+    neurons -> loop
+    (
+        [ this ]( Neuron* neuron ) -> bool
+        {
+            bool change = false;
+            neuron -> calcError( change );
+            errorChange = errorChange || change;
+            return false;
+        }
+    );
 
     return this;
 }
@@ -636,3 +657,15 @@ double Layer::getSensivity()
 {
     return sensivity;
 }
+
+
+
+/*
+    Return true if neurons error changed in calcError method
+*/
+bool Layer::getErrorChange()
+{
+    return errorChange;
+}
+
+

@@ -45,6 +45,24 @@ class Chart2d
 
 
 
+        Chart2d* drawX  /* Draw X value */
+        (
+            Scene*,
+            double,
+            Rgba& = RGBA_Y
+        );
+
+
+
+        Chart2d* drawY  /* Draw Y value */
+        (
+            Scene*,
+            double,
+            Rgba& = RGBA_X
+        );
+
+
+
         Chart2d* setCenterSize
         (
             const Point2d&,

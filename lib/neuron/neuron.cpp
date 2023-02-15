@@ -3,6 +3,7 @@
 #include "neuron.h"
 #include "layer.h"
 #include "func.h"
+#include "../math.h"
 
 using namespace std;
 
@@ -107,6 +108,26 @@ double Neuron::getValue()
 
 
 
+Neuron& Neuron::setError
+(
+    const double a,
+    bool& change
+)
+{
+    change = abs( error - a ) > EPSILON_D;
+    error = a;
+    return *this;
+}
+
+
+
+double Neuron::getError()
+{
+    return error;
+}
+
+
+
 Point3d& Neuron::getWorldPoint()
 {
     return extention == NULL ? POINT_3D_0 : extention -> world;
@@ -178,10 +199,36 @@ Neuron* Neuron::setScreenPoint
 
 
 
+/*
+    Set waiting value for neuron in learning mode
+*/
+Neuron* Neuron::setWaitingValue
+(
+    const double a
+)
+{
+    createExtention();
+    extention -> waitingValue = a;
+    return this;
+}
+
+
+
+/*
+    Return a waiting value for neuron in learning mode
+*/
+double Neuron::getWaitingValue()
+{
+    return extention == NULL ? 0.0 : extention -> waitingValue;
+}
+
+
+
 Neuron* Neuron::calc()
 {
     if( parentBinds -> getCount() != 0 )
     {
+        /* Layer is not preceptorn */
         double summ = 0;
 
         parentBinds -> loop
@@ -192,8 +239,39 @@ Neuron* Neuron::calc()
                 return false;
             }
         );
-        setValue( FUNC_SIGMOID( summ, 10 ));//layer -> getSensivity() ));
+        setValue( FUNC_SIGMOID( summ, layer -> getSensivity() ));
     }
+    return this;
+}
+
+
+
+Neuron* Neuron::calcError
+(
+    bool& aChange
+)
+{
+    double summ = 0;
+
+    if( abs( getWaitingValue()) < EPSILON_D  )
+    {
+        /* This neuron is not reult and must take the error from parents */
+        parentBinds -> loop
+        (
+            [ &summ ]( Bind* bind ) -> bool
+            {
+                summ += bind -> getChild() -> getError() * bind -> getWeight();
+                return false;
+            }
+        );
+    }
+    else
+    {
+        /* This neuron have a waiting result */
+        summ = getWaitingValue() - value;
+    }
+    setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ), aChange );
+
     return this;
 }
 

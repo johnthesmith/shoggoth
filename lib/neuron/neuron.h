@@ -33,6 +33,7 @@ struct Neuron
     BindList* parentBinds       = NULL; /* Binds for parents */
     BindList* childrenBinds     = NULL; /* Binds for children */
     double value;                       /* Neuron value */
+    double error;                       /* Neuron error */
 
 
 
@@ -98,6 +99,21 @@ struct Neuron
 
 
     /*
+        Set error for neuron
+    */
+    Neuron& setError
+    (
+        const double,
+        bool&
+    );
+
+
+
+    double getError();
+
+
+
+    /*
         Set world point
     */
     Neuron* setWorldPoint
@@ -121,6 +137,23 @@ struct Neuron
 
 
     /*
+        Set waiting value for neuron in learning mode
+    */
+    Neuron* setWaitingValue
+    (
+        const double
+    );
+
+
+
+    /*
+        Return a waiting value for neuron in learning mode
+    */
+    double getWaitingValue();
+
+
+
+    /*
         Create extention for neuron
     */
     Neuron* createExtention();
@@ -135,4 +168,14 @@ struct Neuron
 
 
     Neuron* calc();
+
+
+    /*
+        Calculate neurons error
+    */
+    Neuron* calcError
+    (
+        bool& aChange   /* True for error will be change */
+    );
+
 };

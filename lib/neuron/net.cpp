@@ -1,7 +1,6 @@
 #include "net.h"
 
 
-
 /*
     Constructor
 */
@@ -137,11 +136,35 @@ Net* Net::calc
 )
 {
     int c = layers -> getCount();
+
+    /* Calculate values */
     for( int i = 0; i < c; i++ )
     {
         Layer* layer = ( Layer* ) layers -> getByIndex( i );
-        layer -> calc( aScene );
+        layer -> calc();
     }
+
+    /* TODO values must stablilized  like errors */
+
+
+
+    /* Calculate errors */
+    auto errorChange = false;
+    for( int j = c-1; j >= 0 ; j-- )
+    {
+        /* Calculate error for j neurons in the layer */
+        Layer* layer = ( Layer* ) layers -> getByIndex( j );
+        layer -> calcError();
+        /* Fixing erorr change result for j Layer */
+        errorChange = errorChange || layer -> getErrorChange();
+    }
+
+
+    if( !errorChange )
+    {
+        /* Завтра пишем расчет весов для связей */
+    }
+
     return this;
 }
 

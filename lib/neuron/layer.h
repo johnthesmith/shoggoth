@@ -70,8 +70,9 @@ class Layer : public Object
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        double  sensivity           = 10;
+        double  sensivity           = 5;
 
+        bool    errorChange         = false;        /* True - method errorChange return true for any neuron, else false */
     public:
 
         NeuronList* neurons;                        /* List of neurons */
@@ -167,13 +168,18 @@ class Layer : public Object
         );
 
 
+
         /*
-            Calc layer
+            Calc layer forward
         */
-        Layer* calc
-        (
-            Scene* aScene   /* Scene object */
-        );
+        Layer* calc();
+
+
+
+        /*
+            Calc layer error (backward)
+        */
+        Layer* calcError();
 
 
 
@@ -283,4 +289,6 @@ class Layer : public Object
 
 
         double getSensivity();
+
+        bool getErrorChange();
 };

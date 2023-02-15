@@ -173,16 +173,17 @@ void Form::onDraw
     aScene
     .setPointSize( 4 )
     .begin( POINT )
-    .color( RGBA_GREEN ).vertex( aScene.getScreenByWorld( POINT_3D_X ))
-    .color( RGBA_BLUE ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
-    .color( RGBA_RED ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
+    .color( RGBA_X ).vertex( aScene.getScreenByWorld( POINT_3D_X ))
+    .color( RGBA_Y ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
+    .color( RGBA_Z ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
     .end();
 
 
     /*
         Draw neuron chart
     */
-    if( net -> getSelected() != NULL )
+    Neuron* neuron = net -> getSelected();
+    if( neuron != NULL )
     {
 
         aScene
@@ -193,7 +194,7 @@ void Form::onDraw
         (
             Rect2d().setCenterSize
             (
-                net -> getSelected() -> getScreenPoint(),
+                neuron -> getScreenPoint(),
                 Point2d( 10.0, 10.0 )
             )
         )
@@ -202,13 +203,21 @@ void Form::onDraw
         Chart2d::create()
         -> setXMin( -5.0 )
         -> setXMax( 5.0 )
-        -> setYMin( -1.0 )
-        -> setYMax( 1.0 )
-        -> setCenterSize( Point2d( 210,110 ), Point2d( 200, 100 ) )
+        -> setYMin( -0.5 )
+        -> setYMax( 1.5 )
+        -> setCenterSize( Point2d( 210,210 ), Point2d( 200, 200 ) )
         -> setBackColor( interfaceColorDark )
         -> setLineColor( interfaceColor )
         -> drawBack( &aScene )
-        -> draw( &aScene, FUNC_SIGMOID, net -> getSelected() -> getLayer() -> getSensivity() )
+        -> draw( &aScene, FUNC_SIGMOID, neuron -> getLayer() -> getSensivity() )
+        -> draw( &aScene, FUNC_SIGMOID_DERIVATIVE, neuron -> getLayer() -> getSensivity() )
+
+        -> drawX( &aScene, neuron -> getValue(), RGBA_ORANGE )
+//        -> drawY( &aScene, FUNC_SIGMOID( neuron -> getValue(), neuron -> getLayer() -> getSensivity() ), RGBA_CYAN )
+        -> drawX( &aScene, 0.0 )
+        -> drawX( &aScene, neuron -> getError(), RGBA_RED )
+        -> drawX( &aScene, -1.0, interfaceColor )
+        -> drawX( &aScene, 1.0, interfaceColor )
         -> destroy();
     }
 
@@ -387,7 +396,7 @@ void Form::onMouseWheel
     if(  neuron != NULL )
     {
         /* Neuron Control*/
-        neuron -> setValue( neuron -> getValue() + aDelta.y * 0.2 );
+        neuron -> setValue( neuron -> getValue() + aDelta.y * 0.1 );
     }
     else
     {

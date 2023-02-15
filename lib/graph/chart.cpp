@@ -90,6 +90,51 @@ Chart2d* Chart2d::draw
 
 
 
+Chart2d* Chart2d::drawX
+(
+    Scene* aScene,
+    double x,
+    Rgba& aColor
+)
+{
+    aScene -> setLineWidth( 1 );
+
+    Point2d p1 = chartToScreen( Point2d( x, yMin ));
+    Point2d p2 = chartToScreen( Point2d( x, yMax ));
+
+    aScene -> begin( LINE  ).color( lineColor );;
+    aScene -> color( aColor );
+    aScene -> vertex( p1 );
+    aScene -> vertex( p2 );
+    aScene -> end();
+
+    return this;
+}
+
+
+
+Chart2d* Chart2d::drawY
+(
+    Scene* aScene,
+    double y,
+    Rgba& aColor
+)
+{
+    aScene -> setLineWidth( 1 );
+
+    Point2d p1 = chartToScreen( Point2d( xMin, y ));
+    Point2d p2 = chartToScreen( Point2d( xMax, y ));
+    aScene -> begin( LINE  ).color( lineColor );;
+    aScene -> color( aColor );
+    aScene -> vertex( p1 );
+    aScene -> vertex( p2 );
+    aScene -> end();
+
+    return this;
+}
+
+
+
 Chart2d* Chart2d::setCenterSize
 (
     const Point2d& aCenter,
@@ -112,11 +157,11 @@ Point2d Chart2d::chartToScreen
     double chartHeight  = yMax - yMin;
     double screenHeight = rect.size.y * 2;
 
-    double nx = ( a.x - xMin ) / chartWidth;
-    double ny = ( a.y - yMin ) / chartHeight;
+    double nx = a.x < xMin ? xMin : ( a.x > xMax ? xMax : a.x );
+    double ny = a.y < yMin ? yMin : ( a.y > yMax ? yMax : a.y );
 
-    nx = nx < xMin ? xMin : ( nx > xMax ? xMax : nx );
-    ny = ny < yMin ? yMin : ( ny > yMax ? yMax : ny );
+    nx = ( nx - xMin ) / chartWidth;
+    ny = ( ny - yMin ) / chartHeight;
 
     auto result = Point2d
     (
