@@ -6,7 +6,7 @@ using namespace std;
 
 
 /*
-    Create sigmoid modifer from [-00; +00]
+    Create sigmoid modifer
     https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%B3%D0%BC%D0%BE%D0%B8%D0%B4%D0%B0
     |
     |           Power = 10
@@ -24,14 +24,25 @@ using namespace std;
     |  -1-----------0-----------1
 */
 
-function <double ( double, double )> FUNC_SIGMOID =
+function
+<
+    double  /* Result */
+    (
+        double, /* Argiment [-oo; +oo] */
+        double  /* Sensiviti [ 0; +oo]*/
+    )
+>
+FUNC_SIGMOID =
 []( double x, double sensivity ) -> double
 {
     return 1.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) );
 };
 
+
+
+
 /*
-    Create sigmoid modifer from [-00; +00]
+    Create sigmoid derivative
     https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%B3%D0%BC%D0%BE%D0%B8%D0%B4%D0%B0
     https://kawahara.ca/how-to-compute-the-derivative-of-a-sigmoid-function-fully-worked-example/
     |                y
@@ -46,10 +57,17 @@ function <double ( double, double )> FUNC_SIGMOID =
     |   -1-----------0-----------1
 */
 
-function <double ( double, double )> FUNC_SIGMOID_DERIVATIVE =
+function
+<
+    double
+    (
+        double, /* Argiment [-oo; +oo] */
+        double  /* Sensiviti [ 0; +oo]*/
+    )
+>
+FUNC_SIGMOID_DERIVATIVE =
 []( double x, double sensivity ) -> double
 {
-    return FUNC_SIGMOID( x, sensivity ) * ( 1 - FUNC_SIGMOID( x, sensivity ));
+    auto sigmoida = FUNC_SIGMOID( x, sensivity );
+    return ssigmoida * ( 1 - sigmoida );
 };
-
-
