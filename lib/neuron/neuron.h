@@ -32,9 +32,11 @@ struct Neuron
     NeuronExtention* extention  = NULL; /* Neuron extention object */
     BindList* parentBinds       = NULL; /* Binds for parents */
     BindList* childrenBinds     = NULL; /* Binds for children */
-    double value;                       /* Neuron value */
-    double error;                       /* Neuron error */
-
+    double  value;                      /* Neuron value */
+    /* Neuron error, difference between value and extends.waitingValue,
+    calculating in calcValue */
+    double  error               = 0;
+    bool    loopParity          = 0;    /* Loop parity, look at Net.loopParity */
 
 
     Neuron
@@ -103,8 +105,7 @@ struct Neuron
     */
     Neuron& setError
     (
-        const double,
-        bool&
+        const double
     );
 
 
@@ -167,7 +168,13 @@ struct Neuron
 
 
 
-    Neuron* calc();
+    /*
+        Calculate value
+    */
+    Neuron* calcValue
+    (
+        bool    /* Loop parity */
+    );
 
 
     /*

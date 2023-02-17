@@ -257,19 +257,39 @@ Layer* Layer::neuronPointsScreenCalc
 
 
 
-Layer* Layer::calc()
+Layer* Layer::calc
+(
+    bool aLoopParity
+)
 {
+    bool calculatedValueFinish = true;
+
     /* Calculate neurons */
     neurons -> loop
     (
-        []( Neuron* neuron ) -> bool
+        [ &calculatedValueFinish, &aLoopParity ]( Neuron* neuron ) -> bool
         {
-            neuron -> calc();
+            if( neuron -> loopParity != aLoopParity )
+            {
+                /* Calc neuron */
+                neuron -> calcValue( aLoopParity );
+                /* Accumulate layer finish value */
+                calculatedValueFinish
+                = calculatedValueFinish
+                && ( neuron -> loopParity == aLoopParity );
+            }
             return false;
         }
     );
 
-    /**/
+    /* Fixing the loop parity for layer */
+    if( calculatedValueFinish )
+    {
+        loopParity = aLoopParity;
+    }
+
+
+    /* Calculate 3d */
     if( getChanged() )
     {
         neuronPointsCalc();
@@ -668,4 +688,13 @@ bool Layer::getErrorChange()
     return errorChange;
 }
 
+
+
+/*
+    Return true when all neurons is calculated
+*/
+bool Layer::getLoopParity()
+{
+    return loopParity;
+}
 

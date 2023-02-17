@@ -69,5 +69,23 @@ FUNC_SIGMOID_DERIVATIVE =
 []( double x, double sensivity ) -> double
 {
     auto sigmoida = FUNC_SIGMOID( x, sensivity );
-    return ssigmoida * ( 1 - sigmoida );
+    return sigmoida * ( 1 - sigmoida );
 };
+
+
+
+/*
+    Randomizer
+*/
+function
+<
+    double()
+>
+FUNC_RND =
+[]() -> double
+{
+    return Rnd::get( 0.0, 1.0 );
+};
+
+
+

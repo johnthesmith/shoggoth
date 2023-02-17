@@ -110,11 +110,9 @@ double Neuron::getValue()
 
 Neuron& Neuron::setError
 (
-    const double a,
-    bool& change
+    const double a
 )
 {
-    change = abs( error - a ) > EPSILON_D;
     error = a;
     return *this;
 }
@@ -224,22 +222,47 @@ double Neuron::getWaitingValue()
 
 
 
-Neuron* Neuron::calc()
+/*
+    Calculate neuron
+*/
+Neuron* Neuron::calcValue
+(
+    bool aLoopParity /* Loop parity */
+)
 {
-    if( parentBinds -> getCount() != 0 )
+    /* Checking if a neuron value needs to be counted */
+    if( loopParity != aLoopParity )
     {
-        /* Layer is not preceptorn */
-        double summ = 0;
-
-        parentBinds -> loop
-        (
-            [ &summ ]( Bind* bind ) -> bool
+        if( parentBinds -> getCount() != 0 )
+        {
+            /* Neuron has a binds and it is not a Receptor */
+            double summ = 0;
+            bool stop = false;
+            parentBinds -> loop
+            (
+                [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
+                {
+                    /* Get a nauron */
+                    Neuron* iNeuron = bind -> getParent();
+                    /* Calculate summ */
+                    summ += iNeuron -> getValue() * bind -> getWeight();
+                    /* Check parent parity and compare with current loop parity */
+                    stop = iNeuron -> loopParity != aLoopParity;
+                    return stop;
+                }
+            );
+            if( !stop )
             {
-                summ += bind -> getParent() -> getValue() * bind -> getWeight();
-                return false;
+                /* Neuron is calculated */
+                setValue( FUNC_SIGMOID( summ, layer -> getSensivity() ));
+                loopParity = aLoopParity;
             }
-        );
-        setValue( FUNC_SIGMOID( summ, layer -> getSensivity() ));
+        }
+        else
+        {
+            /* It is Preceptron */
+            loopParity = aLoopParity;
+        }
     }
     return this;
 }
@@ -248,29 +271,38 @@ Neuron* Neuron::calc()
 
 Neuron* Neuron::calcError
 (
-    bool& aChange
+    bool& aLoopParity
 )
 {
-    double summ = 0;
-
-    if( abs( getWaitingValue()) < EPSILON_D  )
+    /* Checking if a neuron error needs to be counted */
+    if( loopParity != aLoopParity )
     {
-        /* This neuron is not reult and must take the error from parents */
-        parentBinds -> loop
-        (
-            [ &summ ]( Bind* bind ) -> bool
-            {
-                summ += bind -> getChild() -> getError() * bind -> getWeight();
-                return false;
-            }
-        );
+        double summ = 0;
+        bool stop = false;  /* Stop calculating */
+        if( abs( getWaitingValue()) < EPSILON_D  )
+        {
+            /* This neuron is not result and must take the error from parents */
+            parentBinds -> loop
+            (
+                [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
+                {
+                    /* Get a nauron */
+                    Neuron* iNeuron = bind -> getParent();
+                    /* Calculate summ */
+                    summ += iNeuron -> getError() * bind -> getWeight();
+                    /* Check parent parity and compare with current loop parity */
+                    stop = iNeuron -> loopParity != aLoopParity;
+                    return false;
+                }
+            );
+        }
+        else
+        {
+            /* This neuron have a waiting result */
+            summ = getWaitingValue() - value;
+        }
+        setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
     }
-    else
-    {
-        /* This neuron have a waiting result */
-        summ = getWaitingValue() - value;
-    }
-    setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ), aChange );
 
     return this;
 }

@@ -24,6 +24,8 @@ class Net
         LayerList* layers   = NULL; /* The layer list object */
 
         Neuron* selected    = NULL; /* Selectrd neuron */
+
+        bool loopParity     = true;
     public:
 
         /*

@@ -70,9 +70,11 @@ class Layer : public Object
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        double  sensivity           = 5;
+        double  sensivity               = 5;
 
-        bool    errorChange         = false;        /* True - method errorChange return true for any neuron, else false */
+        bool    errorChange             = false;    /* True - method errorChange return true for any neuron, else false */
+        bool    loopParity              = false;    /* Loop parity value */
+        bool    incomeChanged           = false;    /* True if preceptron chenged. Set in neuron->setValue*/
     public:
 
         NeuronList* neurons;                        /* List of neurons */
@@ -155,6 +157,9 @@ class Layer : public Object
 
 
 
+        /*
+            Recalculate world position
+        */
         Layer* neuronPointsCalc();
 
 
@@ -172,7 +177,10 @@ class Layer : public Object
         /*
             Calc layer forward
         */
-        Layer* calc();
+        Layer* calc
+        (
+            bool    /* Loop parity */
+        );
 
 
 
@@ -291,4 +299,11 @@ class Layer : public Object
         double getSensivity();
 
         bool getErrorChange();
+
+
+
+        /*
+            Get loop parity
+        */
+        bool getLoopParity();
 };

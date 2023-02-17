@@ -48,38 +48,92 @@ After that you need to run:
 ## OpenGL objects scheme
 
 ```mermaid
-flowchart
+flowchart LR
 
-    ScenePayload
-    Camera
+ScenePayload
+Camera
+
+math((math<br>libs))
+
+subgraph app
+    main
+    Form
+end
+
+subgraph lib
+    Heap
+    Result
+    Payload
     Log
+    Rnd
+    Utils
+end
 
-    math((math<br>libs))
+subgraph graph
+    Object
+    Camera
+    ScenePayload
+    Scene
+    math
+    Point3d
+    Point4d
+    Point2d
+    Matrix4
+    Rect2d
+    Rgba
+    
+end
+
+subgraph neuron
+    Bind
+    BindList
+    Layer
+    LayerList
+    Net
+    Neuron
+    NeuronList
+    Func
+end
 
 
-    Payload --> ScenePayload
-    Camera -.-> UserPayload
+Payload --> ScenePayload
+Camera -.-> Form
 
 
-    ScenePayload -->  UserPayload
-    ScenePayload-.-> Scene
+ScenePayload-.-> Scene
 
-    Result --> Camera
-    Result --> Payload
-    Result --> Scene
+Object --> Camera
+Result --> Payload
+Result --> Scene
+Result --> Object
 
 
-    Log -.-> main
+Log -.-> main
 
-    UserPayload -.-> main
-    Scene -.-> main
+Form -.-> main
+Scene -.-> main
 
-    Point3d -.-> math
-    Point4d -.-> math
-    Point2d -.-> math
-    Matrix4 -.-> math
+Point3d -.-> math
+Point4d -.-> math
+Point2d -.-> math
+Matrix4 -.-> math
+Rect2d -.-> math
 
-    math -.-> Scene
+math -.-> Scene
+
+Net --> Form
+ScenePayload--> Form 
+
+
+Func -.-> Neuron
+Neuron -.-> NeuronList
+NeuronList -.-> Layer
+Layer -.-> LayerList
+LayerList -.-> Net
+Bind -.-> BindList
+BindList -.-> Neuron
+Heap --> BindList
+Heap --> NeuronList
 ```
 
 1. Solid line - extends class
@@ -89,4 +143,71 @@ flowchart
 
 # Shabnigroth
 
-1. Waiting.
+1. Shabnigroth - are simple neural network (neuronet). Contains following components:
+    1. Neuron - element of neuronet with value and error.
+    0. Neuron Extention - structure contains the optionl specific information about neuron like id, name etc.
+    0. Bind - link between two neurns with Weight.
+    0. Layer - the layer contains neurons.
+    0. Net - it is a general oblect of neuronet with list of neurons.
+
+```mermaid
+flowchart LR
+
+    subgraph neuronet
+        Bind
+        BindList
+        Layer
+        LayerList
+        Net
+        Neuron
+        NeuronList
+        Func
+        NeuronExtention
+    end
+
+    Point2d -..-o NeuronExtention
+    Point3d -..-o NeuronExtention
+
+    Log -.-o Net
+    Log -.-o Layer
+    NeuronExtention -.-o Neuron
+    Func -.-o Neuron
+    Neuron -.-o NeuronList
+    Object ---> Layer
+    NeuronList -.-o Layer
+    Layer -.-o LayerList
+    LayerList -.-o Net
+    Bind -.-o BindList & Neuron
+    BindList -.-o Neuron
+    Heap --> BindList
+    Heap -----> NeuronList
+    Heap -----> LayerList
+```
+
+# Neuron
+
+1. The element of neuronet with Value and Error. Element can has the Extention for optional information.
+0. Neuron is defined in [Neuron](./lib/neuron/neuron.h). 
+0. Neuron uses the sigmoid function to calculate Value and derivative sigmoid function to calculate Error in learning mode.
+
+
+
+# Neuron extention
+
+1. It is a optional structure for neurons. 
+0. Each neuron may or not may has one Extantion.
+0. The extention will be created for the neuron on demand, when user setts the advinced parameter.
+0. No extentions needed for huge [layers](#layer).
+
+
+
+# Layer
+
+1. The layer it is the  [object](#object) and contains neurons.
+0. Each layer has a unique auto-generated identifier for identification and a human readable name.
+
+
+
+# Net
+
+
