@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "rgba.h"
 
 
@@ -95,3 +97,37 @@ Rgba& Rgba::setAlpha
     alpha = a;
     return *this;
 }
+
+
+
+/*
+    Linear interpolation
+*/
+Rgba& Rgba::itpLin
+(
+    const Rgba& a,
+    const double aTime
+)
+{
+    red     += ( a.red - red ) * aTime;
+    green   += ( a.green - green ) * aTime;
+    blue    += ( a.blue - blue ) * aTime;
+    alpha   += ( a.alpha - alpha ) * aTime;
+    return *this;
+}
+
+
+
+/*
+    Tangens interpolation
+*/
+Rgba& Rgba::itpSgm
+(
+    const Rgba& a,
+    const double aTime
+)
+{
+    itpLin( a, 1.0 / ( 1.0 + pow( M_E, ( -aTime + 0.5 ) * 10 ) ));
+    return *this;
+}
+

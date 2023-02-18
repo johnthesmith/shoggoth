@@ -169,4 +169,11 @@ class Net
 
 
         Neuron* getSelected();
+
+
+
+        Net* setNeuronDrawMode
+        (
+            const NeuronDrawMode
+        );
 };

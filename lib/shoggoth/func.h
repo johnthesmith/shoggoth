@@ -6,4 +6,3 @@ using namespace std;
 
 extern function <double ( double, double )> FUNC_SIGMOID;
 extern function <double ( double, double )> FUNC_SIGMOID_DERIVATIVE;
-extern function <double ()> FUNC_RND;

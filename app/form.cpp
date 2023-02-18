@@ -36,15 +36,15 @@ Form::Form
 {
     net = Net::create( &getLog() );
 
-    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 ));
+    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 )) -> setLayerType( LT_RECEPTOR );
     layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 5, 5, 1 ));
     layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 5, 5, 1 ));
     layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 5, 5, 1 ));
     layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 5, 5, 1 ));
     layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 5, 5, 1 ));
     layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 5, 5, 1 ));
-    layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 ));
-    layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 ));
+    layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
+    layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
 
     layer1 -> setTarget( POINT_3D_Z * 0 );
     layer2 -> setTarget( POINT_3D_Z * 2 - POINT_3D_X );
@@ -216,8 +216,11 @@ void Form::onDraw
         -> drawBack( &aScene )
         -> draw( &aScene, FUNC_SIGMOID, neuron -> getLayer() -> getSensivity() )
         -> draw( &aScene, FUNC_SIGMOID_DERIVATIVE, neuron -> getLayer() -> getSensivity() )
+
         -> drawX( &aScene, neuron -> getValue(), RGBA_ORANGE )
         -> drawX( &aScene, neuron -> getError(), RGBA_RED )
+        -> drawX( &aScene, neuron -> getLearningValue(), RGBA_MAGENTA )
+
         -> drawX( &aScene, 0.0, interfaceColor )
         -> drawX( &aScene, 1.0, interfaceColor )
         -> drawY( &aScene, 0.0, interfaceColor )
@@ -287,6 +290,12 @@ void Form::onKeyUp
         break;
         case KEY_LEFT_SHIFT:
             camera.setTargetLock( false );
+        break;
+        case KEY_F1:
+            net -> setNeuronDrawMode( NDM_VALUE );
+        break;
+        case KEY_F2:
+            net -> setNeuronDrawMode( NDM_ERROR );
         break;
     }
 }
@@ -399,12 +408,25 @@ void Form::onMouseWheel
     Neuron* neuron = net -> getSelected();
     if(  neuron != NULL )
     {
-        /* Neuron Control*/
-        neuron -> setValue
-        (
-            neuron -> getValue() + aDelta.y *
-            ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
-        );
+        switch( neuron -> getLayer() -> getLayerType())
+        {
+            case LT_RECEPTOR:
+                /* Neuron value Control*/
+                neuron -> setValue
+                (
+                    neuron -> getValue() + aDelta.y *
+                    ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+                );
+            break;
+            case LT_RESULT:
+                /* Neyron learning value control */
+                neuron -> setLearningValue
+                (
+                    neuron -> getLearningValue() + aDelta.y *
+                    ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+                );
+            break;
+        }
     }
     else
     {

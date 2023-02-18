@@ -309,3 +309,19 @@ Neuron* Neuron::calcError
 
 
 
+Neuron* Neuron::setLearningValue
+(
+    double a
+)
+{
+    createExtention();
+    extention -> waitingValue = a;
+    return this;
+}
+
+
+
+double Neuron::getLearningValue()
+{
+    return extention == NULL ? 0.0 : extention -> waitingValue;
+}

@@ -190,4 +190,21 @@ struct Neuron
         bool& aChange   /* True for error will be change */
     );
 
+
+
+    /*
+        Set waiting value for neuron in learning mode
+    */
+    Neuron* setLearningValue
+    (
+        const double
+    );
+
+
+
+    /*
+        Return a waiting value for neuron in learning mode
+    */
+    double getLearningValue();
+
 };

@@ -27,6 +27,23 @@ using namespace std;
 
 
 
+enum NeuronDrawMode
+{
+    NDM_VALUE,
+    NDM_ERROR
+};
+
+
+
+enum LayerType
+{
+    LT_RECEPTOR,
+    LT_CORTEX,
+    LT_RESULT
+};
+
+
+
 enum ConnectType
 {
     ONE_TO_ONE, /* Connection type = */
@@ -68,17 +85,30 @@ class Layer : public Object
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        double  sensivity               = 10;
+        LayerType       layerType       = LT_CORTEX;
 
-        bool    errorChange             = false;    /* True - method errorChange return true for any neuron, else false */
-        bool    loopParity              = false;    /* Loop parity value */
-        bool    incomeChanged           = false;    /* True if preceptron chenged. Set in neuron->setValue*/
+        double          sensivity       = 10;
+
+        bool            errorChange     = false;    /* True - method errorChange return true for any neuron, else false */
+        bool            loopParity      = false;    /* Loop parity value */
+        bool            incomeChanged   = false;    /* True if preceptron chenged. Set in neuron->setValue*/
+
+        const Rgba      colorValue0     = Rgba( 0.0, 0.5, 1.0, 1.0 );
+        const Rgba      colorValue1     = Rgba( 1.0, 0.5, 0.0, 1.0 );
+        const Rgba      colorError0     = Rgba( 1.0, 0.0, 0.0, 0.0 );
+        const Rgba      colorError1     = Rgba( 1.0, 0.0, 0.0, 1.0 );
+
+        NeuronDrawMode  neuronDrawMode  = NDM_VALUE;
+
+        Rgba            colorLayerTypeReceptor  = Rgba( 1.0, 1.0, 0.0, 0.1 );
+        Rgba            colorLayerTypeCortex    = Rgba( 0.5, 0.7, 1.0, 0.1 );
+        Rgba            colorLayerTypeResult    = Rgba( 1.0, 0.5, 1.0, 0.1 );
     public:
 
         NeuronList* neurons;                        /* List of neurons */
 
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
-        double neuronDrawSize       = 4.0;          /* Neuron size in scerrn pixels */
+        double neuronDrawSize       = 6.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
 
         /*
@@ -328,4 +358,24 @@ class Layer : public Object
         );
 
 
+
+        Layer* setNeuronDrawMode
+        (
+            const NeuronDrawMode
+        );
+
+
+
+        NeuronDrawMode getNeuronDrawMode();
+
+
+
+        Layer* setLayerType
+        (
+            const LayerType
+        );
+
+
+
+        LayerType getLayerType();
 };

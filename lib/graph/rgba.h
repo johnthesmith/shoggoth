@@ -68,6 +68,28 @@ struct Rgba
 
 
 
+    /*
+        Linear interpolation
+    */
+    Rgba& itpLin
+    (
+        const Rgba&, /* To color */
+        const double
+    );
+
+
+
+    /*
+        Linear interpolation
+    */
+    Rgba&  itpSgm
+    (
+        const Rgba&, /* To color */
+        const double
+    );
+
+
+
     Rgba& Temperatura
     (
         double
@@ -99,4 +121,3 @@ static Rgba RGBA_CYAN       = Rgba( 0.0, 1.0, 1.0, 1.0 );
 static Rgba RGBA_X          = RGBA_RED;
 static Rgba RGBA_Y          = RGBA_GREEN;
 static Rgba RGBA_Z          = RGBA_BLUE;
-

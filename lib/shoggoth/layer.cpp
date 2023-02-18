@@ -362,7 +362,17 @@ Layer* Layer::draw
     for( int i = 0; i < currentSize; i++ )
     {
         Neuron* n = neurons -> getByIndex( i );
-        aScene -> color( Rgba( 1.0, 0.7, 0.0, n -> getValue() ));
+        Rgba c;
+        switch( neuronDrawMode )
+        {
+            case NDM_VALUE:
+                c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
+            break;
+            case NDM_ERROR:
+                c = Rgba( colorError0 ).itpLin( colorError1, n -> getValue() );
+            break;
+        }
+        aScene -> color( c );
         aScene -> vertex( n -> getWorldPoint() );
     }
     aScene -> end();
@@ -384,7 +394,7 @@ Layer* Layer::draw
             auto w = bind -> getWeight();
 
             aScene
-            -> color( Rgba( 0, 1, 0, w *0.1 ))
+            -> color( Rgba( 0, 1, 0, w * 0.1 ))
             .vertex( iNeuron -> getWorldPoint() )
             .vertex( cNeuron -> getWorldPoint() )
             ;
@@ -403,16 +413,25 @@ Layer* Layer::draw
 
     /* Draw layer box */
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
+
+    Rgba c;
+
+    switch( layerType )
+    {
+        case LT_RECEPTOR: c = colorLayerTypeReceptor; break;
+        case LT_CORTEX: c = colorLayerTypeCortex; break;
+        case LT_RESULT: c = colorLayerTypeResult; break;
+    }
+
     aScene
     -> setLineWidth( 1 )
     .polygonMode( POLYGON_LINE )
+    .color( c )
     .begin( QUAD )
-    .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
     .sendQube( getTarget(), outerBox )
     .end()
     .polygonMode( POLYGON_FILL )
     .begin( QUAD )
-    .color( Rgba( 0.5, 0.7, 1.0, 0.1 ) )
     .sendQube( getTarget(), outerBox )
     .end();
 
@@ -721,4 +740,41 @@ Layer* Layer::getNeuronsByScreenPos
     buffer -> destroy();
 
     return this;
+}
+
+
+
+Layer* Layer::setNeuronDrawMode
+(
+    const NeuronDrawMode a
+)
+{
+    neuronDrawMode = a;
+
+    return this;
+}
+
+
+
+NeuronDrawMode Layer::getNeuronDrawMode()
+{
+    return neuronDrawMode;
+}
+
+
+
+Layer* Layer::setLayerType
+(
+    const LayerType a
+)
+{
+    layerType = a;
+    return this;
+}
+
+
+
+LayerType Layer::getLayerType()
+{
+    return layerType;
 }
