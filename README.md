@@ -1,6 +1,6 @@
 # Shoggoth
 
-This is Shoggoth https://github.com/johnthesmith/shab neuronet with visual control.
+This is [Shoggoth](https://github.com/johnthesmith/shab) neuronet with visual control.
 
 
 
