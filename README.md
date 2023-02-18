@@ -41,6 +41,7 @@ flowchart
     shoggoth --> app
     lib --> shoggoth
     lib --> app
+    shab
 ```
 
 
@@ -153,6 +154,7 @@ flowchart LR
 
 1. Solid line - extends class
 0. Dotted line - uses class
+
 
 
 ### Neuron
