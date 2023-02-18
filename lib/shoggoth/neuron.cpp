@@ -277,51 +277,37 @@ Neuron* Neuron::calcError
     /* Checking if a neuron error needs to be counted */
     if( loopParity != aLoopParity )
     {
-        double summ = 0;
+        double summ = 0.0;
         bool stop = false;  /* Stop calculating */
-        if( abs( getLearningValue()) < EPSILON_D  )
+
+        switch( getLayer() -> getLayerType())
         {
-            /* This neuron is not result and must take the error from parents */
-            childrenBinds -> loop
-            (
-                [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
-                {
-                    /* Get a nauron */
-                    Neuron* iNeuron = bind -> getChild();
-                    /* Calculate summ */
-                    summ += iNeuron -> getError() * bind -> getWeight();
-                    /* Check parent parity and compare with current loop parity */
-                    stop = iNeuron -> loopParity != aLoopParity;
-                    return false;
-                }
-            );
+            case LT_RECEPTOR:
+                setError( 0.0 );
+            break;
+            case LT_CORTEX:
+                /* This neuron is not result and must take the error from parents */
+                childrenBinds -> loop
+                (
+                    [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
+                    {
+                        /* Get a nauron */
+                        Neuron* iNeuron = bind -> getChild();
+                        /* Calculate summ */
+                        summ += iNeuron -> getError() * bind -> getWeight();
+                        /* Check parent parity and compare with current loop parity */
+                        stop = iNeuron -> loopParity != aLoopParity;
+                        return false;
+                    }
+                );
+                setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
+            break;
+            case LT_RESULT:
+                /* This neuron have a waiting result */
+                setError( getLearningValue() - value );
+            break;
         }
-        else
-        {
-            /* This neuron have a waiting result */
-            summ = getLearningValue() - value;
-        }
-        setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
     }
-
     return this;
 }
 
-
-
-Neuron* Neuron::setLearningValue
-(
-    double a
-)
-{
-    createExtention();
-    extention -> learningValue = a;
-    return this;
-}
-
-
-
-double Neuron::getLearningValue()
-{
-    return extention == NULL ? 0.0 : extention -> learningValue;
-}

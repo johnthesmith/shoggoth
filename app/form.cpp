@@ -410,6 +410,7 @@ void Form::onMouseWheel
     {
         switch( neuron -> getLayer() -> getLayerType())
         {
+
             case LT_RECEPTOR:
                 /* Neuron value Control*/
                 neuron -> setValue

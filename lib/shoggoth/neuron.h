@@ -143,23 +143,6 @@ struct Neuron
 
 
     /*
-        Set waiting value for neuron in learning mode
-    */
-    Neuron* setLearningValue
-    (
-        const double
-    );
-
-
-
-    /*
-        Return a waiting value for neuron in learning mode
-    */
-    double getLearningValue();
-
-
-
-    /*
         Create extention for neuron
     */
     Neuron* createExtention();
@@ -193,7 +176,7 @@ struct Neuron
 
 
     /*
-        Set waiting value for neuron in learning mode
+        Set learning value for neuron in learning mode
     */
     Neuron* setLearningValue
     (
@@ -203,7 +186,7 @@ struct Neuron
 
 
     /*
-        Return a waiting value for neuron in learning mode
+        Return a learning value for neuron in learning mode
     */
     double getLearningValue();
 

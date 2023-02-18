@@ -161,6 +161,7 @@ Scene& Scene::init
                     int aMods
                 )
                 {
+cout << aKey << "\n";
                     /* Get scene object in lambda */
                     ((Scene*)glfwGetWindowUserPointer( aWin ))
                     -> keyboardEvent( aKey, aScancode, aAction, aMods );
