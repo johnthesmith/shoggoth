@@ -120,7 +120,7 @@ Log -.-o Scene
 ```mermaid
 flowchart LR
 
-    subgraph neuronet
+    subgraph shoggoth
         Bind
         BindList
         Layer
