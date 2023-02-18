@@ -83,24 +83,24 @@ end
 ScenePayload--> Form
 
 Payload --> ScenePayload
-Camera -.-> Form
+Camera -.-o Form
 
-ScenePayload-.-> Scene
+ScenePayload-.-o Scene
 
 Object --> Camera
 Result --> Scene
 Result --> Object
 
-Scene -.-> main
+Scene -.-o main
 
-Point3d -.-> Scene
-Point4d -.-> Scene
-Point2d -.-> Scene
-Matrix4 -.-> Scene
-Rect2d -.-> Scene
-Rgba -.-> Scene
+Point3d -.-o Scene
+Point4d -.-o Scene
+Point2d -.-o Scene
+Matrix4 -.-o Scene
+Rect2d -.-o Scene
+Rgba -.-o Scene
 
-Log -.-> Scene
+Log -.-o Scene
 ```
 
 1. Solid line - extends class
