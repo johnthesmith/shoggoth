@@ -98,7 +98,7 @@ subgraph graph
     Matrix4
     Rect2d
     Rgba
-    
+
 end
 
 subgraph neuron
@@ -139,8 +139,7 @@ Rect2d -.-> math
 math -.-> Scene
 
 Net --> Form
-ScenePayload--> Form 
-
+ScenePayload--> Form
 
 Func -.-> Neuron
 Neuron -.-> NeuronList
@@ -228,3 +227,110 @@ flowchart LR
 ### Net
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+flowchart LR
+
+ScenePayload
+Camera
+
+math((math<br>libs))
+
+subgraph app
+    main
+    Form
+end
+
+subgraph lib
+    Heap
+    Result
+    Payload
+    Log
+    Rnd
+    Utils
+end
+
+subgraph graph
+    Object
+    Camera
+    ScenePayload
+    Scene
+    math
+    Point3d
+    Point4d
+    Point2d
+    Matrix4
+    Rect2d
+    Rgba
+
+end
+
+subgraph neuron
+    Bind
+    BindList
+    Layer
+    LayerList
+    Net
+    Neuron
+    NeuronList
+    Func
+end
+
+
+Payload --> ScenePayload
+Camera -.-> Form
+
+
+ScenePayload-.-> Scene
+
+Object --> Camera
+Result --> Payload
+Result --> Scene
+Result --> Object
+
+
+Log -.-> main
+
+Form -.-> main
+Scene -.-> main
+
+Point3d -.-> math
+Point4d -.-> math
+Point2d -.-> math
+Matrix4 -.-> math
+Rect2d -.-> math
+
+math -.-> Scene
+
+Net --> Form
+ScenePayload--> Form
+
+
+Func -.-> Neuron
+Neuron -.-> NeuronList
+NeuronList -.-> Layer
+Layer -.-> LayerList
+LayerList -.-> Net
+Bind -.-> BindList
+BindList -.-> Neuron
+Heap --> BindList
+Heap --> NeuronList
