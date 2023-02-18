@@ -7,7 +7,7 @@ The kernel was written in c++ and contains next components:
 1. [app](#app) - application
 0. [lib](#lib) - baisic c++ libraries
 0. [graph](#opengl) - graphics librayes
-0. [shoggoth](#neuronet) - neurla net Shoggoth libraryes
+0. [shoggoth](#neuronet) - neurlal net Shoggoth libraryes
 0. [shab](#shab) - small bash maker for Shoggoth
 
 ```mermaid
