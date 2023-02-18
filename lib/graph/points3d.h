@@ -2,10 +2,11 @@
 
 #include "point3.h"
 
+
+
 /*
     List of points3d
 */
-
 
 using namespace std;
 

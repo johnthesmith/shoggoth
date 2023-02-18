@@ -3,13 +3,13 @@
 
 /* Libraryes */
 #include "./lib/log.h"
-#include "./lib/scene.h"
-#include "./lib/matrix.h"
-#include "./lib/log_points.h"
-#include "./lib/point3i.h"
+#include "./lib/graph/scene.h"
+#include "./lib/graph/matrix.h"
+#include "./lib/graph/point3i.h"
 
-#include "./lib/neuron/neuron.h"
-#include "./lib/neuron/layer.h"
+
+#include "./lib/shoggoth/neuron.h"
+#include "./lib/shoggoth/layer.h"
 #include "./lib/utils.h"
 
 /* Application libraryes */

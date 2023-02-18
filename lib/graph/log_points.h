@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
-#include "log.h"
+
+#include "../log.h"
+
 #include "point3.h"
 #include "point4d.h"
 #include "matrix.h"

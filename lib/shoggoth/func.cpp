@@ -1,6 +1,8 @@
-#include "func.h"
 #include "cmath"
+
 #include "../rnd.h"
+
+#include "func.h"
 
 using namespace std;
 
@@ -35,7 +37,7 @@ function
 FUNC_SIGMOID =
 []( double x, double sensivity ) -> double
 {
-    return 1.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) );
+    return 1.0 / ( 1.0 + pow( M_E, ( -x + 0.5 ) * sensivity ) );
 };
 
 

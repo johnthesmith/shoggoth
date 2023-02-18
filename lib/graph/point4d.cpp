@@ -1,7 +1,9 @@
 #include <string>
 #include <iostream>
 #include <tgmath.h>
-#include "math.h"
+
+#include "../math.h"
+
 #include "point4d.h"
 #include "point3.h"
 #include "matrix.h"

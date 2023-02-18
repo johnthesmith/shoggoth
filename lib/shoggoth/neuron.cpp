@@ -1,9 +1,9 @@
 #include "../rnd.h"
+#include "../math.h"
 
 #include "neuron.h"
 #include "layer.h"
 #include "func.h"
-#include "../math.h"
 
 using namespace std;
 

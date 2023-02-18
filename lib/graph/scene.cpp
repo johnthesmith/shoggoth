@@ -8,14 +8,14 @@
 #include <GL/glu.h>
 
 /* Local libraries */
-#include "utils.h"
-#include "scene.h"
+#include "../utils.h"
+#include "../moment.h"
 
 //#include "camera.h"
+#include "scene.h"
 #include "matrix.h"
 #include "scene_payload.h"
 #include "log_points.h"
-#include "moment.h"
 
 
 

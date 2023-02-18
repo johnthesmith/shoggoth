@@ -1,7 +1,11 @@
 #include <iostream> /* memcpy */
 #include <cstring>
-#include "bind_list.h"
+
 #include "../rnd.h"
+
+#include "bind_list.h"
+
+
 
 using namespace std;
 

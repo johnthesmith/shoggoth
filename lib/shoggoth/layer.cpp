@@ -1,6 +1,7 @@
-#include "../log_points.h"
-#include "../point3.h"
 #include "../rnd.h"
+
+#include "../graph/point3.h"
+#include "../graph/log_points.h"
 
 #include "layer.h"
 #include "neuron.h"
@@ -121,7 +122,7 @@ Layer* Layer::connectTo
 
             /* Fill bind */
             bind
-            -> setWeight( Rnd::get( -1.0, 1.0 ))
+            -> setWeight( Rnd::get( -0.9, 0.9 ))
             -> setParent( neurons -> getByIndex( iFrom ))
             -> setChild( a -> neurons -> getByIndex( iTo ));
 
@@ -595,6 +596,57 @@ Layer* Layer::setPointsRecalc
 
 
 /*
+    Return true if neurons error changed in calcError method
+*/
+bool Layer::getErrorChange()
+{
+    return errorChange;
+}
+
+
+
+
+/******************************************************************************
+    Setters and getters
+*/
+
+
+
+/*
+    Set sensivity of layer
+*/
+Layer* Layer::setSensivity
+(
+    const double a
+)
+{
+    sensivity = a;
+    return this;
+}
+
+
+
+/*
+    Get sensivity of layer
+*/
+double Layer::getSensivity()
+{
+    return sensivity;
+}
+
+
+
+/*
+    Return parity of loop for current layer
+*/
+bool Layer::getLoopParity()
+{
+    return loopParity;
+}
+
+
+
+/*
     Return list of neurons in screen rect
 */
 Layer* Layer::getNeuronsByScreenRect
@@ -670,31 +722,3 @@ Layer* Layer::getNeuronsByScreenPos
 
     return this;
 }
-
-
-
-double Layer::getSensivity()
-{
-    return sensivity;
-}
-
-
-
-/*
-    Return true if neurons error changed in calcError method
-*/
-bool Layer::getErrorChange()
-{
-    return errorChange;
-}
-
-
-
-/*
-    Return true when all neurons is calculated
-*/
-bool Layer::getLoopParity()
-{
-    return loopParity;
-}
-

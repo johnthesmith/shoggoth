@@ -5,10 +5,9 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
-#include "../point3.h"
-#include "../point3i.h"
+#include "../graph/point3.h"
+#include "../graph/point3i.h"
 
 #include "neuron_list.h"
 #include "neuron_extention.h"
@@ -125,6 +124,7 @@ struct Neuron
     Point3d& getWorldPoint();
 
 
+
     /*
         Set screen point
     */
@@ -133,6 +133,11 @@ struct Neuron
         Point3d&
     );
 
+
+
+    /*
+        Return screen point
+    */
     Point3d& getScreenPoint();
 
 

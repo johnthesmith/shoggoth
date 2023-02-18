@@ -1,18 +1,31 @@
-# Shabnigroth
+# Shoggoth
 
-This is Shabnigroth https://github.com/johnthesmith/shab neuronet with visual control.
+
+This is Shoggoth https://github.com/johnthesmith/shab neuronet with visual control.
 The kernel was written in c++ and contains next components:
 
-1. [Kernel](#kermel) - baisic c++ libraries
-0. [OpenGL](#opengl) - graphics librayes
-0. [Neuronet](#neuronet) - shabnigroth libraryes
-0. [Shab](#shab) - small bash maker for Shabnigroth
+1. [app](#app) - application
+0. [lib](#lib) - baisic c++ libraries
+0. [graph](#opengl) - graphics librayes
+0. [shoggoth](#neuronet) - neurla net Shoggoth libraryes
+0. [shab](#shab) - small bash maker for Shoggoth
+
+```mermaid
+flowchart
+    graphics[graph]    
+
+    lib --> graphics
+    graphics --> app
+    shoggoth --> app
+    lib --> shoggoth
+    lib --> app
+```
 
 
 
 # Run
 
-Shab is building at Ubuntu 18.04 and more.
+``Shab`` is building at Ubuntu 18.04 and more.
 
 You need to install the following components:
 
@@ -28,13 +41,16 @@ After that you need to run:
 
 
 
-# Kernel
-
-1. Kernel is contain the tiniy libraries for application with users controllers.
 
 
 
-# OpenGL
+# Lib
+
+1. Lib is contain the tiniy libraries for application with users controllers.
+
+
+
+# Graph
 
 1. User interface based on on [glfw](https://www.glfw.org/).
 0. Supports:
@@ -141,9 +157,9 @@ Heap --> NeuronList
 
 
 
-# Shabnigroth
+# Shoggoth
 
-1. Shabnigroth - are simple neural network (neuronet). Contains following components:
+1. Shoggoth - are simple neural network (neuronet). Contains following components:
     1. Neuron - element of neuronet with value and error.
     0. Neuron Extention - structure contains the optionl specific information about neuron like id, name etc.
     0. Bind - link between two neurns with Weight.

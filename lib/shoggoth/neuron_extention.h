@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../point3.h"
 #include <string>
+
+#include "../graph/point3.h"
+
+
 
 /*
     Neuron extention

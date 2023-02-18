@@ -11,17 +11,15 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 #include "../utils.h"
 #include "../log.h"
-#include "../point3.h"
-#include "../point3i.h"
-#include "../points3d.h"
-#include "../object.h"
 
-
-#include "../scene.h"   /*LOOP*/
+#include "../graph/point3.h"
+#include "../graph/point3i.h"
+#include "../graph/points3d.h"
+#include "../graph/object.h"
+#include "../graph/scene.h"   /*LOOP*/
 
 #include "neuron_list.h"
 
@@ -70,7 +68,7 @@ class Layer : public Object
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        double  sensivity               = 5;
+        double  sensivity               = 10;
 
         bool    errorChange             = false;    /* True - method errorChange return true for any neuron, else false */
         bool    loopParity              = false;    /* Loop parity value */
@@ -274,6 +272,40 @@ class Layer : public Object
 
 
 
+
+        bool getErrorChange();
+
+
+
+        /******************************************************************************
+            Setters and getters
+        */
+
+
+        /*
+            Set sensivity of layer
+        */
+        Layer* setSensivity
+        (
+            const double
+        );
+
+
+
+        /*
+            Get sensivity of layer
+        */
+        double getSensivity();
+
+
+
+        /*
+            Get loop parity
+        */
+        bool getLoopParity();
+
+
+
         /*
             Return list of neurons in screen rect
         */
@@ -296,14 +328,4 @@ class Layer : public Object
         );
 
 
-        double getSensivity();
-
-        bool getErrorChange();
-
-
-
-        /*
-            Get loop parity
-        */
-        bool getLoopParity();
 };

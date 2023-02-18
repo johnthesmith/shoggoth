@@ -2,8 +2,6 @@
 
 
 
-
-
 Rect2d& Rect2d::setCenterSize
 (
     const Point2d& aCenter,

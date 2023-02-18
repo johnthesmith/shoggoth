@@ -1,5 +1,9 @@
 #pragma once
 
+
+/* Constants for GLFW*/
+
+
 enum Key
 {
     KEY_UNKNOWN     = -1,
@@ -9,25 +13,25 @@ enum Key
     KEY_MINUS       = 45, /* - */
     KEY_PERIOD      = 46, /* . */
     KEY_SLASH       = 47, /* / */
-    KEY_0       = 48,
-    KEY_1       = 49,
-    KEY_2       = 50,
-    KEY_3       = 51,
-    KEY_4       = 52,
-    KEY_5       = 53,
-    KEY_6       = 54,
-    KEY_7       = 55,
-    KEY_8       = 56,
-    KEY_9       = 57,
+    KEY_0           = 48,
+    KEY_1           = 49,
+    KEY_2           = 50,
+    KEY_3           = 51,
+    KEY_4           = 52,
+    KEY_5           = 53,
+    KEY_6           = 54,
+    KEY_7           = 55,
+    KEY_8           = 56,
+    KEY_9           = 57,
     KEY_SEMICOLON   = 59, /* ; */
     KEY_EQUAL       = 61, /* = */
-    KEY_A       = 65,
-    KEY_B       = 66,
-    KEY_C       = 67,
-    KEY_D       = 68,
-    KEY_E       = 69,
-    KEY_F       = 70,
-    KEY_G       = 71,
+    KEY_A           = 65,
+    KEY_B           = 66,
+    KEY_C           = 67,
+    KEY_D           = 68,
+    KEY_E           = 69,
+    KEY_F           = 70,
+    KEY_G           = 71,
     KEY_H       = 72,
     KEY_I       = 73,
     KEY_J       = 74,
@@ -44,10 +48,10 @@ enum Key
     KEY_U       = 85,
     KEY_V       = 86,
     KEY_W       = 87,
-    KEY_X       = 88,
-    KEY_Y       = 89,
-    KEY_Z       = 90,
-    KEY_LEFT_BRACKET= 91, /* [ */
+    KEY_X               = 88,
+    KEY_Y               = 89,
+    KEY_Z               = 90,
+    KEY_LEFT_BRACKET    = 91, /* [ */
     KEY_BACKSLASH       = 92, /* \ */
     KEY_RIGHT_BRACKET   = 93, /* ] */
     KEY_GRAVE_ACCENT    = 96, /* ` */
@@ -124,6 +128,7 @@ enum Key
     KEY_RIGHT_SUPER     = 347,
     KEY_MENU            = 348
 };
+
 
 
 enum MouseButton

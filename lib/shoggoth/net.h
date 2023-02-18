@@ -7,10 +7,11 @@
 */
 
 
-
 #include <string>
+
 #include "../log.h"
-#include "../scene.h"
+#include "../graph/scene.h"
+
 #include "layer_list.h"
 
 
@@ -24,6 +25,7 @@ class Net
         LayerList* layers   = NULL; /* The layer list object */
 
         Neuron* selected    = NULL; /* Selectrd neuron */
+        double  sensivity   = 10;   /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
 
         bool loopParity     = true;
     public:

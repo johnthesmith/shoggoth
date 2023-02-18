@@ -9,7 +9,7 @@
 
 #include <math.h>
 
-#include "result.h"
+#include "../result.h"
 #include "point3.h"
 
 class Object : public Result

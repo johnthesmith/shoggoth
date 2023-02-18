@@ -1,15 +1,19 @@
 #include <iostream>
 
+
+
 /* Local libraries */
-#include "../lib/scene_payload.h"
-#include "../lib/scene.h"
-#include "../lib/rgba.h"
-#include "../lib/log_points.h"
-#include "../lib/draw_mode.h"
-#include "../lib/neuron/neuron.h"
+#include "../lib/graph/scene_payload.h"
+#include "../lib/graph/scene.h"
+#include "../lib/graph/rgba.h"
+#include "../lib/graph/log_points.h"
+#include "../lib/graph/draw_mode.h"
 #include "../lib/graph/chart.h"
 #include "../lib/graph/rect2d.h"
-#include "../lib/neuron/func.h"
+
+#include "../lib/shoggoth/neuron.h"
+#include "../lib/shoggoth/func.h"
+
 #include "../lib/rnd.h"
 
 /* User libraries */
@@ -200,12 +204,13 @@ void Form::onDraw
         )
         .end();
 
+        /* Draw chart */
         Chart2d::create()
-        -> setXMin( -5.0 )
-        -> setXMax( 5.0 )
+        -> setXMin( -0.5 )
+        -> setXMax( 1.5 )
         -> setYMin( -0.5 )
         -> setYMax( 1.5 )
-        -> setCenterSize( Point2d( 210,210 ), Point2d( 200, 200 ) )
+        -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
         -> setBackColor( interfaceColorDark )
         -> setLineColor( interfaceColor )
         -> drawBack( &aScene )
@@ -213,8 +218,10 @@ void Form::onDraw
         -> draw( &aScene, FUNC_SIGMOID_DERIVATIVE, neuron -> getLayer() -> getSensivity() )
         -> drawX( &aScene, neuron -> getValue(), RGBA_ORANGE )
         -> drawX( &aScene, neuron -> getError(), RGBA_RED )
-        -> drawX( &aScene, -1.0, interfaceColor )
+        -> drawX( &aScene, 0.0, interfaceColor )
         -> drawX( &aScene, 1.0, interfaceColor )
+        -> drawY( &aScene, 0.0, interfaceColor )
+        -> drawY( &aScene, 1.0, interfaceColor )
         -> destroy();
     }
 
@@ -393,7 +400,11 @@ void Form::onMouseWheel
     if(  neuron != NULL )
     {
         /* Neuron Control*/
-        neuron -> setValue( neuron -> getValue() + aDelta.y * 0.1 );
+        neuron -> setValue
+        (
+            neuron -> getValue() + aDelta.y *
+            ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+        );
     }
     else
     {

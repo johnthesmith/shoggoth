@@ -3,8 +3,8 @@
 #include <functional>   /* for lyambda */
 
 #include "rect2d.h"
-#include "../scene.h"
-#include "../rgba.h"
+#include "scene.h"
+#include "rgba.h"
 
 class Chart2d
 {

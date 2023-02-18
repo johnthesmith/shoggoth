@@ -4,10 +4,11 @@
 #include <vector>
 #include <functional>   /* for lyambda */
 
-#include "../point3.h"
-#include "../point3i.h"
-#include "../object.h"
 #include "../heap.h"
+
+#include "../graph/point3.h"
+#include "../graph/point3i.h"
+#include "../graph/object.h"
 
 using namespace std;
 

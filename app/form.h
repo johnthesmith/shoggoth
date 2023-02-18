@@ -1,10 +1,10 @@
 #pragma once
 
 /* Local libraries */
-#include "../lib/scene_payload.h"
-#include "../lib/camera.h"
-#include "../lib/neuron/layer.h"
-#include "../lib/neuron/net.h"
+#include "../lib/graph/scene_payload.h"
+#include "../lib/graph/camera.h"
+#include "../lib/shoggoth/layer.h"
+#include "../lib/shoggoth/net.h"
 
 
 

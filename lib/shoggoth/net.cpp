@@ -86,7 +86,7 @@ Layer* Net::createLayer
     string a /* Name of layer */
 )
 {
-    Layer* result = Layer::create( *log ) -> setName( a );
+    Layer* result = Layer::create( *log ) -> setName( a ) -> setSensivity( sensivity );
     layers -> push( result );
     return result;
 }
@@ -137,9 +137,8 @@ Net* Net::calc
 {
     int c = layers -> getCount();
 
-    bool calculatedValueFinish = true;
-
     /* Calculate values */
+    bool calculatedValueFinish = true;
     for( int i = 0; i < c; i++ )
     {
         Layer* layer = ( Layer* ) layers -> getByIndex( i );

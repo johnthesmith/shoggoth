@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
 
+#include "../log.h"
+
 #include "log_points.h"
-#include "log.h"
+
 #include "point3.h"
 #include "point4d.h"
 #include "matrix.h"

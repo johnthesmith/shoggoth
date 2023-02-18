@@ -1,7 +1,7 @@
 #pragma once
 
 #include "point2d.h"
-#include "../point3.h"
+#include "point3.h"
 
 
 struct Rect2d

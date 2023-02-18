@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+
+/* Graphics libraries */
 #include "points3d.h"
 
 using namespace std;

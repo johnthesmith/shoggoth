@@ -1,13 +1,16 @@
 /*
     List of neurons layer
 */
+
 #pragma once
+
 
 
 #include <string>
 
-#include "layer.h"
 #include "../heap.h"
+
+#include "layer.h"
 
 
 

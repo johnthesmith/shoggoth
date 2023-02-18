@@ -1,9 +1,13 @@
 #pragma once
 
 #include <cstring>
+
+#include "../heap.h"
+
 #include "bind.h"
 #include "neuron_list.h"
-#include "../heap.h"
+
+
 
 /*
     List of Bind

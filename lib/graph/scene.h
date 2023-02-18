@@ -5,12 +5,14 @@
 #include <math.h>
 
 /* Local libraries */
-#include "result.h"
-#include "log.h"
+#include "../result.h"
+#include "../log.h"
+
+/* Graphics libraries */
 #include "rgba.h"
 #include "point3.h"
-#include "./graph/point2d.h"
-#include "./graph/rect2d.h"
+#include "point2d.h"
+#include "rect2d.h"
 #include "point4d.h"
 #include "matrix.h"
 #include "draw_mode.h"
