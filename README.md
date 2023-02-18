@@ -1,25 +1,6 @@
 # Shoggoth
 
-
 This is Shoggoth https://github.com/johnthesmith/shab neuronet with visual control.
-The kernel was written in c++ and contains next components:
-
-1. [app](#app) - application
-0. [lib](#lib) - baisic c++ libraries
-0. [graph](#opengl) - graphics librayes
-0. [shoggoth](#neuronet) - neurlal net Shoggoth libraryes
-0. [shab](#shab) - small bash maker for Shoggoth
-
-```mermaid
-flowchart
-    graphics[graph]    
-
-    lib --> graphics
-    graphics --> app
-    shoggoth --> app
-    lib --> shoggoth
-    lib --> app
-```
 
 
 
@@ -41,16 +22,36 @@ After that you need to run:
 
 
 
+# Components
+
+The kernel was written in c++ and contains next components:
+
+1. [app](#app) - application
+0. [lib](#lib) - baisic c++ libraries
+0. [graph](#opengl) - graphics librayes
+0. [shoggoth](#neuronet) - neurlal net Shoggoth libraryes
+0. [shab](#shab) - small bash maker for Shoggoth
+
+```mermaid
+flowchart
+    graphics[graph]    
+
+    lib --> graphics
+    graphics --> app
+    shoggoth --> app
+    lib --> shoggoth
+    lib --> app
+```
 
 
 
-# Lib
+## Lib
 
 1. Lib is contain the tiniy libraries for application with users controllers.
 
 
 
-# Graph
+## Graph
 
 1. User interface based on on [glfw](https://www.glfw.org/).
 0. Supports:
@@ -61,7 +62,7 @@ After that you need to run:
 
 
 
-## OpenGL objects scheme
+### OpenGL objects scheme
 
 ```mermaid
 flowchart LR
@@ -157,7 +158,7 @@ Heap --> NeuronList
 
 
 
-# Shoggoth
+## Shoggoth
 
 1. Shoggoth - are simple neural network (neuronet). Contains following components:
     1. Neuron - element of neuronet with value and error.
@@ -200,7 +201,7 @@ flowchart LR
     Heap -----> LayerList
 ```
 
-# Neuron
+### Neuron
 
 1. The element of neuronet with Value and Error. Element can has the Extention for optional information.
 0. Neuron is defined in [Neuron](./lib/neuron/neuron.h). 
@@ -208,7 +209,7 @@ flowchart LR
 
 
 
-# Neuron extention
+### Neuron extention
 
 1. It is a optional structure for neurons. 
 0. Each neuron may or not may has one Extantion.
@@ -217,13 +218,13 @@ flowchart LR
 
 
 
-# Layer
+### Layer
 
 1. The layer it is the  [object](#object) and contains neurons.
 0. Each layer has a unique auto-generated identifier for identification and a human readable name.
 
 
 
-# Net
+### Net
 
 
