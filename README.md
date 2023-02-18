@@ -6,7 +6,7 @@ This is [Shoggoth](https://github.com/johnthesmith/shab) neural network with vis
 
 # Run
 
-``Shab`` is building at Ubuntu 18.04 and more.
+``Shoggoth`` is building at Ubuntu 18.04 and more.
 
 You need to install the following components:
 
