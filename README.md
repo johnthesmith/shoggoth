@@ -161,11 +161,11 @@ Heap --> NeuronList
 ## Shoggoth
 
 1. Shoggoth - are simple neural network (neuronet). Contains following components:
-    1. [Neuron](#) - element of neuronet with value and error.
-    0. Neuron Extention - structure contains the optionl specific information about neuron like id, name etc.
-    0. Bind - link between two neurns with Weight.
-    0. Layer - the layer contains neurons.
-    0. Net - it is a general oblect of neuronet with list of neurons.
+    1. [Neuron](#neuron) - element of neuronet with value and error.
+    0. [Neuron Extention](#neuron-extention) - structure contains the optionl specific information about neuron like id, name etc.
+    0. [Bind](#bind) - link between two neurns with Weight.
+    0. [Layer](#layer) - the layer contains neurons.
+    0. [Net](#net) - it is a general oblect of neuronet with list of neurons.
 
 ```mermaid
 flowchart LR
