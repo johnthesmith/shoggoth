@@ -65,91 +65,42 @@ flowchart
 ### OpenGL objects scheme
 
 ```mermaid
-flowchart LR
-
-ScenePayload
-Camera
-
-math((math<br>libs))
-
-subgraph app
-    main
-    Form
-end
-
-subgraph lib
-    Heap
-    Result
-    Payload
-    Log
-    Rnd
-    Utils
-end
+flowchart BT
 
 subgraph graph
-    Object
-    Camera
     ScenePayload
     Scene
-    math
     Point3d
     Point4d
     Point2d
     Matrix4
     Rect2d
     Rgba
-
+    Object
+    Camera
 end
 
-subgraph neuron
-    Bind
-    BindList
-    Layer
-    LayerList
-    Net
-    Neuron
-    NeuronList
-    Func
-end
-
+ScenePayload--> Form
 
 Payload --> ScenePayload
 Camera -.-> Form
 
-
 ScenePayload-.-> Scene
 
 Object --> Camera
-Result --> Payload
 Result --> Scene
 Result --> Object
 
-
-Log -.-> main
-
-Form -.-> main
 Scene -.-> main
 
-Point3d -.-> math
-Point4d -.-> math
-Point2d -.-> math
-Matrix4 -.-> math
-Rect2d -.-> math
+Point3d -.-> Scene
+Point4d -.-> Scene
+Point2d -.-> Scene
+Matrix4 -.-> Scene
+Rect2d -.-> Scene
+Rgba -.-> Scene
 
-math -.-> Scene
-
-Net --> Form
-ScenePayload--> Form
-
-Func -.-> Neuron
-Neuron -.-> NeuronList
-NeuronList -.-> Layer
-Layer -.-> LayerList
-LayerList -.-> Net
-Bind -.-> BindList
-BindList -.-> Neuron
-Heap --> BindList
-Heap --> NeuronList
+Log -.-> Scene
 ```
 
 1. Solid line - extends class
@@ -199,6 +150,10 @@ flowchart LR
     Heap -----> NeuronList
     Heap -----> LayerList
 ```
+
+1. Solid line - extends class
+0. Dotted line - uses class
+
 
 ### Neuron
 
