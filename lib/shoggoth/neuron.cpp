@@ -200,13 +200,13 @@ Neuron* Neuron::setScreenPoint
 /*
     Set waiting value for neuron in learning mode
 */
-Neuron* Neuron::setWaitingValue
+Neuron* Neuron::setLearningValue
 (
     const double a
 )
 {
     createExtention();
-    extention -> waitingValue = a;
+    extention -> learningValue = a;
     return this;
 }
 
@@ -215,9 +215,9 @@ Neuron* Neuron::setWaitingValue
 /*
     Return a waiting value for neuron in learning mode
 */
-double Neuron::getWaitingValue()
+double Neuron::getLearningValue()
 {
-    return extention == NULL ? 0.0 : extention -> waitingValue;
+    return extention == NULL ? 0.0 : extention -> learningValue;
 }
 
 
@@ -279,15 +279,15 @@ Neuron* Neuron::calcError
     {
         double summ = 0;
         bool stop = false;  /* Stop calculating */
-        if( abs( getWaitingValue()) < EPSILON_D  )
+        if( abs( getLearningValue()) < EPSILON_D  )
         {
             /* This neuron is not result and must take the error from parents */
-            parentBinds -> loop
+            childrenBinds -> loop
             (
                 [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
                 {
                     /* Get a nauron */
-                    Neuron* iNeuron = bind -> getParent();
+                    Neuron* iNeuron = bind -> getChild();
                     /* Calculate summ */
                     summ += iNeuron -> getError() * bind -> getWeight();
                     /* Check parent parity and compare with current loop parity */
@@ -299,7 +299,7 @@ Neuron* Neuron::calcError
         else
         {
             /* This neuron have a waiting result */
-            summ = getWaitingValue() - value;
+            summ = getLearningValue() - value;
         }
         setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
     }
@@ -315,7 +315,7 @@ Neuron* Neuron::setLearningValue
 )
 {
     createExtention();
-    extention -> waitingValue = a;
+    extention -> learningValue = a;
     return this;
 }
 
@@ -323,5 +323,5 @@ Neuron* Neuron::setLearningValue
 
 double Neuron::getLearningValue()
 {
-    return extention == NULL ? 0.0 : extention -> waitingValue;
+    return extention == NULL ? 0.0 : extention -> learningValue;
 }

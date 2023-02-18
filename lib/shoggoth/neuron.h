@@ -32,7 +32,7 @@ struct Neuron
     BindList* parentBinds       = NULL; /* Binds for parents */
     BindList* childrenBinds     = NULL; /* Binds for children */
     double  value;                      /* Neuron value */
-    /* Neuron error, difference between value and extends.waitingValue,
+    /* Neuron error, difference between value and extends.LearningValue,
     calculating in calcValue */
     double  error               = 0;
     bool    loopParity          = 0;    /* Loop parity, look at Net.loopParity */
@@ -145,7 +145,7 @@ struct Neuron
     /*
         Set waiting value for neuron in learning mode
     */
-    Neuron* setWaitingValue
+    Neuron* setLearningValue
     (
         const double
     );
@@ -155,7 +155,7 @@ struct Neuron
     /*
         Return a waiting value for neuron in learning mode
     */
-    double getWaitingValue();
+    double getLearningValue();
 
 
 
