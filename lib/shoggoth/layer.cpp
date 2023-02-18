@@ -258,7 +258,7 @@ Layer* Layer::neuronPointsScreenCalc
 
 
 
-Layer* Layer::calc
+Layer* Layer::calcValue
 (
     bool aLoopParity
 )
@@ -414,8 +414,8 @@ Layer* Layer::draw
     /* Draw layer box */
     auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
 
+    /* Define color of neuron */
     Rgba c;
-
     switch( layerType )
     {
         case LT_RECEPTOR: c = colorLayerTypeReceptor; break;

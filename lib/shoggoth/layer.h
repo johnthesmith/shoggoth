@@ -205,7 +205,7 @@ class Layer : public Object
         /*
             Calc layer forward
         */
-        Layer* calc
+        Layer* calcValue
         (
             bool    /* Loop parity */
         );
