@@ -2,6 +2,13 @@
 
 ./shab begin
 
+# Install libraries
+#./shab header "Check libraries"
+#./shab apt "libglfw3"
+#./shab apt "libglfw3-dev"
+#./shab apt "libglu1-mesa-dev"
+#./shab apt "upx"
+
 # Building object files
 ./shab header "Obj building"
 ./shab build "hello.cpp"
