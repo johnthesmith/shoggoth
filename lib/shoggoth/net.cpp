@@ -144,7 +144,7 @@ Net* Net::calc
         Layer* layer = ( Layer* ) layers -> getByIndex( i );
         if( layer -> getLoopParity() != loopParity )
         {
-            layer -> calc( loopParity );
+            layer -> calcValue( loopParity );
             calculatedValueFinish = calculatedValueFinish && layer -> getLoopParity() == loopParity;
         }
     }
