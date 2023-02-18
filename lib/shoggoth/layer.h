@@ -77,10 +77,10 @@ class Layer : public Object
         string name                 = "";           /* Name of layer */
         bool pointsRecalc           = true;         /* Recalculate points for Neurons */
 
-        bool showBox                = true;
-        bool showNeurons            = true;
-        bool showChildrenLink       = true;
-        bool showParentsLink        = true;
+        bool            showBox                = true;
+        bool            showNeurons            = true;
+        bool            showChildrenLink       = true;
+        bool            showParentsLink        = true;
 
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
@@ -90,7 +90,10 @@ class Layer : public Object
         double          sensivity       = 10;
 
         bool            errorChange     = false;    /* True - method errorChange return true for any neuron, else false */
-        bool            loopParity      = false;    /* Loop parity value */
+
+        bool            loopParityValue = false;    /* Loop parity value */
+        bool            loopParityError = false;    /* Loop parity error */
+
         bool            incomeChanged   = false;    /* True if preceptron chenged. Set in neuron->setValue*/
 
         const Rgba      colorValue0     = Rgba( 0.0, 0.5, 1.0, 1.0 );
@@ -98,7 +101,7 @@ class Layer : public Object
         const Rgba      colorError0     = Rgba( 1.0, 0.0, 0.0, 0.0 );
         const Rgba      colorError1     = Rgba( 1.0, 0.0, 0.0, 1.0 );
 
-        NeuronDrawMode  neuronDrawMode  = NDM_VALUE;
+        NeuronDrawMode  neuronDrawMode          = NDM_VALUE;
 
         Rgba            colorLayerTypeReceptor  = Rgba( 1.0, 1.0, 0.0, 0.1 );
         Rgba            colorLayerTypeCortex    = Rgba( 0.5, 0.7, 1.0, 0.1 );
@@ -215,7 +218,17 @@ class Layer : public Object
         /*
             Calc layer error (backward)
         */
-        Layer* calcError();
+        Layer* calcError
+        (
+            bool    /* Loop parity */
+        );
+
+
+
+        /*
+            Calc layer forward
+        */
+        Layer* learning();
 
 
 
@@ -330,9 +343,16 @@ class Layer : public Object
 
 
         /*
-            Get loop parity
+            Get loop parity error
         */
-        bool getLoopParity();
+        bool getLoopParityError();
+
+
+
+        /*
+            Get loop parity value
+        */
+        bool getLoopParityValue();
 
 
 

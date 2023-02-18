@@ -230,14 +230,18 @@ Neuron* Neuron::calcValue
     bool aLoopParity /* Loop parity */
 )
 {
-    /* Checking if a neuron value needs to be counted */
-    if( loopParity != aLoopParity )
+    double summ = 0;
+    bool stop = false;
+    switch( getLayer() -> getLayerType())
     {
-        if( parentBinds -> getCount() != 0 )
-        {
+        case LT_RECEPTOR:
+            /* It is Preceptron */
+            /* Neuron is calculated */
+            setLoopParityValue( aLoopParity );
+        break;
+        case LT_RESULT:
+        case LT_CORTEX:
             /* Neuron has a binds and it is not a Receptor */
-            double summ = 0;
-            bool stop = false;
             parentBinds -> loop
             (
                 [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
@@ -247,7 +251,7 @@ Neuron* Neuron::calcValue
                     /* Calculate summ */
                     summ += iNeuron -> getValue() * bind -> getWeight();
                     /* Check parent parity and compare with current loop parity */
-                    stop = iNeuron -> loopParity != aLoopParity;
+                    stop = iNeuron -> getLoopParityValue() != aLoopParity;
                     return stop;
                 }
             );
@@ -255,14 +259,9 @@ Neuron* Neuron::calcValue
             {
                 /* Neuron is calculated */
                 setValue( FUNC_SIGMOID( summ, layer -> getSensivity() ));
-                loopParity = aLoopParity;
+                setLoopParityValue( aLoopParity );
             }
-        }
-        else
-        {
-            /* It is Preceptron */
-            loopParity = aLoopParity;
-        }
+        break;
     }
     return this;
 }
@@ -274,40 +273,101 @@ Neuron* Neuron::calcError
     bool& aLoopParity
 )
 {
-    /* Checking if a neuron error needs to be counted */
-    if( loopParity != aLoopParity )
-    {
-        double summ = 0.0;
-        bool stop = false;  /* Stop calculating */
+    double summ = 0.0;
+    bool stop = false;  /* Stop calculating */
 
-        switch( getLayer() -> getLayerType())
-        {
-            case LT_RECEPTOR:
-                setError( 0.0 );
-            break;
-            case LT_CORTEX:
-                /* This neuron is not result and must take the error from parents */
-                childrenBinds -> loop
-                (
-                    [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
-                    {
-                        /* Get a nauron */
-                        Neuron* iNeuron = bind -> getChild();
-                        /* Calculate summ */
-                        summ += iNeuron -> getError() * bind -> getWeight();
-                        /* Check parent parity and compare with current loop parity */
-                        stop = iNeuron -> loopParity != aLoopParity;
-                        return false;
-                    }
-                );
+    switch( getLayer() -> getLayerType())
+    {
+//            setError( 0.0 );
+//            setLoopParityError( aLoopParity );
+//        break;
+        case LT_RECEPTOR:
+        case LT_CORTEX:
+            /* This neuron is not result and must take the error from parents */
+            childrenBinds -> loop
+            (
+                [ &summ, &aLoopParity, &stop ]( Bind* bind ) -> bool
+                {
+                    /* Get a nauron */
+                    Neuron* iNeuron = bind -> getChild();
+                    /* Calculate summ */
+                    summ += iNeuron -> getError() * bind -> getWeight();
+                    /* Check parent parity and compare with current loop parity */
+                    stop = iNeuron -> getLoopParityError() != aLoopParity;
+                    return false;
+                }
+            );
+            if( !stop )
+            {
+                /* Neuron error is calculated */
                 setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
-            break;
-            case LT_RESULT:
-                /* This neuron have a waiting result */
-                setError( getLearningValue() - value );
-            break;
-        }
+                setLoopParityError( aLoopParity );
+            }
+        break;
+        case LT_RESULT:
+            /* This neuron have a waiting result */
+            setError( getLearningValue() - value );
+            setLoopParityError( aLoopParity );
+        break;
     }
     return this;
 }
+
+
+
+Neuron* Neuron::learning()
+{
+    double aLearningRate = 1.0e-4;
+
+    parentBinds -> loop
+    (
+        [ this, &aLearningRate ]( Bind* bind ) -> bool
+        {
+            /* Get a neuron */
+            Neuron* iNeuron = bind -> getParent();
+            /* Calculate summ */
+            bind -> setWeight( bind -> getWeight() + iNeuron -> getValue() * getError() * aLearningRate );
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+bool Neuron::getLoopParityError()
+{
+    return loopParity & 0x00000010;
+}
+
+
+
+Neuron* Neuron::setLoopParityError
+(
+    bool a
+)
+{
+    loopParity = a ? loopParity | 0x00000010 : loopParity & 0x11111101;
+    return this;
+}
+
+
+
+bool Neuron::getLoopParityValue()
+{
+    return loopParity & 0x00000001;
+}
+
+
+
+Neuron* Neuron::setLoopParityValue
+(
+    bool a
+)
+{
+    loopParity = a ? loopParity | 0x00000001 : loopParity & 0x11111110;
+    return this;
+}
+
+
 

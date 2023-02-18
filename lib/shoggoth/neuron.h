@@ -25,169 +25,210 @@ class Layer;
 /*
     Neuron structure
 */
-struct Neuron
+class Neuron
 {
-    Layer* layer                = NULL; /* Neuron layer */
-    NeuronExtention* extention  = NULL; /* Neuron extention object */
-    BindList* parentBinds       = NULL; /* Binds for parents */
-    BindList* childrenBinds     = NULL; /* Binds for children */
-    double  value;                      /* Neuron value */
-    /* Neuron error, difference between value and extends.LearningValue,
-    calculating in calcValue */
-    double  error               = 0;
-    bool    loopParity          = 0;    /* Loop parity, look at Net.loopParity */
+    private:
+        /*
+            Loop parity, look at Net.loopParity
+            0 bit - value
+            1 bit - error
+            2 and more dose not use
+        */
+        unsigned char loopParity     = 0;
+
+    public:
+
+        Layer* layer                = NULL; /* Neuron layer */
+        NeuronExtention* extention  = NULL; /* Neuron extention object */
+        BindList* parentBinds       = NULL; /* Binds for parents */
+        BindList* childrenBinds     = NULL; /* Binds for children */
+        double  value;                      /* Neuron value */
+        /*
+            Neuron error, difference between value and extends.LearningValue,
+            calculating in calcValue
+        */
+        double  error               = 0;
 
 
-    Neuron
-    (
-        Layer*  /* Layer object */
-    );
-
-
-
-    ~Neuron();
-
-
-
-    /*
-        Return null neuron
-    */
-    virtual bool isNull();
-
-
-
-    /*
-        Return Name of neuron
-    */
-    virtual string getName();
+        Neuron
+        (
+            Layer*  /* Layer object */
+        );
 
 
 
-    /*
-        Draw neuron
-    */
-    virtual Neuron& draw();
+        ~Neuron();
 
 
 
-    /**************************************************************************
-        Setters and getters
-    */
-
-
-    /*
-        Return neuron layer
-    */
-    Layer* getLayer();
+        /*
+            Return null neuron
+        */
+        virtual bool isNull();
 
 
 
-    /*
-        Return neuron layer index
-    */
-    int getLayerIndex();
-
-
-    Neuron& setValue
-    (
-        double
-    );
+        /*
+            Return Name of neuron
+        */
+        virtual string getName();
 
 
 
-    double getValue();
+        /*
+            Draw neuron
+        */
+        virtual Neuron& draw();
 
 
 
-    /*
-        Set error for neuron
-    */
-    Neuron& setError
-    (
-        const double
-    );
+        /**************************************************************************
+            Setters and getters
+        */
+
+
+        /*
+            Return neuron layer
+        */
+        Layer* getLayer();
 
 
 
-    double getError();
+        /*
+            Return neuron layer index
+        */
+        int getLayerIndex();
+
+
+        Neuron& setValue
+        (
+            double
+        );
 
 
 
-    /*
-        Set world point
-    */
-    Neuron* setWorldPoint
-    (
-        Point3d&
-    );
-
-    Point3d& getWorldPoint();
+        double getValue();
 
 
 
-    /*
-        Set screen point
-    */
-    Neuron* setScreenPoint
-    (
-        Point3d&
-    );
+        /*
+            Set error for neuron
+        */
+        Neuron& setError
+        (
+            const double
+        );
 
 
 
-    /*
-        Return screen point
-    */
-    Point3d& getScreenPoint();
+        double getError();
 
 
 
-    /*
-        Create extention for neuron
-    */
-    Neuron* createExtention();
+        /*
+            Set world point
+        */
+        Neuron* setWorldPoint
+        (
+            Point3d&
+        );
+
+        Point3d& getWorldPoint();
 
 
 
-    /*
-        Destroy extention for neuron
-    */
-    Neuron* destroyExtention();
+        /*
+            Set screen point
+        */
+        Neuron* setScreenPoint
+        (
+            Point3d&
+        );
 
 
 
-    /*
-        Calculate value
-    */
-    Neuron* calcValue
-    (
-        bool    /* Loop parity */
-    );
-
-
-    /*
-        Calculate neurons error
-    */
-    Neuron* calcError
-    (
-        bool& aChange   /* True for error will be change */
-    );
+        /*
+            Return screen point
+        */
+        Point3d& getScreenPoint();
 
 
 
-    /*
-        Set learning value for neuron in learning mode
-    */
-    Neuron* setLearningValue
-    (
-        const double
-    );
+        /*
+            Create extention for neuron
+        */
+        Neuron* createExtention();
 
 
 
-    /*
-        Return a learning value for neuron in learning mode
-    */
-    double getLearningValue();
+        /*
+            Destroy extention for neuron
+        */
+        Neuron* destroyExtention();
 
+
+
+        /*
+            Calculate value
+        */
+        Neuron* calcValue
+        (
+            bool    /* Loop parity */
+        );
+
+
+
+        /*
+            Calculate neurons error
+        */
+        Neuron* calcError
+        (
+            bool& aChange   /* True for error will be change */
+        );
+
+
+
+        /*
+            Learning children neurons bind
+        */
+        Neuron* learning();
+
+
+
+        /*
+            Set learning value for neuron in learning mode
+        */
+        Neuron* setLearningValue
+        (
+            const double
+        );
+
+
+
+        /*
+            Return a learning value for neuron in learning mode
+        */
+        double getLearningValue();
+
+
+
+        bool getLoopParityError();
+
+
+
+        Neuron* setLoopParityError
+        (
+            bool
+        );
+
+
+
+        bool getLoopParityValue();
+
+
+
+        Neuron* setLoopParityValue
+        (
+            bool
+        );
 };

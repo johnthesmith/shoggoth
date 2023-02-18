@@ -138,44 +138,44 @@ Net* Net::calc
     int c = layers -> getCount();
 
     /* Calculate values */
-    bool calculatedValueFinish = true;
+    bool valueFinish = true;
     for( int i = 0; i < c; i++ )
     {
         Layer* layer = ( Layer* ) layers -> getByIndex( i );
-        if( layer -> getLoopParity() != loopParity )
+        if( layer -> getLoopParityValue() != loopParity )
         {
             layer -> calcValue( loopParity );
-            calculatedValueFinish = calculatedValueFinish && layer -> getLoopParity() == loopParity;
+            valueFinish = valueFinish && layer -> getLoopParityValue() == loopParity;
         }
     }
 
-    if( calculatedValueFinish )
+    /* Calculate errors */
+    bool errorFinish = true;
+    if( valueFinish )
     {
+        for( int i = c - 1; i >= 0; i-- )
+        {
+            Layer* layer = ( Layer* ) layers -> getByIndex( i );
+            if( layer -> getLoopParityError() != loopParity )
+            {
+                layer -> calcError( loopParity );
+                errorFinish = errorFinish && layer -> getLoopParityError() == loopParity;
+            }
+        }
+    }
+
+
+
+    if( valueFinish && errorFinish )
+    {
+        for( int i = 0; i < c; i++ )
+        {
+            Layer* layer = ( Layer* ) layers -> getByIndex( i );
+            layer -> learning();
+        }
         loopParity = !loopParity;
     }
 
-    if( calculatedValueFinish )
-    {
-//    /* Calculate errors */
-//    auto errorChange = false;
-//    for( int j = c-1; j >= 0 ; j-- )
-//    {
-//        /* Calculate error for j neurons in the layer */
-//        Layer* layer = ( Layer* ) layers -> getByIndex( j );
-//        layer -> calcError();
-//        /* Fixing erorr change result for j Layer */
-//        errorChange = errorChange || layer -> getErrorChange();
-//    }
-
-    }
-
-
-//
-//
-//    if( !errorChange )
-//    {
-//        /* Завтра пишем расчет весов для связей */
-//    }
 
     return this;
 }

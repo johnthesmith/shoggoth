@@ -270,14 +270,14 @@ Layer* Layer::calcValue
     (
         [ &calculatedValueFinish, &aLoopParity ]( Neuron* neuron ) -> bool
         {
-            if( neuron -> loopParity != aLoopParity )
+            if( neuron -> getLoopParityValue() != aLoopParity )
             {
                 /* Calc neuron */
                 neuron -> calcValue( aLoopParity );
                 /* Accumulate layer finish value */
                 calculatedValueFinish
                 = calculatedValueFinish
-                && ( neuron -> loopParity == aLoopParity );
+                && ( neuron -> getLoopParityValue() == aLoopParity );
             }
             return false;
         }
@@ -286,7 +286,7 @@ Layer* Layer::calcValue
     /* Fixing the loop parity for layer */
     if( calculatedValueFinish )
     {
-        loopParity = aLoopParity;
+        loopParityValue = aLoopParity;
     }
 
 
@@ -305,18 +305,54 @@ Layer* Layer::calcValue
 /*
     Calculate neurons error for learning
 */
-Layer* Layer::calcError()
+Layer* Layer::calcError
+(
+    bool aLoopParity
+)
 {
-    errorChange = false;
+    bool calculatedErrorFinish = true;
 
     /* Calculate neurons */
     neurons -> loop
     (
-        [ this ]( Neuron* neuron ) -> bool
+        [ &calculatedErrorFinish, &aLoopParity ]( Neuron* neuron ) -> bool
         {
-            bool change = false;
-            neuron -> calcError( change );
-            errorChange = errorChange || change;
+            if( neuron -> getLoopParityError() != aLoopParity )
+            {
+                /* Calc neuron */
+                neuron -> calcError( aLoopParity );
+                /* Accumulate layer finish value */
+                calculatedErrorFinish
+                = calculatedErrorFinish
+                && ( neuron -> getLoopParityError() == aLoopParity );
+            }
+            return false;
+        }
+    );
+
+    /* Fixing the loop parity for layer */
+    if( calculatedErrorFinish )
+    {
+        loopParityError = aLoopParity;
+    }
+
+    return this;
+}
+
+
+
+/*
+    Calculate learning
+*/
+Layer* Layer::learning()
+{
+    /* Calculate neurons */
+    neurons -> loop
+    (
+        []( Neuron* neuron ) -> bool
+        {
+            /* Calc neuron */
+            neuron -> learning();
             return false;
         }
     );
@@ -369,7 +405,14 @@ Layer* Layer::draw
                 c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
             break;
             case NDM_ERROR:
-                c = Rgba( colorError0 ).itpLin( colorError1, n -> getValue() );
+                if( layerType != LT_RECEPTOR )
+                {
+                    c = Rgba( colorError0 ).itpLin( colorError1, n -> getError() );
+                }
+                else
+                {
+                    c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
+                }
             break;
         }
         aScene -> color( c );
@@ -658,9 +701,19 @@ double Layer::getSensivity()
 /*
     Return parity of loop for current layer
 */
-bool Layer::getLoopParity()
+bool Layer::getLoopParityValue()
 {
-    return loopParity;
+    return loopParityValue;
+}
+
+
+
+/*
+    Return parity of loop for current layer
+*/
+bool Layer::getLoopParityError()
+{
+    return loopParityError;
 }
 
 
