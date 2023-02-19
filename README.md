@@ -25,8 +25,8 @@ After that you need to run:
 
 # Authors
 
-- @johnthesmith
-- @igptx
+- [@johnthesmith](https://www.github.com/johnthesmith)
+- [@igptx](https://www.github.com/igptx)
 
 
 
