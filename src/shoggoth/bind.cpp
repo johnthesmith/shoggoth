@@ -1,4 +1,6 @@
+#include <iostream>
 #include "bind.h"
+#include "func.h"
 
 
 
@@ -35,6 +37,8 @@ Bind* Bind::addWeight
 )
 {
     weight += a;
+cout << weight << "\n";
+//    weight = FUNC_SIGMOID_PLUS_MINUS( weight, 20 );
     return this;
 }
 

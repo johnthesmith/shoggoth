@@ -1,4 +1,4 @@
-2/*
+/*
     Neurons can not be created directly. You must use Layer.setSize();
 */
 

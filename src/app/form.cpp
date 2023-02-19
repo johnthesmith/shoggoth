@@ -216,6 +216,7 @@ void Form::onDraw
         -> drawBack( &aScene )
         -> draw( &aScene, FUNC_SIGMOID, neuron -> getLayer() -> getSensivity() )
         -> draw( &aScene, FUNC_SIGMOID_DERIVATIVE, neuron -> getLayer() -> getSensivity() )
+        -> draw( &aScene, FUNC_SIGMOID_PLUS_MINUS, neuron -> getLayer() -> getSensivity() )
 
         -> drawX( &aScene, neuron -> getValue(), RGBA_ORANGE )
         -> drawX( &aScene, neuron -> getError(), RGBA_RED )
