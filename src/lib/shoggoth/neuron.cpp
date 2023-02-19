@@ -326,7 +326,7 @@ Neuron* Neuron::learning()
             /* Get a neuron */
             Neuron* iNeuron = bind -> getParent();
             /* Calculate summ */
-            bind -> setWeight( bind -> getWeight() + iNeuron -> getValue() * getError() * aLearningRate );
+            bind -> setWeight( bind -> getWeight() + /*iNeuron -> getValue() **/ getError() * aLearningRate );
             return false;
         }
     );

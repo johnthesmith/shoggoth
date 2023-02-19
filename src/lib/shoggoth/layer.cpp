@@ -122,7 +122,7 @@ Layer* Layer::connectTo
 
             /* Fill bind */
             bind
-            -> setWeight( Rnd::get( -0.9, 0.9 ))
+            -> setWeight( Rnd::get( -0.0, 0.0 ))
             -> setParent( neurons -> getByIndex( iFrom ))
             -> setChild( a -> neurons -> getByIndex( iTo ));
 
@@ -407,7 +407,7 @@ Layer* Layer::draw
             case NDM_ERROR:
                 if( layerType != LT_RECEPTOR )
                 {
-                    c = Rgba( colorError0 ).itpLin( colorError1, n -> getError() );
+                    c = Rgba( colorError0 ).itpLin( colorError1, abs( n -> getError() ));
                 }
                 else
                 {

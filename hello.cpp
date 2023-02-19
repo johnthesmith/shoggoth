@@ -2,18 +2,12 @@
 #include <iostream>
 
 /* Libraryes */
-#include "./lib/log.h"
-#include "./lib/graph/scene.h"
-#include "./lib/graph/matrix.h"
-#include "./lib/graph/point3i.h"
-
-
-#include "./lib/shoggoth/neuron.h"
-#include "./lib/shoggoth/layer.h"
-#include "./lib/utils.h"
+#include "./src/lib/log.h"
+#include "./src/lib/graph/scene.h"
+#include "./src/lib/shoggoth/neuron.h"
 
 /* Application libraryes */
-#include "./app/form.h"
+#include "./src/app/form.h"
 
 
 

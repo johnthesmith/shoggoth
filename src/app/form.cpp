@@ -206,10 +206,10 @@ void Form::onDraw
 
         /* Draw chart */
         Chart2d::create()
-        -> setXMin( -0.5 )
-        -> setXMax( 1.5 )
-        -> setYMin( -0.5 )
-        -> setYMax( 1.5 )
+        -> setXMin( -1.0 )
+        -> setXMax( 2.0 )
+        -> setYMin( -1.0 )
+        -> setYMax( 2.0 )
         -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
         -> setBackColor( interfaceColorDark )
         -> setLineColor( interfaceColor )

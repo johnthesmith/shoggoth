@@ -2,23 +2,28 @@
 
 ./shab begin
 
-# Upload libraries
-#./shab git "asdasdasdasdsa"
-
 # Install aprt
-#./shab header "Check libraries"
+#./shab header "Upload apt packeges"
+#./shab apt "g++"
+#./shab apt "git"
 #./shab apt "libglfw3"
 #./shab apt "libglfw3-dev"
 #./shab apt "libglu1-mesa-dev"
 #./shab apt "upx"
 
+# Upload git project
+#./shab header "Upload git projects"
+#./shab git "https://github.com/johnthesmith/shoggoth"
+#./shab git "https://github.com/johnthesmith/lib"
+#./shab git "https://github.com/johnthesmith/opengl"
+
 # Building object files
 ./shab header "Obj building"
 ./shab build "hello.cpp"
-./shab build "src/lib/*.cpp"
-./shab build "src/lib/shoggoth/*.cpp"
-./shab build "src/lib/graph/*.cpp"
-./shab build "src/app/*.cpp"
+./shab build "lib/*.cpp"
+./shab build "lib/shoggoth/*.cpp"
+./shab build "lib/graph/*.cpp"
+./shab build "app/*.cpp"
 
 # Make executable file
 ./shab header "make"
