@@ -1,7 +1,8 @@
 # Ignore file
 
 # Exclude execute file
-hello
+shoggoth
+
 *.swp
 *~
 *.o
