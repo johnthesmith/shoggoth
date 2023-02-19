@@ -15,14 +15,28 @@ Bind* Bind::setWeight
 }
 
 
+
 /*
-Return weight bind
+    Return weight bind
 */
 double Bind::getWeight()
 {
     return weight;
 }
 
+
+
+/*
+    Add bind weight
+*/
+Bind* Bind::addWeight
+(
+    double a
+)
+{
+    weight += a;
+    return this;
+}
 
 
 

@@ -125,6 +125,11 @@ Log -.-o Scene
     0. [Bind](#bind) - link between two neurns with Weight.
     0. [Layer](#layer) - the layer contains neurons.
     0. [Net](#net) - it is a general oblect of neuronet with list of neurons.
+0. Shoggoth library located at [src/shoggoth](src/shoggoth).
+
+
+
+## Shoggoth scheme
 
 ```mermaid
 flowchart LR
@@ -186,6 +191,11 @@ flowchart LR
 
 1. The layer it is the  [object](#object) and contains neurons.
 0. Each layer has a unique auto-generated identifier for identification and a human readable name.
+0. Layers cab be one of the following types:
+    1. Receptor
+    0. Cortex
+    0. Result
+    
 
 
 

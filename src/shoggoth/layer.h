@@ -98,8 +98,10 @@ class Layer : public Object
 
         const Rgba      colorValue0     = Rgba( 0.0, 0.5, 1.0, 1.0 );
         const Rgba      colorValue1     = Rgba( 1.0, 0.5, 0.0, 1.0 );
-        const Rgba      colorError0     = Rgba( 1.0, 1.0, 1.0, 0.5 );
-        const Rgba      colorError1     = Rgba( 1.0, 0.0, 0.0, 1.0 );
+
+        const Rgba      colorErrorNeg   = Rgba( 0.0, 1.0, 1.0, 1.0 );
+        const Rgba      colorErrorZer   = Rgba( 1.0, 1.0, 1.0, 0.5 );
+        const Rgba      colorErrorPos   = Rgba( 1.0, 0.0, 0.0, 1.0 );
 
         NeuronDrawMode  neuronDrawMode          = NDM_VALUE;
 
@@ -398,4 +400,17 @@ class Layer : public Object
 
 
         LayerType getLayerType();
+
+
+        Rgba getBindColor
+        (
+            const double
+        );
+
+
+
+        Rgba getErrorColor
+        (
+            const double
+        );
 };

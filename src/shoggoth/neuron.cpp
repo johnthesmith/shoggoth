@@ -317,7 +317,7 @@ Neuron* Neuron::calcError
 
 Neuron* Neuron::learning()
 {
-    double aLearningRate = 1.0e-4;
+    double aLearningRate = 1.0e-2;
 
     parentBinds -> loop
     (
@@ -326,7 +326,12 @@ Neuron* Neuron::learning()
             /* Get a neuron */
             Neuron* iNeuron = bind -> getParent();
             /* Calculate summ */
-            bind -> setWeight( bind -> getWeight() + /*iNeuron -> getValue() **/ getError() * aLearningRate );
+            bind -> addWeight
+            (
+ /*iNeuron -> getValue() **/
+                getError() *
+                aLearningRate
+            );
             return false;
         }
     );

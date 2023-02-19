@@ -362,7 +362,6 @@ Layer* Layer::learning()
 
 
 
-
 Layer* Layer::draw
 (
     Scene* aScene,
@@ -390,35 +389,8 @@ Layer* Layer::draw
     Point3d ege = box * -0.5 + getTarget();
     Point3d p = ege;
 
-    /* Draw nurons point */
-    aScene
-    -> setPointSize( neuronDrawSize )
-    .begin( POINT );
+    /* Get neurons conut */
     int currentSize = neurons -> getCount();
-    for( int i = 0; i < currentSize; i++ )
-    {
-        Neuron* n = neurons -> getByIndex( i );
-        Rgba c;
-        switch( neuronDrawMode )
-        {
-            case NDM_VALUE:
-                c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
-            break;
-            case NDM_ERROR:
-                if( layerType != LT_RECEPTOR )
-                {
-                    c = Rgba( colorError0 ).itpLin( colorError1, abs( n -> getError() ));
-                }
-                else
-                {
-                    c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
-                }
-            break;
-        }
-        aScene -> color( c );
-        aScene -> vertex( n -> getWorldPoint() );
-    }
-    aScene -> end();
 
     /* Draw neuron links */
     aScene -> setLineWidth( 1 );
@@ -433,15 +405,41 @@ Layer* Layer::draw
             Neuron* cNeuron = bind -> getChild();
 
             /* Draw bind */
-
-            auto w = bind -> getWeight();
-
             aScene
-            -> color( Rgba( 0, 1, 0, w * 0.1 ))
+            -> color( getBindColor( bind -> getWeight() ))
             .vertex( iNeuron -> getWorldPoint() )
             .vertex( cNeuron -> getWorldPoint() )
             ;
         }
+    }
+    aScene -> end();
+
+    /* Draw nurons point */
+    aScene
+    -> setPointSize( neuronDrawSize )
+    .begin( POINT );
+    for( int i = 0; i < currentSize; i++ )
+    {
+        Neuron* n = neurons -> getByIndex( i );
+        Rgba c;
+        switch( neuronDrawMode )
+        {
+            case NDM_VALUE:
+                c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
+            break;
+            case NDM_ERROR:
+                if( layerType != LT_RECEPTOR )
+                {
+                    c = getErrorColor( n -> getError() );
+                }
+                else
+                {
+                    c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
+                }
+            break;
+        }
+        aScene -> color( c );
+        aScene -> vertex( n -> getWorldPoint() );
     }
     aScene -> end();
 
@@ -830,4 +828,30 @@ Layer* Layer::setLayerType
 LayerType Layer::getLayerType()
 {
     return layerType;
+}
+
+
+
+Rgba Layer::getBindColor
+(
+    const double a
+)
+{
+    return
+    a <= 0
+    ? Rgba( 1.0, 0.0, 0.0, 0.5 ).itpLin( Rgba( 1.0, 0.0, 0.0, 0.0 ), a + 1 )
+    : Rgba( 0.0, 1.0, 0.0, 0.0 ).itpLin( Rgba( 0.0, 1.0, 0.0, 0.5 ), a );
+}
+
+
+
+Rgba Layer::getErrorColor
+(
+    const double a
+)
+{
+    return
+    a <= 0
+    ? Rgba( colorErrorNeg ).itpLin( colorErrorZer, a + 1 )
+    : Rgba( colorErrorZer ).itpLin( colorErrorPos, a );
 }

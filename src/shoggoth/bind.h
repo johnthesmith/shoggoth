@@ -18,19 +18,32 @@ class Bind
 
     public:
 
+
+
         /*
             set bind weight
         */
         Bind* setWeight
         (
-            double
+            double  /* Value */
         );
+
 
 
         /*
             Return weight bind
         */
         double getWeight();
+
+
+
+        /*
+            Add bind weight
+        */
+        Bind* addWeight
+        (
+            double  /* Increment */
+        );
 
 
 
