@@ -22,10 +22,10 @@
 
 # Make executable file
 ./shab header "make"
-./shab execute "g++ -O3 -o hello OBJECT_PATH/*.o -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw"
+./shab execute "g++ -O3 -o shoggoth OBJECT_PATH/*.o -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw"
 
 ./shab header "compress"
-./shab execute "upx -9 hello"
+./shab execute "upx -9 shoggoth"
 
 ./shab header "run"
-./shab execute "./hello"
+./shab execute "./shoggoth"
