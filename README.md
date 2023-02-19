@@ -4,6 +4,7 @@ This is [Shoggoth](https://github.com/johnthesmith/shab) neural network with vis
 
 
 
+
 # Run
 
 Shoggoth is building at Ubuntu 18.04 and more.
@@ -19,6 +20,13 @@ After that you need to run:
 ```
 ./make
 ```
+
+
+
+# Authors
+
+- @johnthesmith
+- @igptx
 
 
 
