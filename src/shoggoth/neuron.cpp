@@ -1,5 +1,5 @@
-#include "../rnd.h"
-#include "../math.h"
+#include "../lib/rnd.h"
+#include "../lib/math.h"
 
 #include "neuron.h"
 #include "layer.h"

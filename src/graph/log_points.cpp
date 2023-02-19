@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "../log.h"
+#include "../lib/log.h"
 
 #include "log_points.h"
 

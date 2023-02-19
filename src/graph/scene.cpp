@@ -8,8 +8,8 @@
 #include <GL/glu.h>
 
 /* Local libraries */
-#include "../utils.h"
-#include "../moment.h"
+#include "../lib/utils.h"
+#include "../lib/moment.h"
 
 //#include "camera.h"
 #include "scene.h"

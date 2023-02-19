@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "chart.h"
-#include "../rnd.h"
+#include "../lib/rnd.h"
 
 
 

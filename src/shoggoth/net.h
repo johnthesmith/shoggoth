@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "../log.h"
+#include "../lib/log.h"
 #include "../graph/scene.h"
 
 #include "layer_list.h"

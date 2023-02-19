@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "../heap.h"
+#include "../lib/heap.h"
 
 #include "bind.h"
 #include "neuron_list.h"

@@ -1,4 +1,4 @@
-#include "../rnd.h"
+#include "../lib/rnd.h"
 
 #include "../graph/point3.h"
 #include "../graph/log_points.h"

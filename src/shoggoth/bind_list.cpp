@@ -1,7 +1,7 @@
 #include <iostream> /* memcpy */
 #include <cstring>
 
-#include "../rnd.h"
+#include "../lib/rnd.h"
 
 #include "bind_list.h"
 

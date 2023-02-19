@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../log.h"
+#include "../lib/log.h"
 
 #include "point3.h"
 #include "point4d.h"

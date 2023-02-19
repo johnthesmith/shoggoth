@@ -3,7 +3,7 @@
 #include <tgmath.h>
 
 
-#include "../math.h"
+#include "../lib/math.h"
 #include "point2d.h"
 
 

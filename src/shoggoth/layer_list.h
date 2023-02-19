@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "../heap.h"
+#include "../lib/heap.h"
 
 #include "layer.h"
 

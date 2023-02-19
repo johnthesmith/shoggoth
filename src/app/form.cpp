@@ -3,16 +3,16 @@
 
 
 /* Local libraries */
-#include "../lib/graph/scene_payload.h"
-#include "../lib/graph/scene.h"
-#include "../lib/graph/rgba.h"
-#include "../lib/graph/log_points.h"
-#include "../lib/graph/draw_mode.h"
-#include "../lib/graph/chart.h"
-#include "../lib/graph/rect2d.h"
+#include "../graph/scene_payload.h"
+#include "../graph/scene.h"
+#include "../graph/rgba.h"
+#include "../graph/log_points.h"
+#include "../graph/draw_mode.h"
+#include "../graph/chart.h"
+#include "../graph/rect2d.h"
 
-#include "../lib/shoggoth/neuron.h"
-#include "../lib/shoggoth/func.h"
+#include "../shoggoth/neuron.h"
+#include "../shoggoth/func.h"
 
 #include "../lib/rnd.h"
 

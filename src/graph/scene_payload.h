@@ -1,7 +1,7 @@
 #pragma once
 
 /* Local libraries */
-#include "../payload.h"
+#include "../lib/payload.h"
 #include "point3.h"
 #include "camera.h"
 

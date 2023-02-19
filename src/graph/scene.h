@@ -5,8 +5,8 @@
 #include <math.h>
 
 /* Local libraries */
-#include "../result.h"
-#include "../log.h"
+#include "../lib/result.h"
+#include "../lib/log.h"
 
 /* Graphics libraries */
 #include "rgba.h"

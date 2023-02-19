@@ -12,8 +12,8 @@
 
 #include <string>
 
-#include "../utils.h"
-#include "../log.h"
+#include "../lib/utils.h"
+#include "../lib/log.h"
 
 #include "../graph/point3.h"
 #include "../graph/point3i.h"

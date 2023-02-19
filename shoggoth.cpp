@@ -3,8 +3,7 @@
 
 /* Libraryes */
 #include "./src/lib/log.h"
-#include "./src/lib/graph/scene.h"
-#include "./src/lib/shoggoth/neuron.h"
+#include "./src/graph/scene.h"
 
 /* Application libraryes */
 #include "./src/app/form.h"

@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>   /* for lyambda */
 
-#include "../heap.h"
+#include "../lib/heap.h"
 
 #include "../graph/point3.h"
 #include "../graph/point3i.h"

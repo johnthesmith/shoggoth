@@ -14,10 +14,10 @@
 
 # Building object files
 ./shab header "Obj building"
-./shab build "hello.cpp"
+./shab build "shoggoth.cpp"
 ./shab build "src/lib/*.cpp"
-./shab build "src/lib/shoggoth/*.cpp"
-./shab build "src/lib/graph/*.cpp"
+./shab build "src/shoggoth/*.cpp"
+./shab build "src/graph/*.cpp"
 ./shab build "src/app/*.cpp"
 
 # Make executable file
