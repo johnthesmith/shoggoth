@@ -54,7 +54,7 @@ flowchart
 
 
 
-## Lib
+### Lib
 
 1. Lib is contain the tiniy libraries for application with users controllers.
 
@@ -112,12 +112,12 @@ Rgba -.-o Scene
 Log -.-o Scene
 ```
 
-1. Solid line - extends class
+3. Solid line - extends class
 0. Dotted line - uses class
 
 
 
-## Shoggoth
+### Shoggoth
 
 1. Shoggoth - are simple neural network (neuronet). Contains following components:
     1. [Neuron](#neuron) - element of neuronet with value and error.
