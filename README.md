@@ -5,7 +5,7 @@ This is [Shoggoth](https://github.com/johnthesmith/shab) neural network with vis
 
 
 
-# Run
+## Run
 
 Shoggoth is building at Ubuntu 18.04 and more.
 
@@ -23,14 +23,14 @@ After that you need to run:
 
 
 
-# Authors
+## Authors
 
 - [@johnthesmith](https://www.github.com/johnthesmith)
 - [@igptx](https://www.github.com/igptx)
 
 
 
-# Components
+## Components
 
 The kernel was written in c++ and contains next components:
 
