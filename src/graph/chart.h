@@ -19,6 +19,7 @@ class Chart2d
 
         Rgba backColor = Rgba( 0.4, 0.7, 1.0, 0.7 );
         Rgba lineColor = Rgba( 0.1, 0.2, 0.4, 0.7 );
+        double lineWeight = 1.0;
 
     public:
 
@@ -48,8 +49,7 @@ class Chart2d
         Chart2d* drawX  /* Draw X value */
         (
             Scene*,
-            double,
-            Rgba& = RGBA_Y
+            double
         );
 
 
@@ -57,8 +57,7 @@ class Chart2d
         Chart2d* drawY  /* Draw Y value */
         (
             Scene*,
-            double,
-            Rgba& = RGBA_X
+            double
         );
 
 
@@ -114,6 +113,13 @@ class Chart2d
 
 
         Chart2d* setYMax
+        (
+            double
+        );
+
+
+
+        Chart2d* setLineWeight
         (
             double
         );

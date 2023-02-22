@@ -21,14 +21,16 @@ class Net
 {
     private:
 
-        Log* log            = NULL; /* The log object */
-        LayerList* layers   = NULL; /* The layer list object */
+        Log* log                = NULL; /* The log object */
 
-        Neuron* selected    = NULL; /* Selectrd neuron */
-        double  sensivity   = 10;   /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
+        Neuron* selected        = NULL; /* Selectrd neuron */
+        double  sensivity       = 10;   /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
 
-        bool loopParity     = true;
+        bool    loopParity      = true;
+        bool    learningMode    = false;
+
     public:
+        LayerList* layers   = NULL; /* The layer list object */
 
         /*
             Constructor
@@ -112,17 +114,6 @@ class Net
 
 
         /*
-            Draw all enabled layers
-        */
-        Net* draw
-        (
-            Scene*,
-            bool        /* Recalculate screen neurons position request */
-        );
-
-
-
-        /*
             Return log object
         */
         Log* getLog();
@@ -176,4 +167,33 @@ class Net
         (
             const NeuronDrawMode
         );
+
+
+
+        Net* switchShowBinds();
+        Net* switchShowLayer();
+
+
+
+        /*
+            Set learning mode
+        */
+        Net* setLearningMode
+        (
+            bool /* Value */
+        );
+
+
+
+        /*
+            Get learning mode
+        */
+        bool getLearningMode();
+
+
+
+        /*
+            Switch learning mode true/false
+        */
+        Net* switchLearningMode();
 };

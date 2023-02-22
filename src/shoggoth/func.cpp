@@ -42,6 +42,110 @@ FUNC_SIGMOID =
 
 
 
+/*
+    Create sigmoid modifer
+       ^ y
+       | +1.0
+     - - - - - - - - - - -*****
+       |                **:
+       |              **  :
+       |            **    :
+       |          **      :
+       |        **  0.5   :
+       |      **          :
+       |    **            :
+       |  **              :
+       |**                :
+    ****------------------o-> x
+        0                +s
+*/
+function
+<
+    double  /* Result */
+    (
+        double, /* Argiment [-oo; +oo] */
+        double  /* Sensiviti [ 0; +oo]*/
+    )
+>
+FUNC_SIGMOID_LINE_ZERO_PLUS =
+[]( double x, double s ) -> double
+{
+    return x < 0.0 ? 0.0 : ( x > s ? 1.0 : x / s );
+};
+
+
+
+/*
+    Sigmoid modifer from -sensivity to +sensifity on line spline r=x
+
+                 ^ y
+                 | +1.0
+     - -:- - - - o - - - -*****
+        :        |      **:
+        :        |    **  :
+        :        |  **    :
+        :        |**      :
+        :       **  0.5   :
+        :     ** |        :
+        :   **   |        :
+        : **     |        :
+        **       |        :
+    ****---------0----------> x
+        -s                +s
+*/
+
+function
+<
+    double  /* Result */
+    (
+        double, /* Argiment [-oo; +oo] */
+        double  /* Sensiviti [ 0; +oo]*/
+    )
+>
+FUNC_SIGMOID_LINE_MINUS_PLUS =
+[]( double x, double s ) -> double
+{
+    return x < -s ? -1.0 : ( x > s ? 1.0 :  x / s );
+};
+
+
+
+/*
+    V modifer from -sensivity to +sensifity on line spline
+
+                 ^ y
+                 | +1.0
+     ****- - - - o - - - -*****
+        :*       |       *:
+        : *      |      * :
+        :  *     |     *  :
+        :   *    |    *   :
+        :    *   |   *    :
+        :     *  |  *     :
+        :      * | *      :
+        :       *|*       :
+    -------------0-------------> x
+        -s                +s
+*/
+
+function
+<
+    double  /* Result */
+    (
+        double, /* Argiment [-oo; +oo] */
+        double  /* Sensiviti [ 0; +oo]*/
+    )
+>
+FUNC_V_LINE =
+[]( double x, double s ) -> double
+{
+    return abs( x < -s ? -1.0 : ( x > s ? 1.0 : x / s ));
+};
+
+
+
+
+
 
 /*
     Create sigmoid modifer
@@ -71,7 +175,7 @@ function
 FUNC_SIGMOID_PLUS_MINUS =
 []( double x, double sensivity ) -> double
 {
-    return  1.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) ) * 2.0 - 1;
+    return  2.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) ) - 1;
 };
 
 
@@ -106,23 +210,3 @@ FUNC_SIGMOID_DERIVATIVE =
     auto sigmoida = FUNC_SIGMOID( x, sensivity );
     return sigmoida * ( 1 - sigmoida );
 };
-
-
-
-
-
-/*
-    Randomizer
-*/
-function
-<
-    double()
->
-FUNC_RND =
-[]() -> double
-{
-    return Rnd::get( 0.0, 1.0 );
-};
-
-
-

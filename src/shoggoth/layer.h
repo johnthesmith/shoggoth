@@ -77,31 +77,30 @@ class Layer : public Object
         string name                 = "";           /* Name of layer */
         bool pointsRecalc           = true;         /* Recalculate points for Neurons */
 
-        bool            showBox                = true;
-        bool            showNeurons            = true;
-        bool            showChildrenLink       = true;
-        bool            showParentsLink        = true;
+        bool            showNeurons             = true;
+        bool            showBinds               = true;
+        bool            showLayer               = true;
 
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        LayerType       layerType       = LT_CORTEX;
+        LayerType       layerType               = LT_CORTEX;
 
-        double          sensivity       = 10;
+        double          sensivity               = 10;
 
-        bool            errorChange     = false;    /* True - method errorChange return true for any neuron, else false */
+        bool            errorChange             = false;    /* True - method errorChange return true for any neuron, else false */
 
-        bool            loopParityValue = false;    /* Loop parity value */
-        bool            loopParityError = false;    /* Loop parity error */
+        bool            loopParityValue         = false;    /* Loop parity value */
+        bool            loopParityError         = false;    /* Loop parity error */
 
-        bool            incomeChanged   = false;    /* True if preceptron chenged. Set in neuron->setValue*/
+        bool            incomeChanged           = false;    /* True if preceptron chenged. Set in neuron->setValue*/
 
-        const Rgba      colorValue0     = Rgba( 0.0, 0.5, 1.0, 1.0 );
-        const Rgba      colorValue1     = Rgba( 1.0, 0.5, 0.0, 1.0 );
+        const Rgba      colorValue0             = Rgba( 0.0, 0.5, 1.0, 1.0 );
+        const Rgba      colorValue1             = Rgba( 1.0, 0.5, 0.0, 1.0 );
 
-        const Rgba      colorErrorNeg   = Rgba( 0.0, 1.0, 1.0, 1.0 );
-        const Rgba      colorErrorZer   = Rgba( 1.0, 1.0, 1.0, 0.5 );
-        const Rgba      colorErrorPos   = Rgba( 1.0, 0.0, 0.0, 1.0 );
+        const Rgba      colorErrorNeg           = Rgba( 0.0, 1.0, 1.0, 1.0 );
+        const Rgba      colorErrorZer           = Rgba( 1.0, 1.0, 1.0, 0.5 );
+        const Rgba      colorErrorPos           = Rgba( 1.0, 0.0, 0.0, 1.0 );
 
         NeuronDrawMode  neuronDrawMode          = NDM_VALUE;
 
@@ -400,6 +399,10 @@ class Layer : public Object
 
 
         LayerType getLayerType();
+
+
+        Layer* switchShowBinds();
+        Layer* switchShowLayer();
 
 
         Rgba getBindColor

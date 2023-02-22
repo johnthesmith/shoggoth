@@ -149,10 +149,10 @@ Net* Net::calc
         }
     }
 
-    /* Calculate errors */
-    bool errorFinish = true;
     if( valueFinish )
     {
+        /* Calculate errors */
+        bool errorFinish = true;
         for( int i = c - 1; i >= 0; i-- )
         {
             Layer* layer = ( Layer* ) layers -> getByIndex( i );
@@ -162,45 +162,28 @@ Net* Net::calc
                 errorFinish = errorFinish && layer -> getLoopParityError() == loopParity;
             }
         }
-    }
 
-
-
-    if( valueFinish && errorFinish )
-    {
-        for( int i = 0; i < c; i++ )
+        if( learningMode )
         {
-            Layer* layer = ( Layer* ) layers -> getByIndex( i );
-            layer -> learning();
+            /* Learning */
+            if( errorFinish )
+            {
+                for( int i = 0; i < c; i++ )
+                {
+                    Layer* layer = ( Layer* ) layers -> getByIndex( i );
+                    layer -> learning();
+                }
+                loopParity = !loopParity;
+            }
         }
-        loopParity = !loopParity;
+        else
+        {
+            loopParity = !loopParity;
+        }
     }
-
 
     return this;
 }
-
-
-
-/*
-    Calculate all enabled layers
-*/
-Net* Net::draw
-(
-    Scene* aScene,
-    bool calcScreenPos
-)
-{
-    int c = layers -> getCount();
-    for( int i = 0; i < c; i++ )
-    {
-        Layer* layer = ( Layer* ) layers -> getByIndex( i );
-        layer -> draw( aScene, calcScreenPos );
-    }
-    return this;
-}
-
-
 
 
 
@@ -315,3 +298,66 @@ Net* Net::setNeuronDrawMode
     }
     return this;
 }
+
+
+
+Net* Net::switchShowBinds()
+{
+    int c = layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> switchShowBinds();
+    }
+    return this;
+}
+
+
+
+Net* Net::switchShowLayer()
+{
+    int c = layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> switchShowLayer();
+    }
+    return this;
+}
+
+
+
+/*
+    Set learning mode
+*/
+Net* Net::setLearningMode
+(
+    bool a /* Value */
+)
+{
+    learningMode = a;
+    return this;
+}
+
+
+
+/*
+    Get learning mode
+*/
+bool Net::getLearningMode()
+{
+    return learningMode;
+}
+
+
+
+/*
+    Switch learning mode true/false
+*/
+Net* Net::switchLearningMode()
+{
+    learningMode = !learningMode;
+    return this;
+}
+
+

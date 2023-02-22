@@ -461,6 +461,10 @@ class Scene : public Result
 
         Scene& switchToWorld();
         Scene& switchToScreen();
+
+
+
+        Ltwh& getViewport();
 };
 
 

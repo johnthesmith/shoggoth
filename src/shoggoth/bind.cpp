@@ -36,9 +36,9 @@ Bind* Bind::addWeight
     double a
 )
 {
-    weight += a;
-cout << weight << "\n";
-//    weight = FUNC_SIGMOID_PLUS_MINUS( weight, 20 );
+//    weight += a;
+// cout << weight << "\n";
+    weight = FUNC_SIGMOID_PLUS_MINUS( a + weight, 20 );
     return this;
 }
 

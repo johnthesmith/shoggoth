@@ -2,11 +2,12 @@
 #include <iostream>
 
 /* Libraryes */
-#include "./src/lib/log.h"
-#include "./src/graph/scene.h"
+#include "../lib/log.h"
+#include "../lib/param_list.h"
+#include "../graph/scene.h"
 
 /* Application libraryes */
-#include "./src/app/form.h"
+#include "../app/form.h"
 
 
 
@@ -21,8 +22,8 @@ int main
 )
 {
     auto log = Log();
-
     log.begin( "Application start" );
+
 
     auto scene      = Scene( log );
     auto payload    = Form::create( log );
@@ -32,6 +33,14 @@ int main
     payload -> destroy();
 
     log.end( "Application stop" );
+
+auto p = ParamList::create();
+cout << p -> setString( "asd", "asd" ) -> getString( "asd", "def" ) << "\n";
+cout << p -> setString( "asd", "asd1" ) -> getString( "asd", "def" ) << "\n";
+p -> destroy();
+
+
+
 
     return 0;
 }

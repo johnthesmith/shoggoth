@@ -4,7 +4,7 @@
 
 
 # Upload libraries
-#./shab git "asdasdasdasdsa"
+#./shab git ""
 
 # Install aprt
 #./shab header "Check libraries"
@@ -15,10 +15,10 @@
 
 # Building object files
 ./shab header "Obj building"
-./shab build "shoggoth.cpp"
 ./shab build "src/lib/*.cpp"
-./shab build "src/shoggoth/*.cpp"
+./shab build "src/json/*.cpp"
 ./shab build "src/graph/*.cpp"
+./shab build "src/shoggoth/*.cpp"
 ./shab build "src/app/*.cpp"
 
 # Make executable file

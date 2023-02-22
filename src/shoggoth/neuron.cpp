@@ -95,7 +95,7 @@ Neuron& Neuron::setValue
     double a
 )
 {
-    value = a;
+    value = FUNC_SIGMOID_LINE_ZERO_PLUS( a, 1.0 );
     return *this;
 }
 
@@ -206,7 +206,7 @@ Neuron* Neuron::setLearningValue
 )
 {
     createExtention();
-    extention -> learningValue = a;
+    extention -> learningValue = a < 0.0 ? 0 : ( a > 1.0 ? 1.0 : a );
     return this;
 }
 
@@ -258,7 +258,7 @@ Neuron* Neuron::calcValue
             if( !stop )
             {
                 /* Neuron is calculated */
-                setValue( FUNC_SIGMOID( summ, layer -> getSensivity() ));
+                setValue( FUNC_SIGMOID_LINE_MINUS_PLUS( summ, 0.1/*layer -> getSensivity()*/ ));
                 setLoopParityValue( aLoopParity );
             }
         break;
@@ -278,10 +278,10 @@ Neuron* Neuron::calcError
 
     switch( getLayer() -> getLayerType())
     {
-//            setError( 0.0 );
-//            setLoopParityError( aLoopParity );
-//        break;
         case LT_RECEPTOR:
+            setError( 0.0 );
+            setLoopParityError( aLoopParity );
+        break;
         case LT_CORTEX:
             /* This neuron is not result and must take the error from parents */
             childrenBinds -> loop
@@ -300,7 +300,7 @@ Neuron* Neuron::calcError
             if( !stop )
             {
                 /* Neuron error is calculated */
-                setError( FUNC_SIGMOID_DERIVATIVE( summ, layer -> getSensivity() ));
+                setError( FUNC_SIGMOID_LINE_MINUS_PLUS( summ, 1.0 /*layer -> getSensivity()*/ ));
                 setLoopParityError( aLoopParity );
             }
         break;
@@ -324,14 +324,20 @@ Neuron* Neuron::learning()
         [ this, &aLearningRate ]( Bind* bind ) -> bool
         {
             /* Get a neuron */
-            Neuron* iNeuron = bind -> getParent();
-            /* Calculate summ */
-            bind -> addWeight
+            Neuron* parentNeuron = bind -> getParent();
+
+            /* Calculate delta */
+            auto wv = bind -> getWeight()  * parentNeuron -> getValue();
+
+            auto f0 = error * 0.01;
+            auto f1 = error;
+            auto deltaWeight = f0 + ( f1 - f0 ) * abs( wv );
+
+            bind -> setWeight
             (
- /*iNeuron -> getValue() **/
-                getError() *
-                aLearningRate
+                FUNC_SIGMOID_LINE_MINUS_PLUS( bind -> getWeight() + deltaWeight * 0.01, 1.0 )
             );
+
             return false;
         }
     );

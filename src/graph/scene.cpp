@@ -1155,3 +1155,9 @@ double Scene::getNear()
 }
 
 
+
+
+Ltwh& Scene::getViewport()
+{
+    return viewport;
+}

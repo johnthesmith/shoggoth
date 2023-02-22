@@ -15,6 +15,7 @@
 #include "../shoggoth/func.h"
 
 #include "../lib/rnd.h"
+#include "../math.h"
 
 /* User libraries */
 #include "form.h"
@@ -136,6 +137,7 @@ void Form::onCalc
 
 
 
+
 /*
     Main draw method
 */
@@ -157,15 +159,31 @@ void Form::onDraw
 
 
 //    aScene
-//    .begin( LINE )
-//    .color( RGBA_RED ).vertex( POINT_3D_X ).vertex( aScene.getMouseCurrentWorld() )
-//    .color( RGBA_RED ).vertex( POINT_3D_Y ).vertex( aScene.getMouseCurrentWorld() )
-//    .color( RGBA_RED ).vertex( POINT_3D_Z ).vertex( aScene.getMouseCurrentWorld() )
-//    .end();
+//    .setPointSize( 4 )
+//    .begin( POINT )
+//    .color( RGBA_X );
+//    for( double err = -3; err < 3; err += 0.1 )
+//    {
+//        for( double vw = 0; vw <= 1; vw += 0.1 )
+//        {
+//            auto f0 = FUNC_SIGMOID_LINE_MINUS_PLUS( err, 1.0 ) * 0.1;
+//            auto f1 = FUNC_SIGMOID_LINE_MINUS_PLUS( err, 1.0 );
+//            auto r = f0 + ( f1 - f0 ) * vw;
+//            aScene.vertex( Point3d( err, vw, r ));
+//       }
+//    }
+//    aScene.end();
 
 
     /* Draw Layers */
-    net -> draw( &aScene, camera.getChanged() );
+    int c = net -> layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) net -> layers -> getByIndex( i );
+        layer -> draw( &aScene, camera.getChanged() );
+    }
+
+//    net -> draw( &aScene, camera.getChanged() );
     camera.setChanged( false );  /* Reset camera changed */
 
 
@@ -181,6 +199,17 @@ void Form::onDraw
     .color( RGBA_Y ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
     .color( RGBA_Z ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
     .end();
+
+    /* Draw Learning mode */
+    if( net -> getLearningMode() )
+    {
+        aScene
+        .setPointSize( 8 )
+        .color( RGBA_YELLOW )
+        .begin( POINT )
+        .vertex( Point3d( 10.0, aScene.getViewport().height - 10.0, 0 ))
+        .end();
+    }
 
 
     /*
@@ -206,26 +235,36 @@ void Form::onDraw
 
         /* Draw chart */
         Chart2d::create()
-        -> setXMin( -1.0 )
+        -> setXMin( -2.0 )
         -> setXMax( 2.0 )
-        -> setYMin( -1.0 )
+        -> setYMin( -2.0 )
         -> setYMax( 2.0 )
         -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
         -> setBackColor( interfaceColorDark )
         -> setLineColor( interfaceColor )
         -> drawBack( &aScene )
-        -> draw( &aScene, FUNC_SIGMOID, neuron -> getLayer() -> getSensivity() )
-        -> draw( &aScene, FUNC_SIGMOID_DERIVATIVE, neuron -> getLayer() -> getSensivity() )
-        -> draw( &aScene, FUNC_SIGMOID_PLUS_MINUS, neuron -> getLayer() -> getSensivity() )
 
-        -> drawX( &aScene, neuron -> getValue(), RGBA_ORANGE )
-        -> drawX( &aScene, neuron -> getError(), RGBA_RED )
-        -> drawX( &aScene, neuron -> getLearningValue(), RGBA_MAGENTA )
+        -> setLineWeight( 1.0 )
+        -> draw( &aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
+        -> draw( &aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
+        -> draw( &aScene, FUNC_V_LINE, 1.0 )
 
-        -> drawX( &aScene, 0.0, interfaceColor )
-        -> drawX( &aScene, 1.0, interfaceColor )
-        -> drawY( &aScene, 0.0, interfaceColor )
-        -> drawY( &aScene, 1.0, interfaceColor )
+        -> setLineWeight( 2.0 )
+        -> setLineColor( RGBA_ORANGE )
+        -> drawX( &aScene, neuron -> getValue() )
+        -> setLineColor( RGBA_RED )
+        -> drawX( &aScene, neuron -> getError() )
+        -> setLineColor( RGBA_MAGENTA )
+        -> drawX( &aScene, neuron -> getLearningValue() )
+
+        -> setLineColor( interfaceColor )
+        -> setLineWeight( 1.0 )
+        -> drawX( &aScene, 0.0 )
+        -> drawX( &aScene, 1.0 )
+        -> drawX( &aScene, -1.0 )
+        -> drawY( &aScene, 0.0 )
+        -> drawY( &aScene, 1.0 )
+        -> drawY( &aScene, -1.0)
         -> destroy();
     }
 
@@ -292,15 +331,27 @@ void Form::onKeyUp
         case KEY_LEFT_SHIFT:
             camera.setTargetLock( false );
         break;
-        case KEY_F1:
-            net -> setNeuronDrawMode( NDM_VALUE );
-        break;
-        case KEY_F2:
-            net -> setNeuronDrawMode( NDM_ERROR );
-        break;
     }
 }
 
+
+
+Form* Form::help()
+{
+    getLog()
+    .info( "----" )
+    .info( "Help" )
+    .info( "----" )
+    .info( "h - help" )
+    .info( "v - draw value of neurons" )
+    .info( "e - draw error of neurons" )
+    .info( "b - switch show/hide binds" )
+    .info( "c - switch show/hide layer cover" )
+    .info( "l - switch on/off learning mode" )
+    .lineEnd()
+    ;
+    return this;
+}
 
 
 /*
@@ -316,6 +367,24 @@ void Form::onKeyDown
 {
     switch( aKey )
     {
+        case KEY_H:
+            help();
+        break;
+        case KEY_V:
+            net -> setNeuronDrawMode( NDM_VALUE );
+        break;
+        case KEY_E:
+            net -> setNeuronDrawMode( NDM_ERROR );
+        break;
+        case KEY_B:
+            net -> switchShowBinds();
+        break;
+        case KEY_C:
+            net -> switchShowLayer();
+        break;
+        case KEY_L:
+            net -> switchLearningMode();
+        break;
         case KEY_LEFT_CONTROL:
             camera.setEyeLock( true );
         break;

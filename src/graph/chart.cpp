@@ -71,7 +71,7 @@ Chart2d* Chart2d::draw
 {
     double step = ( xMax - xMin ) / ( rect.size.x * 2 );
 
-    aScene -> setLineWidth( 1 );
+    aScene -> setLineWidth( lineWeight );
 
     aScene -> begin( LINES  ).color( lineColor );;
     double x = xMin;
@@ -93,17 +93,15 @@ Chart2d* Chart2d::draw
 Chart2d* Chart2d::drawX
 (
     Scene* aScene,
-    double x,
-    Rgba& aColor
+    double x
 )
 {
-    aScene -> setLineWidth( 1 );
+    aScene -> setLineWidth( lineWeight );
 
     Point2d p1 = chartToScreen( Point2d( x, yMin ));
     Point2d p2 = chartToScreen( Point2d( x, yMax ));
 
-    aScene -> begin( LINE  ).color( lineColor );;
-    aScene -> color( aColor );
+    aScene -> begin( LINE  ).color( lineColor );
     aScene -> vertex( p1 );
     aScene -> vertex( p2 );
     aScene -> end();
@@ -116,16 +114,14 @@ Chart2d* Chart2d::drawX
 Chart2d* Chart2d::drawY
 (
     Scene* aScene,
-    double y,
-    Rgba& aColor
+    double y
 )
 {
-    aScene -> setLineWidth( 1 );
+    aScene -> setLineWidth( lineWeight );
 
     Point2d p1 = chartToScreen( Point2d( xMin, y ));
     Point2d p2 = chartToScreen( Point2d( xMax, y ));
     aScene -> begin( LINE  ).color( lineColor );;
-    aScene -> color( aColor );
     aScene -> vertex( p1 );
     aScene -> vertex( p2 );
     aScene -> end();
@@ -235,5 +231,16 @@ Chart2d* Chart2d::setYMax
 )
 {
     yMax = a;
+    return this;
+}
+
+
+
+Chart2d* Chart2d::setLineWeight
+(
+    double a
+)
+{
+    lineWeight = a;
     return this;
 }
