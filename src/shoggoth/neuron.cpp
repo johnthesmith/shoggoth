@@ -235,8 +235,7 @@ Neuron* Neuron::calcValue
     switch( getLayer() -> getLayerType())
     {
         case LT_RECEPTOR:
-            /* It is Preceptron */
-            /* Neuron is calculated */
+            /* It is Preceptron, Neuron is calculated */
             setLoopParityValue( aLoopParity );
         break;
         case LT_RESULT:
@@ -258,7 +257,7 @@ Neuron* Neuron::calcValue
             if( !stop )
             {
                 /* Neuron is calculated */
-                setValue( FUNC_SIGMOID_LINE_ZERO_PLUS( summ, 1.0/*layer -> getSensivity()*/ ));
+                setValue( FUNC_SIGMOID_LINE_ZERO_PLUS( summ, 10.0 ));
                 setLoopParityValue( aLoopParity );
             }
         break;
