@@ -122,7 +122,7 @@ Layer* Layer::connectTo
 
             /* Fill bind */
             bind
-            -> setWeight( Rnd::get( -0.5, 0.5 ))
+            -> setWeight( Rnd::get( -0.1, 0.1 ))
             -> setParent( neurons -> getByIndex( iFrom ))
             -> setChild( a -> neurons -> getByIndex( iTo ));
 

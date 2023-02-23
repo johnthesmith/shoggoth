@@ -43,7 +43,7 @@ FUNC_SIGMOID =
 
 
 /*
-    Create sigmoid modifer
+    Linear sigmoid
        ^ y
        | +1.0
      - - - - - - - - - - -*****

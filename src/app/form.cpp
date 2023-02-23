@@ -35,7 +35,7 @@ Form::Form
 )
 : ScenePayload( aLog ) /* Call parent constructor */
 {
-    net = Net::create( &getLog() );
+    net = NetGraph::create( &getLog() );
 
     layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 )) -> setLayerType( LT_RECEPTOR );
     layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 5, 5, 1 ));
@@ -204,13 +204,12 @@ void Form::onDraw
     if( net -> getLearningMode() )
     {
         aScene
-        .setPointSize( 8 )
+        .setPointSize( 10 )
         .color( RGBA_YELLOW )
         .begin( POINT )
-        .vertex( Point3d( 10.0, aScene.getViewport().height - 10.0, 0 ))
+        .vertex( Point3d( 15.0, aScene.getViewport().height - 15.0, 0 ))
         .end();
     }
-
 
     /*
         Draw neuron chart
@@ -233,39 +232,7 @@ void Form::onDraw
         )
         .end();
 
-        /* Draw chart */
-        Chart2d::create()
-        -> setXMin( -2.0 )
-        -> setXMax( 2.0 )
-        -> setYMin( -2.0 )
-        -> setYMax( 2.0 )
-        -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
-        -> setBackColor( interfaceColorDark )
-        -> setLineColor( interfaceColor )
-        -> drawBack( &aScene )
-
-        -> setLineWeight( 1.0 )
-        -> draw( &aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
-        -> draw( &aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
-        -> draw( &aScene, FUNC_V_LINE, 1.0 )
-
-        -> setLineWeight( 2.0 )
-        -> setLineColor( RGBA_ORANGE )
-        -> drawX( &aScene, neuron -> getValue() )
-        -> setLineColor( RGBA_RED )
-        -> drawX( &aScene, neuron -> getError() )
-        -> setLineColor( RGBA_MAGENTA )
-        -> drawX( &aScene, neuron -> getLearningValue() )
-
-        -> setLineColor( interfaceColor )
-        -> setLineWeight( 1.0 )
-        -> drawX( &aScene, 0.0 )
-        -> drawX( &aScene, 1.0 )
-        -> drawX( &aScene, -1.0 )
-        -> drawY( &aScene, 0.0 )
-        -> drawY( &aScene, 1.0 )
-        -> drawY( &aScene, -1.0)
-        -> destroy();
+        net -> drawNeuronChart( &aScene, neuron );
     }
 
 
