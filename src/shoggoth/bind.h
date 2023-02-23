@@ -38,16 +38,6 @@ class Bind
 
 
         /*
-            Add bind weight
-        */
-        Bind* addWeight
-        (
-            double  /* Increment */
-        );
-
-
-
-        /*
             Set bind parent
         */
         Bind* setParent

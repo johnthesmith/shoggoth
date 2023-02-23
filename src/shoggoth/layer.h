@@ -70,7 +70,7 @@ class Layer : public Object
         bool pointsRecalc           = true;         /* Recalculate points for Neurons */
 
         bool            showNeurons             = true;
-        bool            showBinds               = true;
+        bool            showBinds               = false;
         bool            showLayer               = true;
 
         /* Internal method for neuron creation */

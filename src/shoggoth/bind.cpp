@@ -29,20 +29,6 @@ double Bind::getWeight()
 
 
 /*
-    Add bind weight
-*/
-Bind* Bind::addWeight
-(
-    double a
-)
-{
-    weight = FUNC_SIGMOID_PLUS_MINUS( a + weight, 20 );
-    return this;
-}
-
-
-
-/*
     Set bind parent
 */
 Bind* Bind::setParent

@@ -257,7 +257,7 @@ Neuron* Neuron::calcValue
             if( !stop )
             {
                 /* Neuron is calculated */
-                setValue( FUNC_SIGMOID_LINE_ZERO_PLUS( summ, 10.0 ));
+                setValue( FUNC_SIGMOID_LINE_ZERO_PLUS( summ, 1.0 ));
                 setLoopParityValue( aLoopParity );
             }
         break;
@@ -299,7 +299,7 @@ Neuron* Neuron::calcError
             if( !stop )
             {
                 /* Neuron error is calculated */
-                setError( FUNC_SIGMOID_LINE_MINUS_PLUS( summ, 1.0 /*layer -> getSensivity()*/ ));
+                setError( FUNC_SIGMOID_LINE_MINUS_PLUS( summ, 1.0 ));
                 setLoopParityError( aLoopParity );
             }
         break;
@@ -326,11 +326,8 @@ Neuron* Neuron::learning()
             Neuron* parentNeuron = bind -> getParent();
 
             /* Calculate delta */
-            auto wv = bind -> getWeight()  * parentNeuron -> getValue();
-
-            auto f0 = error * 0.01;
-            auto f1 = error;
-            auto deltaWeight = f0 + ( f1 - f0 ) * abs( wv );
+            auto wv = bind -> getWeight() * parentNeuron -> getValue();
+            auto deltaWeight = error * ( 0.01 + 0.99 * abs( wv ) );
 
             bind -> setWeight
             (
