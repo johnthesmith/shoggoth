@@ -258,7 +258,7 @@ Neuron* Neuron::calcValue
             if( !stop )
             {
                 /* Neuron is calculated */
-                setValue( FUNC_SIGMOID_LINE_MINUS_PLUS( summ, 0.1/*layer -> getSensivity()*/ ));
+                setValue( FUNC_SIGMOID_LINE_ZERO_PLUS( summ, 1.0/*layer -> getSensivity()*/ ));
                 setLoopParityValue( aLoopParity );
             }
         break;
@@ -335,7 +335,7 @@ Neuron* Neuron::learning()
 
             bind -> setWeight
             (
-                FUNC_SIGMOID_LINE_MINUS_PLUS( bind -> getWeight() + deltaWeight * 0.01, 1.0 )
+                FUNC_SIGMOID_LINE_MINUS_PLUS( bind -> getWeight() + deltaWeight * 0.001, 1.0 )
             );
 
             return false;

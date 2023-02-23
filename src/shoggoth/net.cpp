@@ -199,27 +199,6 @@ Log* Net::getLog()
 
 
 /*
-    Return list of neurons in screen rect
-*/
-Net* Net::getNeuronsByScreenRect
-(
-    NeuronList* aList,
-    Point3d& aTopLeft,      /* Top left point */
-    Point3d& aBottomRight   /* Bottom right point */
-)
-{
-    int c = layers -> getCount();
-    for( int i = 0; i < c; i++ )
-    {
-        Layer* layer = ( Layer* ) layers -> getByIndex( i );
-        layer -> getNeuronsByScreenRect( aList, aTopLeft, aBottomRight );
-    }
-    return this;
-}
-
-
-
-/*
     Return neuron by screen position
 */
 Net* Net::getNeuronsByScreenPos
@@ -280,22 +259,6 @@ Net* Net::setSelected
 
     neurons -> destroy();
 
-    return this;
-}
-
-
-
-Net* Net::setNeuronDrawMode
-(
-    const NeuronDrawMode a
-)
-{
-    int c = layers -> getCount();
-    for( int i = 0; i < c; i++ )
-    {
-        Layer* layer = ( Layer* ) layers -> getByIndex( i );
-        layer -> setNeuronDrawMode( a );
-    }
     return this;
 }
 

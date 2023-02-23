@@ -214,4 +214,10 @@ class Form : public ScenePayload
             const Point3d&, /* Mouse position */
             const int       /* Key mode */
         );
+
+
+        Form* fillScreen
+        (
+            int
+        );
 };

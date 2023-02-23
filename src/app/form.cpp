@@ -38,12 +38,12 @@ Form::Form
     net = NetGraph::create( &getLog() );
 
     layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 )) -> setLayerType( LT_RECEPTOR );
-    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 5, 5, 1 ));
-    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 5, 5, 1 ));
-    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 5, 5, 1 ));
-    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 5, 5, 1 ));
-    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 5, 5, 1 ));
-    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 5, 5, 1 ));
+    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 10, 10, 1 ));
+    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 10, 10, 1 ));
+    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 10, 10, 1 ));
+    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 10, 10, 1 ));
+    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 10, 10, 1 ));
+    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 10, 10, 1 ));
     layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
     layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
 
@@ -152,11 +152,6 @@ void Form::onDraw
 
     applyCameraToScene( camera, aScene );
 
-    aScene
-    .clearColor()
-    .drawAxisIdentity()
-    ;
-
 
 //    aScene
 //    .setPointSize( 4 )
@@ -175,41 +170,25 @@ void Form::onDraw
 //    aScene.end();
 
 
+    aScene
+    .clearColor()
+    .drawAxisIdentity()
+    ;
+
+
     /* Draw Layers */
-    int c = net -> layers -> getCount();
-    for( int i = 0; i < c; i++ )
-    {
-        Layer* layer = ( Layer* ) net -> layers -> getByIndex( i );
-        layer -> draw( &aScene, camera.getChanged() );
-    }
+    net -> drawLayers( &aScene, camera.getChanged() );
 
-//    net -> draw( &aScene, camera.getChanged() );
-    camera.setChanged( false );  /* Reset camera changed */
-
+    /* Reset camera changed */
+    camera.setChanged( false );
 
     /*
         Switch to flat screen
     */
     applyScreenToScene( aScene );
 
-    aScene
-    .setPointSize( 4 )
-    .begin( POINT )
-    .color( RGBA_X ).vertex( aScene.getScreenByWorld( POINT_3D_X ))
-    .color( RGBA_Y ).vertex( aScene.getScreenByWorld( POINT_3D_Y ))
-    .color( RGBA_Z ).vertex( aScene.getScreenByWorld( POINT_3D_Z ))
-    .end();
-
     /* Draw Learning mode */
-    if( net -> getLearningMode() )
-    {
-        aScene
-        .setPointSize( 10 )
-        .color( RGBA_YELLOW )
-        .begin( POINT )
-        .vertex( Point3d( 15.0, aScene.getViewport().height - 15.0, 0 ))
-        .end();
-    }
+    net -> drawLearningMode( &aScene );
 
     /*
         Draw neuron chart
@@ -234,6 +213,9 @@ void Form::onDraw
 
         net -> drawNeuronChart( &aScene, neuron );
     }
+
+
+    net -> drawSelectedNeurons( &aScene );
 
 
     if( selectTopLeft != selectBottomRight )
@@ -315,8 +297,33 @@ Form* Form::help()
     .info( "b - switch show/hide binds" )
     .info( "c - switch show/hide layer cover" )
     .info( "l - switch on/off learning mode" )
+    .info( "r - set random values for selected neurons" )
     .lineEnd()
     ;
+    return this;
+}
+
+
+
+Form* Form::fillScreen
+(
+    int a
+)
+{
+    Rnd::storeSeed( a );
+    layer1 -> neurons -> loop
+    (
+        []( Neuron* neuron )
+        {
+            neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
+            return false;
+        }
+    );
+    Rnd::restoreSeed();
+
+    layer8 -> neurons -> getByIndex( 0 ) -> setLearningValue( 1 - a % 2 );
+    layer8 -> neurons -> getByIndex( 1 ) -> setLearningValue( a % 2 );
+
     return this;
 }
 
@@ -334,8 +341,30 @@ void Form::onKeyDown
 {
     switch( aKey )
     {
+        case KEY_1:
+        case KEY_2:
+        case KEY_3:
+        case KEY_4:
+        case KEY_5:
+        case KEY_6:
+        case KEY_7:
+        case KEY_8:
+        case KEY_9:
+            fillScreen( aKey );
+        break;
+
         case KEY_H:
             help();
+        break;
+        case KEY_R:
+            net -> getSelectedNeurons() -> loop
+            (
+                []( Neuron* neuron )
+                {
+                    neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
+                    return false;
+                }
+            );
         break;
         case KEY_V:
             net -> setNeuronDrawMode( NDM_VALUE );
@@ -360,6 +389,7 @@ void Form::onKeyDown
         break;
     }
 }
+
 
 
 
@@ -397,6 +427,7 @@ void Form::onLeftDragEnd
     const Point3d& aPoint
 )
 {
+    net -> selectNeuronsByRect( selectTopLeft, selectBottomRight );
     selectTopLeft = POINT_3D_0;
     selectBottomRight = POINT_3D_0;
 }

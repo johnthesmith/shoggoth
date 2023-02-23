@@ -27,14 +27,6 @@ using namespace std;
 
 
 
-enum NeuronDrawMode
-{
-    NDM_VALUE,
-    NDM_ERROR
-};
-
-
-
 enum LayerType
 {
     LT_RECEPTOR,
@@ -95,18 +87,6 @@ class Layer : public Object
 
         bool            incomeChanged           = false;    /* True if preceptron chenged. Set in neuron->setValue*/
 
-        const Rgba      colorValue0             = Rgba( 0.0, 0.5, 1.0, 1.0 );
-        const Rgba      colorValue1             = Rgba( 1.0, 0.5, 0.0, 1.0 );
-
-        const Rgba      colorErrorNeg           = Rgba( 0.0, 1.0, 1.0, 1.0 );
-        const Rgba      colorErrorZer           = Rgba( 1.0, 1.0, 1.0, 0.5 );
-        const Rgba      colorErrorPos           = Rgba( 1.0, 0.0, 0.0, 1.0 );
-
-        NeuronDrawMode  neuronDrawMode          = NDM_VALUE;
-
-        Rgba            colorLayerTypeReceptor  = Rgba( 1.0, 1.0, 0.0, 0.1 );
-        Rgba            colorLayerTypeCortex    = Rgba( 0.5, 0.7, 1.0, 0.1 );
-        Rgba            colorLayerTypeResult    = Rgba( 1.0, 0.5, 1.0, 0.1 );
     public:
 
         NeuronList* neurons;                        /* List of neurons */
@@ -114,6 +94,8 @@ class Layer : public Object
         double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
         double neuronDrawSize       = 6.0;          /* Neuron size in scerrn pixels */
         Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
+
+
 
         /*
             Constructor
@@ -230,18 +212,6 @@ class Layer : public Object
             Calc layer forward
         */
         Layer* learning();
-
-
-
-        /*
-            Draw layer
-        */
-        Layer* draw
-        (
-            Scene* aScene,   /* Scene object */
-            bool calcScreenPos
-        );
-
 
 
 
@@ -380,17 +350,6 @@ class Layer : public Object
 
 
 
-        Layer* setNeuronDrawMode
-        (
-            const NeuronDrawMode
-        );
-
-
-
-        NeuronDrawMode getNeuronDrawMode();
-
-
-
         Layer* setLayerType
         (
             const LayerType
@@ -405,15 +364,25 @@ class Layer : public Object
         Layer* switchShowLayer();
 
 
-        Rgba getBindColor
-        (
-            const double
-        );
-
-
 
         Rgba getErrorColor
         (
             const double
         );
+
+
+
+        Point3i getSize();
+
+
+
+        /*
+            Return count of neurons in layer
+        */
+        int getNeuronsCount();
+
+
+
+        bool getShowBinds();
+        bool getShowLayer();
 };

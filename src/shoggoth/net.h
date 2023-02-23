@@ -163,12 +163,6 @@ class Net
 
 
 
-        Net* setNeuronDrawMode
-        (
-            const NeuronDrawMode
-        );
-
-
 
         Net* switchShowBinds();
         Net* switchShowLayer();

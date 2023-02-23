@@ -122,7 +122,7 @@ Layer* Layer::connectTo
 
             /* Fill bind */
             bind
-            -> setWeight( Rnd::get( -0.1, 0.1 ))
+            -> setWeight( Rnd::get( -0.5, 0.5 ))
             -> setParent( neurons -> getByIndex( iFrom ))
             -> setChild( a -> neurons -> getByIndex( iTo ));
 
@@ -356,129 +356,6 @@ Layer* Layer::learning()
             return false;
         }
     );
-    return this;
-}
-
-
-
-Layer* Layer::draw
-(
-    Scene* aScene,
-    bool calcScreenPos
-)
-{
-    /* Calculate scree point position */
-    if( calcScreenPos )
-    {
-        neuronPointsScreenCalc( aScene );
-    }
-
-    /* Calculate box */
-    auto box = Point3d
-    (
-        drawSize.x == 0 ? ( size.x - 1 ) * neuronDrawBox : drawSize.x,
-        drawSize.y == 0 ? ( size.y - 1 ) * neuronDrawBox : drawSize.y,
-        drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawBox : drawSize.z
-    );
-
-    /* Calculate step between neurons */
-    auto step = box / ( size - POINT_3I_I );
-
-    /* Calculate bound box for layer */
-    Point3d ege = box * -0.5 + getTarget();
-    Point3d p = ege;
-
-    /* Get neurons conut */
-    int currentSize = neurons -> getCount();
-
-    /* Draw neuron binds */
-    if( showBinds )
-    {
-        aScene -> setLineWidth( 1 );
-        aScene -> begin( LINE );
-        for( int i = 0; i < currentSize; i++ )
-        {
-            Neuron* iNeuron = neurons -> getByIndex( i );
-            auto countChildren = iNeuron -> childrenBinds -> getCount();
-            for( int c = 0; c < countChildren; c++ )
-            {
-                Bind* bind = iNeuron -> childrenBinds -> getByIndex( c );
-                Neuron* cNeuron = bind -> getChild();
-
-                /* Draw bind */
-                aScene
-                -> color( getBindColor( bind -> getWeight() ))
-                .vertex( iNeuron -> getWorldPoint() )
-                .vertex( cNeuron -> getWorldPoint() )
-                ;
-            }
-        }
-        aScene -> end();
-    }
-
-
-
-    /* Draw nurons point */
-    aScene
-    -> setPointSize( neuronDrawSize )
-    .begin( POINT );
-    for( int i = 0; i < currentSize; i++ )
-    {
-        Neuron* n = neurons -> getByIndex( i );
-        Rgba c;
-        switch( neuronDrawMode )
-        {
-            case NDM_VALUE:
-                c = Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
-            break;
-            case NDM_ERROR:
-                c = (layerType != LT_RECEPTOR )
-                ? getErrorColor( n -> getError() )
-                : Rgba( colorValue0 ).itpLin( colorValue1, n -> getValue() );
-            break;
-        }
-        aScene -> color( c );
-        aScene -> vertex( n -> getWorldPoint() );
-    }
-    aScene -> end();
-
-
-    if( showLayer )
-    {
-        /* Draw layer center point */
-        aScene
-        -> setPointSize( 4 )
-        .begin( POINT )
-        .color( Rgba( RGBA_WHITE ))
-        .vertex( getTarget())
-        .end();
-
-
-        /* Draw layer box */
-        auto outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
-
-        /* Define color of neuron */
-        Rgba c;
-        switch( layerType )
-        {
-            case LT_RECEPTOR: c = colorLayerTypeReceptor; break;
-            case LT_CORTEX: c = colorLayerTypeCortex; break;
-            case LT_RESULT: c = colorLayerTypeResult; break;
-        }
-
-        aScene
-        -> setLineWidth( 1 )
-        .polygonMode( POLYGON_LINE )
-        .color( c )
-        .begin( QUAD )
-        .sendQube( getTarget(), outerBox )
-        .end()
-        .polygonMode( POLYGON_FILL )
-        .begin( QUAD )
-        .sendQube( getTarget(), outerBox )
-        .end();
-    }
-
     return this;
 }
 
@@ -783,25 +660,6 @@ Layer* Layer::getNeuronsByScreenPos
 
 
 
-Layer* Layer::setNeuronDrawMode
-(
-    const NeuronDrawMode a
-)
-{
-    neuronDrawMode = a;
-
-    return this;
-}
-
-
-
-NeuronDrawMode Layer::getNeuronDrawMode()
-{
-    return neuronDrawMode;
-}
-
-
-
 Layer* Layer::setLayerType
 (
     const LayerType a
@@ -820,32 +678,6 @@ LayerType Layer::getLayerType()
 
 
 
-Rgba Layer::getBindColor
-(
-    const double a
-)
-{
-    return
-    a <= 0
-    ? Rgba( 1.0, 0.0, 0.0, 0.5 ).itpLin( Rgba( 1.0, 1.0, 1.0, 0.1 ), a + 1 )
-    : Rgba( 1.0, 1.0, 1.0, 0.1 ).itpLin( Rgba( 0.0, 1.0, 0.0, 0.5 ), a );
-}
-
-
-
-Rgba Layer::getErrorColor
-(
-    const double a
-)
-{
-    return
-    a <= 0
-    ? Rgba( colorErrorNeg ).itpLin( colorErrorZer, a + 1 )
-    : Rgba( colorErrorZer ).itpLin( colorErrorPos, a );
-}
-
-
-
 Layer* Layer::switchShowBinds()
 {
     showBinds = !showBinds;
@@ -859,4 +691,33 @@ Layer* Layer::switchShowLayer()
     showLayer = !showLayer;
     return this;
 }
+
+
+
+Point3i Layer::getSize()
+{
+    return size;
+}
+
+
+
+int Layer::getNeuronsCount()
+{
+    return neurons -> getCount();
+}
+
+
+
+bool Layer::getShowBinds()
+{
+    return showBinds;
+}
+
+
+
+bool Layer::getShowLayer()
+{
+    return showLayer;
+}
+
 
