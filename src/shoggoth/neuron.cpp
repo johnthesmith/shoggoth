@@ -331,7 +331,7 @@ Neuron* Neuron::learning()
 
             bind -> setWeight
             (
-                FUNC_SIGMOID_LINE_MINUS_PLUS( bind -> getWeight() + deltaWeight * 0.001, 1.0 )
+                FUNC_SIGMOID_LINE_MINUS_PLUS( bind -> getWeight() + deltaWeight * 0.01, 1.0 )
             );
 
             return false;

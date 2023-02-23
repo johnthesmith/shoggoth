@@ -29,6 +29,7 @@ class Form : public ScenePayload
         Layer*      layer7              = NULL;
         Layer*      layer8              = NULL;
         Layer*      layer9              = NULL;
+        Layer*      layer10             = NULL;
 
         Point3d     selectTopLeft       = POINT_3D_0;
         Point3d     selectBottomRight   = POINT_3D_0;

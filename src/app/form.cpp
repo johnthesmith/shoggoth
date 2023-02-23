@@ -38,14 +38,15 @@ Form::Form
     net = NetGraph::create( &getLog() );
 
     layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 )) -> setLayerType( LT_RECEPTOR );
-    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 10, 10, 1 ));
-    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 10, 10, 1 ));
-    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 10, 10, 1 ));
-    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 10, 10, 1 ));
-    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 10, 10, 1 ));
-    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 10, 10, 1 ));
+    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 4, 4, 4 ));
+    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 4, 4, 4 ));
+    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 4, 4, 4 ));
+    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 4, 4, 4 ));
+    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 4, 4, 4 ));
+    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 4, 4, 4 ));
     layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
     layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
+    layer10 = net -> createLayer( "ResultAll" )-> setSize( Point3i( 9, 1, 1 )) -> setLayerType( LT_RESULT );
 
     layer1 -> setTarget( POINT_3D_Z * 0 );
     layer2 -> setTarget( POINT_3D_Z * 2 - POINT_3D_X );
@@ -56,6 +57,7 @@ Form::Form
     layer7 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
     layer8 -> setTarget( POINT_3D_Z * 5 - POINT_3D_X );
     layer9 -> setTarget( POINT_3D_Z * 5 + POINT_3D_X );
+    layer10 -> setTarget( POINT_3D_Z * 5 + POINT_3D_Y + 2 );
 
     layer1 -> connectTo( layer2 );
     layer1 -> connectTo( layer3 );
@@ -68,6 +70,9 @@ Form::Form
 
     layer6 -> connectTo( layer8 );
     layer7 -> connectTo( layer9 );
+
+    layer6 -> connectTo( layer10 );
+
 }
 
 
