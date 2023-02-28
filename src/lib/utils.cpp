@@ -1,6 +1,7 @@
 #include <time.h>
 #include <iostream>
 #include <string>
+#include <cstring>
 
 using namespace std;
 
@@ -17,3 +18,4 @@ long long now()
     ? Current.tv_sec * 1000000 + Current.tv_nsec / 1000
     : 0;
 }
+

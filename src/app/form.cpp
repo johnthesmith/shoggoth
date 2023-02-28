@@ -37,42 +37,26 @@ Form::Form
 {
     net = NetGraph::create( &getLog() );
 
-    layer1 = net -> createLayer( "Screen" )     -> setSize( Point3i( 10, 10, 1 )) -> setLayerType( LT_RECEPTOR );
-    layer2 = net -> createLayer( "Left1" )      -> setSize( Point3i( 4, 4, 4 ));
-    layer3 = net -> createLayer( "Right1" )     -> setSize( Point3i( 4, 4, 4 ));
-    layer4 = net -> createLayer( "Left2" )      -> setSize( Point3i( 4, 4, 4 ));
-    layer5 = net -> createLayer( "Right2" )     -> setSize( Point3i( 4, 4, 4 ));
-    layer6 = net -> createLayer( "Left3" )      -> setSize( Point3i( 4, 4, 4 ));
-    layer7 = net -> createLayer( "Right3" )     -> setSize( Point3i( 4, 4, 4 ));
-    layer8 = net -> createLayer( "ResultLeft" ) -> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
-    layer9 = net -> createLayer( "ResultRight" )-> setSize( Point3i( 2, 1, 1 )) -> setLayerType( LT_RESULT );
-    layer10 = net -> createLayer( "ResultAll" )-> setSize( Point3i( 9, 1, 1 )) -> setLayerType( LT_RESULT );
+    layerRetina = net -> createLayer( "Retina" ) -> setSize( Point3i( 20, 20, 1 ));
+    layerSample = net -> createLayer( "Sample" ) -> setSize( Point3i( 10, 1, 1 ));
+    layerCortex1 = net -> createLayer( "Cortex1" ) -> setSize( Point3i( 10, 10, 1 ));
+    layerCortex2 = net -> createLayer( "Cortex2" ) -> setSize( Point3i( 10, 10, 1 ));
+    layerCortex3 = net -> createLayer( "Cortex3" ) -> setSize( Point3i( 10, 10, 1 ));
+    layerResult = net -> createLayer( "Result" ) -> setSize( Point3i( 10, 1, 1 ));
 
-    layer1 -> setTarget( POINT_3D_Z * 0 );
-    layer2 -> setTarget( POINT_3D_Z * 2 - POINT_3D_X );
-    layer3 -> setTarget( POINT_3D_Z * 2 + POINT_3D_X );
-    layer4 -> setTarget( POINT_3D_Z * 3 - POINT_3D_X );
-    layer5 -> setTarget( POINT_3D_Z * 3 + POINT_3D_X );
-    layer6 -> setTarget( POINT_3D_Z * 4 - POINT_3D_X );
-    layer7 -> setTarget( POINT_3D_Z * 4 + POINT_3D_X );
-    layer8 -> setTarget( POINT_3D_Z * 5 - POINT_3D_X );
-    layer9 -> setTarget( POINT_3D_Z * 5 + POINT_3D_X );
-    layer10 -> setTarget( POINT_3D_Z * 5 + POINT_3D_Y + 2 );
+    layerRetina -> setTarget( POINT_3D_Z * 0 );
+    layerCortex1 -> setTarget( POINT_3D_Z * 1 );
+    layerCortex2 -> setTarget( POINT_3D_Z * 2 );
+    layerCortex3 -> setTarget( POINT_3D_Z * 3 );
+    layerResult -> setTarget( POINT_3D_Z * 4 );
+    layerSample -> setTarget( POINT_3D_Z * 5 );
 
-    layer1 -> connectTo( layer2 );
-    layer1 -> connectTo( layer3 );
-
-    layer2 -> connectTo( layer4 );
-    layer3 -> connectTo( layer5 );
-
-    layer4 -> connectTo( layer6 );
-    layer5 -> connectTo( layer7 );
-
-    layer6 -> connectTo( layer8 );
-    layer7 -> connectTo( layer9 );
-
-    layer6 -> connectTo( layer10 );
-
+    layerRetina -> connectTo( layerCortex1, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
+    layerCortex1 -> connectTo( layerCortex2, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
+    layerCortex2 -> connectTo( layerCortex3, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
+    layerCortex3 -> connectTo( layerResult, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
+    layerSample -> connectTo( layerResult, ONE_TO_ONE, BT_SAMPLE,  1.0, 1.0 );
+    layerSample -> connectTo( layerResult, ALL_TO_ALL, BT_COMMAND,  1.0, 1.0 );
 }
 
 
@@ -316,7 +300,7 @@ Form* Form::fillScreen
 )
 {
     Rnd::storeSeed( a );
-    layer1 -> neurons -> loop
+    layerRetina -> neurons -> loop
     (
         []( Neuron* neuron )
         {
@@ -326,9 +310,10 @@ Form* Form::fillScreen
     );
     Rnd::restoreSeed();
 
-    layer8 -> neurons -> getByIndex( 0 ) -> setLearningValue( 1 - a % 2 );
-    layer8 -> neurons -> getByIndex( 1 ) -> setLearningValue( a % 2 );
-
+    for( int i = 0; i < layerSample -> neurons -> getCount(); i ++ )
+    {
+        layerSample -> neurons -> getByIndex( i ) -> setValue( i+49 == a ? 1.0 : 0.0 );
+    }
     return this;
 }
 
@@ -481,26 +466,12 @@ void Form::onMouseWheel
     Neuron* neuron = net -> getSelected();
     if(  neuron != NULL )
     {
-        switch( neuron -> getLayer() -> getLayerType())
-        {
-
-            case LT_RECEPTOR:
-                /* Neuron value Control*/
-                neuron -> setValue
-                (
-                    neuron -> getValue() + aDelta.y *
-                    ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
-                );
-            break;
-            case LT_RESULT:
-                /* Neyron learning value control */
-                neuron -> setLearningValue
-                (
-                    neuron -> getLearningValue() + aDelta.y *
-                    ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
-                );
-            break;
-        }
+        /* Neuron value Control*/
+        neuron -> setValue
+        (
+            neuron -> getValue() + aDelta.y *
+            ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+        );
     }
     else
     {

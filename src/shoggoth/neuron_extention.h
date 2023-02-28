@@ -17,5 +17,4 @@ struct NeuronExtention
     Point3d screen          = POINT_3D_0;
     bool    selected        = false;        /* Neuron is selected */
     string  id              = "";           /* Neuron identifier */
-    double  learningValue   = 0.0;          /* Waiting value for learning, */
 };

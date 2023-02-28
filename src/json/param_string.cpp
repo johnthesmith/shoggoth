@@ -76,6 +76,7 @@ ParamType ParamString::getType()
 }
 
 
+
 /*
     Return the type of the Param
 */
@@ -83,6 +84,7 @@ string ParamString::getNameOfType()
 {
     return "STRING";
 }
+
 
 
 /******************************************************************************

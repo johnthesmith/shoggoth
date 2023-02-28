@@ -20,16 +20,12 @@ class Form : public ScenePayload
 
         NetGraph*   net                 = NULL;
 
-        Layer*      layer1              = NULL;
-        Layer*      layer2              = NULL;
-        Layer*      layer3              = NULL;
-        Layer*      layer4              = NULL;
-        Layer*      layer5              = NULL;
-        Layer*      layer6              = NULL;
-        Layer*      layer7              = NULL;
-        Layer*      layer8              = NULL;
-        Layer*      layer9              = NULL;
-        Layer*      layer10             = NULL;
+        Layer*      layerRetina         = NULL;
+        Layer*      layerCortex1        = NULL;
+        Layer*      layerCortex2        = NULL;
+        Layer*      layerCortex3        = NULL;
+        Layer*      layerResult         = NULL;
+        Layer*      layerSample         = NULL;
 
         Point3d     selectTopLeft       = POINT_3D_0;
         Point3d     selectBottomRight   = POINT_3D_0;

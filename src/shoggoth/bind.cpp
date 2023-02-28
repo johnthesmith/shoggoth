@@ -28,6 +28,31 @@ double Bind::getWeight()
 
 
 
+
+/*
+    set bind type
+*/
+Bind* Bind::setType
+(
+    BindType a
+)
+{
+    type = a;
+    return this;
+}
+
+
+
+/*
+    Return weight bind
+*/
+BindType Bind::getType()
+{
+    return type;
+}
+
+
+
 /*
     Set bind parent
 */

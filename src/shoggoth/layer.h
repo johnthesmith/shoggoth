@@ -19,20 +19,14 @@
 #include "../graph/point3i.h"
 #include "../graph/points3d.h"
 #include "../graph/object.h"
-#include "../graph/scene.h"   /*LOOP*/
 
 #include "neuron_list.h"
+#include "bind.h"
+
+
 
 using namespace std;
 
-
-
-enum LayerType
-{
-    LT_RECEPTOR,
-    LT_CORTEX,
-    LT_RESULT
-};
 
 
 
@@ -40,6 +34,15 @@ enum ConnectType
 {
     ONE_TO_ONE, /* Connection type = */
     ALL_TO_ALL  /* Connection type x */
+};
+
+
+
+enum BindDrawMode
+{
+    BDM_HIDDEN,
+    BDM_WEIGHT,
+    BDM_TYPE
 };
 
 
@@ -56,44 +59,34 @@ class Layer : public Object
     private:
 
         /* States */
-        Log& log;                                   /* Log object */
+        Log&            log;                                    /* Log object */
+        bool            loopParityValue         = false;        /* Loop parity value */
+        bool            loopParityError         = false;        /* Loop parity error */
+        bool            pointsRecalc            = true;         /* Recalculate points for Neurons */
+        Point3d         drawSize                = POINT_3D_0;   /* Visual draw size at GL units*/
+
+        bool            errorChange             = false;        /* True - method errorChange return true for any neuron, else false */
+        bool            incomeChanged           = false;        /* True if preceptron chenged. Set in neuron->setValue*/
 
         /* Settings */
-        Point3d drawSize            = POINT_3D_0;   /* Visual draw saze at GL units*/
-        Point3i size                = POINT_3I_0;   /* Dimention size */
+        Point3i         size                    = POINT_3I_0;   /* Dimention size */
+        string          id                      = "";           /* Id of layer */
+        string          name                    = "";           /* Name of layer */
 
-        double defaultBindWeightMin = 0.0;          /* Default bind weight for new binds */
-        double defaultBindWeightMax = 0.0;
-
-        string id                   = "";           /* Id of layer */
-        string name                 = "";           /* Name of layer */
-        bool pointsRecalc           = true;         /* Recalculate points for Neurons */
-
-        bool            showNeurons             = true;
-        bool            showBinds               = false;
-        bool            showLayer               = true;
+        bool            showNeurons             = true;         /* Show neurons */
+        BindDrawMode    showBinds               = BDM_HIDDEN;   /* Bind draw mode */
+        bool            showLayer               = true;         /* SHow layer cover */
 
         /* Internal method for neuron creation */
         virtual Neuron* newNeuron();
 
-        LayerType       layerType               = LT_CORTEX;
-
-        double          sensivity               = 10;
-
-        bool            errorChange             = false;    /* True - method errorChange return true for any neuron, else false */
-
-        bool            loopParityValue         = false;    /* Loop parity value */
-        bool            loopParityError         = false;    /* Loop parity error */
-
-        bool            incomeChanged           = false;    /* True if preceptron chenged. Set in neuron->setValue*/
-
     public:
 
-        NeuronList* neurons;                        /* List of neurons */
+        NeuronList*     neurons;                                /* List of neurons */
 
-        double neuronDrawBox        = 0.1;          /* Neuron size in 3d space */
-        double neuronDrawSize       = 6.0;          /* Neuron size in scerrn pixels */
-        Point3d borderSize          = Point3d( 0.1, 0.1, 0.1 );
+        double          neuronDrawBox           = 0.1;          /* Neuron size in 3d space */
+        double          neuronDrawSize          = 6.0;          /* Neuron size in scerrn pixels */
+        Point3d         borderSize              = POINT_3D_I * 0.1;
 
 
 
@@ -150,7 +143,11 @@ class Layer : public Object
 
         Layer* connectTo
         (
-            Layer*
+            Layer*,
+            ConnectType,
+            BindType,
+            double = +0.1,
+            double = -0.1
         );
 
 
@@ -176,15 +173,6 @@ class Layer : public Object
         */
         Layer* neuronPointsCalc();
 
-
-
-        /*
-            Recalculate screeen position
-        */
-        Layer* neuronPointsScreenCalc
-        (
-            Scene*  /* Scene */
-        );
 
 
 
@@ -297,23 +285,6 @@ class Layer : public Object
 
 
         /*
-            Set sensivity of layer
-        */
-        Layer* setSensivity
-        (
-            const double
-        );
-
-
-
-        /*
-            Get sensivity of layer
-        */
-        double getSensivity();
-
-
-
-        /*
             Get loop parity error
         */
         bool getLoopParityError();
@@ -349,27 +320,8 @@ class Layer : public Object
         );
 
 
-
-        Layer* setLayerType
-        (
-            const LayerType
-        );
-
-
-
-        LayerType getLayerType();
-
-
         Layer* switchShowBinds();
         Layer* switchShowLayer();
-
-
-
-        Rgba getErrorColor
-        (
-            const double
-        );
-
 
 
         Point3i getSize();
@@ -383,6 +335,6 @@ class Layer : public Object
 
 
 
-        bool getShowBinds();
+        BindDrawMode getShowBinds();
         bool getShowLayer();
 };

@@ -86,7 +86,7 @@ Layer* Net::createLayer
     string a /* Name of layer */
 )
 {
-    Layer* result = Layer::create( *log ) -> setName( a ) -> setSensivity( sensivity );
+    Layer* result = Layer::create( *log ) -> setName( a );
     layers -> push( result );
     return result;
 }
@@ -184,7 +184,6 @@ Net* Net::calc
 
     return this;
 }
-
 
 
 

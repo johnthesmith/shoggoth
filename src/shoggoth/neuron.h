@@ -195,23 +195,6 @@ class Neuron
 
 
 
-        /*
-            Set learning value for neuron in learning mode
-        */
-        Neuron* setLearningValue
-        (
-            const double
-        );
-
-
-
-        /*
-            Return a learning value for neuron in learning mode
-        */
-        double getLearningValue();
-
-
-
         bool getLoopParityError();
 
 

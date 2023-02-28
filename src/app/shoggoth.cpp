@@ -1,9 +1,15 @@
 /* System libraries */
 #include <iostream>
 
+
+#include <string>
+#include <streambuf>
+#include <sstream>
+#include <fstream>
+
 /* Libraryes */
 #include "../lib/log.h"
-#include "../lib/param_list.h"
+#include "../json/json.h"
 #include "../graph/scene.h"
 
 /* Application libraryes */
@@ -24,7 +30,6 @@ int main
     auto log = Log();
     log.begin( "Application start" );
 
-
     auto scene      = Scene( log );
     auto payload    = Form::create( log );
 
@@ -34,13 +39,15 @@ int main
 
     log.end( "Application stop" );
 
-auto p = ParamList::create();
-cout << p -> setString( "asd", "asd" ) -> getString( "asd", "def" ) << "\n";
-cout << p -> setString( "asd", "asd1" ) -> getString( "asd", "def" ) << "\n";
-p -> destroy();
 
-
-
+//ifstream t( "example.json" );
+//stringstream b;
+//b << t.rdbuf();
+//
+//auto json = Json::create();
+//json -> fromString( b.str() );
+//cout << json -> getCode() << "\n";
+//json -> destroy();
 
     return 0;
 }

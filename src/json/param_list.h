@@ -5,7 +5,8 @@
 #pragma once
 
 
-#include "heap.h"
+#include "../lib/heap.h"
+
 #include "param.h"
 
 
@@ -24,7 +25,13 @@ struct ParamList : public Heap
     ParamList();
 
 
+
+    ~ParamList();
+
+
+
     static ParamList* create();
+
 
 
     /*
@@ -91,6 +98,14 @@ struct ParamList : public Heap
 
 
     /*
+        Clear list
+        All parameters will be destroy and list will be resize
+    */
+    ParamList* clear();
+
+
+
+    /*
         Return Param by name
     */
     int getIndexByName
@@ -107,6 +122,31 @@ struct ParamList : public Heap
     );
 
 
+
+    bool getBool
+    (
+        string,         /* Name of parameter */
+        bool = false    /* Dafault value */
+    );
+
+
+
+    long long int getInt
+    (
+        string,             /* Name of parameter */
+        long long int = 0   /* Dafault value */
+    );
+
+
+
+    double getDouble
+    (
+        string,         /* Name of parameter */
+        double = 0.0    /* Dafault value */
+    );
+
+
+
     /*
         Set string value
     */
@@ -119,12 +159,12 @@ struct ParamList : public Heap
 
 
     /*
-        Set double value
+        Set bool value
     */
-    ParamList* setDouble
+    ParamList* setBool
     (
         string,         /* Name of parameter */
-        double = 0.0    /* Value */
+        bool = false    /* Value */
     );
 
 
@@ -141,11 +181,11 @@ struct ParamList : public Heap
 
 
     /*
-        Set bool value
+        Set double value
     */
-    ParamList* setBool
+    ParamList* setDouble
     (
         string,         /* Name of parameter */
-        bool = false    /* Value */
+        double = 0.0    /* Value */
     );
 };

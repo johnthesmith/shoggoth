@@ -73,6 +73,8 @@ struct ParamString : public Param
     string getNameOfType() override;
 
 
+
+
     /******************************************************************************
         Specific methods
     */

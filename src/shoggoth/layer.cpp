@@ -1,11 +1,10 @@
 #include "../lib/rnd.h"
 
 #include "../graph/point3.h"
-#include "../graph/log_points.h"
 
+#include "func.h"
 #include "layer.h"
 #include "neuron.h"
-#include "func.h"
 
 
 
@@ -69,6 +68,9 @@ void Layer::destroy()
 
 
 
+/*
+    Return linear index of neuron by position
+*/
 int Layer::indexByPos
 (
     const Point3i& a
@@ -80,7 +82,7 @@ int Layer::indexByPos
 
 
 /*
-    New neoron method
+    Prived method for the neuron creation
 */
 Neuron* Layer::newNeuron()
 {
@@ -92,80 +94,125 @@ Neuron* Layer::newNeuron()
 
 
 /*
-    Connect all neurons from current layer to argument
+    Connect all neurons from current layer to argument layer
     (i) -> (j)
 */
 Layer* Layer::connectTo
 (
-    Layer* a
+    Layer*      aLayer,
+    ConnectType aConnectType,
+    BindType    aBindType,
+    double      aMinWeight,
+    double      aMaxWeight
 )
 {
     getLog()
     .begin( "Layer connecting" )
     .prm( "from", getNameOrId() )
-    .prm( "to", a -> getNameOrId() )
+    .prm( "to", aLayer -> getNameOrId() )
     .lineEnd();
 
-    /* Create bind list */
     int cFrom = neurons -> getCount();
-    int cTo = a -> neurons -> getCount();
+    int cTo = aLayer -> neurons -> getCount();
 
     BindList binds = BindList();
-    binds.resize( cFrom * cTo );
 
-    for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+    switch( aConnectType )
     {
-        for( int iTo = 0; iTo < cTo; iTo++ )
+        case ONE_TO_ONE:
         {
-            /* Create bind */
-            Bind* bind = new Bind();
+            int maxIndex = max( cFrom, cTo );
 
-            /* Fill bind */
-            bind
-            -> setWeight( Rnd::get( -0.5, 0.5 ))
-            -> setParent( neurons -> getByIndex( iFrom ))
-            -> setChild( a -> neurons -> getByIndex( iTo ));
+            binds.resize( maxIndex );
 
-            /* Store bind */
-            binds.setByIndex( iFrom * cTo + iTo, bind );
+            for( int i = 0; i < maxIndex; i++ )
+            {
+                int iFrom = (int) ((float) i / (float) maxIndex * cFrom ) ;
+                int iTo = (int) ((float) i / (float) maxIndex * cTo );
+
+                /* Create bind */
+                Bind* bind = new Bind();
+
+                /* Fill bind */
+                bind
+                -> setType( aBindType )
+                -> setWeight( Rnd::get( aMinWeight, aMaxWeight ))
+                -> setParent( neurons -> getByIndex( iFrom ))
+                -> setChild( aLayer -> neurons -> getByIndex( iTo ));
+
+                /* Store bind */
+                binds.setByIndex( i, bind );
+
+                neurons -> getByIndex( iFrom ) -> childrenBinds -> push( bind );
+                aLayer -> neurons -> getByIndex( iTo ) -> parentBinds -> push( bind );
+            }
         }
+        break;
+
+        case ALL_TO_ALL:
+        {
+            /* Create bind list */
+
+            binds.resize( cFrom * cTo );
+
+            for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+            {
+                for( int iTo = 0; iTo < cTo; iTo++ )
+                {
+                    /* Create bind */
+                    Bind* bind = new Bind();
+
+                    /* Fill bind */
+                    bind
+                    -> setType( aBindType )
+                    -> setWeight( Rnd::get( aMinWeight, aMaxWeight ))
+                    -> setParent( neurons -> getByIndex( iFrom ))
+                    -> setChild( aLayer -> neurons -> getByIndex( iTo ));
+
+                    /* Store bind */
+                    binds.setByIndex( iFrom * cTo + iTo, bind );
+                }
+            }
+
+            /* Resize children list in parent layer */
+            for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+            {
+                neurons                 /* for this layer */
+                -> getByIndex( iFrom )  /* get the next neuron */
+                -> childrenBinds        /* and him children list */
+                -> expand( cTo );       /* expand to count of childrens */
+            }
+
+            /* Resize parents list in child layer */
+            for( int iTo = 0; iTo < cTo; iTo++ )
+            {
+                aLayer -> neurons            /* for child layer */
+                -> getByIndex( iTo )    /* get the next neuron */
+                -> parentBinds          /* and him parents list */
+                -> expand( cFrom );     /* expand to count of parents */
+            }
+
+            /* Run at binds */
+            int c = binds.getCount();
+            for( int i = 0; i < c; i++ )
+            {
+                Bind* iBind = binds.getByIndex( i );
+
+                Neuron* parent = iBind -> getParent();
+                Neuron* child = iBind -> getChild();
+
+                int parentChildIndex = parent -> childrenBinds -> getCount() - cTo + i % cTo;
+                int childParentIndex = child -> parentBinds -> getCount() - cFrom + i / cTo;
+
+                parent -> childrenBinds -> setByIndex( parentChildIndex, iBind );
+                child -> parentBinds -> setByIndex( childParentIndex, iBind );
+            }
+        }
+        break;
     }
 
-    /* Resize children list in parent layer */
-    for( int iFrom = 0; iFrom < cFrom; iFrom++ )
-    {
-        neurons                 /* for this layer */
-        -> getByIndex( iFrom )  /* get the next neuron */
-        -> childrenBinds        /* and him children list */
-        -> expand( cTo );       /* expand to count of childrens */
-    }
 
-    /* Resize parents list in child layer */
-    for( int iTo = 0; iTo < cTo; iTo++ )
-    {
-        a -> neurons            /* for child layer */
-        -> getByIndex( iTo )    /* get the next neuron */
-        -> parentBinds          /* and him parents list */
-        -> expand( cFrom );     /* expand to count of parents */
-    }
-
-    /* Run at binds */
-    int c = binds.getCount();
-    for( int i = 0; i < c; i++ )
-    {
-        Bind* iBind = binds.getByIndex( i );
-
-        Neuron* parent = iBind -> getParent();
-        Neuron* child = iBind -> getChild();
-
-        int parentChildIndex = parent -> childrenBinds -> getCount() - cTo + i % cTo;
-        int childParentIndex = child -> parentBinds -> getCount() - cFrom + i / cTo;
-
-        parent -> childrenBinds -> setByIndex( parentChildIndex, iBind );
-        child -> parentBinds -> setByIndex( childParentIndex, iBind );
-    }
-
-    getLog().end();
+    getLog().trace("").prm( "Binds count", binds.getCount() ).end();
 
     return this;
 }
@@ -218,41 +265,6 @@ Layer* Layer::neuronPointsCalc()
 
         getLog().end();
     }
-    return this;
-}
-
-
-
-/*
-    Recalculate screeen position
-*/
-
-Layer* Layer::neuronPointsScreenCalc
-(
-    Scene* aScene /* Scene object */
-)
-{
-    getLog().begin( "Calculate neurons screen position" ).prm( "Layer", getNameOrId() );
-
-    /* Get count of points in the layer */
-    int neuronsCount = neurons -> getCount();
-
-    neurons -> loop
-    (
-        [ aScene ]
-        (
-            Neuron* neuron
-        ) -> bool
-        {
-            auto p = aScene -> getScreenByWorld( neuron -> getWorldPoint());
-            neuron -> setScreenPoint( p );
-            return false;
-        }
-    );
-
-
-    getLog().end();
-
     return this;
 }
 
@@ -432,6 +444,9 @@ Layer* Layer::setSize
 
 
 
+/*
+    Return the name of layer
+*/
 string Layer::getName()
 {
    return name;
@@ -439,6 +454,9 @@ string Layer::getName()
 
 
 
+/*
+    Set the name of layer
+*/
 Layer* Layer::setName
 (
     string a
@@ -526,37 +544,6 @@ Layer* Layer::setPointsRecalc
 bool Layer::getErrorChange()
 {
     return errorChange;
-}
-
-
-
-
-/******************************************************************************
-    Setters and getters
-*/
-
-
-
-/*
-    Set sensivity of layer
-*/
-Layer* Layer::setSensivity
-(
-    const double a
-)
-{
-    sensivity = a;
-    return this;
-}
-
-
-
-/*
-    Get sensivity of layer
-*/
-double Layer::getSensivity()
-{
-    return sensivity;
 }
 
 
@@ -660,27 +647,14 @@ Layer* Layer::getNeuronsByScreenPos
 
 
 
-Layer* Layer::setLayerType
-(
-    const LayerType a
-)
-{
-    layerType = a;
-    return this;
-}
-
-
-
-LayerType Layer::getLayerType()
-{
-    return layerType;
-}
-
-
-
 Layer* Layer::switchShowBinds()
 {
-    showBinds = !showBinds;
+    switch( showBinds )
+    {
+        case BDM_HIDDEN: showBinds = BDM_WEIGHT; break;
+        case BDM_WEIGHT: showBinds = BDM_TYPE; break;
+        case BDM_TYPE: showBinds = BDM_HIDDEN; break;
+    }
     return this;
 }
 
@@ -708,7 +682,7 @@ int Layer::getNeuronsCount()
 
 
 
-bool Layer::getShowBinds()
+BindDrawMode Layer::getShowBinds()
 {
     return showBinds;
 }

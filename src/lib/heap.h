@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>  /* for NULL */
 
 
 using namespace std;

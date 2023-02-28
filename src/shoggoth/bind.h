@@ -7,18 +7,28 @@
 struct Neuron;
 
 
+/*
+    Type of bind
+*/
+enum BindType
+{
+    BT_VALUE,       /* Spred the value of neuron and error on reverse move */
+    BT_SAMPLE,      /* Spred the value from sample */
+    BT_COMMAND      /* Spred the command value from sample */
+};
+
+
 
 class Bind
 {
     private:
 
-        Neuron* parent  = NULL; /* Parent neuroin */
-        Neuron* child   = NULL;  /* Child neuron */
-        double weight   = 0.0;  /* Bind weight */
+        Neuron*     parent  = NULL;     /* Parent neuroin */
+        Neuron*     child   = NULL;     /* Child neuron */
+        double      weight  = 0.0;      /* Bind weight */
+        BindType    type    = BT_VALUE; /* Type of bind */
 
     public:
-
-
 
         /*
             set bind weight
@@ -34,6 +44,23 @@ class Bind
             Return weight bind
         */
         double getWeight();
+
+
+
+        /*
+            set bind type
+        */
+        Bind* setType
+        (
+            BindType
+        );
+
+
+
+        /*
+            Return type of bind
+        */
+        BindType getType();
 
 
 
