@@ -108,10 +108,50 @@ ParamDouble* ParamDouble::setValue
 
 
 /*
-    Return value as string
+    Return value
 */
 double ParamDouble::getValue()
 {
     return value;
 }
 
+
+
+
+/*
+    Return the value as string
+*/
+string ParamDouble::getString()
+{
+    return to_string( getValue() );
+}
+
+
+
+/*
+    Return the value as bool
+*/
+bool ParamDouble::getBool()
+{
+    return getValue() == 0.0 ? false : true;
+}
+
+
+
+/*
+    Return the value as integer
+*/
+long long int ParamDouble::getInt()
+{
+    return (long long int) getValue();
+}
+
+
+
+/*
+    Return the value as float value
+*/
+double ParamDouble::getDouble()
+{
+    return getValue();
+}

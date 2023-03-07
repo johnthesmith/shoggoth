@@ -3,12 +3,14 @@
 
 #include "../lib/math.h"
 
+
 #include "param.h"
 #include "param_list.h"
 #include "param_string.h"
 #include "param_bool.h"
 #include "param_int.h"
 #include "param_double.h"
+#include "param_object.h"
 
 
 
@@ -62,6 +64,52 @@ int ParamList::indexBy
 {
     return Heap::indexBy(( void* ) a );
 }
+
+
+
+/*
+    Return paramer by name
+*/
+Param* ParamList::getByName
+(
+    string a
+)
+{
+    return ( Param* )getByIndex( getIndexByName( a ));
+}
+
+
+
+/*
+    Return parameter by list of name path
+*/
+Param* ParamList::getByName
+(
+    vector <string> aName   /* Names of parameter */
+)
+{
+    Param* result = NULL;
+    Param* param = NULL;
+    int c = aName.size();
+    int i = 0;
+
+    if( c > 0 )
+    {
+        do
+        {
+            ParamList* iParamList = param == NULL ? this : param -> getObject();
+            param = iParamList -> getByName( aName[ i ] );
+            if( i == c - 1 )
+            {
+                result = param;
+            }
+            i++;
+        } while ( i < c && param != NULL && param -> getType() == KT_OBJECT );
+    }
+    return result;
+}
+
+
 
 
 
@@ -147,9 +195,13 @@ int ParamList::getIndexByName
 }
 
 
+/******************************************************************************
+    get
+*/
+
 
 /*
-    Set string value
+    Get string value
 */
 string ParamList::getString
 (
@@ -157,37 +209,65 @@ string ParamList::getString
     string aDefault /* Value */
 )
 {
-    string r = aDefault;
-    auto i = getIndexByName( aName );
-    if( i >= 0 )
-    {
-        auto p = getByIndex( i );
-        switch( p -> getType() )
-        {
-            case KT_UNKNOWN:
-                r = aDefault;
-            break;
-            case KT_STRING:
-                r = ((ParamString*) p) -> getValue();
-            break;
-            case KT_INT:
-                r = to_string( ((ParamInt*) p) -> getValue() );
-            break;
-            case KT_BOOL:
-                r = (( ParamBool* ) p) -> getValue() ? "true" : "false";
-            break;
-            case KT_DOUBLE:
-                r = to_string((( ParamDouble* ) p) -> getValue());
-            break;
-        }
-    }
-    return r;
+    return getString( getIndexByName( aName ), aDefault );
+}
+
+
+
+
+/*
+    Get string value
+*/
+string ParamList::getString
+(
+    int aIndex,   /* Name of parameter */
+    string aDefault /* Value */
+)
+{
+    auto p = getByIndex( aIndex );
+    return
+    p == NULL || p -> getType() == KT_UNKNOWN
+    ? aDefault
+    : p -> getString();
 }
 
 
 
 /*
-    Set boolean value
+    Get string value by full path
+*/
+string ParamList::getString
+(
+    vector <string> aName,  /* Name of parameter */
+    string aDefault         /* default value */
+)
+{
+    Param* result = getByName( aName );
+    return result == NULL ? aDefault : result -> getString();
+}
+
+
+
+/*
+    get boolean value by index
+*/
+bool ParamList::getBool
+(
+    int aIndex,     /* Name of parameter */
+    bool aDefault   /* Value */
+)
+{
+    auto p = getByIndex( aIndex );
+    return
+    p == NULL || p -> getType() == KT_UNKNOWN
+    ? aDefault
+    : p -> getBool();
+}
+
+
+
+/*
+    Set boolean value by name
 */
 bool ParamList::getBool
 (
@@ -195,37 +275,30 @@ bool ParamList::getBool
     bool aDefault   /* Value */
 )
 {
-    bool r = aDefault;
-    auto i = getIndexByName( aName );
-    if( i >= 0 )
-    {
-        auto p = getByIndex( i );
-        switch( p -> getType() )
-        {
-            case KT_UNKNOWN:
-                r = aDefault;
-            break;
-            case KT_STRING:
-                r = ((ParamString*) p) -> getValue() == "true";
-            break;
-            case KT_INT:
-                r = ((ParamInt*) p) -> getValue() == 0 ? false : true;
-            break;
-            case KT_BOOL:
-                r = ((ParamBool*) p) -> getValue();
-            break;
-            case KT_DOUBLE:
-                r = ((ParamDouble*) p) -> getValue() == 0 ? false : true;
-            break;
-        }
-    }
-    return r;
+    return getBool( getIndexByName( aName ), aDefault );
 }
 
 
 
+
 /*
-    Set integer value
+    Get boolean value by path
+*/
+bool ParamList::getBool
+(
+    vector <string> aName,  /* Name of parameter */
+    bool aDefault           /* default value */
+)
+{
+    Param* result = getByName( aName );
+    return result == NULL ? aDefault : result -> getBool();
+}
+
+
+
+
+/*
+    Get integer value by name
 */
 long long int ParamList::getInt
 (
@@ -233,37 +306,49 @@ long long int ParamList::getInt
     long long int aDefault    /* Value */
 )
 {
-    long long int r = aDefault;
-    auto i = getIndexByName( aName );
-    if( i >= 0 )
-    {
-        auto p = getByIndex( i );
-        switch( p -> getType() )
-        {
-            case KT_UNKNOWN:
-                r = aDefault;
-            break;
-            case KT_STRING:
-                r = atoi( ((ParamString*) p) -> getValue().c_str() );
-            break;
-            case KT_INT:
-                r = ((ParamInt*) p) -> getValue();
-            break;
-            case KT_BOOL:
-                r = (( ParamBool* ) p) -> getValue() ? 1 : 0;
-            break;
-            case KT_DOUBLE:
-                r = (long long int) ((ParamDouble*) p) -> getValue();
-            break;
-        }
-    }
-    return r;
+    return getInt( getIndexByName( aName ), aDefault );
+}
+
+
+
+
+/*
+    get integer value by index
+*/
+long long int ParamList::getInt
+(
+    int aIndex,             /* Index of parameter */
+    long long int aDefault  /* Value */
+)
+{
+    auto p = getByIndex( aIndex );
+    return
+    p == NULL || p -> getType() == KT_UNKNOWN
+    ? aDefault
+    : p -> getInt();
 }
 
 
 
 /*
-    Set double value
+    Get integer value by path
+*/
+long long int ParamList::getInt
+(
+    vector <string> aName,  /* Name of parameter */
+    long long int aDefault  /* default value */
+)
+{
+    Param* result = getByName( aName );
+    return result == NULL ? aDefault : result -> getInt();
+}
+
+
+
+
+
+/*
+    Get double value by name
 */
 double ParamList::getDouble
 (
@@ -271,32 +356,44 @@ double ParamList::getDouble
     double aDefault    /* Value */
 )
 {
-    double r = aDefault;
-    auto i = getIndexByName( aName );
-    if( i >= 0 )
-    {
-        auto p = getByIndex( i );
-        switch( p -> getType() )
-        {
-            case KT_UNKNOWN:
-                r = aDefault;
-            break;
-            case KT_STRING:
-                r = atoi( ((ParamString*) p) -> getValue().c_str() );
-            break;
-            case KT_INT:
-                r = ((ParamInt*) p) -> getValue();
-            break;
-            case KT_BOOL:
-                r = (( ParamBool* ) p) -> getValue() ? 1.0 : 0.0;
-            break;
-            case KT_DOUBLE:
-                r = (( ParamDouble* ) p) -> getValue();
-            break;
-        }
-    }
-    return r;
+    return getDouble( getIndexByName( aName ), aDefault );
 }
+
+
+
+/*
+    Get double value by index
+*/
+double ParamList::getDouble
+(
+    int aIndex,         /* Name of parameter */
+    double aDefault     /* Value */
+)
+{
+    auto p = getByIndex( aIndex );
+    return
+    p == NULL || p -> getType() == KT_UNKNOWN
+    ? aDefault
+    : p -> getDouble();
+}
+
+
+
+/*
+    Get double value by path
+*/
+double ParamList::getDouble
+(
+    vector <string> aName,  /* Name of parameter */
+    double aDefault         /* default value */
+)
+{
+    Param* result = getByName( aName );
+    return result == NULL ? aDefault : result -> getDouble();
+}
+
+
+
 
 
 
@@ -310,7 +407,7 @@ ParamList* ParamList::setBool
 )
 {
     auto i = getIndexByName( aName );
-    auto p = getByIndex( i );
+    Param* p = NULL;
 
     if( i < 0 )
     {
@@ -320,6 +417,7 @@ ParamList* ParamList::setBool
     }
     else
     {
+        p = getByIndex( i );
         /* Parameter exists */
         if( p -> getType() !=  KT_BOOL )
         {
@@ -348,7 +446,7 @@ ParamList* ParamList::setString
 )
 {
     auto i = getIndexByName( aName );
-    auto p = getByIndex( i );
+    Param* p = NULL;
 
     if( i < 0 )
     {
@@ -358,6 +456,7 @@ ParamList* ParamList::setString
     }
     else
     {
+        p = getByIndex( i );
         /* Parameter exists */
         if( p -> getType() !=  KT_STRING )
         {
@@ -386,7 +485,7 @@ ParamList* ParamList::setInt
 )
 {
     auto i = getIndexByName( aName );
-    auto p = getByIndex( i );
+    Param* p = NULL;
 
     if( i < 0 )
     {
@@ -396,6 +495,7 @@ ParamList* ParamList::setInt
     }
     else
     {
+        p = getByIndex( i );
         /* Parameter exists */
         if( p -> getType() !=  KT_INT )
         {
@@ -424,7 +524,7 @@ ParamList* ParamList::setDouble
 )
 {
     auto i = getIndexByName( aName );
-    auto p = getByIndex( i );
+    Param* p = NULL;
 
     if( i < 0 )
     {
@@ -437,6 +537,7 @@ ParamList* ParamList::setDouble
         /* Parameter exists */
         if( p -> getType() !=  KT_DOUBLE )
         {
+            p = getByIndex( i );
             /* And it is not a string */
             p -> destroy();
             p = ParamDouble::create() -> setName( aName );
@@ -447,5 +548,83 @@ ParamList* ParamList::setDouble
     /* Set value */
     ((ParamDouble*) p ) -> setValue( aValue );
 
+    return this;
+}
+
+
+
+/*
+    Set param list
+*/
+ParamList* ParamList::setObject
+(
+    string aName,   /* Name of parameter */
+    ParamList* aValue   /* Value */
+)
+{
+    auto i = getIndexByName( aName );
+    Param* p = NULL;
+
+    if( i < 0 )
+    {
+        /* Create new object */
+        p = ParamObject::create() -> setName( aName );
+        push( p );
+    }
+    else
+    {
+        /* Parameter exists */
+        p = getByIndex( i );
+        /* And it is not a string */
+        p -> destroy();
+        p = ParamObject::create() -> setName( aName );
+        setByIndex( i, p );
+    }
+
+    /* Set value */
+    ((ParamObject*) p ) -> setValue( aValue );
+
+    return this;
+}
+
+
+
+
+ParamList* ParamList::dump
+(
+    int depth
+)
+{
+    int c = getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        auto p = getByIndex( i );
+        string tab = "";
+        tab.resize( 4 * depth, ' ' );
+        cout << tab;
+        switch( p -> getType() )
+        {
+            case KT_OBJECT:
+                cout
+                << "["
+                << p -> getNameOfType()
+                << "] "
+                << p -> getName()
+                << "\n";
+
+                ((ParamObject*) p) -> getValue() -> dump( depth + 1 );
+            break;
+            default:
+                cout
+                << "["
+                << p -> getNameOfType()
+                << "] "
+                << p -> getName()
+                << "="
+                << getString( i )
+                << "\n";
+            break;
+        }
+    };
     return this;
 }

@@ -27,27 +27,30 @@ int main
     char** argv
 )
 {
-    auto log = Log();
-    log.begin( "Application start" );
-
-    auto scene      = Scene( log );
-    auto payload    = Form::create( log );
-
-    scene.init().setPayload( payload ).loop().finit();
-
-    payload -> destroy();
-
-    log.end( "Application stop" );
-
-
-//ifstream t( "example.json" );
-//stringstream b;
-//b << t.rdbuf();
+//    auto log = Log();
+//    log.begin( "Application start" );
 //
-//auto json = Json::create();
-//json -> fromString( b.str() );
-//cout << json -> getCode() << "\n";
-//json -> destroy();
+//    auto scene      = Scene( log );
+//    auto payload    = Form::create( log );
+//
+//    scene.init().setPayload( payload ).loop().finit();
+//
+//    payload -> destroy();
+//
+//    log.end( "Application stop" );
 
-    return 0;
+
+ifstream t( "example.json" );
+stringstream b;
+b << t.rdbuf();
+
+auto json = Json::create();
+json -> fromString( b.str() );
+cout << json -> getCode() << "\n";
+
+cout << json -> getInt( vector <string> { "code", "c" }, 666 ) << "\n";
+
+json -> destroy();
+
+return 0;
 }

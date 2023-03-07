@@ -90,7 +90,7 @@ struct ParamObject : public Param
     */
     ParamObject* setValue
     (
-        const ParamList* /* Value */
+        ParamList* /* Value */
     );
 
 
@@ -99,4 +99,25 @@ struct ParamObject : public Param
         Return value
     */
     ParamList* getValue();
+
+
+
+    /*
+        Return the value as string
+    */
+    string getString() override;
+
+
+
+    /*
+        Return the value as bool
+    */
+    bool getBool() override;
+
+
+
+    /*
+        Return the value as integer
+    */
+    ParamList* getObject() override;
 };

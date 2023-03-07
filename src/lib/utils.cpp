@@ -19,3 +19,34 @@ long long now()
     : 0;
 }
 
+
+
+
+bool stringToBool
+(
+    string a
+)
+{
+    return a == "true" || a == "TRUE";
+}
+
+
+
+long long int stringToInt
+(
+    string a
+)
+{
+    return atol( a.c_str() );
+}
+
+
+
+double stringToDouble
+(
+    string a
+)
+{
+    return atof( a.c_str() );
+}
+

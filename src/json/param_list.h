@@ -4,9 +4,8 @@
 
 #pragma once
 
-
+#include <vector>
 #include "../lib/heap.h"
-
 #include "param.h"
 
 
@@ -51,6 +50,27 @@ struct ParamList : public Heap
     int indexBy
     (
         Param*
+    );
+
+
+
+
+    /*
+        Return paramer or null by name
+    */
+    Param* getByName
+    (
+        string
+    );
+
+
+
+    /*
+        Return parameter by list of name path
+    */
+    Param* getByName
+    (
+        vector <string> /* Names of parameter */
     );
 
 
@@ -117,8 +137,32 @@ struct ParamList : public Heap
 
     string getString
     (
+        int,            /* Index of parameter */
+        string  = ""    /* Dafault value */
+    );
+
+
+
+    string getString
+    (
         string,         /* Name of parameter */
         string  = ""    /* Dafault value */
+    );
+
+
+
+    string getString
+    (
+        vector <string>,/* Name of parameter */
+        string  = ""    /* Dafault value */
+    );
+
+
+
+    bool getBool
+    (
+        int,            /* Index of parameter */
+        bool = false    /* Dafault value */
     );
 
 
@@ -131,6 +175,25 @@ struct ParamList : public Heap
 
 
 
+    /*
+        Get boolean value by path
+    */
+    bool getBool
+    (
+        vector <string>,    /* Name path of parameter */
+        bool = false        /* default value */
+    );
+
+
+
+    long long int getInt
+    (
+        int,                /* Name of parameter */
+        long long int = 0   /* Dafault value */
+    );
+
+
+
     long long int getInt
     (
         string,             /* Name of parameter */
@@ -139,10 +202,40 @@ struct ParamList : public Heap
 
 
 
+    /*
+        Get integer value by path
+    */
+    long long int getInt
+    (
+        vector <string>,    /* Name of parameter */
+        long long int       /* default value */
+    );
+
+
+
+    double getDouble
+    (
+        int,            /* Name of parameter */
+        double = 0.0    /* Dafault value */
+    );
+
+
+
     double getDouble
     (
         string,         /* Name of parameter */
         double = 0.0    /* Dafault value */
+    );
+
+
+
+    /*
+        Get double value by path
+    */
+    double getDouble
+    (
+        vector <string>,    /* Name of parameter */
+        double              /* default value */
     );
 
 
@@ -187,5 +280,23 @@ struct ParamList : public Heap
     (
         string,         /* Name of parameter */
         double = 0.0    /* Value */
+    );
+
+
+
+    /*
+        Set double value
+    */
+    ParamList* setObject
+    (
+        string,         /* Name of parameter */
+        ParamList*    /* Value */
+    );
+
+
+
+    ParamList* dump
+    (
+        int = 0 /* depth */
     );
 };

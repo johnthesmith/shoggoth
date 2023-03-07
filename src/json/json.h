@@ -3,6 +3,7 @@
 #include "../lib/result.h"
 
 #include <stack>
+#include <vector>
 #include "param_list.h"
 
 
@@ -18,20 +19,26 @@ enum PairPart
 
 struct JsonObject
 {
-    PairPart pairPart        = PP_UNKNOWN;
+    PairPart pairPart           = PP_UNKNOWN;
+    bool    pairBegin           = false;
 
-    bool    fArray          = false;
-    bool    fEscape         = false;
+    bool    fArray              = false;
+    bool    fEscape             = false;
 
-    bool    fNameBegin      = false;
-    bool    fNameEnd        = false;
-    string  name            = "";
+    bool    fNameBegin          = false;
+    bool    fNameEnd            = false;
+    string  name                = "";
 
-    bool    fValueBegin     = false;
-    bool    fValueEnd       = false;
-    string  value           = "";
+    bool        fValueBegin     = false;
+    bool        fValueEnd       = false;
+    string      value           = "";
+    ParamList*  valueParamList  = NULL;
 
-    ParamType valueType = KT_UNKNOWN;
+    ParamList*  paramList       = NULL;
+
+    ParamType   valueType       = KT_UNKNOWN;
+    JsonObject* prevJsonObject  = NULL;
+
 };
 
 
@@ -43,13 +50,13 @@ class Json : public Result
 {
     private:
 
-        int                 line            = 0;    /* Current line */
-        int                 index           = 0;    /* Trace index of string */
-        bool                fStringBegin    = false;
-        bool                fStringEnd      = false;
-        string              label           = "";
-        stack <JsonObject*> objects;             /* State */
-        ParamList*          paramList       = NULL;
+        int                 line                = 0;    /* Current line */
+        int                 index               = 0;    /* Trace index of string */
+        bool                fStringBegin        = false;
+        bool                fStringEnd          = false;
+        string              label               = "";
+        JsonObject*         currentJsonObject   = NULL;             /* State */
+        ParamList*          paramList           = NULL;
 
     public:
         Json();
@@ -68,6 +75,7 @@ class Json : public Result
         void destroy();
 
 
+
         /*
             Convert string to Json
         */
@@ -75,6 +83,13 @@ class Json : public Result
         (
             const string
         );
+
+
+
+        /*
+            Convert Json to string
+        */
+        string toString();
 
 
 
@@ -102,5 +117,48 @@ class Json : public Result
 
         Json* newObject();
         JsonObject* getObject();
-        Json* popObject();
+        Json* deleteObject
+        (
+            bool /* Destroy parmList object */
+        );
+
+
+
+        static ParamType getType
+        (
+            string
+        );
+
+
+
+        string getString
+        (
+            string,
+            string = ""
+        );
+
+
+
+        string getString
+        (
+            vector <string>,
+            string = ""
+        );
+
+
+
+        long long int getInt
+        (
+            string,
+            long long int = 0
+        );
+
+
+
+        long long int getInt
+        (
+            vector <string>,
+            long long int = 0
+        );
+
 };

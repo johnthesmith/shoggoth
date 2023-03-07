@@ -93,4 +93,34 @@ struct ParamInt : public Param
         Return value
     */
     long long int getValue();
+
+
+
+    /*
+        Return the value as string
+    */
+    string getString() override;
+
+
+
+    /*
+        Return the value as bool
+    */
+    bool getBool() override;
+
+
+
+    /*
+        Return the value as integer
+    */
+    long long int getInt() override;
+
+
+
+    /*
+        Return the value as float value
+    */
+    double getDouble() override;
+
 };
+

@@ -100,10 +100,10 @@ string ParamObject::getNameOfType()
 */
 ParamObject* ParamObject::setValue
 (
-    const ParamList* a /* Value */
+    ParamList* a /* Value */
 )
 {
-//    value = a;
+    value = a;
     return this;
 }
 
@@ -115,5 +115,35 @@ ParamObject* ParamObject::setValue
 ParamList* ParamObject::getValue()
 {
     return value;
+}
+
+
+
+/*
+    Return the value as string
+*/
+string ParamObject::getString()
+{
+    return "[OBJECT]";
+}
+
+
+
+/*
+    Return the value as bool
+*/
+bool ParamObject::getBool()
+{
+    return getValue() != NULL;
+}
+
+
+
+/*
+    Return the value as integer
+*/
+ParamList* ParamObject::getObject()
+{
+    return getValue();
 }
 

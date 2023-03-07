@@ -13,10 +13,13 @@
 using namespace std;
 
 
+struct ParamList;
+
 
 struct Param
 {
-    string  name = "";           /* Name of Param */
+    string  name = "";      /* Name of Param */
+    string  comment = "";   /* Comment */
 
 
 
@@ -87,4 +90,41 @@ struct Param
         Get Param name
     */
     string getName();
+
+
+
+    /*
+        Return the value as string
+    */
+    virtual string getString();
+
+
+
+    /*
+        Return the value as bool
+    */
+    virtual bool getBool();
+
+
+
+    /*
+        Return the value as integer
+    */
+    virtual long long int getInt();
+
+
+
+    /*
+        Return the value as float value
+    */
+    virtual double getDouble();
+
+
+
+    /*
+        Return the value as param list
+    */
+    virtual ParamList* getObject();
+
+
 };

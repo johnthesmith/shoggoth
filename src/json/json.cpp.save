@@ -3,7 +3,6 @@
 
 #include "json.h"
 #include "param_type.h"
-#include "param_object.h"
 
 #include "../lib/utils.h"
 
@@ -111,11 +110,11 @@ Json* Json::fromString
                             break;
                             case PP_UNKNOWN:
                             case PP_VALUE:
-                                if( obj -> prevJsonObject != NULL )
+                                if( objects.size() > 1 )
                                 {
-                                    deleteObject( false );
                                     valueEnd();
                                     pairEnd();
+                                    popObject();
                                 }
                                 else
                                 {
@@ -219,23 +218,10 @@ Json* Json::fromString
             break;
 
             case ' ':
-                if( !fStringBegin )
-                {
-                    if( obj -> fValueEnd && obj -> pairPart == PP_VALUE )
-                    {
-                        pairEnd();
-                    }
-                }
-                else
-                {
-                    addChar( a[ index ] );
-                }
-            break;
-
             case ',':
                 if( !fStringBegin )
                 {
-                    if( obj -> pairPart == PP_VALUE )
+                    if( obj -> fValueEnd && obj -> pairPart == PP_VALUE )
                     {
                         pairEnd();
                     }
@@ -281,34 +267,27 @@ Json* Json::fromString
     }
 
     /* Check heracly */
-    if( isOk() && obj -> prevJsonObject != NULL )
+    if( objects.size() != 1 )
     {
-        setResult( "HeraclyError" );
+        if( isOk() )
+        {
+            setResult( "HeraclyError" );
+        }
     }
     else
     {
-        paramList -> destroy();
-        paramList = ((ParamObject*)( obj -> paramList -> getByIndex( 0 ))) -> getValue();
+        objects[ 0 ] -> paramList -> copyTo( paramList );
     }
 
     /* Clear stack */
-    while( getObject() != NULL )
+    while( objects.size() != 0 )
     {
-        deleteObject( !isOk() );
+        popObject();
     }
-
-    paramList -> dump();
 
     return this;
 }
 
-
-
-string Json::toString()
-{
-    string result = "";
-    return result;
-}
 
 
 
@@ -414,20 +393,14 @@ Json* Json::pairEnd()
     }
     else
     {
-        if( obj -> valueParamList != NULL)
+        if( paramList() )
+        switch( getType( obj -> value ) )
         {
-            obj -> paramList -> setObject( obj -> name, obj -> valueParamList);
-        }
-        else
-        {
-            switch( getType( obj -> value ) )
-            {
-                case KT_NULL    : obj -> paramList -> setInt( obj -> name, 0 ); break;
-                case KT_STRING  : obj -> paramList -> setString( obj -> name, obj -> value ); break;
-                case KT_BOOL    : obj -> paramList -> setBool( obj -> name, stringToBool( obj -> value )); break;
-                case KT_INT     : obj -> paramList -> setInt( obj -> name, stringToInt( obj -> value )); break;
-                case KT_DOUBLE  : obj -> paramList -> setDouble( obj -> name, stringToDouble( obj -> value )); break;
-            }
+            case KT_NULL    : obj -> paramList -> setInt( obj -> name, 0 ); break;
+            case KT_STRING  : obj -> paramList -> setString( obj -> name, obj -> value ); break;
+            case KT_BOOL    : obj -> paramList -> setBool( obj -> name, stringToBool( obj -> value )); break;
+            case KT_INT     : obj -> paramList -> setInt( obj -> name, stringToInt( obj -> value )); break;
+            case KT_DOUBLE  : obj -> paramList -> setDouble( obj -> name, stringToDouble( obj -> value )); break;
         }
     }
 
@@ -440,7 +413,6 @@ Json* Json::pairEnd()
     obj -> fNameEnd = false;
     obj -> name = "";
     obj -> value = "";
-    obj -> valueParamList = NULL;
     obj -> pairPart = PP_UNKNOWN;
 
     return this;
@@ -456,37 +428,21 @@ Json* Json::pairEnd()
 
 Json* Json::newObject()
 {
-    auto obj = new JsonObject();
-    obj -> prevJsonObject = currentJsonObject;
-    currentJsonObject = obj;
-    obj -> paramList = new ParamList();
+    auto object = new JsonObject();
+    object -> paramList = new ParamList();
+    objects.push( object );
 
     return this;
 }
 
 
 
-Json* Json::deleteObject
-(
-    bool aDestroyParamList
-)
+Json* Json::popObject()
 {
     auto object = getObject();
-    if( aDestroyParamList )
-    {
-        /* The object paramList must be completely destroy */
-        paramList -> destroy();
-    }
-    else
-    {
-        /* ParamList using like value in parent Object */
-        if( object -> prevJsonObject != NULL )
-        {
-            object -> prevJsonObject -> valueParamList = object -> paramList;
-        }
-    }
-    currentJsonObject = object -> prevJsonObject;
+    delete object -> paramList;
     delete object;
+    objects.pop();
     return this;
 }
 
@@ -495,7 +451,7 @@ Json* Json::deleteObject
 
 JsonObject* Json::getObject()
 {
-    return currentJsonObject;
+    return objects.top();
 }
 
 
@@ -515,6 +471,7 @@ Json* Json::trace
     cout << "---------------------------------------\n";
     cout << "result     " << getCode() << "\n";
     cout << "label      \"" << label << "\"\n";
+    cout << "stack      " << objects.size() << "\n";
     cout << "i          " << index << "\n";
     cout << "char       '" << c << "'\n";
     cout << "line       " << line << "\n";
@@ -526,9 +483,10 @@ Json* Json::trace
     cout << "fName      " << obj -> fNameBegin << " " << obj -> fNameEnd << "\n";
     cout << "fValue     " << obj -> fValueBegin << " " << obj -> fValueEnd << "\n";
 
-    cout << "valueType  " << obj -> valueType << "\n";
-    cout << "Name       \"" << obj -> name << "\"\n";
-    cout << "value      \"" << obj -> value << "\"\n";
+    cout << "valueType  " << getObject() -> valueType << "\n";
+    cout << "Name       \"" << getObject() -> name << "\"\n";
+    cout << "value      \"" << getObject() -> value << "\"\n";
+
 
     return this;
 }
@@ -586,7 +544,6 @@ string Json::getString
 
 
 
-
 string Json::getString
 (
     vector <string> aName,
@@ -596,27 +553,4 @@ string Json::getString
     return paramList -> getString( aName, aDefault );
 }
 
-
-
-
-long long int Json::getInt
-(
-    string aName,
-    long long int aDefault
-)
-{
-    return paramList -> getInt( aName, aDefault );
-}
-
-
-
-
-long long int Json::getInt
-(
-    vector <string> aName,
-    long long int aDefault
-)
-{
-    return paramList -> getInt( aName, aDefault );
-}
 

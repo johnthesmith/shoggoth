@@ -97,3 +97,53 @@ string Param::getName()
 {
     return name;
 }
+
+
+
+/*
+    Return the value as string
+*/
+string Param::getString()
+{
+    return "";
+}
+
+
+
+/*
+    Return the value as bool
+*/
+bool Param::getBool()
+{
+    return false;
+}
+
+
+
+/*
+    Return the value as integer
+*/
+long long int Param::getInt()
+{
+    return 0;
+}
+
+
+
+/*
+    Return the value as float value
+*/
+double Param::getDouble()
+{
+    return 0.0;
+}
+
+
+
+/*
+    Return the value as param list
+*/
+ParamList* Param::getObject()
+{
+    return NULL;
+}

@@ -114,3 +114,42 @@ string ParamString::getValue()
     return value;
 }
 
+
+
+/*
+    Return the value as string
+*/
+string ParamString::getString()
+{
+    return getValue();
+}
+
+
+
+/*
+    Return the value as bool
+*/
+bool ParamString::getBool()
+{
+    return getValue() == "true" || getValue() == "TRUE";
+}
+
+
+
+/*
+    Return the value as integer
+*/
+long long int ParamString::getInt()
+{
+    return atol( getValue().c_str() );
+}
+
+
+
+/*
+    Return the value as float value
+*/
+double ParamString::getDouble()
+{
+    return atof( getValue().c_str() );
+}
