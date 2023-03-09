@@ -394,6 +394,53 @@ double ParamList::getDouble
 
 
 
+/*
+    Get object value by name
+*/
+ParamList* ParamList::getObject
+(
+    string aName,   /* Name of parameter */
+    ParamList* aDefault    /* Value */
+)
+{
+    return getObject( getIndexByName( aName ), aDefault );
+}
+
+
+
+/*
+    Get object value by index
+*/
+ParamList* ParamList::getObject
+(
+    int aIndex,             /* Name of parameter */
+    ParamList* aDefault     /* Value */
+)
+{
+    auto p = getByIndex( aIndex );
+    return
+    p == NULL || p -> getType() == KT_UNKNOWN
+    ? aDefault
+    : p -> getObject();
+}
+
+
+
+/*
+    Get object value by path
+*/
+ParamList* ParamList::getObject
+(
+    vector <string> aName,  /* Name of parameter */
+    ParamList* aDefault         /* default value */
+)
+{
+    Param* result = getByName( aName );
+    return result == NULL ? aDefault : result -> getObject();
+}
+
+
+
 
 
 

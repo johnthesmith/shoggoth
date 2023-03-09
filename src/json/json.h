@@ -20,17 +20,20 @@ enum PairPart
 struct JsonObject
 {
     PairPart pairPart           = PP_UNKNOWN;
-    bool    pairBegin           = false;
+    bool        fPairBegin           = false;
 
-    bool    fArray              = false;
-    bool    fEscape             = false;
+    bool        fArray              = false;
+    bool        fEscape             = false;
 
-    bool    fNameBegin          = false;
-    bool    fNameEnd            = false;
-    string  name                = "";
+    bool        fNameBegin          = false;
+    bool        fNameEnd            = false;
+    string      name                = "";
 
     bool        fValueBegin     = false;
     bool        fValueEnd       = false;
+    bool        fStringBegin    = false;
+    bool        fStringEnd      = false;
+
     string      value           = "";
     ParamList*  valueParamList  = NULL;
 
@@ -39,6 +42,25 @@ struct JsonObject
     ParamType   valueType       = KT_UNKNOWN;
     JsonObject* prevJsonObject  = NULL;
 
+    static JsonObject* create
+    (
+        JsonObject* = NULL
+    );
+
+    JsonObject* nameBegin();
+    JsonObject* nameEnd();
+    JsonObject* valueBegin();
+    JsonObject* valueEnd();
+    JsonObject* pairBegin();
+    JsonObject* pairEnd();
+    JsonObject* deleteObject
+    (
+        bool /* Destroy parmList object */
+    );
+    JsonObject* addChar
+    (
+        char
+    );
 };
 
 
@@ -52,10 +74,6 @@ class Json : public Result
 
         int                 line                = 0;    /* Current line */
         int                 index               = 0;    /* Trace index of string */
-        bool                fStringBegin        = false;
-        bool                fStringEnd          = false;
-        string              label               = "";
-        JsonObject*         currentJsonObject   = NULL;             /* State */
         ParamList*          paramList           = NULL;
 
     public:
@@ -93,33 +111,11 @@ class Json : public Result
 
 
 
-        Json* addChar
-        (
-            char
-        );
-
-
 
         Json* trace
         (
-            char c
-        );
-
-
-
-
-        Json* pairBegin();
-        Json* pairEnd();
-        Json* nameBegin();
-        Json* nameEnd();
-        Json* valueBegin();
-        Json* valueEnd();
-
-        Json* newObject();
-        JsonObject* getObject();
-        Json* deleteObject
-        (
-            bool /* Destroy parmList object */
+            char c,
+            JsonObject*
         );
 
 
@@ -159,6 +155,22 @@ class Json : public Result
         (
             vector <string>,
             long long int = 0
+        );
+
+
+
+        ParamList* getObject
+        (
+            string,
+            ParamList* = NULL
+        );
+
+
+
+        ParamList* getObject
+        (
+            vector <string>,
+            ParamList* = NULL
         );
 
 };

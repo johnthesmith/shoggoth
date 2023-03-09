@@ -48,7 +48,7 @@ auto json = Json::create();
 json -> fromString( b.str() );
 cout << json -> getCode() << "\n";
 
-cout << json -> getInt( vector <string> { "code", "c" }, 666 ) << "\n";
+cout << json -> getObject( vector <string> { "dd", "dd" } ) << "\n";
 
 json -> destroy();
 

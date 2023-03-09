@@ -1,6 +1,6 @@
 /*
-    It is a dafault Param container with type UNKNOWN
-    Param has a Type and Name
+    It is a dafault Value container with type UNKNOWN
+    Value has a Type and Name
 */
 
 #pragma once
@@ -14,37 +14,34 @@ using namespace std;
 
 
 struct ParamList;
+struct Array;
 
 
-struct Param
+struct Value
 {
-    string  name = "";      /* Name of Param */
-
-
-
     /*
         Constructor
     */
-    Param();
+    Value();
 
 
 
     /*
         Destructor
     */
-    ~Param();
+    ~Value();
 
 
 
     /*
-        Create a new Param
+        Create a new Value
     */
-    static Param* create();
+    static Value* create();
 
 
 
     /*
-        Destroy the Param
+        Destroy the Value
     */
     void destroy();
 
@@ -52,43 +49,26 @@ struct Param
 
 
     /*
-        Set name of the Param
+        Set name of the Value
     */
-    Param* setType
+    Value* setType
     (
-        ParamType /* Value for Param type */
+        ParamType /* Value for Value type */
     );
 
 
 
     /*
-        Return the type of the Param
+        Return the type of the Value
     */
     virtual ParamType getType();
 
 
 
     /*
-        Return the type of the Param
+        Return the type of the Value
     */
     virtual string getNameOfType();
-
-
-
-    /*
-        Set Param Name
-    */
-    virtual Param* setName
-    (
-        string
-    );
-
-
-
-    /*
-        Get Param name
-    */
-    string getName();
 
 
 
@@ -122,9 +102,15 @@ struct Param
 
 
     /*
-        Return the value as param list
+        Return the value as Value list
     */
     virtual ParamList* getObject();
 
+
+
+    /*
+        Return the value as Value list
+    */
+    virtual ArrayList* getArray();
 
 };

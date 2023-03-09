@@ -241,6 +241,39 @@ struct ParamList : public Heap
 
 
     /*
+        Get object value by name
+    */
+    ParamList* getObject
+    (
+        string,             /* Name of parameter */
+        ParamList* = NULL   /* Value */
+    );
+
+
+
+    /*
+        Get object value by index
+    */
+    ParamList* getObject
+    (
+        int aIndex,         /* Name of parameter */
+        ParamList* = NULL   /* Value */
+    );
+
+
+
+    /*
+        Get object value by path
+    */
+    ParamList* getObject
+    (
+        vector <string>,    /* Name of parameter */
+        ParamList* = NULL   /* default value */
+    );
+
+
+
+    /*
         Set string value
     */
     ParamList* setString

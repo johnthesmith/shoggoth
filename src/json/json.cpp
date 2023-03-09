@@ -11,16 +11,15 @@
 
 Json::Json()
 {
-    paramList = new ParamList();
+    paramList = ParamList::create();
 }
 
 
 
 Json::~Json()
 {
-    delete paramList;
+    paramList -> destroy();
 }
-
 
 
 
@@ -50,22 +49,18 @@ Json* Json::fromString
     int c = a.length();
 
     /* Default object */
-    newObject();
-    auto obj = getObject();
+    auto obj = JsonObject::create();
     obj -> name = "ROOT";
-    pairBegin();
-    nameEnd();
+    obj -> pairBegin();
+    obj -> nameEnd();
     obj -> pairPart = PP_VALUE;
 
     for( index = 0; index < c && isOk(); index++ )
     {
-        obj = getObject();
-        label = "";
-
         switch( a[ index ] )
         {
             case '{':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
                     switch( obj -> pairPart )
                     {
@@ -78,8 +73,7 @@ Json* Json::fromString
                         case PP_VALUE:
                             if( !obj -> fValueBegin )
                             {
-                                newObject();
-                                obj = getObject();
+                                obj = JsonObject::create( obj );
                             }
                             if( obj -> fValueBegin || obj -> fValueEnd )
                             {
@@ -87,18 +81,18 @@ Json* Json::fromString
                             }
                         break;
                     }
-                    pairBegin();
+                    obj -> pairBegin();
                 }
                 else
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
             break;
 
             case '}':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
-                    if( !obj -> pairBegin )
+                    if( !obj -> fPairBegin )
                     {
                         setResult( "Unexpected } without name" );
                     }
@@ -107,15 +101,32 @@ Json* Json::fromString
                         switch( obj -> pairPart )
                         {
                             case PP_NAME:
-                                setResult( "Unexpected } in name" );
+                                if( obj -> fNameBegin )
+                                {
+                                    setResult( "Unexpected } in name" );
+                                }
+                                else
+                                {
+                                    /* Close ROOT case */
+                                    if( obj -> prevJsonObject != NULL )
+                                    {
+                                        if( obj -> name != "")
+                                        {
+                                            obj -> pairEnd();
+                                        }
+                                        obj = obj -> deleteObject( false );
+                                    }
+                                }
                             break;
                             case PP_UNKNOWN:
                             case PP_VALUE:
                                 if( obj -> prevJsonObject != NULL )
                                 {
-                                    deleteObject( false );
-                                    valueEnd();
-                                    pairEnd();
+                                    if( obj -> name != "")
+                                    {
+                                        obj -> pairEnd();
+                                    }
+                                    obj = obj -> deleteObject( false );
                                 }
                                 else
                                 {
@@ -127,15 +138,15 @@ Json* Json::fromString
                 }
                 else
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
             break;
 
             case '"':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
-                    fStringBegin = true;
-                    fStringEnd = false;
+                    obj -> fStringBegin = true;
+                    obj -> fStringEnd = false;
 
                     switch( obj -> pairPart )
                     {
@@ -143,8 +154,8 @@ Json* Json::fromString
                         case PP_NAME:
                             if( !obj -> fNameBegin && !obj -> fNameEnd )
                             {
-                                nameBegin();
-                                pairBegin();
+                                obj -> nameBegin();
+                                obj -> pairBegin();
                             }
                             else
                             {
@@ -154,7 +165,7 @@ Json* Json::fromString
                         case PP_VALUE:
                             if( !obj -> fValueBegin && !obj -> fValueEnd )
                             {
-                                valueBegin();
+                                obj -> valueBegin();
                             }
                             else
                             {
@@ -167,30 +178,34 @@ Json* Json::fromString
                 {
                     if( !obj -> fEscape )
                     {
-                        if( obj -> fValueBegin && fStringBegin )
+                        if( obj -> fValueBegin && obj -> fStringBegin )
                         {
-                            valueEnd();
+                            obj -> valueEnd();
                         }
 
                         if( obj -> fNameBegin )
                         {
-                            nameEnd();
+                            obj -> nameEnd();
+                            if( obj -> name == "" )
+                            {
+                                setResult( "NameIsEmpty" );
+                            }
                         }
 
-                        fStringBegin = false;
-                        fStringEnd = true;
+                        obj -> fStringBegin = false;
+                        obj -> fStringEnd = true;
                     }
                     else
                     {
-                        addChar( a[ index ] );
+                        obj -> addChar( a[ index ] );
                     }
                 }
             break;
 
             case '\\':
-                if( fStringBegin )
+                if( obj -> fStringBegin )
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                     obj -> fEscape = true;
                 }
                 else
@@ -200,11 +215,12 @@ Json* Json::fromString
             break;
 
             case ':':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
                     if( obj -> pairPart == PP_NAME )
                     {
-                        fStringBegin = false;
+                        obj -> fStringBegin = false;
+                        obj -> fStringEnd = false;
                         obj -> pairPart = PP_VALUE;
                     }
                     else
@@ -214,42 +230,42 @@ Json* Json::fromString
                 }
                 else
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
             break;
 
             case ' ':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
                     if( obj -> fValueEnd && obj -> pairPart == PP_VALUE )
                     {
-                        pairEnd();
+                        obj -> pairEnd();
                     }
                 }
                 else
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
             break;
 
             case ',':
-                if( !fStringBegin )
+                if( !obj -> fStringBegin )
                 {
                     if( obj -> pairPart == PP_VALUE )
                     {
-                        pairEnd();
+                        obj -> pairEnd();
                     }
                 }
                 else
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
             break;
 
             case '\n':
-                if( fStringBegin )
+                if( obj -> fStringBegin )
                 {
-                    addChar( a[ index ] );
+                    obj -> addChar( a[ index ] );
                 }
                 else
                 {
@@ -273,28 +289,39 @@ Json* Json::fromString
 
                 if( isOk() )
                 {
-                    addChar( a[ index ]);
+                    obj -> addChar( a[ index ]);
                 }
             break;
         }
-        trace( a[ index ] );
+        trace( a[ index ], obj );
     }
 
     /* Check heracly */
-    if( isOk() && obj -> prevJsonObject != NULL )
+    if( isOk() )
     {
-        setResult( "HeraclyError" );
-    }
-    else
-    {
-        paramList -> destroy();
-        paramList = ((ParamObject*)( obj -> paramList -> getByIndex( 0 ))) -> getValue();
+        if( obj -> prevJsonObject != NULL )
+        {
+            setResult( "HeraclyError" );
+        }
+        else
+        {
+            obj -> pairEnd();
+            if( obj -> paramList -> getByIndex( 0 ) != NULL )
+            {
+                paramList -> destroy();
+                paramList = ((ParamObject*)( obj -> paramList -> getByIndex( 0 ))) -> getValue();
+            }
+            else
+            {
+                setResult( "UnknownFormat" );
+            }
+        }
     }
 
     /* Clear stack */
-    while( getObject() != NULL )
+    while( obj != NULL )
     {
-        deleteObject( !isOk() );
+        obj = obj -> deleteObject( !isOk() );
     }
 
     paramList -> dump();
@@ -304,200 +331,14 @@ Json* Json::fromString
 
 
 
+/*
+    Convert json to string
+*/
 string Json::toString()
 {
     string result = "";
     return result;
 }
-
-
-
-Json* Json::addChar
-(
-    char a
-)
-{
-    auto obj = getObject();
-    if( obj -> fNameBegin && !obj -> fNameEnd )
-    {
-        obj -> name += a;
-    }
-
-    if( obj -> pairPart == PP_VALUE && !obj -> fValueBegin && !obj -> fValueEnd )
-    {
-       valueBegin();
-    }
-
-    if( obj -> fValueBegin && !obj -> fValueEnd )
-    {
-        obj -> value += a;
-    }
-
-    if( obj -> fEscape )
-    {
-        obj -> fEscape = false;
-    }
-    return this;
-}
-
-
-
-
-Json* Json::nameBegin()
-{
-    auto obj = getObject();
-    obj -> fNameBegin = true;
-    obj -> fNameEnd = false;
-    return this;
-}
-
-
-
-Json* Json::nameEnd()
-{
-    auto obj = getObject();
-
-    obj -> fNameBegin = false;
-    obj -> fNameEnd = true;
-
-    if( obj -> name == "" )
-    {
-        setResult( "NameIsEmpty" );
-    }
-
-    return this;
-}
-
-
-
-Json* Json::valueBegin()
-{
-    auto obj = getObject();
-
-    obj -> fValueBegin = true;
-    obj -> fValueEnd = false;
-
-    return this;
-}
-
-
-
-Json* Json::valueEnd()
-{
-    auto obj = getObject();
-
-    obj -> fValueBegin = false;
-    obj -> fValueEnd = true;
-
-    return this;
-}
-
-
-
-Json* Json::pairBegin()
-{
-    auto obj = getObject();
-    obj -> pairBegin = true;
-    obj -> pairPart = PP_NAME;
-    return this;
-}
-
-
-
-Json* Json::pairEnd()
-{
-    auto obj = getObject();
-
-    if( fStringEnd )
-    {
-        obj -> paramList -> setString( obj -> name, obj -> value );
-    }
-    else
-    {
-        if( obj -> valueParamList != NULL)
-        {
-            obj -> paramList -> setObject( obj -> name, obj -> valueParamList);
-        }
-        else
-        {
-            switch( getType( obj -> value ) )
-            {
-                case KT_NULL    : obj -> paramList -> setInt( obj -> name, 0 ); break;
-                case KT_STRING  : obj -> paramList -> setString( obj -> name, obj -> value ); break;
-                case KT_BOOL    : obj -> paramList -> setBool( obj -> name, stringToBool( obj -> value )); break;
-                case KT_INT     : obj -> paramList -> setInt( obj -> name, stringToInt( obj -> value )); break;
-                case KT_DOUBLE  : obj -> paramList -> setDouble( obj -> name, stringToDouble( obj -> value )); break;
-            }
-        }
-    }
-
-    fStringBegin = false;
-    fStringEnd = false;
-
-    obj -> fValueBegin = false;
-    obj -> fValueEnd = false;
-    obj -> fNameBegin = false;
-    obj -> fNameEnd = false;
-    obj -> name = "";
-    obj -> value = "";
-    obj -> valueParamList = NULL;
-    obj -> pairPart = PP_UNKNOWN;
-
-    return this;
-}
-
-
-
-
-
-/******************************************************************************
-    Objects work
-*/
-
-Json* Json::newObject()
-{
-    auto obj = new JsonObject();
-    obj -> prevJsonObject = currentJsonObject;
-    currentJsonObject = obj;
-    obj -> paramList = new ParamList();
-
-    return this;
-}
-
-
-
-Json* Json::deleteObject
-(
-    bool aDestroyParamList
-)
-{
-    auto object = getObject();
-    if( aDestroyParamList )
-    {
-        /* The object paramList must be completely destroy */
-        paramList -> destroy();
-    }
-    else
-    {
-        /* ParamList using like value in parent Object */
-        if( object -> prevJsonObject != NULL )
-        {
-            object -> prevJsonObject -> valueParamList = object -> paramList;
-        }
-    }
-    currentJsonObject = object -> prevJsonObject;
-    delete object;
-    return this;
-}
-
-
-
-
-JsonObject* Json::getObject()
-{
-    return currentJsonObject;
-}
-
 
 
 
@@ -507,28 +348,28 @@ JsonObject* Json::getObject()
 
 Json* Json::trace
 (
-    char c
+    char c,
+    JsonObject* obj
 )
 {
-    auto obj = getObject();
-
-    cout << "---------------------------------------\n";
+    cout << "-begin--------------------------------------\n";
     cout << "result     " << getCode() << "\n";
-    cout << "label      \"" << label << "\"\n";
     cout << "i          " << index << "\n";
     cout << "char       '" << c << "'\n";
     cout << "line       " << line << "\n";
 
     cout << "pairPart   " << obj -> pairPart << "\n";
-    cout << "pairBegin  " << obj -> pairBegin << "\n";
-    cout << "fString    " << fStringBegin << " " << fStringEnd << "\n";
+    cout << "pairBegin  " << obj -> fPairBegin << "\n";
+    cout << "fString    " << obj -> fStringBegin << " " << obj -> fStringEnd << "\n";
     cout << "fEscape    " << obj -> fEscape << "\n";
     cout << "fName      " << obj -> fNameBegin << " " << obj -> fNameEnd << "\n";
-    cout << "fValue     " << obj -> fValueBegin << " " << obj -> fValueEnd << "\n";
+    cout << "fValue         " << obj -> fValueBegin << " " << obj -> fValueEnd << "\n";
+    cout << "valueParamList " << obj -> valueParamList << "\n";
 
     cout << "valueType  " << obj -> valueType << "\n";
     cout << "Name       \"" << obj -> name << "\"\n";
     cout << "value      \"" << obj -> value << "\"\n";
+    cout << "-end--------------------------------------\n";
 
     return this;
 }
@@ -619,4 +460,193 @@ long long int Json::getInt
 {
     return paramList -> getInt( aName, aDefault );
 }
+
+
+
+
+ParamList* Json::getObject
+(
+    string aName,
+    ParamList* aDefault
+)
+{
+    return paramList -> getObject( aName, aDefault );
+}
+
+
+
+
+ParamList* Json::getObject
+(
+    vector <string> aName,
+    ParamList* aDefault
+)
+{
+    return paramList -> getObject( aName, aDefault );
+}
+
+
+
+
+/******************************************************************************
+    JsonObject
+*/
+
+
+JsonObject* JsonObject::create
+(
+    JsonObject* aParent
+)
+{
+    auto result = new JsonObject();
+    result -> prevJsonObject = aParent;
+    result -> paramList = new ParamList();
+    return result;
+}
+
+
+
+JsonObject* JsonObject::deleteObject
+(
+    bool aDestroyParamList
+)
+{
+    if( aDestroyParamList )
+    {
+        /* The object paramList must be completely destroy */
+        paramList -> destroy();
+    }
+    else
+    {
+        /* ParamList using like value in parent Object */
+        if( prevJsonObject != NULL )
+        {
+            prevJsonObject -> valueParamList = paramList;
+        }
+    }
+    auto result = prevJsonObject;
+    delete this;
+
+    return result;
+}
+
+
+
+JsonObject* JsonObject::nameBegin()
+{
+    fNameBegin = true;
+    fNameEnd = false;
+    return this;
+}
+
+
+
+JsonObject* JsonObject::nameEnd()
+{
+    fNameBegin = false;
+    fNameEnd = true;
+    return this;
+}
+
+
+
+JsonObject* JsonObject::valueBegin()
+{
+    fValueBegin = true;
+    fValueEnd = false;
+    return this;
+}
+
+
+
+JsonObject* JsonObject::valueEnd()
+{
+    fValueBegin = false;
+    fValueEnd = true;
+    return this;
+}
+
+
+
+
+JsonObject* JsonObject::pairBegin()
+{
+    fPairBegin = true;
+    pairPart = PP_NAME;
+    return this;
+}
+
+
+
+JsonObject* JsonObject::pairEnd()
+{
+    if( fStringEnd )
+    {
+        paramList -> setString( name, value );
+    }
+    else
+    {
+        if( valueParamList != NULL)
+        {
+            paramList -> setObject( name, valueParamList);
+        }
+        else
+        {
+            switch( Json::getType( value ) )
+            {
+                case KT_NULL    : paramList -> setInt( name, 0 ); break;
+                case KT_STRING  : paramList -> setString( name, value ); break;
+                case KT_BOOL    : paramList -> setBool( name, stringToBool( value )); break;
+                case KT_INT     : paramList -> setInt( name, stringToInt( value )); break;
+                case KT_DOUBLE  : paramList -> setDouble( name, stringToDouble( value )); break;
+            }
+        }
+    }
+
+    fStringBegin = false;
+    fStringEnd = false;
+    fValueBegin = false;
+    fValueEnd = false;
+    fNameBegin = false;
+    fNameEnd = false;
+    name = "";
+    value = "";
+    valueParamList = NULL;
+    pairPart = PP_UNKNOWN;
+
+    return this;
+}
+
+
+
+JsonObject* JsonObject::addChar
+(
+    char a
+)
+{
+    if( fNameBegin && !fNameEnd )
+    {
+        name += a;
+    }
+
+    if( pairPart == PP_VALUE && !fValueBegin && !fValueEnd )
+    {
+        valueBegin();
+    }
+
+    if( fValueBegin && !fValueEnd )
+    {
+        value += a;
+    }
+
+    if( fEscape )
+    {
+        fEscape = false;
+    }
+
+    return this;
+}
+
+
+
 
