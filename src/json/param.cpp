@@ -61,7 +61,7 @@ Param* Param::setType
 */
 ParamType Param::getType()
 {
-    return KT_UNKNOWN;
+    return Value::getType();
 }
 
 
@@ -71,7 +71,7 @@ ParamType Param::getType()
 */
 string Param::getNameOfType()
 {
-    return "UNKNOWN";
+    return Value::getNameOfType();
 }
 
 
@@ -105,7 +105,7 @@ string Param::getName()
 */
 string Param::getString()
 {
-    return "";
+    return Value::getString();
 }
 
 
@@ -115,7 +115,7 @@ string Param::getString()
 */
 bool Param::getBool()
 {
-    return false;
+    return Value::getBool();
 }
 
 
@@ -125,7 +125,7 @@ bool Param::getBool()
 */
 long long int Param::getInt()
 {
-    return 0;
+    return Value::getInt();
 }
 
 
@@ -135,7 +135,7 @@ long long int Param::getInt()
 */
 double Param::getDouble()
 {
-    return 0.0;
+    return Value::getDouble();
 }
 
 
@@ -145,5 +145,15 @@ double Param::getDouble()
 */
 ParamList* Param::getObject()
 {
-    return NULL;
+    return Value::getObject();
+}
+
+
+
+/*
+    Return the value as array list
+*/
+ParamList* Param::getObject()
+{
+    return Value::getArray();
 }

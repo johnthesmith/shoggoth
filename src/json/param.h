@@ -7,6 +7,7 @@
 
 #include <string>
 #include "param_type.h"
+#include "value.h"
 
 
 
@@ -16,7 +17,7 @@ using namespace std;
 struct ParamList;
 
 
-struct Param
+struct Param : public Value
 {
     string  name = "";      /* Name of Param */
 
@@ -127,4 +128,9 @@ struct Param
     virtual ParamList* getObject();
 
 
+
+    /*
+        Return the value as array list
+    */
+    virtual ParamList* getArray();
 };
