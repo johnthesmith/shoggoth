@@ -111,10 +111,17 @@ class Json : public Result
 
 
 
-
         Json* trace
         (
             char c,
+            JsonObject*
+        );
+
+
+
+        Json* error
+        (
+            string,     /* message */
             JsonObject*
         );
 

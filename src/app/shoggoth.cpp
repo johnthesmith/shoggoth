@@ -15,6 +15,8 @@
 /* Application libraryes */
 #include "../app/form.h"
 
+#include "../json/param_int.h"
+
 
 
 using namespace std;
@@ -27,30 +29,30 @@ int main
     char** argv
 )
 {
-//    auto log = Log();
-//    log.begin( "Application start" );
+    auto log = Log();
+    log.begin( "Application start" );
+
+    auto scene      = Scene( log );
+    auto payload    = Form::create( log );
+
+    scene.init().setPayload( payload ).loop().finit();
+
+    payload -> destroy();
+
+    log.end( "Application stop" );
+
 //
-//    auto scene      = Scene( log );
-//    auto payload    = Form::create( log );
+//ifstream t( "net.json" );
+//stringstream b;
+//b << t.rdbuf();
 //
-//    scene.init().setPayload( payload ).loop().finit();
+//auto json = Json::create();
+//json -> fromString( b.str() );
+//cout << json -> getCode() << "\n";
 //
-//    payload -> destroy();
+//cout << json -> getObject( vector <string> { "dd", "dd" } ) << "\n";
 //
-//    log.end( "Application stop" );
-
-
-ifstream t( "example.json" );
-stringstream b;
-b << t.rdbuf();
-
-auto json = Json::create();
-json -> fromString( b.str() );
-cout << json -> getCode() << "\n";
-
-cout << json -> getObject( vector <string> { "dd", "dd" } ) << "\n";
-
-json -> destroy();
+//json -> destroy();
 
 return 0;
 }

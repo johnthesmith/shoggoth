@@ -1,5 +1,10 @@
 #include <iostream>
 
+/* File read */
+#include <streambuf>
+#include <sstream>
+#include <fstream>
+
 
 
 /* Local libraries */
@@ -15,6 +20,9 @@
 #include "../shoggoth/func.h"
 
 #include "../lib/rnd.h"
+#include "../lib/moment.h"
+#include "../json/json.h"
+
 #include "../math.h"
 
 /* User libraries */
@@ -37,19 +45,19 @@ Form::Form
 {
     net = NetGraph::create( &getLog() );
 
-    layerRetina = net -> createLayer( "Retina" ) -> setSize( Point3i( 20, 20, 1 ));
+    layerRetina = net -> createLayer( "Retina" ) -> setId( "Retina" ) -> setSize( Point3i( 20, 20, 1 ));
     layerSample = net -> createLayer( "Sample" ) -> setSize( Point3i( 10, 1, 1 ));
     layerCortex1 = net -> createLayer( "Cortex1" ) -> setSize( Point3i( 10, 10, 1 ));
     layerCortex2 = net -> createLayer( "Cortex2" ) -> setSize( Point3i( 10, 10, 1 ));
     layerCortex3 = net -> createLayer( "Cortex3" ) -> setSize( Point3i( 10, 10, 1 ));
     layerResult = net -> createLayer( "Result" ) -> setSize( Point3i( 10, 1, 1 ));
 
-    layerRetina -> setTarget( POINT_3D_Z * 0 );
-    layerCortex1 -> setTarget( POINT_3D_Z * 1 );
-    layerCortex2 -> setTarget( POINT_3D_Z * 2 );
-    layerCortex3 -> setTarget( POINT_3D_Z * 3 );
-    layerResult -> setTarget( POINT_3D_Z * 4 );
-    layerSample -> setTarget( POINT_3D_Z * 5 );
+    layerRetina -> setEye( POINT_3D_Z * 0 );
+    layerCortex1 -> setEye( POINT_3D_Z * 1 );
+    layerCortex2 -> setEye( POINT_3D_Z * 2 );
+    layerCortex3 -> setEye( POINT_3D_Z * 3 );
+    layerResult -> setEye( POINT_3D_Z * 4 );
+    layerSample -> setEye( POINT_3D_Z * 5 );
 
     layerRetina -> connectTo( layerCortex1, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
     layerCortex1 -> connectTo( layerCortex2, ALL_TO_ALL, BT_VALUE, -0.5, 0.5);
@@ -121,6 +129,40 @@ void Form::onCalc
     Scene& aScene   /* Scene object */
 )
 {
+    /* Read config */
+    auto nowMoment = now();
+    if( lastConfigRead + SECOND < nowMoment )
+    {
+        auto t = ifstream( "net.json" );
+        if( t.is_open() )
+        {
+            /* Read file */
+            stringstream b;
+            b << t.rdbuf();
+
+            /* Parsing file */
+            auto json = Json::create();
+            json -> fromString( b.str() );
+
+            if( json -> isOk())
+            {
+                /* Config apply */
+                net -> applyConfig( json);
+            }
+            else
+            {
+                /* Config error */
+                getLog()
+                .warning( "Config error" )
+                .prm( "message", json -> getMessage() );
+            }
+            json -> destroy();
+        }
+
+        /* Set last moment */
+        lastConfigRead = nowMoment;
+    }
+
     net -> calc( &aScene );
 }
 

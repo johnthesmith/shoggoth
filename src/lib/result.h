@@ -1,8 +1,12 @@
 #pragma once
 
 #include <string>
+#include "../json/param_list.h"
 
-using namespace std; // для того что бы std:: не приходилось каждый раз писать
+
+
+using namespace std;
+
 
 
 const string RESULT_OK = "ok";
@@ -14,9 +18,9 @@ class Result
         /* Состояния текстового процессора */
         string      message     = "";
         string      code        = RESULT_OK;
+        ParamList*  details     = NULL;
 
     public:
-
 
         Result& setCode
         (
@@ -29,6 +33,7 @@ class Result
         string getCode();
 
 
+
         /*
             Set message for object
         */
@@ -37,13 +42,23 @@ class Result
             string /* String for Text */
         );
 
+
+
+        /*
+            Return message for object
+        */
+        string getMessage();
+
+
+
         /*
             Set result and message
         */
         Result& setResult
         (
-            string,     /* Code value */
-            string = "" /* Message value */
+            string,             /* Code value */
+            string = "",        /* Message value */
+            ParamList* = NULL
         );
 
         /*

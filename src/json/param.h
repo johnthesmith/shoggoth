@@ -132,5 +132,5 @@ struct Param : public Value
     /*
         Return the value as array list
     */
-    virtual ParamList* getArray();
+    virtual ArrayList* getArray();
 };

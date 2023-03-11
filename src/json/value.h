@@ -14,7 +14,7 @@ using namespace std;
 
 
 struct ParamList;
-struct Array;
+struct ArrayList;
 
 
 struct Value

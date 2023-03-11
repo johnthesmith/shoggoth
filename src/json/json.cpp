@@ -59,17 +59,77 @@ Json* Json::fromString
     {
         switch( a[ index ] )
         {
+            case '[':
+                if( !obj -> fStringBegin )
+                {
+                    switch( obj -> pairPart )
+                    {
+                        case PP_NAME:
+                            error( "Unexpected [ in name", obj );
+                        break;
+                        case PP_UNKNOWN:
+                        case PP_VALUE:
+                            if( !obj -> fValueBegin )
+                            {
+                                obj = JsonObject::create( obj );
+                                obj -> fArray = true;
+                                obj -> nameEnd();
+                            }
+                            if( obj -> fValueBegin || obj -> fValueEnd )
+                            {
+                                error( "Unexpected [ in value", obj );
+                            }
+                        break;
+                    }
+                }
+                else
+                {
+                    obj -> addChar( a[ index ] );
+                }
+            break;
+
+            case ']':
+                if( !obj -> fStringBegin )
+                {
+                    if( !obj -> fArray )
+                    {
+                        error( "Unexpected ] without name", obj );
+                    }
+                    else
+                    {
+                        switch( obj -> pairPart )
+                        {
+                            case PP_UNKNOWN:
+                            case PP_VALUE:
+                                if( obj -> prevJsonObject != NULL )
+                                {
+                                    obj -> pairEnd();
+                                    obj = obj -> deleteObject( false );
+                                }
+                                else
+                                {
+                                    error( "Unexpected ] and heracly error", obj );
+                                }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    obj -> addChar( a[ index ] );
+                }
+            break;
+
+
             case '{':
                 if( !obj -> fStringBegin )
                 {
                     switch( obj -> pairPart )
                     {
-                        case PP_UNKNOWN:
-                            setResult( "Unexpected { outside of object" );
-                        break;
                         case PP_NAME:
-                            setResult( "Unexpected { in name" );
+                            error( "Unexpected { in name", obj );
                         break;
+                        case PP_UNKNOWN:
                         case PP_VALUE:
                             if( !obj -> fValueBegin )
                             {
@@ -77,7 +137,7 @@ Json* Json::fromString
                             }
                             if( obj -> fValueBegin || obj -> fValueEnd )
                             {
-                                setResult( "Unexpected { in value" );
+                                error( "Unexpected { in value", obj );
                             }
                         break;
                     }
@@ -94,7 +154,7 @@ Json* Json::fromString
                 {
                     if( !obj -> fPairBegin )
                     {
-                        setResult( "Unexpected } without name" );
+                        error( "Unexpected } without name", obj );
                     }
                     else
                     {
@@ -103,7 +163,7 @@ Json* Json::fromString
                             case PP_NAME:
                                 if( obj -> fNameBegin )
                                 {
-                                    setResult( "Unexpected } in name" );
+                                    error( "Unexpected } in name", obj );
                                 }
                                 else
                                 {
@@ -130,7 +190,7 @@ Json* Json::fromString
                                 }
                                 else
                                 {
-                                    setResult( "Unexpected } and heracly error" );
+                                    error( "Unexpected } and heracly error", obj );
                                 }
                             break;
                         }
@@ -148,30 +208,50 @@ Json* Json::fromString
                     obj -> fStringBegin = true;
                     obj -> fStringEnd = false;
 
-                    switch( obj -> pairPart )
+                    if( obj -> fArray )
                     {
-                        case PP_UNKNOWN:
-                        case PP_NAME:
-                            if( !obj -> fNameBegin && !obj -> fNameEnd )
-                            {
-                                obj -> nameBegin();
-                                obj -> pairBegin();
-                            }
-                            else
-                            {
-                                setResult( "Unexpected \" in name" );
-                            }
+                        switch( obj -> pairPart )
+                        {
+                            case PP_UNKNOWN:
+                                if( !obj -> fValueBegin && !obj -> fValueEnd )
+                                {
+                                    obj -> nameEnd();
+                                    obj -> valueBegin();
+                                }
+                                else
+                                {
+                                    error( "Unexpected \" in value part", obj );
+                                }
                             break;
-                        case PP_VALUE:
-                            if( !obj -> fValueBegin && !obj -> fValueEnd )
-                            {
-                                obj -> valueBegin();
-                            }
-                            else
-                            {
-                                setResult( "Unexpected \" in value part" );
-                            }
+                        }
+                    }
+                    else
+                    {
+                        switch( obj -> pairPart )
+                        {
+                            case PP_UNKNOWN:
+                            case PP_NAME:
+                                if( !obj -> fNameBegin && !obj -> fNameEnd )
+                                {
+                                    obj -> nameBegin();
+                                    obj -> pairBegin();
+                                }
+                                else
+                                {
+                                    error( "Unexpected \" in name", obj );
+                                }
                             break;
+                            case PP_VALUE:
+                                if( !obj -> fValueBegin && !obj -> fValueEnd )
+                                {
+                                    obj -> valueBegin();
+                                }
+                                else
+                                {
+                                    error( "Unexpected \" in value part", obj );
+                                }
+                            break;
+                        }
                     }
                 }
                 else
@@ -188,7 +268,7 @@ Json* Json::fromString
                             obj -> nameEnd();
                             if( obj -> name == "" )
                             {
-                                setResult( "NameIsEmpty" );
+                                error( "NameIsEmpty", obj );
                             }
                         }
 
@@ -210,22 +290,29 @@ Json* Json::fromString
                 }
                 else
                 {
-                    setResult( "Unexpected \\" );
+                    error( "Unexpected \\", obj );
                 }
             break;
 
             case ':':
                 if( !obj -> fStringBegin )
                 {
-                    if( obj -> pairPart == PP_NAME )
+                    if( obj -> fArray )
                     {
-                        obj -> fStringBegin = false;
-                        obj -> fStringEnd = false;
-                        obj -> pairPart = PP_VALUE;
+                        error( "Unexpected : in value part", obj );
                     }
                     else
                     {
-                        setResult( "Unexpected : in value part" );
+                        if( obj -> pairPart == PP_NAME )
+                        {
+                            obj -> fStringBegin = false;
+                            obj -> fStringEnd = false;
+                            obj -> pairPart = PP_VALUE;
+                        }
+                        else
+                        {
+                            error( "Unexpected : in value part", obj );
+                        }
                     }
                 }
                 else
@@ -251,7 +338,7 @@ Json* Json::fromString
             case ',':
                 if( !obj -> fStringBegin )
                 {
-                    if( obj -> pairPart == PP_VALUE )
+                    if( obj -> pairPart == PP_VALUE || obj -> pairPart == PP_UNKNOWN )
                     {
                         obj -> pairEnd();
                     }
@@ -274,17 +361,25 @@ Json* Json::fromString
             break;
 
             default:
+
+                if( obj -> fArray && !obj -> fValueEnd )
+                {
+                    obj -> valueBegin();
+                }
+
                 if( obj -> fValueEnd )
                 {
-                    setResult( "Unexpected character after value" );
+                    error( "Unexpected character after value", obj );
                 }
+
                 if( !obj -> fNameBegin && !obj -> fNameEnd )
                 {
-                    setResult( "Unexpected character before name" );
+                    error( "Unexpected character before name", obj );
                 }
+
                 if( obj -> fNameEnd && obj -> pairPart == PP_NAME )
                 {
-                    setResult( "Unexpected character after name" );
+                    error( "Unexpected character after name", obj );
                 }
 
                 if( isOk() )
@@ -293,7 +388,6 @@ Json* Json::fromString
                 }
             break;
         }
-        trace( a[ index ], obj );
     }
 
     /* Check heracly */
@@ -301,7 +395,7 @@ Json* Json::fromString
     {
         if( obj -> prevJsonObject != NULL )
         {
-            setResult( "HeraclyError" );
+            error( "HeraclyError", obj );
         }
         else
         {
@@ -313,7 +407,7 @@ Json* Json::fromString
             }
             else
             {
-                setResult( "UnknownFormat" );
+                error( "UnknownFormat", NULL );
             }
         }
     }
@@ -323,8 +417,6 @@ Json* Json::fromString
     {
         obj = obj -> deleteObject( !isOk() );
     }
-
-    paramList -> dump();
 
     return this;
 }
@@ -353,11 +445,11 @@ Json* Json::trace
 )
 {
     cout << "-begin--------------------------------------\n";
-    cout << "result     " << getCode() << "\n";
     cout << "i          " << index << "\n";
     cout << "char       '" << c << "'\n";
     cout << "line       " << line << "\n";
 
+    cout << "fArray     " << obj -> fArray << "\n";
     cout << "pairPart   " << obj -> pairPart << "\n";
     cout << "pairBegin  " << obj -> fPairBegin << "\n";
     cout << "fString    " << obj -> fStringBegin << " " << obj -> fStringEnd << "\n";
@@ -369,6 +461,8 @@ Json* Json::trace
     cout << "valueType  " << obj -> valueType << "\n";
     cout << "Name       \"" << obj -> name << "\"\n";
     cout << "value      \"" << obj -> value << "\"\n";
+    cout << "result     " << getCode() << "\n";
+
     cout << "-end--------------------------------------\n";
 
     return this;
@@ -487,6 +581,30 @@ ParamList* Json::getObject
 
 
 
+Json* Json::error
+(
+    string aMessage,   /* message */
+    JsonObject* aObj
+)
+{
+    auto details = ParamList::create();
+    if( aObj != NULL )
+    {
+        details
+        -> setInt( "line", line )
+        -> setInt( "index", index )
+        -> setString( "name", aObj -> name )
+        -> setString( "value", aObj -> value );
+    }
+    setResult(
+        "jsonParsError",
+        aMessage + " Line:" + details -> getString( "line" )
+    );
+    details -> destroy();
+    return this;
+}
+
+
 
 /******************************************************************************
     JsonObject
@@ -580,39 +698,87 @@ JsonObject* JsonObject::pairBegin()
 
 JsonObject* JsonObject::pairEnd()
 {
-    if( fStringEnd )
+    if( fArray )
     {
-        paramList -> setString( name, value );
-    }
-    else
-    {
-        if( valueParamList != NULL)
+        if( fStringEnd )
         {
-            paramList -> setObject( name, valueParamList);
+            paramList -> pushString( value );
         }
         else
         {
-            switch( Json::getType( value ) )
+            if( valueParamList != NULL)
             {
-                case KT_NULL    : paramList -> setInt( name, 0 ); break;
-                case KT_STRING  : paramList -> setString( name, value ); break;
-                case KT_BOOL    : paramList -> setBool( name, stringToBool( value )); break;
-                case KT_INT     : paramList -> setInt( name, stringToInt( value )); break;
-                case KT_DOUBLE  : paramList -> setDouble( name, stringToDouble( value )); break;
+                paramList -> pushObject( valueParamList);
+            }
+            else
+            {
+                switch( Json::getType( value ) )
+                {
+                    case KT_NULL:
+                        paramList -> pushInt( 0 );
+                    break;
+                    case KT_STRING:
+                        paramList -> pushString( value );
+                    break;
+                    case KT_BOOL:
+                        paramList -> pushBool( stringToBool( value ));
+                    break;
+                    case KT_INT:
+                        paramList -> pushInt( stringToInt( value ));
+                    break;
+                    case KT_DOUBLE:
+                        paramList -> pushDouble( stringToDouble( value ));
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        if( fStringEnd )
+        {
+            paramList -> setString( name, value );
+        }
+        else
+        {
+            if( valueParamList != NULL)
+            {
+                paramList -> setObject( name, valueParamList);
+            }
+            else
+            {
+                switch( Json::getType( value ) )
+                {
+                    case KT_NULL:
+                        paramList -> setInt( name, 0 );
+                    break;
+                    case KT_STRING:
+                        paramList -> setString( name, value );
+                    break;
+                    case KT_BOOL:
+                        paramList -> setBool( name, stringToBool( value ));
+                    break;
+                    case KT_INT:
+                        paramList -> setInt( name, stringToInt( value ));
+                    break;
+                    case KT_DOUBLE:
+                        paramList -> setDouble( name, stringToDouble( value ));
+                    break;
+                }
             }
         }
     }
 
-    fStringBegin = false;
-    fStringEnd = false;
-    fValueBegin = false;
-    fValueEnd = false;
-    fNameBegin = false;
-    fNameEnd = false;
-    name = "";
-    value = "";
-    valueParamList = NULL;
-    pairPart = PP_UNKNOWN;
+    fStringBegin    = false;
+    fStringEnd      = false;
+    fValueBegin     = false;
+    fValueEnd       = false;
+    fNameBegin      = false;
+    fNameEnd        = fArray;
+    name            = "";
+    value           = "";
+    valueParamList  = NULL;
+    pairPart        = fArray ? PP_VALUE : PP_UNKNOWN;
 
     return this;
 }

@@ -102,3 +102,17 @@ int LayerList::getIndexById
     }
     return result;
 }
+
+
+
+/*
+    Return layer by id
+*/
+Layer* LayerList::getById
+(
+    string  a
+)
+{
+    auto index = getIndexById( a );
+    return index > -1 ? getByIndex( index ) : NULL;
+}

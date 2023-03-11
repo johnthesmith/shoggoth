@@ -484,6 +484,88 @@ ParamList* ParamList::setBool
 
 
 /*
+    Push string value
+*/
+ParamList* ParamList::pushString
+(
+    string aValue   /* Default value */
+)
+{
+    /* Create new string param */
+    push( ParamString::create() -> setValue( aValue ));
+    return this;
+}
+
+
+
+/*
+    Push string value
+*/
+ParamList* ParamList::pushInt
+(
+    long long int aValue   /* Default value */
+)
+{
+    /* Create new string param */
+    push( ParamInt::create() -> setValue( aValue ));
+    return this;
+}
+
+
+
+/*
+    Push bool value
+*/
+ParamList* ParamList::pushBool
+(
+    bool aValue   /* Default value */
+)
+{
+    /* Create new string param */
+    push( ParamBool::create() -> setValue( aValue ));
+    return this;
+}
+
+
+
+/*
+    Push double value
+*/
+ParamList* ParamList::pushDouble
+(
+    double aValue   /* Default value */
+)
+{
+    /* Create new string param */
+    push( ParamDouble::create() -> setValue( aValue ));
+    return this;
+}
+
+
+
+/*
+    Push object value
+*/
+ParamList* ParamList::pushObject
+(
+    ParamList* aValue   /* Default value */
+)
+{
+    /* Create new string param */
+    push( ParamObject::create() -> setValue( aValue ));
+    return this;
+}
+
+
+
+
+
+
+
+
+
+
+/*
     Set string value
 */
 ParamList* ParamList::setString
@@ -494,7 +576,6 @@ ParamList* ParamList::setString
 {
     auto i = getIndexByName( aName );
     Param* p = NULL;
-
     if( i < 0 )
     {
         /* Create new string param */
@@ -519,6 +600,7 @@ ParamList* ParamList::setString
 
     return this;
 }
+
 
 
 
@@ -673,5 +755,23 @@ ParamList* ParamList::dump
             break;
         }
     };
+    return this;
+}
+
+
+
+/*
+    Loop with lyambda
+*/
+ParamList* ParamList::loop
+(
+    function <bool ( Param* )> callback
+)
+{
+    bool stop = false;
+    for( int i = 0; i < count && !stop; i++ )
+    {
+        stop = callback(( Param*) items[ i ] );
+    }
     return this;
 }

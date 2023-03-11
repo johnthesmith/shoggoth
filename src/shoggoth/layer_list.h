@@ -121,4 +121,14 @@ struct LayerList : public Heap
     (
         string
     );
+
+
+
+    /*
+        Return layer by id
+    */
+    Layer* getById
+    (
+        string
+    );
 };

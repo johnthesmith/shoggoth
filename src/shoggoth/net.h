@@ -10,6 +10,7 @@
 #include <string>
 
 #include "../lib/log.h"
+#include "../json/json.h"
 #include "../graph/scene.h"
 
 #include "layer_list.h"
@@ -190,4 +191,14 @@ class Net
             Switch learning mode true/false
         */
         Net* switchLearningMode();
+
+
+
+        /*
+            Apply config from Json
+        */
+        Net* applyConfig
+        (
+            Json*   /* Config structure */
+        );
 };

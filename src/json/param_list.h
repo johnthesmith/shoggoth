@@ -5,16 +5,14 @@
 #pragma once
 
 #include <vector>
+#include <functional>   /* for lyambda */
+
 #include "../lib/heap.h"
 #include "param.h"
 
 
 
 using namespace std;
-
-
-
-class Param;
 
 
 
@@ -208,7 +206,7 @@ struct ParamList : public Heap
     long long int getInt
     (
         vector <string>,    /* Name of parameter */
-        long long int       /* default value */
+        long long int = 0   /* default value */
     );
 
 
@@ -234,8 +232,8 @@ struct ParamList : public Heap
     */
     double getDouble
     (
-        vector <string>,    /* Name of parameter */
-        double              /* default value */
+        vector <string>,  /* Name of parameter */
+        double = 0        /* default value */
     );
 
 
@@ -274,6 +272,53 @@ struct ParamList : public Heap
 
 
     /*
+        Push string value
+    */
+    ParamList* pushString
+    (
+        string = ""     /* Value */
+    );
+
+
+    /*
+        Push bool value
+    */
+    ParamList* pushBool
+    (
+        bool = false     /* Value */
+    );
+
+
+    /*
+        Push integer value
+    */
+    ParamList* pushInt
+    (
+        long long int = 0     /* Value */
+    );
+
+
+    /*
+        Push double value
+    */
+    ParamList* pushDouble
+    (
+        double = 0.0     /* Value */
+    );
+
+
+
+    /*
+        Push object value
+    */
+    ParamList* pushObject
+    (
+        ParamList*    /* Value */
+    );
+
+
+
+    /*
         Set string value
     */
     ParamList* setString
@@ -281,6 +326,7 @@ struct ParamList : public Heap
         string,         /* Name of parameter */
         string = ""     /* Value */
     );
+
 
 
 
@@ -331,5 +377,15 @@ struct ParamList : public Heap
     ParamList* dump
     (
         int = 0 /* depth */
+    );
+
+
+
+    /*
+        Loop with lyambda
+    */
+    ParamList* loop
+    (
+        function <bool ( Param* )>
     );
 };

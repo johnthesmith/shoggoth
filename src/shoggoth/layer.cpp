@@ -240,7 +240,7 @@ Layer* Layer::neuronPointsCalc()
         auto step = box / ( size - POINT_3I_I );
 
         /* Calculate ege in the world and start point in the world */
-        Point3d ege = box * -0.5 + getTarget();
+        Point3d ege = box * -0.5 + getEye();
         Point3d p = ege;
 
         int i = 0;
@@ -472,6 +472,21 @@ string Layer::getId()
 {
    return id;
 }
+
+
+
+/*
+    Set the id of layer
+*/
+Layer* Layer::setId
+(
+    string a
+)
+{
+   id = a;
+   return this;
+}
+
 
 
 

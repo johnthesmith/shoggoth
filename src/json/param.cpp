@@ -153,7 +153,7 @@ ParamList* Param::getObject()
 /*
     Return the value as array list
 */
-ParamList* Param::getObject()
+ArrayList* Param::getArray()
 {
     return Value::getArray();
 }

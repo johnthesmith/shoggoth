@@ -15,7 +15,6 @@ using namespace std;
 class Form : public ScenePayload
 {
     private:
-
         Camera      camera              = Camera();   /* Default camera */
 
         NetGraph*   net                 = NULL;
@@ -33,6 +32,8 @@ class Form : public ScenePayload
         Rgba        interfaceColor      = Rgba( 0.4, 0.7, 1.0, 0.7 );
         Rgba        interfaceColorDark  = Rgba( 0.1, 0.2, 0.4, 0.7 );
 
+
+        long long int lastConfigRead    = 0;
     public:
 
         /*

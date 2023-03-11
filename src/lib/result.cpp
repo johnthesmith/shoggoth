@@ -37,13 +37,21 @@ Result& Result::setMessage
 
 
 
+string Result::getMessage()
+{
+    return message;
+}
+
+
+
 /*
     Set result and message
 */
 Result& Result::setResult
 (
-    string aCode,   /* Code value */
-    string aMessage /* Message value */
+    string aCode,       /* Code value */
+    string aMessage,    /* Message value */
+    ParamList* aDetails /* Details */
 )
 {
     setCode( aCode );

@@ -1,4 +1,5 @@
 #include "net.h"
+#include "../json/param_object.h"
 
 
 /*
@@ -321,5 +322,62 @@ Net* Net::switchLearningMode()
     learningMode = !learningMode;
     return this;
 }
+
+
+
+/*
+    Apply config from Json
+*/
+Net* Net::applyConfig
+(
+    Json* json
+)
+{
+    auto jsonLayers = json -> getObject( "layers" );
+    if( jsonLayers != NULL )
+    {
+        jsonLayers -> loop
+        (
+            [ this ]
+            ( Param* aItem )
+            {
+                /* Check the json layer */
+                if( aItem -> getType() == KT_OBJECT )
+                {
+                    auto jsonLayer = aItem -> getObject();
+                    auto idLayer = jsonLayer -> getString( "id" );
+                    if( idLayer != "" )
+                    {
+                        /* Looking fore the layer in the net */
+                        auto layer = layers -> getById( idLayer );
+                        if( layer == NULL )
+                        {
+                            /* Create the layer */
+                        }
+                        else
+                        {
+                            /* Layer founded in the net */
+                            layer -> setEye
+                            (
+                                Point3d
+                                (
+                                    jsonLayer -> getDouble( vector <string> { "position", "x" } ),
+                                    jsonLayer -> getDouble( vector <string> { "position", "y" } ),
+                                    jsonLayer -> getDouble( vector <string> { "position", "z" } )
+                                )
+                            );
+                        }
+                    }
+                }
+                return false;
+            }
+        );
+    }
+    return this;
+}
+
+
+
+
 
 

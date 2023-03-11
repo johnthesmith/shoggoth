@@ -1,0 +1,103 @@
+{
+    "name"                  : "test",
+    "layers":
+    [
+        {
+            "id"            : "Retina",
+            "name"          : "Retina",
+            "size"          : [ 20, 20, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":0.0 }
+        },
+        {
+            "id"            : "Cortex1",
+            "name"          : "Cortex 1",
+            "size"          : [ 10, 10, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":1.0 }
+        },
+        {
+            "id"            : "Cortex2",
+            "name"          : "Cortex 2",
+            "size"          : [ 10, 10, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":2.0 }
+        },
+        {
+            "id"            : "Cortex3",
+            "name"          : "Cortex 3",
+            "size"          : [ 10, 10, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":3.0 }
+        },
+        {
+            "id"            : "Result",
+            "name"          : "Result",
+            "size"          : [ 10, 1, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":4.0 },
+            "neurons"       :
+            [
+                {
+                    "findPos"  : [ 1, 1, 1 ],
+                    "id"       : "cat"
+                },
+                {
+                    "findPos" : [ 2, 1, 1 ],
+                    "id"      : "dog"
+                },
+                {
+                    "findId": "dog",
+                    "value" : 1.0
+                }
+            ]
+        },
+        {
+            "id"            : "Sample",
+            "name"          : "Sample",
+            "size"          : [ 10, 1, 1 ],
+            "position"      : { "x":0.0, "y":0.0, "z":5.0 },
+            "neurons"       :
+            [
+                {
+                    "findIndex" : 0,
+                    "id"        : "cat"
+                },
+                {
+                    "findIndex" : 1,
+                    "id"        : "dog"
+                }
+            ]
+        }
+    ],
+
+    "connections":
+    [
+        {
+            "idFrom"        : "Retina",
+            "idTo"          : "Cortex1",
+            "connectType"   : "ALL_TO_ALL",
+            "bindType"      : "VALUE"
+        },
+        {
+            "idFrom"        : "Cortex1",
+            "idTo"          : "Cortex2",
+            "connectType"   : "ALL_TO_ALL",
+            "bindType"      : "VALUE"
+        },
+        {
+            "idFrom"        : "Cortex2",
+            "idTo"          : "Cortex3",
+            "connectType"   : "ALL_TO_ALL",
+            "bindType"      : "VALUE"
+        },
+        {
+            "idFrom"        : "Sample",
+            "idTo"          : "Result",
+            "connectType"   : "ONE_TO_ONE",
+            "bindType"      : "SAMPLE"
+        }
+        {
+            "idFrom"        : "Sample",
+            "idTo"          : "Result",
+            "connectType"   : "ALL_TO_ALL",
+            "bindType"      : "COMMAND"
+        }
+    ]
+}
+

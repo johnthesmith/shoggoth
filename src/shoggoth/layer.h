@@ -78,7 +78,7 @@ class Layer : public Object
         bool            showLayer               = true;         /* SHow layer cover */
 
         /* Internal method for neuron creation */
-        virtual Neuron* newNeuron();
+        virtual         Neuron* newNeuron();
 
     public:
 
@@ -87,8 +87,6 @@ class Layer : public Object
         double          neuronDrawBox           = 0.1;          /* Neuron size in 3d space */
         double          neuronDrawSize          = 6.0;          /* Neuron size in scerrn pixels */
         Point3d         borderSize              = POINT_3D_I * 0.1;
-
-
 
         /*
             Constructor
@@ -224,6 +222,14 @@ class Layer : public Object
         );
 
         string getId();
+
+        /*
+            Set the id of layer
+        */
+        Layer* setId
+        (
+            string
+        );
 
 
         string getNameOrId();
