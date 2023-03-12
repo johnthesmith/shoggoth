@@ -353,20 +353,31 @@ Net* Net::applyConfig
                         if( layer == NULL )
                         {
                             /* Create the layer */
-                        }
-                        else
-                        {
-                            /* Layer founded in the net */
-                            layer -> setEye
+                            layer =
+                            createLayer( jsonLayer -> getString( "id" ) )
+                            -> setId( "Retina" )
+                            -> setSize
                             (
                                 Point3d
                                 (
-                                    jsonLayer -> getDouble( vector <string> { "position", "x" } ),
-                                    jsonLayer -> getDouble( vector <string> { "position", "y" } ),
-                                    jsonLayer -> getDouble( vector <string> { "position", "z" } )
+                                    jsonLayer -> getInt( vector <string> { "position", "x" } ),
+                                    jsonLayer -> getInt( vector <string> { "position", "y" } ),
+                                    jsonLayer -> getInt( vector <string> { "position", "z" } )
                                 )
                             );
                         }
+
+                        /* Layer founded in the net */
+                        layer -> setEye
+                        (
+                            Point3d
+                            (
+                                jsonLayer -> getDouble( vector <string> { "position", "x" } ),
+                                jsonLayer -> getDouble( vector <string> { "position", "y" } ),
+                                jsonLayer -> getDouble( vector <string> { "position", "z" } )
+                            )
+                        );
+
                     }
                 }
                 return false;
