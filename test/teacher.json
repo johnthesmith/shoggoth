@@ -1,0 +1,40 @@
+{
+    "role"          :"teacher",
+    "storagePath"   :"test",
+
+    "error"         :"error",
+
+    "use":
+    {
+        "error"     :[ "receive" ],
+        "retina"    :[ "receive", "send" ],
+        "sample"    :[ "receive", "send" ]
+    },
+
+    "batches":
+    [
+        {
+            "sample":
+            [
+                "cat"
+            ],
+            "retina":
+            [
+                "./test/cat1.png",
+                "./test/cat2.png"
+            ]
+        },
+        {
+            "sample":
+            [
+                "dog",
+                "little dog"
+            ],
+            "reting":
+            [
+                "./test/dog1.png",
+                "./test/dog2.png"
+            ]
+        }
+    ]
+}

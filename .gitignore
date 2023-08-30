@@ -1,0 +1,11 @@
+# Ignore file
+
+# Exclude execute file
+
+*.log
+*.bin
+*.swp
+*~
+*.o
+.shab
+./shoggot

@@ -1,0 +1,447 @@
+#pragma once
+
+
+
+/*
+    Neuron net class.
+    Contains list of neuron layers.
+*/
+
+
+
+#include <string>
+
+#include "../lib/application.h"
+#include "../lib/result.h"
+#include "../json/json.h"
+#include "../graph/scene.h"
+#include "../lib/rpc_client.h"
+
+#include "bind_type.h"
+#include "layer_list.h"
+#include "nerve_list.h"
+#include "sync.h"
+
+
+
+class Net: public Result
+{
+    private:
+
+        Application* application        = NULL; /* The log object */
+
+        Neuron* selected                = NULL;     /* Selectrd neuron */
+        double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
+
+        Sync*   sync                    = NULL;     /* Synchronization object */
+
+        bool    learningMode            = false;    /* True for backweard calculation in learning */
+
+        NerveList* nerves               = NULL;     /* List of nerves*/
+
+        double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
+        double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
+        double  errorNormalize          = 0.0;      /* 0.0 - full error transfer,  1.0 - full dependency from sum weight of layer */
+
+        string  storagePath             = "net";
+
+        int processorNumber             = 0;        /* Number processor for calc and send to server */
+        int processorCount              = 1;
+
+        string host                     = "";       /* Server host */
+        unsigned int port               = 0;        /* Server port */
+
+        /* Calculation state */
+
+        bool calcDirection              = false;    /* Calculation direction true - forward, false - backward */
+        int calcLayerIndex              = 0;        /* Current lsyer for calculation */
+
+    public:
+
+        LayerList* layers               = NULL; /* The layer list object */
+
+        /*
+            Constructor
+        */
+        Net
+        (
+            Application*    /* Application object */
+        );
+
+
+
+        /*
+            Destructor
+        */
+        ~Net();
+
+
+
+        /*
+            Static constructor
+        */
+        static Net* create
+        (
+            Application*
+        );
+
+
+
+        /*
+            Destructor
+        */
+        void destroy();
+
+
+
+        /*
+            Clear all layers
+        */
+        Net* clear();
+
+
+
+        /*
+            Create new nerve
+        */
+        Nerve* createNerve
+        (
+            string,         /* Nerve id */
+            Layer*,         /* Layer source */
+            Layer*,         /* Layer destination */
+            NerveType,
+            BindType,
+            double,
+            double
+        );
+
+
+
+        /*
+            Delete layer by Id
+        */
+        Net* deleteNerve
+        (
+            string          /* Id of layer */
+        );
+
+
+
+        /*
+            Return layer by Id
+        */
+        Layer* getLayerById
+        (
+            string /* Id of layer */
+        );
+
+
+
+        /*
+            Request actual data layer form server
+        */
+        Net* readLayersFromServer();
+
+
+
+        /*
+            Request actual data layer form server
+        */
+        Net* writeLayersToServer();
+
+
+
+        /*
+            Calculate all enabled layers
+        */
+        Net* calc();
+
+
+
+        /*
+            Return application object
+        */
+        Application* getApplication();
+
+
+
+
+        /*
+            Return log object
+        */
+        Log* getLog();
+
+
+
+
+        /*
+            Return neuron by screen position
+        */
+        Net* getNeuronsByScreenPos
+        (
+            NeuronList*,/* Neuron list */
+            const Point3d&
+        );
+
+
+
+        Net* setSelected
+        (
+            Neuron*
+        );
+
+
+
+        /*
+            Select neurn by MOUSE position
+        */
+        Net* setSelected
+        (
+            Scene&
+        );
+
+
+
+        Neuron* getSelected();
+
+
+
+
+        Net* switchShowLayer();
+
+
+
+        /*
+            Set learning mode
+        */
+        Net* setLearningMode
+        (
+            bool /* Value */
+        );
+
+
+
+        /*
+            Get learning mode
+        */
+        bool getLearningMode();
+
+
+
+        /*
+            Switch learning mode true/false
+        */
+        Net* switchLearningMode();
+
+
+
+        /*
+            Apply config from Json
+        */
+        Net* applyConfig
+        (
+            ParamList*   /* Config structure */
+        );
+
+
+
+        /*
+            Return layer list
+        */
+        LayerList* getLayers();
+
+
+
+        /*
+            Set learning speed
+        */
+        Net* setLearningSpeed
+        (
+            double
+        );
+
+
+
+        /*
+            Set wakeup weight
+        */
+        Net* setWakeupWeight
+        (
+            double
+        );
+
+
+
+        /*
+            Set error normalize
+        */
+        Net* setErrorNormalize
+        (
+            double
+        );
+
+
+
+        /*
+            Get learning speed
+        */
+        double getLearningSpeed();
+
+
+
+        /*
+            Get wakeup weight k
+        */
+        double getWakeupWeight();
+
+
+
+        /*
+            Get error normalize
+        */
+        double getErrorNormalize();
+
+
+
+        Net* setStoragePath
+        (
+            const string
+        );
+
+
+
+        string getStoragePath();
+
+
+        /*
+            Load layers from storage
+        */
+        Net* loadLayers();
+
+        /*
+            Save layers to storage
+        */
+        Net* saveLayers();
+
+
+        /*
+            Return list ov nerves
+        */
+        NerveList* getNerves();
+
+
+
+        /******************************************************************************
+            Layers
+        */
+
+
+        /*
+            Create new layer
+        */
+        Layer* createLayer
+        (
+            string /* Name of layer */
+        );
+
+
+
+        /*
+            Delete layer by Id
+        */
+        Net* deleteLayer
+        (
+            string  /* Id of layer */
+        );
+
+
+
+        /*
+            Load layer structure from param list
+            Layer may be resized.
+        */
+        Net* loadLayer
+        (
+            Layer*,
+            ParamList*
+        );
+
+
+
+        /*
+            Load layer from net.layers section
+        */
+        Layer* loadLayerFromConfig
+        (
+            string,
+            ParamList*
+        );
+
+
+
+        /*
+            Remove layers absent in the list
+        */
+        Net* purgeLayers
+        (
+            ParamList*
+        );
+
+
+
+        Net* readNetFromServer();
+
+
+
+
+        Net* setProcessorNumber
+        (
+            int
+        );
+
+
+
+        int getProcessorNumber();
+
+
+        Net* setProcessorCount
+        (
+            int
+        );
+
+
+
+        int getProcessorCount();
+
+
+
+        /*
+            Read sync object from server
+        */
+        Net* getSyncFromServer();
+
+
+
+        /*
+            Load parents layers and check forward calculation
+            return true if all parents layers is forward calculated
+            otherwise return false
+        */
+        bool preparedParents
+        (
+            Layer* /* Layer for parents check */
+        );
+
+
+
+        /*
+            Load children layers and check backward calculation
+            return true if all children layers is backward calculated
+            otherwise return false
+        */
+        bool preparedChildren
+        (
+            Layer* /* Layer for children check */
+        );
+};
+

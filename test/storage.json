@@ -1,0 +1,159 @@
+{
+    "role"              :"storage",
+    "storagePath"       :"test",
+    "port"              : 11120,
+
+    "net":
+    {
+        "layers":
+        {
+            "retina":
+            {
+                "name"              :"Retina",
+                "size"              :[ 20, 20, 1 ],
+                "position"          :[ 0.0, 0.0, 0.0 ],
+                "processors"        :[ "first" ]
+            },
+            "cortex_1":
+            {
+                "name"              :"Cortex 1",
+                "size"              :[ 20, 10, 1 ],
+                "position"          :[ 0.0, 0.0, 1.0 ],
+                "processors"        :[ "first" ]
+            },
+            "cortex_2":
+            {
+                "name"              :"Cortex 2",
+                "size"              :[ 10, 10, 1 ],
+                "position"          :[ 0.0, 0.0, 2.0 ],
+                "processors"        :[ "first" ]
+            },
+            "cortex_3":
+            {
+                "name"              :"Cortex 3",
+                "size"              :[ 10, 10, 1 ],
+                "position"          :[ 0.0, 0.0, 3.0 ],
+                "processors"        :[ "first" ]
+            },
+            "cortex_4":
+            {
+                "name"              :"Cortex 4",
+                "size"              :[ 10, 10, 1 ],
+                "position"          :[ 0.0, 0.0, 4.0 ],
+                "processors"        :[ "first" ]
+            },
+            "sample":
+            {
+                "name"              :"Sample",
+                "size"              :[ 8, 16, 1 ],
+                "position"          :[ 0.0, 0.0, 6.0 ],
+                "processors"        :[ "first" ]
+            },
+            "result":
+            {
+                "name"              :"Result",
+                "size"              :[ 8, 16, 1 ],
+                "position"          :[ 0.0, 0.0, 5.0 ],
+                "processors"        :[ "first" ]
+            },
+            "command":
+            {
+                "name"              :"Command",
+                "size"              :[ 1, 1, 1 ],
+                "position"          :[ 0.0, -0.5, 5.5 ],
+                "processors"        :[ "first" ]
+            },
+            "error":
+            {
+                "name"              :"Error",
+                "size"              :[ 1, 1, 1],
+                "position"          :[ 0.0, 0.5, 4.5 ],
+                "processors"        :[ "first" ]
+            }
+        },
+
+        "nerves":
+        [
+            {
+                "idFrom"            :"retina",
+                "idTo"              :"cortex_1",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE",
+                "minWeight"         :-1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"cortex_1",
+                "idTo"              :"cortex_2",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE",
+                "minWeight"         :-1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"cortex_2",
+                "idTo"              :"cortex_3",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE"
+                "minWeight"         :-1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"cortex_3",
+                "idTo"              :"cortex_4",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE",
+                "minWeight"         :-1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"cortex_4",
+                "idTo"              :"result",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE",
+                "minWeight"         :-1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"sample",
+                "idTo"              :"result",
+                "nerveType"         :"ONE_TO_ONE",
+                "bindType"          :"SAMPLE"
+                "minWeight"         :1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"sample",
+                "idTo"              :"command",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"VALUE",
+                "minWeight"         :1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"command",
+                "idTo"              :"result",
+                "nerveType"         :"ALL_TO_ALL",
+                "bindType"          :"COMMAND",
+                "minWeight"         :1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"cortex_4",
+                "idTo"              :"error",
+                "nerveType"         :"ONE_TO_ONE",
+                "bindType"          :"ERROR_TO_VALUE"
+                "minWeight"         :1.0,
+                "maxWeight"         :1.0
+            },
+            {
+                "idFrom"            :"result",
+                "idTo"              :"error",
+                "nerveType"         :"ONE_TO_ONE",
+                "bindType"          :"ERROR_TO_VALUE"
+                "minWeight"         :1.0,
+                "maxWeight"         :1.0
+            }
+        ]
+    }
+}

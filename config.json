@@ -1,0 +1,15 @@
+{
+    "lang":"ru",
+    "languages":
+    {
+        "en":
+        {
+        },
+        "ru":
+        {
+            "font"      :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "gliphSize" : 64,
+            "charset"   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+        }
+    }
+}

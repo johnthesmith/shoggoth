@@ -1,0 +1,23 @@
+{
+    "role"                  :"ui",
+    "receive_timeout_mls"   :1000,
+
+    "storage":
+    {
+        "host"              :"127.0.0.1",
+        "port"              :11120
+    },
+
+    "use":
+    {
+        "retina"            : [ "from_server" ],
+        "cortex_1"          : [ "from_server" ],
+        "cortex_2"          : [ "from_server" ],
+        "cortex_3"          : [ "from_server" ],
+        "cortex_4"          : [ "from_server" ],
+        "result"            : [ "from_server" ],
+        "command"           : [ "from_server" ],
+        "sample"            : [ "from_server" ],
+        "error"             : [ "from_server" ]
+    }
+}

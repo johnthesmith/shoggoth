@@ -1,0 +1,7 @@
+            getLog() -> warning( neurons -> getCode() )
+            -> prm( "layer", getNameOrId() );            neurons -> setOk();
+        }
+    }
+    return this;
+}
+

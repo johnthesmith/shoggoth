@@ -1,0 +1,182 @@
+#include <iostream>
+#include "rpc_client.h"
+#include <cstring>
+
+
+
+using namespace std;
+
+
+
+/*
+    Constructor
+*/
+RpcClient::RpcClient
+(
+    Log*            aLog,
+    SocketDomain    aDomain,
+    SocketType      aType
+):
+SockRpc
+(
+    aLog,
+    aDomain,
+    aType
+)
+{
+}
+
+
+
+/*
+    Create client
+*/
+RpcClient* RpcClient::create
+(
+    Log*            aLog,
+    SocketDomain    aDomain,
+    SocketType      aType
+
+)
+{
+    return new RpcClient( aLog, aDomain, aType );
+}
+
+
+
+
+/*
+    On before read
+    Method may be overrided
+*/
+bool RpcClient::onReadBefore
+(
+    string  /* ip income but not use */
+)
+{
+    return onCallBefore();
+}
+
+
+
+/*
+    On after read
+    Method may be overrided
+*/
+RpcClient* RpcClient::onReadAfter
+(
+    SockBuffer* aBuffer, /* buffer */
+    int
+)
+{
+    auto header = SockRpcHeader::create( aBuffer );
+
+    if( header.isValid() )
+    {
+        auto buffer = aBuffer -> getBuffer();
+        auto params = ParamList::create();
+        char* pointer = &buffer[ sizeof( SockRpcHeader ) ];
+        onCallAfter( params );
+        params -> destroy();
+    }
+    else
+    {
+        getLog() -> warning( "RPC server sent invalid header for RPC client" );
+    }
+    return this;
+}
+
+
+
+/*
+    Call method
+        short int       sizeName        size of method name
+        long long int   sizeArguments   size of data
+        long            methodName      method name
+        char            arguments       data
+
+*/
+RpcClient* RpcClient::call
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    if( isOk() )
+    {
+        openHandle();
+        if( isOk() )
+        {
+            connect();
+            if( isOk() )
+            {
+                if( aArguments != NULL )
+                {
+                    /* Send buffer to server */
+                    write( aArguments );
+                    /* Read answer from server */
+                    read();
+                }
+            };
+        }
+        closeHandle();
+    }
+
+    return this;
+}
+
+
+
+/*
+    On call event
+    Method may be ovverided
+*/
+RpcClient* RpcClient::onCallBefore()
+{
+    getLog() -> trace( "Client RPC on call before" ) -> lineEnd();
+    return this;
+}
+
+
+
+/*
+    Servers On call after event
+    Method may be ovverided
+*/
+RpcClient* RpcClient::onCallAfter
+(
+    ParamList* aParamList
+)
+{
+    getLog() -> trace( "Client RPC on call after" ) -> lineEnd();
+    return this;
+}
+
+
+
+
+/*
+    Override set port
+*/
+RpcClient* RpcClient::setPort
+(
+    unsigned short int a    /* port */
+)
+{
+    SockRpc::setPort( a );
+    return this;
+}
+
+
+
+/*
+    Override set ip
+*/
+RpcClient* RpcClient::setIp
+(
+    string a    /* IP address */
+)
+{
+    SockRpc::setIp( a );
+    return this;
+}

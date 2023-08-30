@@ -1,0 +1,290 @@
+#include "../lib/rnd.h"
+#include "nerve.h"
+#include "layer.h"
+
+/*
+    Constructor
+*/
+Nerve::Nerve
+(
+    Log*        aLog,       /* Log object*/
+    string      aId,        /* id */
+    Layer*      aParent,    /* Parent layer */
+    Layer*      aChild,     /* Child layer */
+    NerveType   aNerveType, /* Type of nerve */
+    BindType    aBindType,  /* Bind of nerve */
+    double      aMinWeight, /* MinWeight */
+    double      aMaxWeight  /* MaxWeight */
+)
+{
+    /* Set properties */
+    log         = aLog;
+    id          = aId;
+    parent      = aParent;
+    child       = aChild;
+    nerveType   = aNerveType;
+    bindType    = aBindType;
+
+    /* Connect */
+
+    getLog()
+    -> begin( "Layer connecting" )
+    -> prm( "from", parent -> getNameOrId() )
+    -> prm( "to", child -> getNameOrId() )
+    -> lineEnd();
+
+    auto parentNeurons = parent -> getNeurons();
+    auto childNeurons = child -> getNeurons();
+
+    int cFrom =  parentNeurons -> getCount();
+    int cTo = childNeurons -> getCount();
+
+    BindList binds = BindList();
+
+    switch( nerveType )
+    {
+        case ALL_TO_ALL:
+        {
+            /* Create bind list */
+            binds.resize( cFrom * cTo );
+
+            for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+            {
+                for( int iTo = 0; iTo < cTo; iTo++ )
+                {
+                    /* Create bind */
+                    Bind* bind = Bind::create
+                    (
+                        this,
+                        parentNeurons -> getByIndex( iFrom ),
+                        childNeurons -> getByIndex( iTo ),
+                        Rnd::get( aMinWeight, aMaxWeight )
+                    );
+
+                    /* Store bind */
+                    binds.setByIndex( iFrom * cTo + iTo, bind );
+                }
+            }
+
+            /* Resize children list in parent layer */
+            for( int iFrom = 0; iFrom < cFrom; iFrom++ )
+            {
+                parentNeurons           /* for this layer */
+                -> getByIndex( iFrom )  /* get the next neuron */
+                -> childrenBinds        /* and him children list */
+                -> expand( cTo );       /* expand to count of childrens */
+            }
+
+            /* Resize parents list in child layer */
+            for( int iTo = 0; iTo < cTo; iTo++ )
+            {
+                childNeurons            /* for child layer */
+                -> getByIndex( iTo )    /* get the next neuron */
+                -> parentBinds          /* and him parents list */
+                -> expand( cFrom );     /* expand to count of parents */
+            }
+
+            /* Run at binds */
+            int c = binds.getCount();
+            for( int i = 0; i < c; i++ )
+            {
+                Bind* iBind = binds.getByIndex( i );
+
+                Neuron* parent = iBind -> getParent();
+                Neuron* child = iBind -> getChild();
+
+                int parentChildIndex = parent -> childrenBinds -> getCount() - cTo + i % cTo;
+                int childParentIndex = child -> parentBinds -> getCount() - cFrom + i / cTo;
+
+                parent -> childrenBinds -> setByIndex( parentChildIndex, iBind );
+                child -> parentBinds -> setByIndex( childParentIndex, iBind );
+            }
+        }
+        break;
+        case ONE_TO_ONE:
+            int maxIndex = max( cFrom, cTo );
+
+            binds.resize( maxIndex );
+
+            for( int i = 0; i < maxIndex; i++ )
+            {
+                /* Normalize size */
+                int iFrom = (int) ((float) i / (float) maxIndex * cFrom ) ;
+                int iTo = (int) ((float) i / (float) maxIndex * cTo );
+
+                Neuron* parentNeuron = parentNeurons -> getByIndex( iFrom );
+                Neuron* childNeuron = childNeurons -> getByIndex( iTo );
+
+                /* Create bind */
+                Bind* bind = Bind::create
+                (
+                    this,
+                    parentNeuron,
+                    childNeuron,
+                    Rnd::get( aMinWeight, aMaxWeight )
+                );
+
+                /* Store bind */
+                binds.setByIndex( i, bind );
+
+                parentNeuron -> childrenBinds -> push( bind );
+                childNeuron -> parentBinds -> push( bind );
+            }
+        break;
+    }
+
+    getLog()
+    -> trace("")
+    -> prm( "Binds count", binds.getCount() )
+    -> end();
+}
+
+
+
+/*
+    Destructor
+*/
+Nerve::~Nerve()
+{
+    /* Remove binds from parent layer */
+    parent -> getNeurons() -> loop
+    (
+        [ this ]
+        (
+            Neuron* iNeuron
+        ) -> bool
+        {
+            iNeuron -> childrenBinds -> removeByNerve( this, NULL );
+            return false;
+        }
+    );
+
+    /* Remove and destroy binds from child layer */
+    auto binds = BindList::create();
+
+    child -> getNeurons() -> loop
+    (
+        [ this, &binds ]
+        (
+            Neuron* iNeuron
+        ) -> bool
+        {
+            iNeuron -> parentBinds -> removeByNerve( this, binds );
+            return false;
+        }
+    );
+
+
+    /* Destroy binds */
+    binds -> loop
+    (
+        []
+        ( Bind* iBind )
+        {
+            iBind -> destroy();
+            return false;
+        }
+    );
+
+    binds -> destroy();
+}
+
+
+
+/*
+    Create
+*/
+Nerve* Nerve::create
+(
+    Log*        aLog,       /* Log object*/
+    string      aId,        /* id */
+    Layer*      aParent,    /* Parent layer */
+    Layer*      aChild,     /* Child layer */
+    NerveType   aNerveType, /* Type of nerve */
+    BindType    aBindType,  /* Bind of nerve */
+    double      aMinWeight, /* MinWeight */
+    double      aMaxWeight  /* MaxWeight */
+)
+{
+    return new Nerve
+    (
+        aLog,
+        aId,
+        aParent,
+        aChild,
+        aNerveType,
+        aBindType,
+        aMinWeight,
+        aMaxWeight
+    );
+}
+
+
+
+/*
+    Destroy
+*/
+void Nerve::destroy()
+{
+    delete this;
+}
+
+
+
+/*
+    Return log object
+*/
+Log* Nerve::getLog()
+{
+    return log;
+}
+
+
+
+/*
+    Return BindType
+*/
+BindType Nerve::getBindType()
+{
+    return bindType;
+}
+
+
+
+/*
+    Return NerveType
+*/
+NerveType Nerve::getNerveType()
+{
+    return nerveType;
+}
+
+
+
+/*
+    Return id
+*/
+string Nerve::getId()
+{
+    return id;
+}
+
+
+
+/*
+    Return parent layer
+*/
+Layer* Nerve::getParent()
+{
+    return parent;
+}
+
+
+
+/*
+    Return child layer
+*/
+Layer* Nerve::getChild()
+{
+    return child;
+}
