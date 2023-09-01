@@ -260,7 +260,7 @@ flowchart LR
 
 
 
-
+```mermaid
 flowchart LR
 
 ScenePayload
@@ -347,5 +347,30 @@ Bind -.-> BindList
 BindList -.-> Neuron
 Heap --> BindList
 Heap --> NeuronList
+```
 
 
+
+
+```mermaid
+flowchart LR
+
+start((b))
+stop(((e)))
+calcCompleteBefore{calcComplete}
+netLoad
+resetSync
+
+start -->  calcCompleteBefore
+calcCompleteBefore --> |+| netLoad
+calcCompleteBefore --> |-| calcFront
+netLoad --> layersLoad --> nervesLoad --> resetSync
+resetSync --> calcFront
+
+calcFront --> calcBack -->
+
+calcCompleteAfter{calcComplete}-->|+| saveNerves
+calcCompleteAfter-->|-| stop
+
+saveNerves --> saveLayers --> stop
+```

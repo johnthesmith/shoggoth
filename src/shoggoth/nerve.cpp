@@ -312,7 +312,7 @@ Nerve* Nerve::loadFromBuffer
     int aSize
 )
 {
-    if( aSize == weightsCout * sizeof( double ) )
+    if( aSize == weightsCount * sizeof( double ) )
     {
         memcpy( weights, aBuffer, aSize );
     }
@@ -322,7 +322,7 @@ Nerve* Nerve::loadFromBuffer
 
 
 /*
-    Request nerwes weight from server
+    Request the nerve weight array from server
 */
 Nerve* Nerve::readFromServer
 (

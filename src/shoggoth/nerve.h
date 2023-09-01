@@ -178,4 +178,25 @@ class Nerve : public Result
             int&   /* index of weights eend for neuron */
         );
 
+
+
+        /*
+            Load nerve weights from buffer
+        */
+        Nerve* loadFromBuffer
+        (
+            char *, /* buffer */
+            int     /* size of buffer */
+        );
+
+
+
+        /*
+            Request the nerve weights array from the server
+        */
+        Nerve* Nerve::readFromServer
+        (
+            string, /* server ip address */
+            int     /* server port number */
+        );
 };
