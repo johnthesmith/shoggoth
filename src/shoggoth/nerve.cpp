@@ -303,3 +303,53 @@ Nerve* Nerve::getWeightsRangeByChildIndex
     }
     return this;
 }
+
+
+
+Nerve* Nerve::loadFromBuffer
+(
+    char * aBuffer,
+    int aSize
+)
+{
+    if( aSize == weightsCout * sizeof( double ) )
+    {
+        memcpy( weights, aBuffer, aSize );
+    }
+    return this;
+}
+
+
+
+/*
+    Request nerwes weight from server
+*/
+Nerve* Nerve::readFromServer
+(
+    string aHost,       /* server ip address */
+    int aPort           /* server port number */
+)
+{
+    if( neurons -> isOk() )
+    {
+        auto rpc = RpcClient::create( getLog(), aHost, aPort );
+        rpc
+        -> getRequest()
+        -> setString( "from", parent -> getId() )
+        -> setString( "to", child -> getId() );
+
+        if( rpc -> call( CMD_READ_NERVE ) -> isOk() )
+        {
+            char* buffer = NULL;
+            size_t size = 0;
+            rpc -> getAnswer() -> getData( "data", buffer, size );
+            if( buffer != NULL && size > 0 )
+            {
+                loadFromBuffer( buffer, size );
+            }
+        }
+        rpc -> destroy();
+    }
+
+    return this;
+}

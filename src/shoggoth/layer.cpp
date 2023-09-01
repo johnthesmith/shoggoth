@@ -1267,3 +1267,76 @@ int Layer::calcNeuronTo
 }
 
 
+/********************************************************************
+    Layer calculateion service
+*/
+
+
+Layer* Layer::calcReset()
+{
+    forward = -1;
+    backward = -1;
+    return this;
+}
+
+
+
+Layer* Layer::calcStartForward()
+{
+    forward = 0;
+    return this;
+}
+
+
+
+Layer* Layer::calcStartBackward()
+{
+    backward = 0;
+    return this;
+}
+
+
+
+Layer* Layer::calcCompleteForward()
+{
+    forward ++;
+    return this;
+}
+
+
+
+Layer* Layer::calcCompleteBackward()
+{
+    backward ++;
+    return this;
+}
+
+
+
+CalcStage Layer::getForwardStage
+(
+    int aThreadCount
+)
+{
+    return forward == -1 ? CALC_NOT_START :
+    (
+        forward == aThreadCount ? CALC_COMPLETE : CALC_START
+    );
+}
+
+
+
+CalcStage Layer::getBackwardStage
+(
+    int aThreadCount
+)
+{
+    return backward == -1 ? CALC_NOT_START :
+    (
+        backward == aThreadCount ? CALC_COMPLETE : CALC_START
+    );
+}
+
+
+
+

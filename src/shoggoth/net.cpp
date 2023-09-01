@@ -11,7 +11,6 @@ Net::Net
     application = a;
     application -> getLog() -> trace( "Create net" );
 
-    sync = Sync::create( application -> getLog());
     layers = LayerList::create();
     nerves = new NerveList();
 }
@@ -26,7 +25,6 @@ Net::~Net()
 {
     clear();
 
-    sync -> destroy();
     delete( nerves );
     layers -> destroy();
 
@@ -131,88 +129,33 @@ Net* Net::clear()
 
 
 
-Net* Net::readNetFromServer()
-{
-    auto rpc = RpcClient::create( getLog(), host, port );
-    if( rpc -> call( CMD_GET_NET ) -> isOk() )
-    {
-        applyConfig( rpc -> getAnswer() );
-    }
-    rpc -> destroy();
 
-    return this;
-}
-
-
-
-
-/*
-    Read sync object from server
-*/
-Net* Net::getSyncFromServer()
-{
-    auto rpc = RpcClient::create( getLog(), host, port );
-    if
-    (
-        rpc -> call( CMD_GET_SYNC ) -> isOk() &&
-        rpc -> getAnswer() -> getObject( "sync" ) != NULL
-    )
-    {
-        sync -> clear() -> copyFrom( rpc -> getAnswer() -> getObject( "sync" ) );
-    }
-    rpc -> destroy();
-
-    return this;
-}
 
 
 
 /*
     Calculate all enabled layers
-    Load sync
-    Forward calculation
-        Loop by layer
-            Если в синке лэйр прямой = false ( надо рассчитывать )
-            Для i Layer получаем по связям перечень лэеров для расчета
-            Запрашиваем каждый лэер для на сервере
-            Если Все лэйры источники вернулись
-                Рассчитываем i лэйер
-                Отправляем его на сервер
-                Обновляем sync по ответу сервера
-    Если для всех лэйеров выполнены прямые расчеты
-        Обратный расчет
-            Цикл по лэерам обратный
-                Получаем лэеры для обратного расчета
-                Запрашиваем каждый лэер на сервере
-                Если все лэйеры нужные вернулись
-                    Рассчитываем обратно i лэйер
-                    Отправляем обратный расчет на сервре
-                    Отправляем связи на сервер
-                    Обновляем синк по ответу сервера
 */
 
 Net* Net::calc()
 {
-    if( host != "" )
+    if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
-        /* First Read sync object if net using */
-        readNetFromServer();
-        getSyncFromServer();
-//        nerves -> readFromServer( host, port );
+        /* Begin of calcuation loop */
+        readNet();
+        /* Reset calc stages for all layers */
+        calcReset();
     }
-    else
-    {
-        /* Read net from config */
-    }
-
-    sync -> toLog( calcLayerIndex );
 
     if( layers -> getCount() > 0 )
     {
-        string idClient = getApplication() -> getConfig() -> getString( "id" );
+        /* Dump sync to log */
+        //sync -> toLog( calcLayerIndex );
 
-        if( !sync -> isForward() )
+        if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
         {
+            /* All forward calculations is not complete */
+
             if( !calcDirection )
             {
                 /* Begin of forward calculation */
@@ -221,47 +164,41 @@ Net* Net::calc()
             }
 
             /* Get calculated layer by index */
-            Layer* layer = ( Layer* ) layers -> getByIndex( calcLayerIndex );
+            Layer* layer =
+            ( Layer* ) layers -> getByIndex( calcLayerIndex );
 
             if
             (
                 /* if layer not forward calculated and ... */
-                !sync -> getForward( idClient, layer -> getId()) &&
-                /* server exists or all parents is prepared */
-                ( host == "" || preparedParents( layer ) )
+                layer -> getForwardStage( processorCount ) == CALC_NOT_START &&
+                /* all parents is prepared */
+                preparedParents( layer )
             )
             {
+                /* Set default thread id */
+                int idThread = 0;
                 /* Layer calculation */
-                layer -> calcValue( processorNumber, processorCount );
-                if( host == "" )
-                {
-                    /* Set local sync for local works */
-                    sync -> setForward( idClient, layer -> getId());
-                }
-                else
-                {
-                    /* Layer send to server */
-                    layer -> writeToServer
-                    (
-                        host,
-                        port,
-                        processorNumber,
-                        processorCount,
-                        idClient,
-                        CALC_FORWARD
-                    );
-                }
-            }
+                layer -> calcStartForward();
+                /* --- thread begin --- */
+                layer -> calcValue( idThread, processorCount );
+                /* Set local sync for local works */
+                layer -> calcCompleteForward();
+                 /* --- thread end --- */
+           }
 
-            calcLayerIndex++;
-
-            if( calcLayerIndex >= layers -> getCount() )
+            if( layer -> getForwardStage( processorCount ) == CALC_COMPLETE )
             {
-                calcLayerIndex = 0;
+                calcLayerIndex++;
+                if( calcLayerIndex >= layers -> getCount() )
+                {
+                    calcLayerIndex = 0;
+                }
             }
         }
         else
         {
+            /* All forward calculation is complete */
+
             if( calcDirection )
             {
                 /* Begin of backward calculation */
@@ -269,16 +206,21 @@ Net* Net::calc()
                 calcDirection = false;
             }
 
-            Layer* layer = ( Layer* ) layers -> getByIndex( calcLayerIndex );
+            Layer* layer =
+            ( Layer* ) layers -> getByIndex( calcLayerIndex );
 
             if
             (
                 /* if layer not backward calculated and ... */
-                !sync -> getBackward( idClient, layer -> getId()) &&
+                layer -> getBackwardStage( processorCount ) == CALC_NOT_START &&
                 /* server exists or all children is prepared */
-                ( host == "" || preparedChildren( layer ) )
+                preparedChildren( layer )
             )
             {
+                int idThread = 0;
+
+                layer -> calcStartBackward();
+
                 /* Calculate errors */
                 layer -> learning
                 (
@@ -287,38 +229,18 @@ Net* Net::calc()
                     wakeupWeight
                 );
 
-                if( host == "" )
-                {
-                    /* Set local sync for local works */
-                    sync -> setBackward( idClient, layer -> getId());
-                }
-                else
-                {
-                    /* Layer send to server */
-                    layer -> writeToServer
-                    (
-                        host,
-                        port,
-                        processorNumber,
-                        processorCount,
-                        idClient,
-                        CALC_BACKWARD
-                    );
-                }
+                /* Set local sync for local works */
+                layer -> calcCompleteBackward();
             }
 
-            calcLayerIndex--;
-
-            if( calcLayerIndex < 0 )
+            if( layer -> getBackwardStage( processorCount ) == CALC_COMPLETE )
             {
-                calcLayerIndex = layers -> getCount() - 1;
+                calcLayerIndex--;
+                if( calcLayerIndex < 0 )
+                {
+                    calcLayerIndex = layers -> getCount() - 1;
+                }
             }
-        }
-
-        /* Without server */
-        if( host == "" && sync -> isComplete())
-        {
-            /* Reset sync for local calculation */
         }
     }
 
@@ -328,7 +250,7 @@ Net* Net::calc()
 
 
 /*
-    Load parents layers and check forward calculation
+    Check forward calculation
     return true if all parents layers is forward calculated
     otherwise return false
 */
@@ -344,19 +266,8 @@ bool Net::preparedParents
     (
         [ this,  &result ]( void* parent )
         {
-            result = sync -> isForward
-            (
-                (( Layer* ) parent ) -> getId()
-            );
-
-            if( result )
-            {
-                (( Layer* ) parent ) -> setOk();
-                result = (( Layer* ) parent )
-                -> readFromServer ( host, port )
-                -> isOk();
-            }
-
+            result = (( Layer* ) parent )
+            -> getForwardStage( processorCount ) == CALC_COMPLETE;
             return !result;
         }
     );
@@ -367,7 +278,7 @@ bool Net::preparedParents
 
 
 /*
-    Load children layers and check backward calculation
+    Check backward calculation
     return true if all children layers is backward calculated
     otherwise return false
 */
@@ -383,19 +294,9 @@ bool Net::preparedChildren
     (
         [ this,  &result ]( void* child )
         {
-            result = sync -> isBackward
-            (
-                (( Layer* ) child ) -> getId()
-            );
 
-            if( result )
-            {
-                (( Layer* ) child ) -> setOk();
-                result = (( Layer* ) child )
-                -> readFromServer( host, port )
-                -> isOk();
-            }
-
+            result = (( Layer* ) child )
+            -> getBackwardStage( processorCount ) == CALC_COMPLETE;
             return !result;
         }
     );
@@ -621,7 +522,6 @@ Net* Net::applyConfig
 )
 {
     json
-    -> loadInt( "processorNumber", processorNumber, processorNumber )
     -> loadInt( "processorCount", processorCount, processorCount )
     -> selectObject( vector<string>{ "server" } )
     -> loadString( "host", host, host )
@@ -1049,25 +949,6 @@ Net* Net::purgeLayers
 
 
 
-
-Net* Net::setProcessorNumber
-(
-    int a
-)
-{
-    processorNumber = a;
-    return this;
-}
-
-
-
-int Net::getProcessorNumber()
-{
-    return processorNumber;
-}
-
-
-
 Net* Net::setProcessorCount
 (
     int a
@@ -1086,16 +967,88 @@ int Net::getProcessorCount()
 
 
 
-//
-//
-//
-//
-//// TODO
-//
-//1. Сделать запись и получение нейронов на сервере с учетом фром ту
-//2. Сделать явно на сервере разделение хранилищ слоев и нервов - (заменить data)
-//3. Нервы передаем целиком с индексом и значением веса толко для расчитываемой части слоя
-//4. Серевер по индексу грузит значения в общий массив
-//5. Сервер возвращает все связи за раз
-//6. Даныне по слою и нерву надо пердавать на сервер синхронно для гарантии завершенности расчета.
-//
+Net* Net::readNet()
+{
+    if( host != "" )
+    {
+        auto rpc = RpcClient::create( getLog(), host, port );
+        if( rpc -> call( CMD_GET_NET ) -> isOk() )
+        {
+            applyConfig( rpc -> getAnswer() );
+            nerves -> readFromServer( host, port );
+        }
+        rpc -> destroy();
+    }
+    else
+    {
+        /* Local read */
+        /* nerves -> readFromFile(); */
+    }
+    return this;
+}
+
+
+
+/*
+    Reset forward and backward counts for layers
+*/
+Net* Net::calcReset()
+{
+    layers -> loop
+    (
+        [  this, &result ]
+        ( void* iLayer )
+        {
+            (( Layer* ) iLayer ) -> calcReset();
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Return calc stage for net layers:
+        CALC_UNKNOWN
+        CALC_NOT_START
+        CALC_START
+        CALC_COMPLETE
+*/
+CalcStage getCalcStage
+(
+    CalcDirection aDirection
+)
+{
+    CalcStage result = CALC_UNKNOWN;
+    layers -> loop
+    (
+        [ this,  &result, &aDirection ]
+        ( void* iLayer )
+        {
+            auto layer = (( Layer* ) iLayer );
+
+            if( result == CALC_UNKNOWN )
+            {
+                result = aDirection == CALC_BACKWARD ?
+                layer -> getBackwardStage( processorCount ) :
+                layer -> getForwardStage( processorCount );
+            }
+
+            if
+            (
+                aDirection != CALC_BACKWARD &&
+                result != layer -> getForwardStage( processorCount ) ||
+                aDirection != CALC_FORWARD &&
+                result != layer -> getBackwardStage( processorCount )
+            )
+            {
+                result = CALC_START;
+            }
+
+            return result != CALC_START;
+        }
+    );
+
+    return result == CALC_UNKNOWN ? CALC_COMPLETE : result;
+}

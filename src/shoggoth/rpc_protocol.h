@@ -9,6 +9,7 @@
 */
 enum CalcDirection
 {
+    CALC_ALL,
     CALC_FORWARD,     /* Calculation forward */
     CALC_BACKWARD     /* Calculation backweard */
 };

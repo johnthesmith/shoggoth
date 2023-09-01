@@ -33,8 +33,6 @@ class Net: public Result
         Neuron* selected                = NULL;     /* Selectrd neuron */
         double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
 
-        Sync*   sync                    = NULL;     /* Synchronization object */
-
         bool    learningMode            = false;    /* True for backweard calculation in learning */
 
         NerveList* nerves               = NULL;     /* List of nerves*/
@@ -45,8 +43,7 @@ class Net: public Result
 
         string  storagePath             = "net";
 
-        int processorNumber             = 0;        /* Number processor for calc and send to server */
-        int processorCount              = 1;
+        int processorCount              = 1;        /* Count of threads */
 
         string host                     = "";       /* Server host */
         unsigned int port               = 0;        /* Server port */
@@ -389,7 +386,7 @@ class Net: public Result
 
 
 
-        Net* readNetFromServer();
+        Net* readNet();
 
 
 
@@ -443,5 +440,23 @@ class Net: public Result
         (
             Layer* /* Layer for children check */
         );
+
+
+
+        /*
+            Return calc stage for layers with direction
+        */
+        CalcStage getCalcStage
+        (
+            CalcDirection CALC_ALL /* Direction */
+        );
+
+
+        /*
+            Reset forward and backward counts for layers
+        */
+        Net* calcReset();
+
+
 };
 

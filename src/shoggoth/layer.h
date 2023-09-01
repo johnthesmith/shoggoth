@@ -34,6 +34,14 @@ using namespace std;
 
 
 
+enum CalcStage
+{
+    CALC_UNKNOWN,
+    CALC_NOT_START,
+    CALC_START,
+    CALC_COMPLETE
+};
+
 
 
 enum BindDrawMode
@@ -89,6 +97,9 @@ class Layer : public Object
         bool            calc                    = false;
         bool            fromServer              = false;
         bool            toServer                = false;
+
+        int             forward                 = -1;
+        int             backward                = -1;
 
     public:
 
@@ -635,6 +646,50 @@ class Layer : public Object
         (
             int,    /* Number of processor */
             int     /* Count of processours */
+        );
+
+
+
+
+        /************************************************************
+            Layer calculateion service
+        */
+
+
+
+        /*
+            Reset calculate states
+        */
+        Layer* calcReset();
+
+
+
+        Layer* calcStartForward();
+
+
+
+        Layer* calcStartBackward();
+
+
+
+        Layer* calcCompleteForward();
+
+
+
+        Layer* calcCompleteBackward();
+
+
+
+        CalcStage getForwardStage
+        (
+            int
+        );
+
+
+
+        CalcStage getBackwardStage
+        (
+            int
         );
 
 };
