@@ -104,26 +104,26 @@ void Teacher::onLoop
 //        net -> use();
 
         /* Create error layer in net */
-        auto errorLayer = net -> getLayers() -> getById( errorId );
-        if( errorLayer != NULL )
-        {
-            errorLayer -> loadValue();
-            if( errorLayer -> isOk())
-            {
-                getLog()
-                -> trace( "value" )
-                -> prm( "value", errorLayer -> getValue() );
-
-                if( errorLayer -> getValue() < 0.001 )
-                {
-                    task();
-                }
-            }
-            else
-            {
-                getLog() -> warning( errorLayer -> getCode() );
-            }
-        }
+//        auto errorLayer = net -> getLayers() -> getById( errorId );
+//        if( errorLayer != NULL )
+//        {
+//            errorLayer -> loadValue();
+//            if( errorLayer -> isOk())
+//            {
+//                getLog()
+//                -> trace( "value" )
+//                -> prm( "value", errorLayer -> getValue() );
+//
+//                if( errorLayer -> getValue() < 0.001 )
+//                {
+//                    task();
+//                }
+//            }
+//            else
+//            {
+//                getLog() -> warning( errorLayer -> getCode() );
+//            }
+//        }
     }
 }
 
@@ -142,28 +142,28 @@ Teacher* Teacher::task()
     if( retina != NULL && sample != NULL )
     {
         /* Set retina */
-        retina -> neurons -> loop
-        (
-            []( Neuron* neuron )
-            {
-                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
-                return false;
-            }
-        );
-        retina -> saveValue();
-
-        /* Set sample */
-        auto hid = Hid().setString( to_string( a ));
-        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-        {
-            sample -> neurons
-            -> getByIndex( i )
-            -> setValue
-            (
-                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-            );
-            sample -> saveValue();
-        }
+//        retina -> neurons -> loop
+//        (
+//            []( Neuron* neuron )
+//            {
+//                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
+//                return false;
+//            }
+//        );
+//        retina -> saveValue();
+//
+//        /* Set sample */
+//        auto hid = Hid().setString( to_string( a ));
+//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
+//        {
+//            sample -> neurons
+//            -> getByIndex( i )
+//            -> setValue
+//            (
+//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
+//            );
+//            sample -> saveValue();
+//        }
     }
     else
     {

@@ -175,8 +175,9 @@ void Ui::onCalc
         lastConfigCheck = nowMoment;
 
         net
-        -> readNetFromServer()
-        -> readLayersFromServer()
+        -> readNet()
+        -> readLayers()
+        -> readNerves()
         ;
     }
 }
@@ -360,43 +361,43 @@ Ui* Ui::fillScreen
     int a
 )
 {
-    Rnd::storeSeed( a );
-
-    auto retina = net -> getLayers() -> getById( "retina" );
-    auto sample = net -> getLayers() -> getById( "sample" );
-
-    if( retina != NULL && sample != NULL )
-    {
-        /* Set retina */
-        retina -> neurons -> loop
-        (
-            []( Neuron* neuron )
-            {
-                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
-                return false;
-            }
-        );
-        retina -> saveValue();
-
-        /* Set sample */
-        auto hid = Hid().setString( to_string( a ));
-        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-        {
-            sample -> neurons
-            -> getByIndex( i )
-            -> setValue
-            (
-                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-            );
-            sample -> saveValue();
-        }
-    }
-    else
-    {
-        getLog() -> warning( "NoLayerRetina" );
-    }
-
-    Rnd::restoreSeed();
+//    Rnd::storeSeed( a );
+//
+//    auto retina = net -> getLayers() -> getById( "retina" );
+//    auto sample = net -> getLayers() -> getById( "sample" );
+//
+//    if( retina != NULL && sample != NULL )
+//    {
+//        /* Set retina */
+//        retina -> neurons -> loop
+//        (
+//            []( Neuron* neuron )
+//            {
+//                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
+//                return false;
+//            }
+//        );
+//        retina -> saveValue();
+//
+//        /* Set sample */
+//        auto hid = Hid().setString( to_string( a ));
+//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
+//        {
+//            sample -> neurons
+//            -> getByIndex( i )
+//            -> setValue
+//            (
+//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
+//            );
+//            sample -> saveValue();
+//        }
+//    }
+//    else
+//    {
+//        getLog() -> warning( "NoLayerRetina" );
+//    }
+//
+//    Rnd::restoreSeed();
 
     return this;
 }

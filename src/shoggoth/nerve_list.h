@@ -132,5 +132,13 @@ class NerveList :  public Heap
             Layer*,     /* Layer for parents search */
             LayerList*  /* Result list of parents */
         );
+
+
+
+        NerveList* read();
+
+
+
+        NerveList* write();
 };
 

@@ -8,6 +8,7 @@
     Layer has reflection at 3D world like Object and it can be moved, rotated etc.
 */
 
+
 #pragma once
 
 #include <string>
@@ -24,7 +25,6 @@
 #include "../json/param_list.h"
 
 #include "nerve_list.h"
-#include "neuron_list.h"
 #include "nerve_type.h"
 
 #include "rpc_protocol.h"
@@ -57,7 +57,6 @@ enum BindDrawMode
 /*
     Predescription of neuron
 */
-struct Neuron;
 class Net;
 
 
@@ -69,8 +68,6 @@ class Layer : public Object
         /* States */
         Net*            net                     = NULL;         /* Net object */
 
-        bool            loopParityValue         = false;        /* Loop parity value */
-        bool            loopParityError         = false;        /* Loop parity error */
         bool            pointsRecalc            = false;        /* Recalculate points for Neurons */
         Point3d         drawSize                = POINT_3D_0;   /* Visual draw size at GL units*/
 
@@ -92,18 +89,35 @@ class Layer : public Object
 
         string          storagePath             = "";
 
-        bool            read                    = false;
-        bool            write                   = false;
-        bool            calc                    = false;
-        bool            fromServer              = false;
-        bool            toServer                = false;
+        bool            roleRead                = false;
+        bool            roleWrite               = false;
+        bool            roleCalc                = false;
 
         int             forward                 = -1;
         int             backward                = -1;
 
-    public:
 
-        NeuronList*     neurons;                                /* List of neurons */
+        int             count                   = 0;    /* Count fo neurons */
+
+        /*
+            Plans of neurons data
+        */
+        double*         values                  = NULL;
+        double*         errors                  = NULL;
+        Point3d*        screen                  = NULL;
+        Point3d*        world                   = NULL;
+        bool*           selected                = NULL;
+
+        /*
+            Plans exists flags
+        */
+        bool            valuesExists            = false;
+        bool            errorsExists            = false;
+        bool            screenExists            = false;
+        bool            worldExists             = false;        /* Worls points exists */
+        bool            selectedExists          = false;
+
+    public:
 
         double          neuronDrawBox           = 0.1;          /* Neuron size in 3d space */
         double          neuronDrawSize          = 6.0;          /* Neuron size in scerrn pixels */
@@ -117,7 +131,12 @@ class Layer : public Object
         Layer
         (
             Net*,
-            string = "" /* id */
+            string = "", /* id */
+            bool /* valuesExists */     = true,
+            bool /* errorsExists */     = true,
+            bool /* screenExists */     = false,
+            bool /* worldExists */      = false,
+            bool /* selectedExists */   = false
         );
 
 
@@ -147,6 +166,7 @@ class Layer : public Object
 
 
 
+
         /*
             Return index by point 3i at layer
         */
@@ -155,12 +175,6 @@ class Layer : public Object
             const Point3i&
         );
 
-
-
-        Neuron* neuronByPos
-        (
-            const Point3i&
-        );
 
 
 
@@ -198,7 +212,6 @@ class Layer : public Object
             int,    /* calcFromNeuron */
             int     /* calcToNeuron */
         );
-
 
 
 
@@ -343,32 +356,10 @@ class Layer : public Object
 
 
         /*
-            Get loop parity error
+            Return list of neurons indexes in screen rect
         */
-        bool getLoopParityError();
-
-
-
-        /*
-            Return neuron list
-        */
-        NeuronList* getNeurons();
-
-
-
-        /*
-            Get loop parity value
-        */
-        bool getLoopParityValue();
-
-
-
-        /*
-            Return list of neurons in screen rect
-        */
-        Layer* getNeuronsByScreenRect
+        vector<int> getNeuronsByScreenRect
         (
-            NeuronList*,
             Point3d&,       /* Top left point */
             Point3d&        /* Bottom right point */
         );
@@ -378,9 +369,8 @@ class Layer : public Object
         /*
             Return list of neurons around the screen poistion
         */
-        Layer* getNeuronsByScreenPos
+        vector<int> getNeuronsByScreenPos
         (
-            NeuronList*,
             const Point3d&       /* Top left point */
         );
 
@@ -504,56 +494,30 @@ class Layer : public Object
 
 
         /*
-            Load value and error from storage file
+            Send value and error to io
         */
-        Layer* loadValue();
+        Layer* write();
 
 
 
         /*
-            Save value and error to storage file
+            Read value and error from io
         */
-        Layer* saveValue();
-
-
-
-        /*
-            Send value and error to remote server
-        */
-        Layer* writeToServer
-        (
-            string,         /* server ip address */
-            int,            /* server port number */
-            int,            /* Processor number */
-            int,            /* Processor count */
-            string,         /* Client ID*/
-            CalcDirection   /* Direction of calculation */
-        );
+        Layer* read();
 
 
 
         /*
             Return read role
         */
-        Layer* readFromServer
-        (
-            string,         /* ip address */
-            int             /* port number */
-        );
-
-
-
-        /*
-            Return read role
-        */
-        bool getRead();
+        bool getRoleRead();
 
 
 
         /*
             Set read role
         */
-        Layer* setRead
+        Layer* setRoleRead
         (
             bool /* value */
         );
@@ -563,13 +527,13 @@ class Layer : public Object
         /*
             Return write role
         */
-        bool getWrite();
+        bool getRoleWrite();
 
 
         /*
             Set write role
         */
-        Layer* setWrite
+        Layer* setRoleWrite
         (
             bool /* value */
         );
@@ -579,49 +543,14 @@ class Layer : public Object
         /*
             Return calc role
         */
-        bool getCalc();
+        bool getRoleCalc();
 
 
 
         /*
             Return calc role
         */
-        Layer* setCalc
-        (
-            bool /* value */
-        );
-
-
-
-
-        /*
-            Return send role
-        */
-        bool getFromServer();
-
-
-
-        /*
-            Return send role
-        */
-        Layer* setFromServer
-        (
-            bool /* value */
-        );
-
-
-
-        /*
-            Return send role
-        */
-        bool getToServer();
-
-
-
-        /*
-            Return send role
-        */
-        Layer* setToServer
+        Layer* setRoleCalc
         (
             bool /* value */
         );
@@ -692,6 +621,119 @@ class Layer : public Object
             int
         );
 
+
+
+        /**********************************************************************
+            Neurons setters and getters
+        */
+
+
+
+        /*
+            Set neuron value
+        */
+        Layer* setNeuronValue
+        (
+            int,            /* Index of neuron */
+            double          /* Value */
+        );
+
+
+
+        /*
+            Return neuron vaalue or default value
+        */
+        Point3d getNeuronValue
+        (
+            int,            /* Index of neuron */
+            double = 0.0    /* Default value */
+        );
+
+
+
+        /*
+            Set neuron error
+        */
+        Layer* setNeuronError
+        (
+            int,            /* Index of neuron */
+            double          /* Value */
+        );
+
+
+
+        /*
+            Return neuron error or default value
+        */
+        Point3d getNeuronError
+        (
+            int,            /* Index of neuron */
+            double = 0.0    /* Default value */
+        );
+
+
+
+        /*
+            Set neuron world position
+        */
+        Layer* setNeuronWorld
+        (
+            int,            /* Index of neuron */
+            Point3d         /* Value */
+        );
+
+
+
+        /*
+            Return neuron world position or default value
+        */
+        Point3d getNeuronWorld
+        (
+            int,                    /* Index of neuron */
+            Point3d = POINT_3D_0    /* Default value */
+        );
+
+
+
+        /*
+            Set neuron screen position
+        */
+        Layer* setNeuronScreen
+        (
+            int,            /* Index of neuron */
+            Point3d         /* Value */
+        );
+
+
+
+        /*
+            Return neuron screen position or default value
+        */
+        Point3d getNeuronScreen
+        (
+            int,                    /* Index of neuron */
+            Point3d = POINT_3D_0    /* Default value */
+        );
+
+
+
+        /*
+            Set neuron selected
+        */
+        Layer* setNeuronSelected
+        (
+            int,            /* Index of neuron */
+            bool            /* Value */
+        );
+
+
+
+        /*
+            Return neuron selected or default value
+        */
+        Point3d getNeuronSelected
+        (
+            int,            /* Index of neuron */
+            bool = false    /* Default value */
+        );
 };
-
-

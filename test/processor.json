@@ -1,6 +1,6 @@
 {
-    "id"                :"first",
     "role"              :"processor",
+    "id"                :"proc",
     "storagePath"       :"test",
 
     "loop_sleep_mcs"    :1000000,

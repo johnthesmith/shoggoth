@@ -7,8 +7,8 @@
 #include "rpc_protocol.h"
 
 #include "func.h"
+#include "io.h"
 #include "layer.h"
-#include "neuron.h"
 #include "net.h"
 
 
@@ -19,16 +19,27 @@
 Layer::Layer
 (
     Net* aNet,
-    string aId
+    string aId,
+    bool aValuesExists,
+    bool aErrorsExists,
+    bool aScreenExists,
+    bool aWorldExists,
+    bool aSelectedExists
+
 )
 {
     net = aNet;
     id = aId == "" ? Rnd::getUuid() : aId;
+
+    /* Set data plans flags */
+    valuesExists    = aValuesExists;
+    errorsExists    = aErrorsExists;
+    screenExists    = aScreenExists;
+    worldExists     = aWorldExists;
+    selectedExists  = aSelectedExists;
+
+    /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
-
-    /* Create list of neurons */
-    neurons = new NeuronList();
-
 }
 
 
@@ -42,7 +53,6 @@ Layer::~Layer()
     setSize();
 
     /* Destroy the list of neurons */
-    delete neurons;
 
     getLog() ->
     trace( "Layer destroy" )
@@ -88,16 +98,6 @@ int Layer::indexByPos
 
 
 
-Neuron* Layer::neuronByPos
-(
-    const Point3i& a
-)
-{
-    return neurons -> getByIndex( indexByPos( a ));
-}
-
-
-
 /*
     Calculate neuron position at world
 */
@@ -136,8 +136,7 @@ Layer* Layer::neuronPointsCalc
             {
                 for( int x = 0; x < size.x; x++ )
                 {
-                    Neuron* n = neurons -> getByIndex( i );
-                    n -> setWorldPoint( p );
+                    setNeuronWorld( i, p );
                     p.x += step.x;
                     i++;
                 }
@@ -163,16 +162,11 @@ Layer* Layer::neuronPointsCalc
 */
 Layer* Layer::clearValues()
 {
-    /* Calculate neurons */
-    neurons -> loop
-    (
-        []( Neuron* iNeuron ) -> bool
-        {
-            /* Calc neuron */
-            iNeuron -> setValue( 0 );
-            return false;
-        }
-    );
+    /* Clear values */
+    for( int i = 0; i < count; i++ )
+    {
+        setNeuronValue( i, 0.0 );
+    }
     return this;
 }
 
@@ -278,7 +272,6 @@ Net* Layer::getNet()
 
 
 
-
 /*
     Set dimations size
 */
@@ -287,51 +280,112 @@ Layer* Layer::setSize
     const Point3i& a
 )
 {
-    auto currentSize = neurons -> getCount();
-    auto newSize = a.x * a.y * a.z;
-    if( newSize != currentSize )
+    auto newCount = a.x * a.y * a.z;
+
+    if( newCount != count )
     {
         /* The size was changed */
         getLog()
         -> begin( "Layer resize" )
         -> prm( "id", getNameOrId() )
-        -> prm( "from", currentSize )
-        -> prm( "to", newSize )
+        -> prm( "from", count )
+        -> prm( "to", newCount )
         -> lineEnd();
 
-        if( newSize > currentSize )
+        /* Change count and size */
+        count = newCount;
+        size = a;
+
+        /* Resize values plan */
+        if( valuesExists )
         {
-            /* Size increase */
-            neurons -> resize( newSize );
-            /* Neurons create */
-            for( int i = currentSize; i < newSize; i++ )
+            /* Delete old plan */
+            if( values != NULL )
             {
-                /*
-                    Create neuron.
-                    It must be the once point for this operation
-                */
-                Neuron::create( this, i )
-                -> setValue( 0.0 );
+                delete [] values;
             }
+
+            /*Create new plan */
+            values = new double[ newSize ];
+
+            clearValues();
         }
-        else
+
+        /* Resize errors plan */
+        if( errorsExists )
         {
-            if( newSize < currentSize )
+            /* Delete old plan */
+            if( errors != NULL )
             {
-                /* Size decrease */
-                for( int i = newSize; i < currentSize; i++ )
-                {
-                    auto n = neurons -> getByIndex( i );
-                    if( !n -> isNull())
-                    {
-                        delete n;
-                    }
-                }
-                neurons -> resize( newSize );
+                delete [] errors;
+            }
+
+            /*Create new plan */
+            errors = new double[ newSize ];
+
+            /* Clear values */
+            for( int i = 0; i < count; i++ )
+            {
+                setError( i, 0.0 );
             }
         }
 
-        size = a;
+        /* Resize screen plan */
+        if( screenExists )
+        {
+            /* Delete old plan */
+            if( screen != NULL )
+            {
+                delete [] screen;
+            }
+
+            /*Create new plan */
+            screen = new Point3d[ newSize ];
+
+            /* Clear values */
+            for( int i = 0; i < count; i++ )
+            {
+                setScreen( i, POINT_3D_0 );
+            }
+        }
+
+        /* Resize world plan */
+        if( worldExists )
+        {
+            /* Delete old plan */
+            if( world != NULL )
+            {
+                delete [] world;
+            }
+
+            /*Create new plan */
+            world = new Point3d[ newSize ];
+
+            /* Clear values */
+            for( int i = 0; i < count; i++ )
+            {
+                setWorld( i, POINT_3D_0 );
+            }
+        }
+
+        /* Resize selected plan */
+        if( selectedExists )
+        {
+            /* Delete old plan */
+            if( selected != NULL )
+            {
+                delete [] selected;
+            }
+
+            /*Create new plan */
+            selected = new bool[ newSize ];
+
+            /* Clear values */
+            for( int i = 0; i < count; i++ )
+            {
+                setSelected( i, POINT_3D_0 );
+            }
+        }
 
         /* Recalculate neuron points */
         neuronPointsCalc( true );
@@ -369,15 +423,6 @@ Layer* Layer::setSize
     return this;
 }
 
-
-
-/*
-    Return neuron list
-*/
-NeuronList* Layer::getNeurons()
-{
-    return neurons;
-}
 
 
 
@@ -544,61 +589,25 @@ Layer* Layer::setLoopParity
 
 
 /*
-    Return parity of loop for current layer
-*/
-bool Layer::getLoopParityValue()
-{
-    return loopParityValue;
-}
-
-
-
-/*
-    Return parity of loop for current layer
-*/
-bool Layer::getLoopParityError()
-{
-    return loopParityError;
-}
-
-
-
-/*
     Return list of neurons in screen rect
 */
-Layer* Layer::getNeuronsByScreenRect
+vector<int> Layer::getNeuronsByScreenRect
 (
-    NeuronList* aList,
     Point3d& aTopLeft,      /* Top left point */
     Point3d& aBottomRight   /* Bottom right point */
 )
 {
-    NeuronList* buffer = NeuronList::create();
-    buffer -> resize( neurons -> getCount() );
+    vector <int> result = {};
 
-    int iBuffer = 0;
-
-    neurons -> loop
-    (
-        [ buffer, &aTopLeft, &aBottomRight, &iBuffer ]
-        (
-            Neuron* neuron
-        ) -> bool
+    for( int i = 0; i < count; i++ )
+    {
+        if( getNeuronScreen( i ).testRectXY( aTopLeft, aBottomRight ))
         {
-            if( neuron -> getScreenPoint().testRectXY( aTopLeft, aBottomRight ))
-            {
-                buffer -> setByIndex( iBuffer, neuron );
-                iBuffer++;
-            }
-            return false;
+            result.push( i );
         }
     );
 
-    buffer -> resize( iBuffer );
-    aList -> add( buffer );
-    buffer -> destroy();
-
-    return this;
+    return result;
 }
 
 
@@ -606,36 +615,20 @@ Layer* Layer::getNeuronsByScreenRect
 /*
     Return list of neurons around  the screen position
 */
-Layer* Layer::getNeuronsByScreenPos
+vector <int> Layer::getNeuronsByScreenPos
 (
-    NeuronList* aList,
     const Point3d& aPosition
 )
 {
-    NeuronList* buffer = NeuronList::create();
-    buffer -> resize( neurons -> getCount() );
+    vector <int> result = {};
 
-    int iBuffer = 0;
-
-    neurons -> loop
-    (
-        [ buffer, &aPosition, &iBuffer ]
-        (
-            Neuron* neuron
-        ) -> bool
+    for( int i = 0; i < count; i++ )
+    {
+        if( getNeuronScreen( i ).distXY( aPosition ) < 10 )
         {
-            if( neuron -> getScreenPoint().distXY( aPosition ) < 10 )
-            {
-                buffer -> setByIndex( iBuffer, neuron );
-                iBuffer++;
-            }
-            return false;
+            result.push( i );
         }
     );
-
-    buffer -> resize( iBuffer );
-    aList -> add( buffer );
-    buffer -> destroy();
 
     return this;
 }
@@ -996,124 +989,58 @@ Point3d& Layer::getOuterBox()
 
 
 /*
-    Load value and error from storage file
+    Write error and value to io
 */
-Layer* Layer::loadValue()
+Layer* Layer::write()
 {
-    if(  neurons -> isOk() )
+    char* buffer = NULL;
+    size_t size = 0;
+
+    getNeurons() -> writeToBuffer( buffer, size );
+
+    if( buffer != NULL )
     {
-        auto valueFile = getStorageValueName();
-        if( !neurons -> loadFromStorage( valueFile ) -> isOk())
-        {
-            getLog() -> warning( neurons -> getCode() )-> prm( "layer", getNameOrId() );
-            neurons -> setOk();
-        }
+        auto io = Io::create( net );
+        io -> getRequest()
+        -> setString( "idLayer", this -> getId() )
+        -> setData( "data", buffer, size );
+
+        io
+        -> call( CMD_WRITE_LAYER )
+        -> destroy();
+
+        /* Delete buffer */
+        delete [] buffer;
     }
+
     return this;
 }
 
 
 
 /*
-    Save value and error to storage file
+    Read value and error from io
 */
-Layer* Layer::saveValue()
+Layer* Layer::read()
 {
-    if(  neurons -> isOk() )
+    auto io = Io::create( net );
+
+    io
+    -> getRequest()
+    -> setString( "idLayer", this -> getId() );
+
+    if( io -> call( CMD_READ_LAYER ) -> isOk() )
     {
-        auto file = getStorageValueName();
-        if( !neurons -> saveToStorage( file ) -> isOk())
-        {
-            getLog() -> warning( neurons -> getCode() )-> prm( "layer", getNameOrId() );
-            neurons -> setOk();
-        }
-    }
-    return this;
-}
-
-
-
-/*
-    Send layer to server
-*/
-Layer* Layer::writeToServer
-(
-    string aHost,               /* server ip address */
-    int aPort,                  /* server port number */
-    int aProcessorNumber,       /* Processor Number */
-    int aProcessorCount,        /* Processor count */
-    string aIdClient,           /* Client ID*/
-    CalcDirection aDirection    /* Direction of calculation */
-)
-{
-    if( neurons -> isOk() )
-    {
-        auto neuronFrom = calcNeuronFrom( aProcessorNumber, aProcessorCount );
-        auto neuronTo = calcNeuronTo( aProcessorNumber, aProcessorCount );
-
         char* buffer = NULL;
         size_t size = 0;
-
-        getNeurons() -> saveToBuffer
-        (
-            neuronFrom,
-            neuronTo,
-            buffer,
-            size
-        );
-
-
-        if( buffer != NULL )
+        io -> getAnswer() -> getData( "data", buffer, size );
+        if( buffer != NULL && size > 0 )
         {
-            auto rpc = RpcClient::create( getLog(), aHost, aPort );
-            rpc -> getRequest()
-            -> setString( "idLayer", this -> getId() )
-            -> setString( "idClient", aIdClient )
-            -> setInt( "direction", aDirection )
-            -> setInt( "from", neuronFrom )
-            -> setInt( "to", neuronTo )
-            -> setData( "data", buffer, size );
-
-            rpc -> call( CMD_WRITE_LAYER );
-            rpc -> destroy();
-
-            /* Delete buffer */
-            delete [] buffer;
+            getNeurons() -> readFromBuffer( buffer, size );
         }
     }
-    return this;
-}
 
-
-
-/*
-    Request layer from server
-*/
-Layer* Layer::readFromServer
-(
-    string aHost,       /* server ip address */
-    int aPort           /* server port number */
-)
-{
-    if( neurons -> isOk() )
-    {
-        auto rpc = RpcClient::create( getLog(), aHost, aPort );
-        rpc
-        -> getRequest()
-        -> setString( "idLayer", this -> getId() );
-
-        if( rpc -> call( CMD_READ_LAYER ) -> isOk() )
-        {
-            char* buffer = NULL;
-            size_t size = 0;
-            rpc -> getAnswer() -> getData( "data", buffer, size );
-            if( buffer != NULL && size > 0 )
-            {
-                getNeurons() -> loadFromBuffer( buffer, size );
-            }
-        }
-        rpc -> destroy();
-    }
+    io -> destroy();
 
     return this;
 }
@@ -1123,9 +1050,9 @@ Layer* Layer::readFromServer
 /*
     Return read role
 */
-bool Layer::getRead()
+bool Layer::getRoleRead()
 {
-    return read;
+    return roleRead;
 }
 
 
@@ -1133,12 +1060,12 @@ bool Layer::getRead()
 /*
     Set read role
 */
-Layer* Layer::setRead
+Layer* Layer::setRoleRead
 (
     bool a /* value */
 )
 {
-    read = a;
+    roleRead = a;
     return this;
 }
 
@@ -1147,9 +1074,9 @@ Layer* Layer::setRead
 /*
     Return write role
 */
-bool Layer::getWrite()
+bool Layer::getRoleWrite()
 {
-    return write;
+    return roleWrite;
 }
 
 
@@ -1157,12 +1084,12 @@ bool Layer::getWrite()
 /*
     Set write role
 */
-Layer* Layer::setWrite
+Layer* Layer::setRoleWrite
 (
     bool a /* value */
 )
 {
-    write = a;
+    roleWrite = a;
     return this;
 }
 
@@ -1171,9 +1098,9 @@ Layer* Layer::setWrite
 /*
     Return calc role
 */
-bool Layer::getCalc()
+bool Layer::getRoleCalc()
 {
-    return calc;
+    return roleCalc;
 }
 
 
@@ -1181,60 +1108,12 @@ bool Layer::getCalc()
 /*
     Return calc role
 */
-Layer* Layer::setCalc
+Layer* Layer::setRoleCalc
 (
     bool a /* value */
 )
 {
-    calc = a;
-    return this;
-}
-
-
-
-/*
-    Return send role
-*/
-bool Layer::getFromServer()
-{
-    return fromServer;
-}
-
-
-
-/*
-    Return send role
-*/
-Layer* Layer::setFromServer
-(
-    bool a /* value */
-)
-{
-    fromServer = a;
-    return this;
-}
-
-
-
-/*
-    Return send role
-*/
-bool Layer::getToServer()
-{
-    return toServer;
-}
-
-
-
-/*
-    Return send role
-*/
-Layer* Layer::setToServer
-(
-    bool a /* value */
-)
-{
-    toServer = a;
+    roleCalc = a;
     return this;
 }
 
@@ -1340,3 +1219,179 @@ CalcStage Layer::getBackwardStage
 
 
 
+/**********************************************************************
+    Neurons setters and getters
+*/
+
+
+
+/*
+    Set neuron value
+*/
+Layer* Layer::setNeuronValue
+(
+    int aIndex,            /* Index of neuron */
+    double aValue          /* Value */
+)
+{
+    if( values != NULL && aIndex => 0 && aIndex < count )
+    {
+        values[ aIndex ] = aValue;
+    }
+    else
+    {
+        setResult( "IndexValueOutOfRange" );
+    }
+    return this;
+}
+
+
+
+/*
+    Return neuron vaalue or default value
+*/
+Point3d Layer::getNeuronValue
+(
+    int aIndex,            /* Index of neuron */
+    double aDefault        /* Default value */
+)
+{
+    auto result = aDefault;
+
+    if( values != NULL && aIndex => 0 && aIndex < count )
+    {
+        result = values[ aIndex ];
+    }
+    else
+    {
+        setResult( "IndexValueOutOfRange" );
+    }
+
+    return result;
+}
+
+
+
+/*
+    Set neuron error
+*/
+Layer* Layer::setNeuronError
+(
+    int aIndex,            /* Index of neuron */
+    double aValue          /* Value */
+)
+{
+    if( errors != NULL && aIndex => 0 && aIndex < count )
+    {
+        errors[ aIndex ] = aValue;
+    }
+    else
+    {
+        setResult( "IndexValueOutOfRange" );
+    }
+    return this;
+}
+
+
+
+/*
+    Return neuron error or default value
+*/
+Point3d Layer::getNeuronError
+(
+    int aIndex,            /* Index of neuron */
+    double aDefault        /* Default value */
+)
+{
+    auto result = aDefault;
+
+    if( errors != NULL && aIndex => 0 && aIndex < count )
+    {
+        result = errors[ aIndex ];
+    }
+    else
+    {
+        setResult( "IndexValueOutOfRange" );
+    }
+
+    return result;
+}
+
+
+
+/*
+    Set neuron world position
+*/
+Layer* Layer::setNeuronWorld
+(
+    int aIndex            /* Index of neuron */
+    Point3d aValue        /* Value */
+)
+{
+}
+
+
+
+/*
+    Return neuron world position or default value
+*/
+Point3d Layer::getNeuronWorld
+(
+    int aIndex,           /* Index of neuron */
+    Point3d aDefault      /* Default value */
+)
+{
+}
+
+
+
+/*
+    Set neuron screen position
+*/
+Layer* Layer::setNeuronScreen
+(
+    int aIndex,          /* Index of neuron */
+    Point3d aValue       /* Value */
+)
+{
+}
+
+
+
+/*
+    Return neuron screen position or default value
+*/
+Point3d Layer::getNeuronScreen
+(
+    int aIndex,          /* Index of neuron */
+    Point3d aDefault     /* Default value */
+)
+{
+}
+
+
+
+
+/*
+    Set neuron selected
+*/
+Layer* Layer::setNeuronSelected
+(
+    int aIndex,     /* Index of neuron */
+    bool aValue     /* Value */
+)
+{
+}
+
+
+
+/*
+    Return neuron selected or default value
+*/
+Point3d Layer::getNeuronSelected
+(
+    int aIndex,     /* Index of neuron */
+    bool aDefault   /* Default value */
+)
+{
+}

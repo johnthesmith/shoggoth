@@ -1,7 +1,5 @@
 #include "net.h"
 
-#include "io.h"
-
 /*
     Constructor
 */
@@ -75,7 +73,7 @@ Nerve* Net::createNerve
 {
     Nerve* result = Nerve::create
     (
-        this,
+        getLog(),
         aId,
         aLayerFrom,
         aLayerTo,
@@ -130,9 +128,15 @@ Net* Net::clear()
 
 
 
+
+
+
+
+
 /*
-    Calculate all layers
+    Calculate all enabled layers
 */
+
 Net* Net::calc()
 {
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
@@ -141,10 +145,6 @@ Net* Net::calc()
         readNet();
         /* Reset calc stages for all layers */
         calcReset();
-        /* Read layers */
-        layers -> read();
-        /* Read nerves */
-        nerves -> read();
     }
 
     if( layers -> getCount() > 0 )
@@ -307,6 +307,77 @@ bool Net::preparedChildren
 
 
 /*
+    Load layers from local storage
+*/
+Net* Net::loadLayers()
+{
+    layers -> loop
+    (
+        []
+        ( void* iLayer )
+        {
+            auto layer = (( Layer* ) iLayer );
+            if( layer -> getRead() )
+            {
+                layer -> loadValue();
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Save layers
+*/
+Net* Net::saveLayers()
+{
+    layers -> loop
+    (
+        []
+        ( void* iLayer )
+        {
+            auto layer = (( Layer* ) iLayer );
+
+            /* Write layer value to local file */
+            if( layer -> getWrite() )
+            {
+                layer -> saveValue();
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Save layers
+*/
+Net* Net::readLayersFromServer()
+{
+    layers -> loop
+    (
+        [ this ]
+        ( void* iLayer )
+        {
+            auto layer = (( Layer* ) iLayer );
+            if( layer -> getFromServer() )
+            {
+                layer -> readFromServer( host, port );
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
     Return application object
 */
 Application* Net::getApplication()
@@ -323,6 +394,46 @@ Log* Net::getLog()
 {
     return application -> getLog();
 }
+
+
+
+
+/*
+    Return neuron by screen position
+*/
+Net* Net::getNeuronsByScreenPos
+(
+    NeuronList* aList,
+    const Point3d& aPosition
+)
+{
+    int c = layers -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> getNeuronsByScreenPos( aList, aPosition );
+    }
+    return this;
+}
+
+
+
+Net* Net::setSelected
+(
+    Neuron* a
+)
+{
+    selected = a;
+    return this;
+}
+
+
+
+Neuron* Net::getSelected()
+{
+    return selected;
+}
+
 
 
 
@@ -429,7 +540,7 @@ Net* Net::applyConfig
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
 
-        /* Create layers */
+        /* Create and reload layers */
         configLayers -> loop
         (
             [ this, &configLayers ]
@@ -929,9 +1040,15 @@ Net* Net::readLayers()
 }
 
 
-
 Net* Net::readNerves()
 {
+    nerves -> loop
+    []
+    ( iNerve )
+    {
+        iNerve -> read(  )
+        return false;
+    }
     return this;
 }
 
@@ -939,25 +1056,26 @@ Net* Net::readNerves()
 
 Net* Net::readNet()
 {
-    auto io = Io::create( this );
-    if( io -> call( CMD_GET_NET ) -> isOk() )
-    {
-        applyConfig( io -> getAnswer() );
-    }
-    io -> destroy();
+    applyConfig( .... );
     return this;
 }
 
 
 
-string Net::getHost()
-{
-    return host;
-}
-
-
-
-int Net::getPort()
-{
-    return port;
-}
+//Net
+//
+//
+//
+//    if( host != "" )
+//    {
+//        auto rpc = RpcClient::create( getLog(), host, port );
+//        if( rpc -> call( CMD_GET_NET ) -> isOk() )
+//        {
+//            applyConfig( rpc -> getAnswer() );
+//        }
+//        rpc -> destroy();
+//    }
+//    else
+//    {
+//        /* Local read */
+//    }

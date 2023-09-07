@@ -24,6 +24,8 @@ class NetGraph : public Net
 {
     private:
 
+        int selected                        = -1;       /* Index of selectrd neuron */
+
         NeuronList*     selected            = NULL;         /* List of selected neurons */
         NeuronDrawMode  neuronDrawMode      = NDM_VALUE;    /* Draw mode for neurons */
         BindDrawMode    showBinds           = BDM_HIDDEN;
@@ -238,4 +240,25 @@ class NetGraph : public Net
         (
             BindType
         );
+
+
+
+        /*
+            Return neuron by screen position
+        */
+        vector<int> getNeuronsByScreenPos
+        (
+            const Point3d&
+        );
+
+
+
+//        Net* setSelected
+//        (
+//            
+//        );
+
+
+
+// Neuron* getSelected();
 };

@@ -279,3 +279,35 @@ ParamList* RpcClient::getAnswer()
 }
 
 
+
+
+RpcClient* RpcClient::setRequest
+(
+    ParamList* aRequest
+)
+{
+    if( ownerRequest )
+    {
+        ownerRequest = true;
+        request -> destroy();
+    }
+    request = aRequest;
+    return this;
+}
+
+
+
+RpcClient* RpcClient::setAnswer
+(
+    ParamList* aAnswer
+)
+{
+    if( ownerAnswer )
+    {
+        ownerAnswer = true;
+        answer -> destroy();
+    }
+    answer = aAnswer;
+    return this;
+}
+

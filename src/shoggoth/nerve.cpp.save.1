@@ -1,18 +1,15 @@
-#include "nerve.h"
-
 #include "../lib/rnd.h"
 #include "../lib/rpc_client.h"
 
-#include "net.h"
+#include "nerve.h"
 #include "layer.h"
-#include "io.h"
 
 /*
     Constructor
 */
 Nerve::Nerve
 (
-    Net*        aNet,       /* Net object*/
+    Log*        aLog,       /* Log object*/
     string      aId,        /* id */
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
@@ -23,7 +20,7 @@ Nerve::Nerve
 )
 {
     /* Set properties */
-    net         = aNet;
+    log         = aLog;
     id          = aId;
     parent      = aParent;
     child       = aChild;
@@ -83,7 +80,7 @@ Nerve::~Nerve()
 */
 Nerve* Nerve::create
 (
-    Net*        aNet,       /* Net object*/
+    Log*        aLog,       /* Log object*/
     string      aId,        /* id */
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
@@ -95,7 +92,7 @@ Nerve* Nerve::create
 {
     return new Nerve
     (
-        aNet,
+        aLog,
         aId,
         aParent,
         aChild,
@@ -123,7 +120,7 @@ void Nerve::destroy()
 */
 Log* Nerve::getLog()
 {
-    return net -> getLog();
+    return log;
 }
 
 
@@ -216,14 +213,14 @@ NerveType Nerve::nerveTypeFromString
 
 
 /*
-    Return the parent neuron iundex by index of weight array
+    Return the parent neurons by index of weight array
 */
-int Nerve::getParentByWeightIndex
+Neuron* Nerve::getParentByWeightIndex
 (
     int aIndex
 )
 {
-    int iParent = -1;
+    int iParent = 0;
 
     switch( nerveType )
     {
@@ -238,20 +235,20 @@ int Nerve::getParentByWeightIndex
         break;
     }
 
-    return iParent;
+    return parent -> getNeurons() -> getByIndex( iParent );
 }
 
 
 
 /*
-    Return the child neuron index by index of weight array
+    Return the child neurons by index of weight array
 */
-int Nerve::getChildByWeightIndex
+Neuron* Nerve::getChildByWeightIndex
 (
     int aIndex
 )
 {
-    int iChild = -1;
+    int iChild = 0;
 
     switch( nerveType )
     {
@@ -265,7 +262,7 @@ int Nerve::getChildByWeightIndex
             iChild = ( int ) ( cc / m * aIndex );
         break;
     }
-    return iChild;
+    return child -> getNeurons() -> getByIndex( iChild );
 }
 
 
@@ -361,29 +358,33 @@ Nerve* Nerve::writeToBuffer
 
 
 /*
-    Read nerve weights array from Io
+    Request the nerve weight array from server
 */
-Nerve* Nerve::read()
+Nerve* Nerve::readFromServer
+(
+    string aHost,       /* server ip address */
+    int aPort           /* server port number */
+)
 {
-    auto io = Io::create( net );
-
-    io
+    auto rpc = RpcClient::create( getLog(), aHost, aPort );
+    rpc
     -> getRequest()
-    -> setString( "from", parent -> getId())
-    -> setString( "to", child -> getId());
+    -> setString( "from", parent -> getId() )
+    -> setString( "to", child -> getId() );
 
-    if( io -> call( CMD_READ_NERVE ) -> isOk() )
+    if( rpc -> call( CMD_READ_NERVE ) -> isOk() )
     {
         char* buffer = NULL;
         size_t size = 0;
-        io -> getAnswer() -> getData( "data", buffer, size );
+
+        rpc -> getAnswer() -> getData( "data", buffer, size );
+
         if( buffer != NULL && size > 0 )
         {
             readFromBuffer( buffer, size );
         }
     }
-
-    io -> destroy();
+    rpc -> destroy();
 
     return this;
 }
@@ -391,26 +392,80 @@ Nerve* Nerve::read()
 
 
 /*
-    Write the nerve weight array to io
+    Request the nerve weight array from server
 */
-Nerve* Nerve::write()
+Nerve* Nerve::writeToServer
+(
+    string aHost,       /* server ip address */
+    int aPort           /* server port number */
+)
 {
-    auto io = Io::create( net );
-
-    io
-    -> getRequest()
-    -> setString( "from", parent -> getId())
-    -> setString( "to", child -> getId())
+    auto rpc = RpcClient::create( getLog(), aHost, aPort );
+    rpc -> getRequest()
+    -> setString( "from", parent -> getId() )
+    -> setString( "to", child -> getId() )
     -> setData
     (
         "data",
         ( char* )weights,
         sizeof(double) * weightsCount
     );
+    rpc -> call( CMD_WRITE_NERVE );
+    rpc -> destroy();
 
-    io
-    -> call( CMD_WRITE_NERVE )
-    -> destroy();
+    return this;
+}
 
+
+
+/*
+    Read nerves weights from file
+*/
+Nerve* Nerve::read
+(
+    Lyambda* aLaymbda
+)
+{
+    /* Create arguments and results objects */
+    auto arguments  = ParamList::create();
+    auto results    = ParamList::create();
+
+    /* Set arguments attributes */
+    arguments
+    -> setString( "command",  CMD_READ_NERVE )
+    -> setString( "from", parent -> getId() )
+    -> setString( "to", child -> getId() );
+
+    aLyambda( arguments, results, net );
+
+    if( result -> isOk() )
+    {
+        char* buffer = NULL;
+        size_t size = 0;
+
+        results -> getData( "data", buffer, size );
+        if( buffer != NULL && size > 0 )
+        {
+            readFromBuffer( buffer, size );
+            delete [] buffer;
+        }
+    }
+
+    arguments -> destroy();
+    results -> destroy();
+
+    return this;
+}
+
+
+
+/*
+    Write nerves weights to file
+*/
+Nerve* Nerve::writeToFile
+(
+    string fileName
+)
+{
     return this;
 }

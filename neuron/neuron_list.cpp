@@ -176,10 +176,8 @@ NeuronList* NeuronList::createStorage
     Save neurons to memory buffer
     Buffer must be delete after using with deleteBuffer
 */
-NeuronList* NeuronList::saveToBuffer
+NeuronList* NeuronList::writeToBuffer
 (
-    int aNeuronFrom,
-    int aNeuronTo,
     char* &aBuffer,
     size_t &aSize
 )
@@ -206,9 +204,7 @@ NeuronList* NeuronList::saveToBuffer
                 pos += sizeOfPart;
 
                 return false;
-            },
-            aNeuronFrom,
-            aNeuronTo
+            }
         );
     }
     else
@@ -223,7 +219,7 @@ NeuronList* NeuronList::saveToBuffer
 /*
     Load neurons from memory buffer
 */
-NeuronList* NeuronList::loadFromBuffer
+NeuronList* NeuronList::readFromBuffer
 (
     const char* aBuffer,
     const size_t aSize
@@ -259,119 +255,5 @@ NeuronList* NeuronList::loadFromBuffer
         this -> setCode( "NeuronsCountNotMatchingDataSize" );
     }
 
-    return this;
-}
-
-
-
-/*
-    Save storage
-*/
-NeuronList* NeuronList::saveToStorage
-(
-    string aFilePath
-)
-{
-    char* buffer = NULL;
-    size_t size = 0;
-    /* Fill buffer */
-    saveToBuffer( 0, getCount(), buffer, size );
-    saveToStorage( aFilePath, buffer, size );
-    delete [] buffer;
-
-    return this;
-}
-
-
-
-/*
-    Save storage
-*/
-NeuronList* NeuronList::saveToStorage
-(
-    string aFilePath,
-    char* aBuffer,
-    size_t aSize
-)
-{
-    if( aFilePath != "" )
-    {
-        if( !checkStorage( aFilePath ) )
-        {
-            createStorage( aFilePath );
-        }
-
-        if( checkStorage( aFilePath ) )
-        {
-            if( aBuffer != NULL )
-            {
-                auto h = fopen( aFilePath.c_str(), "w" );
-                if( h )
-                {
-                    if( fwrite( &aBuffer, aSize, 1, h ) == 0 )
-                    {
-                        setResult( "WriteToStorageError" );
-                    }
-                    fclose( h );
-                }
-                else
-                {
-                    setResult( "SaveOpenStorageError" );
-                }
-            }
-        }
-        else
-        {
-            setResult( "SaveCheckStorageError" );
-        }
-    }
-    return this;
-}
-
-
-
-NeuronList* NeuronList::loadFromStorage
-(
-    string aFilePath
-)
-{
-    if( aFilePath != "" )
-    {
-        if( !checkStorage( aFilePath ) )
-        {
-            setResult( "LoadCheckStorageError" );
-        }
-        else
-        {
-            auto h = fopen( aFilePath.c_str(), "r" );
-            if( !h )
-            {
-                setResult( "LoadOpenStorageError" );
-            }
-            else
-            {
-                loop
-                (
-                    [ this, &h  ]
-                    (
-                        Neuron* iNeuron
-                    )
-                    {
-                        StorageNeuron part;
-                        auto readed = fread( &part, sizeof( part ), 1, h );
-                        iNeuron -> setValue( part.value );
-                        iNeuron -> setError( part.error );
-                        auto stop = readed != 1;
-                        if( stop )
-                        {
-                            setResult( "FileReadError" );
-                        }
-                        return stop;
-                    }
-                );
-                fclose( h );
-            }
-        }
-    }
     return this;
 }

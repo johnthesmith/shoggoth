@@ -136,3 +136,41 @@ Layer* LayerList::getById
     auto index = getIndexById( a );
     return index > -1 ? getByIndex( index ) : NULL;
 }
+
+
+
+/*
+    Read from server
+*/
+LayerList* LayerList::read()
+{
+    loop
+    (
+        []
+        ( void* aLayer )
+        {
+            (( Layer* ) aLayer ) -> read();
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Write to server
+*/
+LayerList*  LayerList::write()
+{
+    loop
+    (
+        []
+        ( void* aLayer )
+        {
+            (( Layer* ) aLayer ) -> write();
+            return false;
+        }
+    );
+    return this;
+}

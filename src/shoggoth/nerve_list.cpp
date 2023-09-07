@@ -201,3 +201,45 @@ NerveList* NerveList::getChildrenByLayer
     );
     return this;
 }
+
+
+
+/*
+    Read from server
+*/
+NerveList* NerveList::read()
+{
+    loop
+    (
+        []
+        ( void* aNerve )
+        {
+            (( Nerve* ) aNerve ) -> read();
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Write to server
+*/
+NerveList*  NerveList::write()
+{
+    loop
+    (
+        []
+        ( void* aNerve )
+        {
+            (( Nerve* ) aNerve ) -> write();
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+

@@ -1,10 +1,13 @@
+/*
+    Shoggoth
+*/
+
 #pragma once
 
-
-
 /*
-    Neuron net class.
+    Neuron net class for Shogogth.
     Contains list of neuron layers.
+    Emplements main methods for work with net
 */
 
 
@@ -29,24 +32,22 @@ class Net: public Result
     private:
 
         Application* application        = NULL; /* The log object */
-
-        Neuron* selected                = NULL;     /* Selectrd neuron */
-        double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
-
-        bool    learningMode            = false;    /* True for backweard calculation in learning */
-
         NerveList* nerves               = NULL;     /* List of nerves*/
+        LayerList* layers               = NULL; /* The layer list object */
+
+        string  storagePath             = "net";
+
+        /* Settings */
+
+        string host                     = "";       /* Server host */
+        unsigned int port               = 0;        /* Server port */
+        int processorCount              = 1;        /* Count of threads */
 
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
         double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
         double  errorNormalize          = 0.0;      /* 0.0 - full error transfer,  1.0 - full dependency from sum weight of layer */
-
-        string  storagePath             = "net";
-
-        int processorCount              = 1;        /* Count of threads */
-
-        string host                     = "";       /* Server host */
-        unsigned int port               = 0;        /* Server port */
+        double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
+        bool    learningMode            = false;    /* True for backweard calculation in learning */
 
         /* Calculation state */
 
@@ -54,8 +55,6 @@ class Net: public Result
         int calcLayerIndex              = 0;        /* Current lsyer for calculation */
 
     public:
-
-        LayerList* layers               = NULL; /* The layer list object */
 
         /*
             Constructor
@@ -171,39 +170,6 @@ class Net: public Result
 
 
 
-        /*
-            Return neuron by screen position
-        */
-        Net* getNeuronsByScreenPos
-        (
-            NeuronList*,/* Neuron list */
-            const Point3d&
-        );
-
-
-
-        Net* setSelected
-        (
-            Neuron*
-        );
-
-
-
-        /*
-            Select neurn by MOUSE position
-        */
-        Net* setSelected
-        (
-            Scene&
-        );
-
-
-
-        Neuron* getSelected();
-
-
-
-
         Net* switchShowLayer();
 
 
@@ -311,17 +277,6 @@ class Net: public Result
 
 
         /*
-            Load layers from storage
-        */
-        Net* loadLayers();
-
-        /*
-            Save layers to storage
-        */
-        Net* saveLayers();
-
-
-        /*
             Return list ov nerves
         */
         NerveList* getNerves();
@@ -413,13 +368,6 @@ class Net: public Result
 
 
         /*
-            Read sync object from server
-        */
-        Net* getSyncFromServer();
-
-
-
-        /*
             Load parents layers and check forward calculation
             return true if all parents layers is forward calculated
             otherwise return false
@@ -457,6 +405,27 @@ class Net: public Result
         */
         Net* calcReset();
 
+
+
+        Net* readLayers();
+
+
+
+        Net* readNerves();
+
+
+
+        /*
+            Return server host
+        */
+        string getHost();
+
+
+
+        /*
+            Return server port
+        */
+        int getPort();
 
 };
 

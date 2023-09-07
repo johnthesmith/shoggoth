@@ -1,3 +1,8 @@
+/*
+    Shoggoth nerve
+    Bind between two neuron layers.
+*/
+
 # pragma once
 
 #include "../lib/result.h"
@@ -5,26 +10,27 @@
 
 #include "bind_type.h"
 #include "nerve_type.h"
-#include "neuron.h"
+
 
 
 class Layer;
+class Net;
 
-class Nerve : public Result
+class Nerve: public Result
 {
     private:
 
         double*     weights         = NULL;         /* Array of weights */
         int         weightsCount    = 0;            /* County of weights */
 
-        Log*        log             = NULL;         /* The log object */
+        Net*        net             = NULL;         /* The net object */
 
-        string      id          = "";
-        BindType    bindType    = BT_VALUE;
-        NerveType   nerveType   = ALL_TO_ALL;
+        string      id              = "";
+        BindType    bindType        = BT_VALUE;
+        NerveType   nerveType       = ALL_TO_ALL;
 
-        Layer*      parent      = NULL;
-        Layer*      child       = NULL;
+        Layer*      parent          = NULL;
+        Layer*      child           = NULL;
 
     public:
 
@@ -33,7 +39,7 @@ class Nerve : public Result
         */
         Nerve
         (
-            Log*,       /* Log object*/
+            Net*,       /* Net object*/
             string,     /* id */
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
@@ -57,7 +63,7 @@ class Nerve : public Result
         */
         static Nerve* create
         (
-            Log*,       /* Log object*/
+            Net*,       /* Net object*/
             string,     /* id */
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
@@ -139,9 +145,9 @@ class Nerve : public Result
 
 
         /*
-            Return the parent neuron by index of weight array
+            Return the parent neuron index by index of weight array
         */
-        Neuron* getParentByWeightIndex
+        int getParentByWeightIndex
         (
             int        /* Index */
         );
@@ -149,9 +155,9 @@ class Nerve : public Result
 
 
         /*
-            Return the child neuron by index of weight array
+            Return the child neuron index by index of weight array
         */
-        Neuron* getChildByWeightIndex
+        int getChildByWeightIndex
         (
             int        /* Index */
         );
@@ -183,20 +189,34 @@ class Nerve : public Result
         /*
             Load nerve weights from buffer
         */
-        Nerve* loadFromBuffer
+        Nerve* readFromBuffer
         (
             char *, /* buffer */
-            int     /* size of buffer */
+            size_t  /* size of buffer */
         );
 
 
 
         /*
-            Request the nerve weights array from the server
+            Put weights array from memory buffer with size
         */
-        Nerve* Nerve::readFromServer
+        Nerve* writeToBuffer
         (
-            string, /* server ip address */
-            int     /* server port number */
+            char*&, /* Buffer */
+            size_t& /* Size */
         );
+
+
+
+        /*
+            Read the nerve weights array from io
+        */
+        Nerve* read();
+
+
+
+        /*
+            Write weights array to the io
+        */
+        Nerve* write();
 };

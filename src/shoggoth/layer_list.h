@@ -1,5 +1,5 @@
 /*
-    List of neurons layer
+    List of neurons layer for Shoggoth
 */
 
 #pragma once
@@ -137,4 +137,19 @@ class LayerList : public Heap
         (
             string
         );
+
+
+
+        /*
+            Read the layers value and error from io
+        */
+        LayerList* read();
+
+
+
+        /*
+            Write the layers value and error to the io
+        */
+        LayerList* write();
+
 };

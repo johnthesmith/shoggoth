@@ -1,8 +1,7 @@
 {
     "role"              :"storage",
     "storagePath"       :"test",
-    "port"              : 11120,
-
+    "port"              :11120,
     "net":
     {
         "layers":
@@ -12,63 +11,104 @@
                 "name"              :"Retina",
                 "size"              :[ 20, 20, 1 ],
                 "position"          :[ 0.0, 0.0, 0.0 ],
-                "processors"        :[ "first" ]
+                "caption"           :"Main input",
+                "io":
+                [
+                    "values_read"   :[ "proc", "ui" ],
+                    "values_write"  :[ "treacher" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "cortex_1":
             {
                 "name"              :"Cortex 1",
                 "size"              :[ 20, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 1.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui" ],
+                    "values_write"  :[ "proc" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "cortex_2":
             {
                 "name"              :"Cortex 2",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 2.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui" ],
+                    "values_write"  :[ "proc" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "cortex_3":
             {
                 "name"              :"Cortex 3",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 3.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui" ],
+                    "values_write"  :[ "proc" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "cortex_4":
             {
                 "name"              :"Cortex 4",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 4.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui" ],
+                    "values_write"  :[ "proc" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ],
+                ]
             },
             "sample":
             {
                 "name"              :"Sample",
                 "size"              :[ 8, 16, 1 ],
                 "position"          :[ 0.0, 0.0, 6.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui", "proc" ],
+                    "values_write"  :[ "teacher" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "result":
             {
                 "name"              :"Result",
                 "size"              :[ 8, 16, 1 ],
                 "position"          :[ 0.0, 0.0, 5.0 ],
-                "processors"        :[ "first" ]
+                "io":
+                [
+                    "values_read"   :[ "ui", "teacher" ],
+                    "values_write"  :[ "proc" ],
+                    "errors_read"   :[ "ui" ],
+                    "errors_write"  :[ "proc" ]
+                ]
             },
             "command":
             {
                 "name"              :"Command",
                 "size"              :[ 1, 1, 1 ],
-                "position"          :[ 0.0, -0.5, 5.5 ],
-                "processors"        :[ "first" ]
+                "position"          :[ 0.0, -0.5, 5.5 ]
             },
             "error":
             {
                 "name"              :"Error",
                 "size"              :[ 1, 1, 1],
-                "position"          :[ 0.0, 0.5, 4.5 ],
-                "processors"        :[ "first" ]
+                "position"          :[ 0.0, 0.5, 4.5 ]
             }
         },
 

@@ -2,6 +2,7 @@
 
 # Exclude execute file
 
+*.save
 *.log
 *.bin
 *.swp

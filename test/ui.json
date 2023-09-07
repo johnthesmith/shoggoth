@@ -1,5 +1,6 @@
 {
     "role"                  :"ui",
+    "id"                    :"ui",
     "receive_timeout_mls"   :1000,
 
     "storage":

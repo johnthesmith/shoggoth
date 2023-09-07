@@ -21,8 +21,13 @@ class RpcClient : public SockRpc
 {
     private:
 
-        ParamList* answer = NULL;
-        ParamList* request = NULL;
+        ParamList* answer   = NULL;
+        ParamList* request  = NULL;
+
+        bool ownerAnswer    = true;
+        bool ownerRequest   = true;
+
+
 
         /*
             On before read
@@ -156,7 +161,22 @@ class RpcClient : public SockRpc
 
 
 
+        RpcClient* setRequest
+        (
+            ParamList*
+        );
+
+
+
+
         ParamList* getRequest();
+
+
+
+        RpcClient* setAnswer
+        (
+            ParamList*
+        );
 
 
 
