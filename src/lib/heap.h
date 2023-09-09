@@ -185,4 +185,11 @@ class Heap : public Result
         (
             function <bool ( void* )>
         );
+
+
+
+        /*
+            Return first element or null if not exists
+        */
+        void* getFirst();
 };

@@ -434,3 +434,13 @@ Heap* Heap::loop
 
     return this;
 }
+
+
+
+/*
+    Return first element or null if not exists
+*/
+void* Heap::getFirst()
+{
+    return getCount() > 0 ? getByIndex( 0 ) : NULL;
+}

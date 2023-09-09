@@ -9,11 +9,12 @@
 
 /* Application libraryes */
 #include "shoggoth_application.h"
-#include "shoggoth_rpc_server.h"
 #include "ui.h"
 #include "processor.h"
 #include "teacher.h"
 
+
+#include "../shoggoth/shoggoth_rpc_server.h"
 #include "../lib/buffer_to_hex.h"
 
 

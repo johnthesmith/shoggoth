@@ -119,10 +119,37 @@ class Io: public Result
 
 
 
-        Io* fileReadNerve();
-        Io* fileWriteNerve();
-        Io* fileReadLayer();
-        Io* fileWriteLayer();
+
+        Io* fileWriteValues();
+
+        Io* fileReadValues();
+
+
+        /*
+            Write layers errors to file
+        */
+        Io* fileWriteErrors();
+
+
+
+        /*
+            Read layer errors from file
+        */
+        Io* fileReadErrors();
+
+
+
+        /*
+            Write nerve weights to file
+        */
+        Io* fileWriteWeights();
+
+
+
+        /*
+            Read nerve weights from file
+        */
+        Io* fileReadWeights();
 };
 
 

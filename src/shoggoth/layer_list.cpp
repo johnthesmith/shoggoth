@@ -142,14 +142,18 @@ Layer* LayerList::getById
 /*
     Read from server
 */
-LayerList* LayerList::read()
+LayerList* LayerList::readValues()
 {
     loop
     (
         []
         ( void* aLayer )
         {
-            (( Layer* ) aLayer ) -> read();
+            auto iLayer = ( Layer* ) aLayer;
+            if( iLayer -> getReadableValues() )
+            {
+                iLayer -> readValues();
+            }
             return false;
         }
     );
@@ -161,14 +165,65 @@ LayerList* LayerList::read()
 /*
     Write to server
 */
-LayerList*  LayerList::write()
+LayerList*  LayerList::writeValues()
 {
     loop
     (
         []
         ( void* aLayer )
         {
-            (( Layer* ) aLayer ) -> write();
+            auto iLayer = ( Layer* ) aLayer;
+            if( iLayer -> getWritableValues() )
+            {
+                iLayer -> writeValues();
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+
+/*
+    Read from server
+*/
+LayerList* LayerList::readErrors()
+{
+    loop
+    (
+        []
+        ( void* aLayer )
+        {
+            auto iLayer = ( Layer* ) aLayer;
+            if( iLayer -> getReadableErrors() )
+            {
+                iLayer -> readErrors();
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Write to server
+*/
+LayerList*  LayerList::writeErrors()
+{
+    loop
+    (
+        []
+        ( void* aLayer )
+        {
+            auto iLayer = ( Layer* ) aLayer;
+            if( iLayer -> getWritableErrors() )
+            {
+                iLayer -> writeErrors();
+            }
             return false;
         }
     );

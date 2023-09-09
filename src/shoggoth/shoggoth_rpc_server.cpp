@@ -6,9 +6,9 @@
 */
 ShoggothRpcServer::ShoggothRpcServer
 (
-    ShoggothApplication*    aApp,
-    SocketDomain            aDomain,
-    SocketType              aType
+    Application*    aApp,
+    SocketDomain    aDomain,
+    SocketType      aType
 )
 :RpcServer
 (
@@ -26,7 +26,7 @@ ShoggothRpcServer::ShoggothRpcServer
     sync
     -> fill
     (
-        getApp()
+        getApplication()
         -> getConfig()
         -> getObject( vector<string>{ "net", "layers" } )
     );
@@ -52,9 +52,9 @@ ShoggothRpcServer::~ShoggothRpcServer()
 */
 ShoggothRpcServer* ShoggothRpcServer::create
 (
-    ShoggothApplication*    aApp,
-    SocketDomain            aDomain,
-    SocketType              aType
+    Application*    aApp,
+    SocketDomain    aDomain,
+    SocketType      aType
 
 )
 {
@@ -64,7 +64,7 @@ ShoggothRpcServer* ShoggothRpcServer::create
 
 
 
-ShoggothApplication* ShoggothRpcServer::getApplication()
+Application* ShoggothRpcServer::getApplication()
 {
     return app;
 }
@@ -87,9 +87,13 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     switch( method )
     {
         case CMD_GET_NET        :getNet( aArguments, aResults); break;
-        case CMD_GET_SYNC       :getSync( aArguments, aResults); break;
-        case CMD_WRITE_LAYER    :writeLayer( aArguments, aResults); break;
-        case CMD_READ_LAYER     :readLayer( aArguments, aResults); break;
+        case CMD_WRITE_VALUES   :writeValues( aArguments, aResults); break;
+        case CMD_READ_VALUES    :readValues( aArguments, aResults); break;
+        case CMD_WRITE_ERRORS   :writeErrors( aArguments, aResults); break;
+        case CMD_READ_ERRORS    :readErrors( aArguments, aResults); break;
+        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
+        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
+
         default                 :unknownMethod( aArguments, aResults); break;
     }
 
@@ -181,37 +185,17 @@ ShoggothRpcServer* ShoggothRpcServer::getNet
 
 
 
-/*
-    Request sync
-*/
-ShoggothRpcServer* ShoggothRpcServer::getSync
-(
-    ParamList* aArguments,
-    ParamList* aResults
-)
-{
-    aResults -> setObject( "sync", ParamList::create() -> copyFrom( sync ));
-    setAnswerResult( aResults, "ok" );
-    return this;
-}
-
-
 
 /*
     Remote host send layer data
 
     Arguments
         idLayer
-        idClient
-        direction
-        from
-        to
         data
     Results
-        sync
         result
 */
-ShoggothRpcServer* ShoggothRpcServer::writeLayer
+ShoggothRpcServer* ShoggothRpcServer::writeValues
 (
     ParamList* aArguments,
     ParamList* aResults
@@ -219,23 +203,10 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayer
 {
     /* Read id layer */
     auto idLayer = aArguments -> getString( "idLayer" );
-    auto idClient = aArguments -> getString( "idClient" );
-    auto direction = aArguments -> getInt( "direction" );
-    auto from = aArguments -> getInt( "from" );
-    auto to = aArguments -> getInt( "to" );
-
     if
     (
         /* Arguments validation */
-        validate( idClient != "", "IdClientIsEmpty", aResults ) &&
-        validate( idLayer != "", "IdLayerIsEmpty", aResults ) &&
-        validate
-        (
-            direction == CALC_FORWARD ||
-            direction == CALC_BACKWARD,
-            "UnknownDirection",
-            aResults
-        )
+        validate( idLayer != "", "IdLayerIsEmpty", aResults )
     )
     {
         /* Get layer data */
@@ -245,35 +216,17 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayer
         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
         {
             /* Storage data */
-            data -> setData( idLayer, buffer, size );
-
-            /* Store to sync */
-            switch( direction )
-            {
-                case CALC_FORWARD: sync -> setForward( idClient, idLayer ); break;
-                case CALC_BACKWARD: sync -> setBackward( idClient, idLayer ); break;
-            }
-
-            aResults -> copyFrom( "sync", sync );
-
-            /* Output sync to log */
-            sync -> toLog();
-
+            data
+            -> setPath( vector <string>{ "layers", idLayer } )
+            -> setData
+            (
+                "values",
+                buffer,
+                size
+            );
             /* Return positive answer */
             setAnswerResult( aResults, "ok" );
         }
-    }
-
-
-    if( sync -> isComplete() )
-    {
-        /* End of loop */
-        sync -> fill
-        (
-            getApp()
-            -> getConfig()
-            -> getObject( vector<string>{ "net", "layers" } )
-        );
     }
 
     return this;
@@ -284,7 +237,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayer
 /*
     Remote host request the layer
 */
-ShoggothRpcServer* ShoggothRpcServer::readLayer
+ShoggothRpcServer* ShoggothRpcServer::readValues
 (
     ParamList* aArguments,
     ParamList* aResults
@@ -295,7 +248,12 @@ ShoggothRpcServer* ShoggothRpcServer::readLayer
     char* buffer = NULL;
     size_t size = 0;
 
-    data -> getData( idLayer, buffer, size );
+    data -> getData
+    (
+        vector <string>{ "layers", idLayer, "values" },
+        buffer,
+        size
+    );
 
     if( buffer != NULL )
     {
@@ -312,12 +270,85 @@ ShoggothRpcServer* ShoggothRpcServer::readLayer
 
 
 
+
 /*
-    Return application
+    Remote host send layer errors data
+
+    Arguments
+        idLayer
+        data
+    Results
+        result
 */
-ShoggothApplication* ShoggothRpcServer::getApp()
+ShoggothRpcServer* ShoggothRpcServer::writeErrors
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
 {
-    return app;
+    /* Read id layer */
+    auto idLayer = aArguments -> getString( "idLayer" );
+    if
+    (
+        /* Arguments validation */
+        validate( idLayer != "", "IdLayerIsEmpty", aResults )
+    )
+    {
+        /* Get layer data */
+        char* buffer = NULL;
+        size_t size = 0;
+        aArguments -> getData( "data", buffer, size );
+        if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+        {
+            /* Storage data */
+            data
+            -> setPath( vector <string>{ "layers", idLayer } )
+            -> setData
+            (
+                "errors",
+                buffer,
+                size
+            );
+            /* Return positive answer */
+            setAnswerResult( aResults, "ok" );
+        }
+    }
+
+    return this;
 }
 
 
+
+/*
+    Remote host request the layer errors
+*/
+ShoggothRpcServer* ShoggothRpcServer::readErrors
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    auto idLayer = aArguments -> getString( "idLayer" );
+
+    char* buffer = NULL;
+    size_t size = 0;
+
+    data -> getData
+    (
+        vector <string>{ "layers", idLayer, "errors" },
+        buffer,
+        size
+    );
+
+    if( buffer != NULL )
+    {
+        aResults -> setData( "data", buffer, size );
+        setAnswerResult( aResults, "ok" );
+    }
+    else
+    {
+        setAnswerResult( aResults, "LayerDataNotFound" );
+    }
+
+    return this;
+}

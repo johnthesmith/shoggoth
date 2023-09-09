@@ -20,6 +20,23 @@ class NerveList :  public Heap
         string id = "";
 
     public:
+
+
+
+        /*
+            Create new nerve list
+        */
+        static NerveList* create();
+
+
+
+        /*
+            Self destroy nerve list
+        */
+        void destroy();
+
+
+
         /*
             Add Nerves from argument list to this list
         */
@@ -135,10 +152,10 @@ class NerveList :  public Heap
 
 
 
-        NerveList* read();
+        NerveList* readWeights();
 
 
 
-        NerveList* write();
+        NerveList* writeWeights();
 };
 

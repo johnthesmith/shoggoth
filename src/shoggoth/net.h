@@ -31,23 +31,26 @@ class Net: public Result
 {
     private:
 
-        Application* application        = NULL; /* The log object */
-        NerveList* nerves               = NULL;     /* List of nerves*/
-        LayerList* layers               = NULL; /* The layer list object */
+        /* State */
 
-        string  storagePath             = "net";
+        Application*    application     = NULL;     /* The log object */
+        NerveList*      nerves          = NULL;     /* List of nerves*/
+        LayerList*      layers          = NULL;     /* The layer list object */
 
         /* Settings */
 
-        string host                     = "";       /* Server host */
-        unsigned int port               = 0;        /* Server port */
-        int processorCount              = 1;        /* Count of threads */
+        string          id              = "";       /* Net id */
+        string          host            = "";       /* Server host */
+        unsigned int    port            = 0;        /* Server port */
+        int             processorCount  = 1;        /* Count of threads */
 
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
         double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
         double  errorNormalize          = 0.0;      /* 0.0 - full error transfer,  1.0 - full dependency from sum weight of layer */
         double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
         bool    learningMode            = false;    /* True for backweard calculation in learning */
+
+        string  storagePath             = "net";
 
         /* Calculation state */
 
@@ -341,6 +344,7 @@ class Net: public Result
 
 
 
+        /**/
         Net* readNet();
 
 
@@ -354,6 +358,7 @@ class Net: public Result
 
 
         int getProcessorNumber();
+
 
 
         Net* setProcessorCount
@@ -400,6 +405,7 @@ class Net: public Result
         );
 
 
+
         /*
             Reset forward and backward counts for layers
         */
@@ -427,5 +433,11 @@ class Net: public Result
         */
         int getPort();
 
+
+
+        Net* setId
+        (
+            string
+        );
 };
 

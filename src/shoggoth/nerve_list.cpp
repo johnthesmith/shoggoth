@@ -3,6 +3,27 @@
 
 
 /*
+    Create new nerve list
+*/
+NerveList* NerveList::create()
+{
+    auto result = new NerveList();
+    return result;
+}
+
+
+
+/*
+    Self destroy nerve list
+*/
+void NerveList::destroy()
+{
+    delete this;
+}
+
+
+
+/*
     Add Nerves from argument list to this list
 */
 NerveList* NerveList::add
@@ -207,14 +228,14 @@ NerveList* NerveList::getChildrenByLayer
 /*
     Read from server
 */
-NerveList* NerveList::read()
+NerveList* NerveList::readWeights()
 {
     loop
     (
         []
         ( void* aNerve )
         {
-            (( Nerve* ) aNerve ) -> read();
+            (( Nerve* ) aNerve ) -> readWeights();
             return false;
         }
     );
@@ -226,14 +247,14 @@ NerveList* NerveList::read()
 /*
     Write to server
 */
-NerveList*  NerveList::write()
+NerveList*  NerveList::writeWeights()
 {
     loop
     (
         []
         ( void* aNerve )
         {
-            (( Nerve* ) aNerve ) -> write();
+            (( Nerve* ) aNerve ) -> writeWeights();
             return false;
         }
     );

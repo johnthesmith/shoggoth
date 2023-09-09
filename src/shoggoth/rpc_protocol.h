@@ -7,6 +7,7 @@
 /*
     Shoggoth RPC protocol constants
 */
+
 enum CalcDirection
 {
     CALC_ALL,
@@ -20,13 +21,15 @@ enum CalcDirection
 */
 enum Command
 {
-    CMD_UNKNWON,        /**/
+    CMD_UNKNWON,        /* Unknown command */
     CMD_GET_NET,        /* Server return full Net configuration */
     CMD_GET_SYNC,       /* Server return sync object */
-    CMD_WRITE_LAYER,    /* Server receive layer value and error data */
-    CMD_READ_LAYER,     /* Server return the layer value and error data */
-    CMD_READ_NERVE,      /* Server return the nerve weights data */
-    CMD_WRITE_NERVE     /* Server receive the nerve weights data */
+    CMD_WRITE_VALUES,   /* Server receive layer values */
+    CMD_READ_VALUES,    /* Server return the layer values data */
+    CMD_WRITE_ERRORS,   /* Server receive layer errors */
+    CMD_READ_ERRORS,    /* Server return the layer errors data */
+    CMD_WRITE_WEIGHTS,  /* Server receive the nerve weights data */
+    CMD_READ_WEIGHTS    /* Server return the nerve weights data */
 };
 
 

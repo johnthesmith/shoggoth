@@ -9,6 +9,7 @@
 
 /* Shoggot libraries */
 #include "func.h"
+#include "neuron.h"
 
 
 
@@ -94,37 +95,32 @@ NetGraph* NetGraph::drawLayer
         neuronPointsScreenCalc( aScene, aLayer );
     }
 
-    /* Get count of neurons in layer */
-    auto neurons = aLayer -> getNeurons();
-
     /* Get neurons conut */
-    int currentSize =  neurons -> getCount();
-
+    int neuronsCount = aLayer -> getNeuronsCount();
 
     /* Draw nurons point */
     aScene
     -> setPointSize( neuronDrawSize )
     -> begin( POINT );
 
-    for( int i = 0; i < currentSize; i++ )
+    for( int i = 0; i < neuronsCount; i++ )
     {
-        Neuron* n = neurons -> getByIndex( i );
         Rgba c;
         switch( neuronDrawMode )
         {
             case NDM_VALUE:
-                c = Rgba( colorValueZ ).itpLin( colorValueP, n -> getValue() );
+                c = Rgba( colorValueZ )
+                .itpLin( colorValueP, aLayer -> getNeuronValue( i ));
             break;
             case NDM_ERROR:
-                c = getErrorColor( n -> getError() );
+                c = getErrorColor( aLayer -> getNeuronError( i ));
             break;
         }
         aScene
         -> color( c )
-        -> vertex( n -> getWorldPoint() );
+        -> vertex( aLayer -> getNeuronWorld( i ));
     }
     aScene -> end();
-
 
 
     if( aLayer -> getShowLayer() )
@@ -220,8 +216,8 @@ NetGraph* NetGraph::drawNerve
             for( int i = 0; i < c; i++ )
             {
                 /* Retrive parent and child by weight index */
-                Neuron* parent = aNerve -> getParentByWeightIndex( i );
-                Neuron* child = aNerve -> getChildByWeightIndex( i );
+                auto iParent = aNerve -> getParentByWeightIndex( i );
+                auto iChild = aNerve -> getChildByWeightIndex( i );
 
                 /* Draw bind */
                 auto color = Rgba();
@@ -251,25 +247,36 @@ NetGraph* NetGraph::drawNerve
                             case NDM_VALUE:
                                 color = getBindValueColor
                                 (
+                                    aNerve -> getWeight( i )
+                                    *
                                     aNerve
-                                    -> getWeight( i ) * parent
-                                    -> getValue()
+                                    -> getParent()
+                                    -> getNeuronValue( iParent )
                                 );
                             break;
                             case NDM_ERROR:
                                 color = getBindErrorColor
                                 (
+                                    aNerve -> getWeight( i )
+                                    *
                                     aNerve
-                                    -> getWeight( i ) * child
-                                    -> getError());
+                                    -> getChild()
+                                    -> getNeuronError( iChild )
+                                );
                             break;
                         }
                     break;
                 }
                 aScene
                 -> color( color )
-                -> vertex( parent -> getWorldPoint() )
-                -> vertex( child -> getWorldPoint() );
+                -> vertex
+                (
+                    aNerve -> getParent() -> getNeuronWorld( iParent )
+                )
+                -> vertex
+                (
+                    aNerve -> getChild() -> getNeuronWorld( iChild )
+                );
             }
             aScene -> end();
         break;
@@ -308,20 +315,14 @@ NetGraph* NetGraph::neuronPointsScreenCalc
     -> begin( "Calculate neurons screen position" )
     -> prm( "Layer", aLayer -> getNameOrId() );
 
-    aLayer
-    -> getNeurons()
-    -> loop
-    (
-        [ aScene ]
-        (
-            Neuron* iNeuron
-        ) -> bool
-        {
-            auto p = aScene -> getScreenByWorld( iNeuron -> getWorldPoint() );
-            iNeuron -> setScreenPoint( p );
-            return false;
-        }
-    );
+    auto c = aLayer -> getNeuronsCount();
+
+    for( int i = 0; i < c; i ++ )
+    {
+        auto p = aScene
+        -> getScreenByWorld( aLayer -> getNeuronWorld( i ) );
+        aLayer -> setNeuronScreen( i, p );
+    };
 
     getLog() -> end();
 
@@ -367,36 +368,36 @@ NetGraph* NetGraph::drawNeuronChart
     Neuron* aNeuron
 )
 {
-    Chart2d::create()
-    -> setXMin( -2.0 )
-    -> setXMax( 2.0 )
-    -> setYMin( -2.0 )
-    -> setYMax( 2.0 )
-    -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
-    -> setBackColor( interfaceColorDark )
-    -> setLineColor( interfaceColor )
-    -> drawBack( aScene )
-
-    -> setLineWeight( 1.0 )
-    -> draw( aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
-    -> draw( aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
-    -> draw( aScene, FUNC_V_LINE, 1.0 )
-
-    -> setLineWeight( 2.0 )
-    -> setLineColor( RGBA_ORANGE )
-    -> drawX( aScene, aNeuron -> getValue() )
-    -> setLineColor( RGBA_RED )
-    -> drawX( aScene, aNeuron -> getError() )
-
-    -> setLineColor( interfaceColor )
-    -> setLineWeight( 1.0 )
-    -> drawX( aScene, 0.0 )
-    -> drawX( aScene, 1.0 )
-    -> drawX( aScene, -1.0 )
-    -> drawY( aScene, 0.0 )
-    -> drawY( aScene, 1.0 )
-    -> drawY( aScene, -1.0)
-    -> destroy();
+//    Chart2d::create()
+//    -> setXMin( -2.0 )
+//    -> setXMax( 2.0 )
+//    -> setYMin( -2.0 )
+//    -> setYMax( 2.0 )
+//    -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
+//    -> setBackColor( interfaceColorDark )
+//    -> setLineColor( interfaceColor )
+//    -> drawBack( aScene )
+//
+//    -> setLineWeight( 1.0 )
+//    -> draw( aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
+//    -> draw( aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
+//    -> draw( aScene, FUNC_V_LINE, 1.0 )
+//
+//    -> setLineWeight( 2.0 )
+//    -> setLineColor( RGBA_ORANGE )
+//    -> drawX( aScene, aNeuron -> getNeuronValue() )
+//    -> setLineColor( RGBA_RED )
+//    -> drawX( aScene, aNeuron -> getError() )
+//
+//    -> setLineColor( interfaceColor )
+//    -> setLineWeight( 1.0 )
+//    -> drawX( aScene, 0.0 )
+//    -> drawX( aScene, 1.0 )
+//    -> drawX( aScene, -1.0 )
+//    -> drawY( aScene, 0.0 )
+//    -> drawY( aScene, 1.0 )
+//    -> drawY( aScene, -1.0)
+//    -> destroy();
 
     return this;
 }
@@ -451,7 +452,7 @@ NetGraph* NetGraph::drawSelectedNeurons
     (
         [ &aScene ]( Neuron* iNeuron ) -> bool
         {
-            aScene -> vertex( iNeuron -> getScreenPoint() );
+            aScene -> vertex( iNeuron -> getScreen() );
             return false;
         }
     );
@@ -561,10 +562,10 @@ NetGraph* NetGraph::switchShowBinds()
         case BDM_TYPE: showBinds = BDM_HIDDEN; break;
     }
 
-    int c = layers -> getCount();
+    int c = getLayers() -> getCount();
     for( int i = 0; i < c; i++ )
     {
-        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        Layer* layer = ( Layer* ) ( getLayers() -> getByIndex( i ));
         layer -> setShowBinds( showBinds );
     }
     return this;
@@ -601,37 +602,64 @@ Rgba NetGraph::getArrowColorByType
 /*
     Return neuron by screen position
 */
-vector<int> NetGraph::getNeuronsByScreenPos
+NetGraph* NetGraph::getNeuronsByScreenPos
 (
+    NeuronList* aNeuronList,
     const Point3d& aPosition
 )
 {
-//    int c = layers -> getCount();
-//    for( int i = 0; i < c; i++ )
-//    {
-//        Layer* layer = ( Layer* ) layers -> getByIndex( i );
-//        layer -> getNeuronsByScreenPos( aList, aPosition );
-//    }
+    getLayers() -> loop
+    (
+        [ &aNeuronList, &aPosition ]
+        (
+            void* iLayer
+        ) -> bool
+        {
+            (( Layer* ) iLayer ) -> getNeuronsByScreenPos
+            (
+                aNeuronList,
+                aPosition
+            );
+            return false;
+        }
+    );
     return this;
 }
 
 
 
-//Net* Net::setSelected
-//(
-//    Neuron* a
-//)
-//{
-//    selected = a;
-//    return this;
-//}
+/*
+    Return first selected neuron
+*/
+Neuron* NetGraph::getSelectedFirst()
+{
+    return ( Neuron* ) selected -> getFirst();
+}
 
 
-//
-//Neuron* Net::getSelected()
-//{
-//    return selected;
-//}
-// 
 
+NetGraph* NetGraph::setSelected
+(
+    Neuron* a
+)
+{
+    selected -> resize( 0 ) -> push( a );
+    return this;
+}
+
+
+
+
+/*
+    On mouse left click event
+*/
+NetGraph* NetGraph::setSelected
+(
+    Scene* aScene /* Scene object */
+)
+{
+    selected -> resize( 0 );
+    getNeuronsByScreenPos( selected, aScene -> getMouseCurrentScreen() );
+    return this;
+}
 

@@ -1,8 +1,8 @@
 #include "../lib/rpc_server.h"
+#include "../lib/application.h"
+
 #include "../shoggoth/rpc_protocol.h"
 #include "../shoggoth/sync.h"
-
-#include "shoggoth_application.h"
 
 
 
@@ -10,7 +10,7 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-        ShoggothApplication*    app     = NULL; /* Application object */
+        Application*            app     = NULL; /* Application object */
         ParamList*              data    = NULL; /* List  */
         Sync*                   sync    = NULL; /* Synchronize table */
 
@@ -21,7 +21,7 @@ class ShoggothRpcServer : public RpcServer
         */
         ShoggothRpcServer
         (
-            ShoggothApplication*,
+            Application*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -40,14 +40,14 @@ class ShoggothRpcServer : public RpcServer
         */
         static ShoggothRpcServer* create
         (
-            ShoggothApplication*,
+            Application*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
 
 
 
-        ShoggothApplication* getApplication();
+        Application* getApplication();
 
 
 
@@ -111,20 +111,9 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
-            Request sync
+            Remote host send layers errors data
         */
-        ShoggothRpcServer* getSync
-        (
-            ParamList* aArguments,
-            ParamList* aResults
-        );
-
-
-
-        /*
-            Remote host send layre data
-        */
-        ShoggothRpcServer* writeLayer
+        ShoggothRpcServer* writeValues
         (
             ParamList*, /* Arguments */
             ParamList*  /* Results */
@@ -133,9 +122,9 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
-            Remote host request the layer
+            Remote host request layers errors layer
         */
-        ShoggothRpcServer* readLayer
+        ShoggothRpcServer* readValues
         (
             ParamList*, /* Arguments */
             ParamList*  /* Results */
@@ -144,7 +133,44 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
-            Return application
+            Remote host send layers errors data
         */
-        ShoggothApplication* getApp();
+        ShoggothRpcServer* writeErrors
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
+        /*
+            Remote host request layers errors layer
+        */
+        ShoggothRpcServer* readErrors
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
+        /*
+            Remote host send nerve weights data
+        */
+        ShoggothRpcServer* writeWeights
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
+        /*
+            Remote host request nerve weights layer
+        */
+        ShoggothRpcServer* readWeights
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
 };

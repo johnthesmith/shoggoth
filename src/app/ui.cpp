@@ -244,7 +244,7 @@ void Ui::onDraw
     /*
         Draw neuron chart
     */
-    Neuron* neuron = net -> getSelected();
+    Neuron* neuron = net -> getSelectedFirst();
     if( neuron != NULL )
     {
 
@@ -256,7 +256,7 @@ void Ui::onDraw
         (
             Rect2d().setCenterSize
             (
-                neuron -> getScreenPoint(),
+                neuron -> getScreen(),
                 Point2d( 10.0, 10.0 )
             )
         )
@@ -297,7 +297,7 @@ void Ui::onDraw
         (
             [ &aScene ]( Neuron* neuron ) -> bool
             {
-                aScene.vertex( neuron -> getScreenPoint() );
+                aScene.vertex( neuron -> getScreen() );
                 return false;
             }
         );
@@ -549,7 +549,7 @@ void Ui::onMouseWheel
     const Point3d& aDelta
 )
 {
-    Neuron* neuron = net -> getSelected();
+    Neuron* neuron = net -> getSelectedFirst();
     if(  neuron != NULL )
     {
         /* Neuron value Control*/
@@ -601,10 +601,10 @@ void Ui::onLeftClick
     const int aMode         /* Key mode */
 )
 {
-    if( net -> setSelected( aScene ) -> getSelected() != NULL )
-    {
+//    if( net -> setSelected( aScene ) -> getSelected() != NULL )
+//    {
 //        exit(0);
-    }
+//    }
 }
 
 
@@ -619,8 +619,8 @@ void Ui::onLeftDblClick
     const int aMode         /* Key mode */
 )
 {
-    if( net -> setSelected( aScene ) -> getSelected() != NULL )
+    if( net -> setSelected( &aScene ) -> getSelectedFirst() != NULL )
     {
-        camera.moveTarget( net -> getSelected() -> getWorldPoint() );
+        camera.moveTarget( net -> getSelectedFirst() -> getWorld() );
     }
 }

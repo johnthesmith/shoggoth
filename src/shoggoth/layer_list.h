@@ -141,15 +141,29 @@ class LayerList : public Heap
 
 
         /*
-            Read the layers value and error from io
+            Read the layers values from io
         */
-        LayerList* read();
+        LayerList* readValues();
 
 
 
         /*
-            Write the layers value and error to the io
+            Write the layers values to the io
         */
-        LayerList* write();
+        LayerList* writeValues();
+
+
+
+        /*
+            Read the layers errors from io
+        */
+        LayerList* readErrors();
+
+
+
+        /*
+            Write the layers errors to the io
+        */
+        LayerList* writeErrors();
 
 };

@@ -211,12 +211,12 @@ class Nerve: public Result
         /*
             Read the nerve weights array from io
         */
-        Nerve* read();
+        Nerve* readWeights();
 
 
 
         /*
             Write weights array to the io
         */
-        Nerve* write();
+        Nerve* writeWeights();
 };

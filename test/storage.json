@@ -8,6 +8,7 @@
         {
             "retina":
             {
+                "uses"              :[ "proc", "ui", "teacher" ],
                 "name"              :"Retina",
                 "size"              :[ 20, 20, 1 ],
                 "position"          :[ 0.0, 0.0, 0.0 ],
@@ -22,6 +23,7 @@
             },
             "cortex_1":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Cortex 1",
                 "size"              :[ 20, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 1.0 ],
@@ -35,6 +37,7 @@
             },
             "cortex_2":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Cortex 2",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 2.0 ],
@@ -48,6 +51,7 @@
             },
             "cortex_3":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Cortex 3",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 3.0 ],
@@ -61,6 +65,7 @@
             },
             "cortex_4":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Cortex 4",
                 "size"              :[ 10, 10, 1 ],
                 "position"          :[ 0.0, 0.0, 4.0 ],
@@ -74,6 +79,7 @@
             },
             "sample":
             {
+                "uses"              :[ "proc", "ui", "teacher" ],
                 "name"              :"Sample",
                 "size"              :[ 8, 16, 1 ],
                 "position"          :[ 0.0, 0.0, 6.0 ],
@@ -87,6 +93,7 @@
             },
             "result":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Result",
                 "size"              :[ 8, 16, 1 ],
                 "position"          :[ 0.0, 0.0, 5.0 ],
@@ -100,12 +107,14 @@
             },
             "command":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Command",
                 "size"              :[ 1, 1, 1 ],
                 "position"          :[ 0.0, -0.5, 5.5 ]
             },
             "error":
             {
+                "uses"              :[ "proc", "ui" ],
                 "name"              :"Error",
                 "size"              :[ 1, 1, 1],
                 "position"          :[ 0.0, 0.5, 4.5 ]
@@ -115,6 +124,7 @@
         "nerves":
         [
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"retina",
                 "idTo"              :"cortex_1",
                 "nerveType"         :"ALL_TO_ALL",
@@ -123,6 +133,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"cortex_1",
                 "idTo"              :"cortex_2",
                 "nerveType"         :"ALL_TO_ALL",
@@ -131,6 +142,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"cortex_2",
                 "idTo"              :"cortex_3",
                 "nerveType"         :"ALL_TO_ALL",
@@ -139,6 +151,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"cortex_3",
                 "idTo"              :"cortex_4",
                 "nerveType"         :"ALL_TO_ALL",
@@ -147,6 +160,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"cortex_4",
                 "idTo"              :"result",
                 "nerveType"         :"ALL_TO_ALL",
@@ -155,6 +169,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"sample",
                 "idTo"              :"result",
                 "nerveType"         :"ONE_TO_ONE",
@@ -163,6 +178,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"sample",
                 "idTo"              :"command",
                 "nerveType"         :"ALL_TO_ALL",
@@ -171,6 +187,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"command",
                 "idTo"              :"result",
                 "nerveType"         :"ALL_TO_ALL",
@@ -179,6 +196,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"cortex_4",
                 "idTo"              :"error",
                 "nerveType"         :"ONE_TO_ONE",
@@ -187,6 +205,7 @@
                 "maxWeight"         :1.0
             },
             {
+                "uses"              :[ "proc", "ui" ],
                 "idFrom"            :"result",
                 "idTo"              :"error",
                 "nerveType"         :"ONE_TO_ONE",

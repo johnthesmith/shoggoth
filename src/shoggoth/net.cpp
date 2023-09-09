@@ -10,11 +10,13 @@ Net::Net
     Application* a    /* Log object */
 )
 {
-    application = a;
     application -> getLog() -> trace( "Create net" );
 
+    application = a;
+
+    /* Create layers and nerves structures */
     layers = LayerList::create();
-    nerves = new NerveList();
+    nerves = NerveList::create();
 }
 
 
@@ -27,7 +29,7 @@ Net::~Net()
 {
     clear();
 
-    delete( nerves );
+    nerves -> destroy();
     layers -> destroy();
 
     getLog() -> trace( "Destroy net" );
@@ -142,9 +144,9 @@ Net* Net::calc()
         /* Reset calc stages for all layers */
         calcReset();
         /* Read layers */
-        layers -> read();
+        layers -> readValues() -> readErrors();
         /* Read nerves */
-        nerves -> read();
+        nerves -> readWeights();
     }
 
     if( layers -> getCount() > 0 )
@@ -326,34 +328,6 @@ Log* Net::getLog()
 
 
 
-/*
-    On mouse left click event
-*/
-Net* Net::setSelected
-(
-    Scene& aScene /* Scene object */
-)
-{
-    auto neurons = NeuronList::create();
-    getNeuronsByScreenPos( neurons, aScene.getMouseCurrentScreen() );
-
-    if( neurons -> getCount() > 0 )
-    {
-        setSelected( neurons -> getByIndex( 0 ));
-    }
-    else
-    {
-        setSelected( NULL );
-    }
-
-    neurons -> destroy();
-
-    return this;
-}
-
-
-
-
 Net* Net::switchShowLayer()
 {
     int c = layers -> getCount();
@@ -412,10 +386,12 @@ Net* Net::applyConfig
 {
     json
     -> loadInt( "processorCount", processorCount, processorCount )
+    -> loadString( "id", id, id )
     -> selectObject( vector<string>{ "server" } )
     -> loadString( "host", host, host )
     -> loadInt( "port", port, port )
     ;
+
 
 //    setLearningSpeed( json -> getDouble( "learningSpeed", getLearningSpeed() ));
 //    setWakeupWeight( json -> getDouble( "wakeupWeight", getWakeupWeight() ));
@@ -437,9 +413,15 @@ Net* Net::applyConfig
                 Param* iParam
             )
             {
-                auto layerId = iParam -> getName();
-                auto layer = createLayer( layerId );
-                loadLayerFromConfig( layerId, configLayers );
+                auto uses = iParam
+                -> getObject()
+                -> getObject( "uses" );
+                if( uses -> contains( id ) )
+                {
+                    auto layerId = iParam -> getName();
+                    auto layer = createLayer( layerId );
+                    loadLayerFromConfig( layerId, configLayers );
+                }
                 return false;
             }
         );
@@ -730,7 +712,11 @@ Net* Net::loadLayer
     if( this -> isOk() )
     {
         /* Set ID from params */
-        if( aLayer-> getId() != aParams -> getString( "id", aLayer -> getId() ))
+        if
+        (
+            aLayer-> getId()
+            != aParams -> getString( "id", aLayer -> getId() )
+        )
         {
             setCode( "InvalidLayerID" );
         }
@@ -960,4 +946,18 @@ string Net::getHost()
 int Net::getPort()
 {
     return port;
+}
+
+
+
+/*
+    Set id for net exemplar
+*/
+Net* Net::setId
+(
+    string aValue
+)
+{
+    id = aValue;
+    return this;
 }

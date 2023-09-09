@@ -69,10 +69,12 @@ Io* Io::call
         /* File operation */
         switch( aCommand )
         {
-            case CMD_READ_NERVE     : fileReadNerve(); break;
-            case CMD_WRITE_NERVE    : fileWriteNerve(); break;
-            case CMD_READ_LAYER     : fileReadLayer(); break;
-            case CMD_WRITE_LAYER    : fileWriteLayer(); break;
+            case CMD_READ_VALUES    : fileReadValues(); break;
+            case CMD_WRITE_VALUES   : fileWriteValues(); break;
+            case CMD_READ_ERRORS    : fileReadErrors(); break;
+            case CMD_WRITE_ERRORS   : fileWriteErrors(); break;
+            case CMD_READ_WEIGHTS   : fileReadWeights(); break;
+            case CMD_WRITE_WEIGHTS  : fileWriteWeights(); break;
         }
     }
     else
@@ -156,27 +158,10 @@ ParamList* Io::getRequest()
     File operation section
 */
 
-
-
-
-Io* Io::fileReadNerve()
-{
-    return this;
-}
-
-
-
-Io* Io::fileWriteNerve()
-{
-    return this;
-}
-
-
-
 /*
     Write layer to file
 */
-Io* Io::fileWriteLayer()
+Io* Io::fileWriteValues()
 {
 //    if( aFilePath != "" )
 //    {
@@ -214,7 +199,7 @@ Io* Io::fileWriteLayer()
 
 
 
-Io* Io::fileReadLayer()
+Io* Io::fileReadValues()
 {
 //    if( aFilePath != "" )
 //    {
@@ -257,6 +242,47 @@ Io* Io::fileReadLayer()
     return this;
 }
 
+
+
+/*
+    Write layers errors to file
+*/
+Io* Io::fileWriteErrors()
+{
+    return this;
+}
+
+
+
+
+/*
+    Read layer errors from file
+*/
+Io* Io::fileReadErrors()
+{
+    return this;
+}
+
+
+
+/*
+    Write nerve weights to file
+*/
+Io* Io::fileWriteWeights()
+{
+    return this;
+}
+
+
+
+
+/*
+    Read nerve weights from file
+*/
+Io* Io::fileReadWeights()
+{
+    return this;
+}
 
 
 

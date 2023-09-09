@@ -25,6 +25,7 @@
 #include "../json/param_list.h"
 
 #include "nerve_list.h"
+#include "neuron_list.h"
 #include "nerve_type.h"
 
 #include "rpc_protocol.h"
@@ -51,6 +52,31 @@ enum BindDrawMode
     BDM_TYPE
 };
 
+
+/*
+    Predeclaration
+*/
+class Layer;
+class Nerve;
+
+
+
+
+/*
+    Lambda function for return parents neurons of child
+*/
+typedef
+function
+<
+    bool
+    (
+        Layer*, /* Layer with parent neurons */
+        int,    /* Neuron index*/
+        Nerve*, /* Nerve */
+        double  /* Weight of bind */
+    )
+>
+parensLambda;
 
 
 
@@ -89,19 +115,23 @@ class Layer : public Object
 
         string          storagePath             = "";
 
-        bool            roleRead                = false;
-        bool            roleWrite               = false;
-        bool            roleCalc                = false;
-
         int             forward                 = -1;
         int             backward                = -1;
-
 
         int             count                   = 0;    /* Count fo neurons */
 
         /*
+            IO operations for layer
+        */
+        bool            readableValues          = false;
+        bool            writableValues          = false;
+        bool            readableErrors          = false;
+        bool            writableErrors          = false;
+
+        /*
             Plans of neurons data
         */
+
         double*         values                  = NULL;
         double*         errors                  = NULL;
         Point3d*        screen                  = NULL;
@@ -131,12 +161,12 @@ class Layer : public Object
         Layer
         (
             Net*,
-            string = "", /* id */
-            bool /* valuesExists */     = true,
-            bool /* errorsExists */     = true,
-            bool /* screenExists */     = false,
-            bool /* worldExists */      = false,
-            bool /* selectedExists */   = false
+            string = "",    /* id */
+            bool = true,    /* valuesExists */
+            bool = true,    /* errorsExists */
+            bool = false,   /* screenExists */
+            bool = false,   /* worldExists */
+            bool = false    /* selectedExists */
         );
 
 
@@ -153,8 +183,13 @@ class Layer : public Object
         */
         static Layer* create
         (
-            Net*,
-            string = ""
+            Net*,           /* Net object */
+            string = "",
+            bool = true,    /* valuesExists */
+            bool = true,    /* errorsExists */
+            bool = false,   /* screenExists */
+            bool = false,   /* worldExists */
+            bool = false    /* selectedExists */
         );
 
 
@@ -163,7 +198,6 @@ class Layer : public Object
             Destructor
         */
         void destroy();
-
 
 
 
@@ -187,20 +221,39 @@ class Layer : public Object
 
 
 
-        /*
-            Recalculate world position
-        */
-        Layer* neuronPointsCalc
-        (
-            bool
-        );
-
-
 
         /*
             Clear values for all neurons
         */
         Layer* clearValues();
+
+
+
+        /*
+            Clear errors for all neurons
+        */
+        Layer* clearErrors();
+
+
+
+        /*
+            Clear screen points  for all neurons
+        */
+        Layer* clearScreen();
+
+
+
+        /*
+            Clear world points for all neurons
+        */
+        Layer* clearWorld();
+
+
+
+        /*
+            Clear world points for all neurons
+        */
+        Layer* clearSelected();
 
 
 
@@ -232,7 +285,6 @@ class Layer : public Object
         */
 
 
-
         /*
             Return the log object
         */
@@ -242,12 +294,18 @@ class Layer : public Object
 
         string getName();
 
+
+
         Layer* setName
         (
             string
         );
 
+
+
         string getId();
+
+
 
         /*
             Set the id of layer
@@ -258,7 +316,12 @@ class Layer : public Object
         );
 
 
+
+        /*
+            Return Name of ID if Name not exists
+        */
         string getNameOrId();
+
 
 
         /*
@@ -331,13 +394,6 @@ class Layer : public Object
 
 
 
-
-
-        /******************************************************************************
-            Setters and getters
-        */
-
-
         /*
             Return the Net object
         */
@@ -358,8 +414,9 @@ class Layer : public Object
         /*
             Return list of neurons indexes in screen rect
         */
-        vector<int> getNeuronsByScreenRect
+        Layer* getNeuronsByScreenRect
         (
+            NeuronList*,
             Point3d&,       /* Top left point */
             Point3d&        /* Bottom right point */
         );
@@ -369,14 +426,13 @@ class Layer : public Object
         /*
             Return list of neurons around the screen poistion
         */
-        vector<int> getNeuronsByScreenPos
+        Layer* getNeuronsByScreenPos
         (
-            const Point3d&       /* Top left point */
+            NeuronList*,        /* List of neurons */
+            const Point3d&      /* Top left point */
         );
 
 
-        Layer* switchShowBinds();
-        Layer* switchShowLayer();
 
 
         Point3i getSize();
@@ -421,30 +477,6 @@ class Layer : public Object
             Return the source path
         */
         string getSourcePath();
-
-
-
-        /*
-            Set bitmap to neurons
-        */
-        Layer* setBitmap
-        (
-            Bitmap*
-        );
-
-
-
-        /*
-            Load bitmap from source file name and set it
-        */
-        Layer* loadSource();
-
-        Layer* applyUuid
-        (
-            Hid
-        );
-
-        Layer* applyImage();
 
 
 
@@ -494,16 +526,30 @@ class Layer : public Object
 
 
         /*
-            Send value and error to io
+            Send values to io
         */
-        Layer* write();
+        Layer* writeValues();
 
 
 
         /*
-            Read value and error from io
+            Read values from io
         */
-        Layer* read();
+        Layer* readValues();
+
+
+
+        /*
+            Send errors to io
+        */
+        Layer* writeErrors();
+
+
+
+        /*
+            Read errors from io
+        */
+        Layer* readErrors();
 
 
 
@@ -522,38 +568,6 @@ class Layer : public Object
             bool /* value */
         );
 
-
-
-        /*
-            Return write role
-        */
-        bool getRoleWrite();
-
-
-        /*
-            Set write role
-        */
-        Layer* setRoleWrite
-        (
-            bool /* value */
-        );
-
-
-
-        /*
-            Return calc role
-        */
-        bool getRoleCalc();
-
-
-
-        /*
-            Return calc role
-        */
-        Layer* setRoleCalc
-        (
-            bool /* value */
-        );
 
 
 
@@ -643,10 +657,9 @@ class Layer : public Object
         /*
             Return neuron vaalue or default value
         */
-        Point3d getNeuronValue
+        double getNeuronValue
         (
-            int,            /* Index of neuron */
-            double = 0.0    /* Default value */
+            int             /* Index of neuron */
         );
 
 
@@ -665,10 +678,9 @@ class Layer : public Object
         /*
             Return neuron error or default value
         */
-        Point3d getNeuronError
+        double getNeuronError
         (
-            int,            /* Index of neuron */
-            double = 0.0    /* Default value */
+            int             /* Index of neuron */
         );
 
 
@@ -679,7 +691,7 @@ class Layer : public Object
         Layer* setNeuronWorld
         (
             int,            /* Index of neuron */
-            Point3d         /* Value */
+            Point3d&        /* Value */
         );
 
 
@@ -689,8 +701,7 @@ class Layer : public Object
         */
         Point3d getNeuronWorld
         (
-            int,                    /* Index of neuron */
-            Point3d = POINT_3D_0    /* Default value */
+            int             /* Index of neuron */
         );
 
 
@@ -701,7 +712,7 @@ class Layer : public Object
         Layer* setNeuronScreen
         (
             int,            /* Index of neuron */
-            Point3d         /* Value */
+            Point3d&        /* Value */
         );
 
 
@@ -711,8 +722,7 @@ class Layer : public Object
         */
         Point3d getNeuronScreen
         (
-            int,                    /* Index of neuron */
-            Point3d = POINT_3D_0    /* Default value */
+            int             /* Index of neuron */
         );
 
 
@@ -733,7 +743,123 @@ class Layer : public Object
         */
         Point3d getNeuronSelected
         (
-            int,            /* Index of neuron */
-            bool = false    /* Default value */
+            int             /* Index of neuron */
         );
+
+
+
+        /**********************************************************************
+            UI
+        */
+
+        Layer* switchShowBinds();
+        Layer* switchShowLayer();
+
+
+        /*
+            Recalculate world position
+        */
+        Layer* neuronPointsCalc
+        (
+            bool
+        );
+
+
+
+
+        /**********************************************************************
+            Load valus
+        */
+
+
+
+        /*
+            Set bitmap to neurons
+        */
+        Layer* setBitmap
+        (
+            Bitmap*
+        );
+
+
+
+        /*
+            Load bitmap from source file name and set it
+        */
+        Layer* loadSource();
+
+
+
+
+        Layer* applyUuid
+        (
+            Hid
+        );
+
+
+
+        Layer* applyImage();
+
+
+
+        /**********************************************************************
+            Calculations
+        */
+
+        /*
+            Calculate neuron
+        */
+        Layer* neuronCalcValue
+        (
+            int /* Index of neuron */
+        );
+
+
+
+        /*
+            Loop for each parents of this neuron
+        */
+        Layer* parentsLoop
+        (
+            int,    /* Index of neuron for loop by his parents */
+            parensLambda callback
+        );
+
+
+        /**********************************************************************
+        */
+
+
+        /*
+            Set readable flag for values in layer over io
+        */
+        bool getReadableValues();
+        bool getWritableValues();
+        bool getReadableErrors();
+        bool getWritableErrors();
+
+        Layer* setReadableValues
+        (
+            bool
+        );
+
+        Layer* setWritableValues
+        (
+            bool
+        );
+
+        Layer* setReadableErrors
+        (
+            bool
+        );
+
+
+
+        /*
+        */
+        Layer* setWritableErrors
+        (
+            bool
+        );
+
 };
