@@ -90,7 +90,8 @@ string ShoggothApplication::roleToString
 */
 ShoggothApplication* ShoggothApplication::run()
 {
-    getLog() -> begin( "Application start" );
+    getLog()
+    -> begin( "Application start" );
 
     /* Output cli arguments */
     getLog() -> begin( "Start CLI parameters" );
@@ -100,6 +101,10 @@ ShoggothApplication* ShoggothApplication::run()
         getLog() -> trace("") -> prm( param -> getName(), param -> getString() );
     }
     getLog() -> end();
+
+    getLog()
+    -> trace( "Config source" )
+    -> prm( "file", getConfigFileName() );
 
     /* Build config object */
     checkConfigUpdate();
