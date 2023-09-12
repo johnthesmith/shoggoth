@@ -3,22 +3,15 @@
     "id"                    :"ui",
     "receive_timeout_mls"   :1000,
 
-    "storage":
+    "io":
     {
+        "source"            :"LOCAL",
+        "net"               :"test/net.json",
         "host"              :"127.0.0.1",
         "port"              :11120
     },
 
-    "use":
-    {
-        "retina"            : [ "from_server" ],
-        "cortex_1"          : [ "from_server" ],
-        "cortex_2"          : [ "from_server" ],
-        "cortex_3"          : [ "from_server" ],
-        "cortex_4"          : [ "from_server" ],
-        "result"            : [ "from_server" ],
-        "command"           : [ "from_server" ],
-        "sample"            : [ "from_server" ],
-        "error"             : [ "from_server" ]
-    }
+    "fontName"          :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+    "gliphSize"         :64,
+    "charSet"           :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
 }

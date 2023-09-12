@@ -102,7 +102,7 @@ class ShoggothRpcServer : public RpcServer
         /*
             Remote host send net configuration
         */
-        ShoggothRpcServer* getNet
+        ShoggothRpcServer* readNet
         (
             ParamList* aArguments,
             ParamList* aResults

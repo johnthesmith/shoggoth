@@ -139,7 +139,7 @@ void Processor::onLoop
             if( getApplication() -> getConfig() -> isOk())
             {
                 /* Config apply */
-                net -> applyConfig(  getApplication() -> getConfig() );
+                net -> applyConfig();
                 aReconfig = true;
             }
             else

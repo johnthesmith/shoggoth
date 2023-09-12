@@ -86,7 +86,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 
     switch( method )
     {
-        case CMD_GET_NET        :getNet( aArguments, aResults); break;
+        case CMD_READ_NET       :readNet( aArguments, aResults); break;
         case CMD_WRITE_VALUES   :writeValues( aArguments, aResults); break;
         case CMD_READ_VALUES    :readValues( aArguments, aResults); break;
         case CMD_WRITE_ERRORS   :writeErrors( aArguments, aResults); break;
@@ -162,7 +162,7 @@ ShoggothRpcServer* ShoggothRpcServer::unknownMethod
 /*
     Request net configuration from remote application
 */
-ShoggothRpcServer* ShoggothRpcServer::getNet
+ShoggothRpcServer* ShoggothRpcServer::readNet
 (
     ParamList* aArguments,
     ParamList* aResults
@@ -350,5 +350,33 @@ ShoggothRpcServer* ShoggothRpcServer::readErrors
         setAnswerResult( aResults, "LayerDataNotFound" );
     }
 
+    return this;
+}
+
+
+
+/*
+    Remote host send nerve weights data
+*/
+ShoggothRpcServer* ShoggothRpcServer::writeWeights
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    return this;
+}
+
+
+
+/*
+    Remote host request nerve weights layer
+*/
+ShoggothRpcServer* ShoggothRpcServer::readWeights
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
     return this;
 }

@@ -1,7 +1,7 @@
 /*
     Shoggoth input ooutput system
     IO may works with:
-        shoggoth server
+       shoggoth server
         files
 */
 
@@ -119,8 +119,18 @@ class Io: public Result
 
 
 
+        /*
+            Read net structore
+        */
+        Io* fileReadNet();
 
+
+
+        /*
+        */
         Io* fileWriteValues();
+
+
 
         Io* fileReadValues();
 

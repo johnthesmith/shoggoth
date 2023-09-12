@@ -117,6 +117,8 @@ class Scene : public Result
         int clickTimeoutMls     = 200;                          /* Click and double click timeoud in milliseconds */
         Rgba    backgroundColor = Rgba( 0.2, 0.2, 0.2, 1.0 );   /* Bakcgound color */
 
+
+
         /*
             Constructor
         */
@@ -125,10 +127,25 @@ class Scene : public Result
             Log* /* Log object */
         );
 
+
+
         /*
             Destructor
         */
         ~Scene();
+
+
+
+        static Scene* create
+        (
+            Log*
+        );
+
+
+
+        void destroy();
+
+
 
         /*
             Return log

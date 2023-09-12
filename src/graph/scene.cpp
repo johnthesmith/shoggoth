@@ -51,6 +51,29 @@ Scene::~Scene()
 
 
 /*
+    Create new scene
+*/
+Scene* Scene::create
+(
+    Log* aLog
+)
+{
+    return new Scene( aLog );
+}
+
+
+
+/*
+    Scene self destroy
+*/
+void Scene::destroy()
+{
+    delete this;
+}
+
+
+
+/*
     Return log
 */
 Log* Scene::getLog()

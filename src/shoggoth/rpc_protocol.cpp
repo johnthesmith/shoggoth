@@ -10,8 +10,7 @@ std::string cmdToStr
 {
     switch( a )
     {
-        case CMD_GET_NET        : return "GET_NET";
-        case CMD_GET_SYNC       : return "GET_SYNC";
+        case CMD_READ_NET       : return "READ_NET";
         case CMD_WRITE_VALUES   : return "WRITE_VALUES";
         case CMD_READ_VALUES    : return "READ_VALUES";
         case CMD_WRITE_ERRORS   : return "WRITE_ERRORS";

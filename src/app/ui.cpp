@@ -51,7 +51,10 @@ Ui::Ui
 {
     net = NetGraph::create( a );
 
-    getLog() -> trace( "Config source" ) -> prm( "file", getApplication() -> getConfigFileName() );
+    getLog()
+    -> trace( "Config source" )
+    -> prm( "file", getApplication()
+    -> getConfigFileName() );
 }
 
 
@@ -97,7 +100,7 @@ ShoggothApplication* Ui::getApplication()
 
 
 /******************************************************************************
-    Methods
+    Events
 */
 
 
@@ -136,23 +139,17 @@ void Ui::onCalc
         getApplication() -> checkConfigUpdate();
         if
         (
-            getApplication()
-            -> getConfigUpdated() ||
-            ! getApplication()
-            -> getConfig()
-            -> isOk()
+            getApplication() -> getConfigUpdated() ||
+            ! getApplication() -> getConfig() -> isOk()
         )
         {
-            getApplication() -> getConfig() -> setOk();
             getLog()
             -> begin( "Config updated" )
-            -> prm( "File", getApplication()
-            -> getConfigFileName() );
+            -> prm( "File", getApplication() -> getConfigFileName() );
 
             if( getApplication() -> getConfig() -> isOk())
             {
-                /* Config apply */
-                net -> applyConfig(  getApplication() -> getConfig() );
+                net -> applyConfig();
             }
             else
             {
@@ -166,6 +163,7 @@ void Ui::onCalc
                     -> getConfig()
                     -> getMessage()
                 );
+                getApplication() -> getConfig() -> setOk();
             }
 
             getLog() -> end();
@@ -173,13 +171,10 @@ void Ui::onCalc
 
         /* Set last moment */
         lastConfigCheck = nowMoment;
-
-        net
-        -> readNet()
-        -> readLayers()
-        -> readNerves()
-        ;
     }
+
+//    net -> getLayers() -> readValues() -> readErrors();
+//    net -> getNerves() -> readWeights();
 }
 
 

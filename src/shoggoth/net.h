@@ -40,8 +40,6 @@ class Net: public Result
         /* Settings */
 
         string          id              = "";       /* Net id */
-        string          host            = "";       /* Server host */
-        unsigned int    port            = 0;        /* Server port */
         int             processorCount  = 1;        /* Count of threads */
 
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
@@ -139,13 +137,6 @@ class Net: public Result
         /*
             Request actual data layer form server
         */
-        Net* readLayersFromServer();
-
-
-
-        /*
-            Request actual data layer form server
-        */
         Net* writeLayersToServer();
 
 
@@ -204,10 +195,7 @@ class Net: public Result
         /*
             Apply config from Json
         */
-        Net* applyConfig
-        (
-            ParamList*   /* Config structure */
-        );
+        Net* applyConfig();
 
 
 
@@ -286,6 +274,12 @@ class Net: public Result
 
 
 
+        Net* setId
+        (
+            string
+        );
+
+
         /******************************************************************************
             Layers
         */
@@ -344,7 +338,9 @@ class Net: public Result
 
 
 
-        /**/
+        /*
+            Read net configuration and reallocate net objects
+        */
         Net* readNet();
 
 
@@ -361,6 +357,9 @@ class Net: public Result
 
 
 
+        /*
+            Set processors count for calculation
+        */
         Net* setProcessorCount
         (
             int
@@ -368,6 +367,9 @@ class Net: public Result
 
 
 
+        /*
+            Return processors count
+        */
         int getProcessorCount();
 
 
@@ -410,34 +412,5 @@ class Net: public Result
             Reset forward and backward counts for layers
         */
         Net* calcReset();
-
-
-
-        Net* readLayers();
-
-
-
-        Net* readNerves();
-
-
-
-        /*
-            Return server host
-        */
-        string getHost();
-
-
-
-        /*
-            Return server port
-        */
-        int getPort();
-
-
-
-        Net* setId
-        (
-            string
-        );
 };
 

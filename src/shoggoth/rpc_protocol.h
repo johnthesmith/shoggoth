@@ -22,8 +22,7 @@ enum CalcDirection
 enum Command
 {
     CMD_UNKNWON,        /* Unknown command */
-    CMD_GET_NET,        /* Server return full Net configuration */
-    CMD_GET_SYNC,       /* Server return sync object */
+    CMD_READ_NET,       /* Server return full Net configuration */
     CMD_WRITE_VALUES,   /* Server receive layer values */
     CMD_READ_VALUES,    /* Server return the layer values data */
     CMD_WRITE_ERRORS,   /* Server receive layer errors */

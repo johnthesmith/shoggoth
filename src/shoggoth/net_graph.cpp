@@ -6,6 +6,7 @@
 
 /* Graph libraries */
 #include "../graph/chart.h"
+#include "../graph/log_points.h"
 
 /* Shoggot libraries */
 #include "func.h"

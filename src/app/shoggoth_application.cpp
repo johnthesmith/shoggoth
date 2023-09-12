@@ -52,14 +52,17 @@ ShoggothApplication* ShoggothApplication::create
 
 
 
+/*
+    Return Role from string
+*/
 Role ShoggothApplication::roleFromString
 (
     string aRole
 )
 {
-    if( aRole == roleToString( ROLE_TEACHER )) return ROLE_TEACHER;
-    if( aRole == roleToString( ROLE_UI )) return ROLE_UI;
-    if( aRole == roleToString( ROLE_STORAGE )) return ROLE_STORAGE;
+    if( aRole == roleToString( ROLE_TEACHER ))  return ROLE_TEACHER;
+    if( aRole == roleToString( ROLE_UI ))       return ROLE_UI;
+    if( aRole == roleToString( ROLE_SERVER ))   return ROLE_SERVER;
     return ROLE_PROCESSOR;
 }
 
@@ -74,7 +77,7 @@ string ShoggothApplication::roleToString
     {
         case ROLE_TEACHER   : return "teacher";
         case ROLE_UI        : return "ui";
-        case ROLE_STORAGE   : return "storage";
+        case ROLE_SERVER    : return "server";
         default:
         case ROLE_PROCESSOR : return "processor";
     }
@@ -87,7 +90,7 @@ string ShoggothApplication::roleToString
 */
 ShoggothApplication* ShoggothApplication::run()
 {
-    getLog() -> begin( "Application start ======================================" );
+    getLog() -> begin( "Application start" );
 
     /* Output cli arguments */
     getLog() -> begin( "Start CLI parameters" );
@@ -101,11 +104,17 @@ ShoggothApplication* ShoggothApplication::run()
     /* Build config object */
     checkConfigUpdate();
 
-    switch( roleFromString( getConfig() -> getString( "role", "storage" ) ))
+    switch
+    (
+        roleFromString( getConfig() -> getString( "role", "storage" ) )
+    )
     {
-        case ROLE_STORAGE:
+        case ROLE_SERVER:
         {
-            getLog() -> trace( "Application role" ) -> prm( "Name", roleToString( ROLE_STORAGE ));
+            getLog()
+            -> trace( "Application role" )
+            -> prm( "Name", roleToString( ROLE_SERVER ));
+
             auto server = ShoggothRpcServer::create( this );
             server -> setPort( getConfig() -> getInt( "port", 11120 ));
             server -> up();
@@ -128,20 +137,27 @@ ShoggothApplication* ShoggothApplication::run()
             -> prm( "Name", roleToString( ROLE_PROCESSOR ));
             Processor::create( this ) -> loop() -> destroy();
         break;
+
         case ROLE_UI:
             getLog()
             -> trace( "Application role" )
             -> prm( "Name", roleToString( ROLE_UI ));
 
-            auto scene  = Scene( getLog() );
             auto ui     = Ui::create( this );
+            auto scene = Scene::create( getLog() );
 
-            scene.getFont()
-            -> setFontName( "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf" )
-            -> setGliphSize( 64 )
-            -> setCharSet( " !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ" );
+            scene
+            -> getFont()
+            -> setFontName( getConfig() -> getString( "fontName" ))
+            -> setGliphSize( getConfig() -> getInt( "gliphSize", 16 ))
+            -> setCharSet( getConfig() -> getString( "charSet" ));
 
-            scene.init() -> setPayload( ui ) -> loop() -> finit();
+            scene
+            -> init()
+            -> setPayload( ui )
+            -> loop()
+            -> finit()
+            -> destroy();
 
             ui -> destroy();
         break;

@@ -30,8 +30,8 @@
 # Run
 ./shab header "run"
 
-./shab execute "./shoggoth --config=test/storage.json --log=storage.log --htopdebug" &
-./shab execute "./shoggoth --config=test/processor.json --log=processor.log --htopdebug" &
-#./shab execute "./shoggoth --config=test/ui.json --log=ui.log --htopdebug"
+#./shab execute "./shoggoth --config=test/storage.json --log=storage.log --htopdebug" &
+#./shab execute "./shoggoth --config=test/processor.json --log=processor.log --htopdebug" &
+./shab execute "./shoggoth --config=test/ui.json --log=ui.log --htopdebug"
 
 #./shab execute "./shoggoth --config=test/teacher.json --log=teacher.log"

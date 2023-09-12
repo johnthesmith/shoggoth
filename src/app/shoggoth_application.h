@@ -12,7 +12,7 @@ enum Role
 {
     ROLE_TEACHER,
     ROLE_PROCESSOR,
-    ROLE_STORAGE,   /* The component of Shogooth, whos  collect and synchronize layers and other participants */
+    ROLE_SERVER,    /* The component of Shogooth, whos  collect and synchronize layers and other participants */
     ROLE_UI
 };
 

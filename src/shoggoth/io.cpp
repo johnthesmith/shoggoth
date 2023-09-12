@@ -64,35 +64,57 @@ Io* Io::call
     Command aCommand    /* Command */
 )
 {
-    if( net -> getHost() == "" )
+    if( this -> isOk() )
     {
-        /* File operation */
-        switch( aCommand )
+        auto config = getApplication()
+        -> getConfig()
+        -> selectObject( vector <string> { "io" });
+
+        /* Read configuration */
+        if( config -> getString( "source", "LOCAL" ) == "LOCAL" )
         {
-            case CMD_READ_VALUES    : fileReadValues(); break;
-            case CMD_WRITE_VALUES   : fileWriteValues(); break;
-            case CMD_READ_ERRORS    : fileReadErrors(); break;
-            case CMD_WRITE_ERRORS   : fileWriteErrors(); break;
-            case CMD_READ_WEIGHTS   : fileReadWeights(); break;
-            case CMD_WRITE_WEIGHTS  : fileWriteWeights(); break;
+            /* File operation */
+            switch( aCommand )
+            {
+                case CMD_READ_NET       : fileReadNet(); break;
+                case CMD_READ_VALUES    : fileReadValues(); break;
+                case CMD_WRITE_VALUES   : fileWriteValues(); break;
+                case CMD_READ_ERRORS    : fileReadErrors(); break;
+                case CMD_WRITE_ERRORS   : fileWriteErrors(); break;
+                case CMD_READ_WEIGHTS   : fileReadWeights(); break;
+                case CMD_WRITE_WEIGHTS  : fileWriteWeights(); break;
+                default                 : setCode( "UnknownCommand" ); break;
+            }
+        }
+        else
+        {
+            string  host = config -> getString( "host" );
+            int     port = config -> getInt( "port" );
+
+            /* Server operation */
+            auto rpc = RpcClient::create
+            (
+                net -> getLog(),
+                host,
+                port
+            )
+            -> setRequest( request )
+            -> setAnswer( answer )
+            -> call( aCommand );
+
+            rpc -> resultTo( this );
+            rpc -> destroy();
+        }
+
+        /* Return code */
+        if( !isOk() )
+        {
+            getLog()
+            -> warning( "IO error" )
+            -> prm( "code", getCode() );
         }
     }
-    else
-    {
-        /* Server operation */
-        auto rpc = RpcClient::create
-        (
-            net -> getLog(),
-            net -> getHost(),
-            net -> getPort()
-        )
-        -> setRequest( request )
-        -> setAnswer( answer )
-        -> call( aCommand );
 
-        rpc -> resultTo( this );
-        rpc -> destroy();
-    }
     return this;
 }
 
@@ -101,17 +123,6 @@ Io* Io::call
 /******************************************************************************
     Setters and getters
 */
-
-
-
-/*
-    Return the Net object
-*/
-Net* Io::getNet()
-{
-    return net;
-}
-
 
 
 /*
@@ -157,6 +168,29 @@ ParamList* Io::getRequest()
 /******************************************************************************
     File operation section
 */
+
+
+
+/*
+    Read net from file
+*/
+Io* Io::fileReadNet()
+{
+    string net = getApplication()
+    -> getConfig()
+    -> getString( vector <string> { "io", "net" });
+    getLog() -> trace( "Net config read" ) -> prm( "file", net );
+    Json::create()
+    -> fromFile( net )
+    -> copyTo( answer )
+    -> resultTo( this )
+    -> destroy();
+    return this;
+}
+
+
+
+
 
 /*
     Write layer to file
@@ -254,7 +288,6 @@ Io* Io::fileWriteErrors()
 
 
 
-
 /*
     Read layer errors from file
 */
@@ -275,7 +308,6 @@ Io* Io::fileWriteWeights()
 
 
 
-
 /*
     Read nerve weights from file
 */
@@ -283,9 +315,6 @@ Io* Io::fileReadWeights()
 {
     return this;
 }
-
-
-
 
 
 
