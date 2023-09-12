@@ -11,7 +11,11 @@
         "port"              :11120
     },
 
-    "fontName"          :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
-    "gliphSize"         :64,
-    "charSet"           :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+    "ui":
+    {
+        "enabled"           :true,
+        "fontName"          :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+        "gliphSize"         :64,
+        "charSet"           :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+    }
 }

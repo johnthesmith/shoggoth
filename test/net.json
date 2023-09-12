@@ -5,7 +5,7 @@
         {
             "uses"              :[ "proc", "ui", "teacher" ],
             "name"              :"Retina",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 20, 20, 2 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "caption"           :"Main input",
             "io":

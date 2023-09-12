@@ -99,6 +99,74 @@ ShoggothApplication* Ui::getApplication()
 
 
 
+Ui* Ui::help()
+{
+    getLog()
+    -> info( "----" )
+    -> info( "Help" )
+    -> info( "----" )
+    -> info( "h - help" )
+    -> info( "v - draw value of neurons" )
+    -> info( "e - draw error of neurons" )
+    -> info( "b - switch show/hide binds" )
+    -> info( "c - switch show/hide layer cover" )
+    -> info( "l - switch on/off learning mode" )
+    -> info( "r - set random values for selected neurons" )
+    -> lineEnd()
+    ;
+    return this;
+}
+
+
+
+Ui* Ui::fillScreen
+(
+    int a
+)
+{
+//    Rnd::storeSeed( a );
+//
+//    auto retina = net -> getLayers() -> getById( "retina" );
+//    auto sample = net -> getLayers() -> getById( "sample" );
+//
+//    if( retina != NULL && sample != NULL )
+//    {
+//        /* Set retina */
+//        retina -> neurons -> loop
+//        (
+//            []( Neuron* neuron )
+//            {
+//                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
+//                return false;
+//            }
+//        );
+//        retina -> saveValue();
+//
+//        /* Set sample */
+//        auto hid = Hid().setString( to_string( a ));
+//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
+//        {
+//            sample -> neurons
+//            -> getByIndex( i )
+//            -> setValue
+//            (
+//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
+//            );
+//            sample -> saveValue();
+//        }
+//    }
+//    else
+//    {
+//        getLog() -> warning( "NoLayerRetina" );
+//    }
+//
+//    Rnd::restoreSeed();
+
+    return this;
+}
+
+
+
 /******************************************************************************
     Events
 */
@@ -190,26 +258,7 @@ void Ui::onDraw
 {
     applyCameraToScene( camera, aScene );
 
-
-//    aScene
-//    .setPointSize( 4 )
-//    .begin( POINT )
-//    .color( RGBA_X );
-//    for( double err = -3; err < 3; err += 0.1 )
-//    {
-//        for( double vw = 0; vw <= 1; vw += 0.1 )
-//        {
-//            auto f0 = FUNC_SIGMOID_LINE_MINUS_PLUS( err, 1.0 ) * 0.1;
-//            auto f1 = FUNC_SIGMOID_LINE_MINUS_PLUS( err, 1.0 );
-//            auto r = f0 + ( f1 - f0 ) * vw;
-//            aScene.vertex( Point3d( err, vw, r ));
-//       }
-//    }
-//    aScene.end();
-
-
-    aScene
-    .clearColor();
+    aScene.clearColor();
 
     /* Draw Layers */
     net
@@ -229,7 +278,6 @@ void Ui::onDraw
     net -> drawLearningMode( &aScene );
 
     aScene.drawAxisIdentity();
-
 
     /* Draw view matrix */
     aScene.color( interfaceColor )
@@ -327,74 +375,6 @@ void Ui::onKeyUp
             camera.setTargetLock( false );
         break;
     }
-}
-
-
-
-Ui* Ui::help()
-{
-    getLog()
-    -> info( "----" )
-    -> info( "Help" )
-    -> info( "----" )
-    -> info( "h - help" )
-    -> info( "v - draw value of neurons" )
-    -> info( "e - draw error of neurons" )
-    -> info( "b - switch show/hide binds" )
-    -> info( "c - switch show/hide layer cover" )
-    -> info( "l - switch on/off learning mode" )
-    -> info( "r - set random values for selected neurons" )
-    -> lineEnd()
-    ;
-    return this;
-}
-
-
-
-Ui* Ui::fillScreen
-(
-    int a
-)
-{
-//    Rnd::storeSeed( a );
-//
-//    auto retina = net -> getLayers() -> getById( "retina" );
-//    auto sample = net -> getLayers() -> getById( "sample" );
-//
-//    if( retina != NULL && sample != NULL )
-//    {
-//        /* Set retina */
-//        retina -> neurons -> loop
-//        (
-//            []( Neuron* neuron )
-//            {
-//                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
-//                return false;
-//            }
-//        );
-//        retina -> saveValue();
-//
-//        /* Set sample */
-//        auto hid = Hid().setString( to_string( a ));
-//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-//        {
-//            sample -> neurons
-//            -> getByIndex( i )
-//            -> setValue
-//            (
-//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-//            );
-//            sample -> saveValue();
-//        }
-//    }
-//    else
-//    {
-//        getLog() -> warning( "NoLayerRetina" );
-//    }
-//
-//    Rnd::restoreSeed();
-
-    return this;
 }
 
 

@@ -16,6 +16,10 @@ using namespace std;
 
 
 
+typedef vector <string> Path;
+
+
+
 struct ParamList : public Heap
 {
     private:

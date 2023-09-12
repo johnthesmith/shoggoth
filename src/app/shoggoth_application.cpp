@@ -106,7 +106,7 @@ ShoggothApplication* ShoggothApplication::run()
 
     switch
     (
-        roleFromString( getConfig() -> getString( "role", "storage" ) )
+        roleFromString( getConfig() -> getString( "role" ) )
     )
     {
         case ROLE_SERVER:
@@ -143,23 +143,26 @@ ShoggothApplication* ShoggothApplication::run()
             -> trace( "Application role" )
             -> prm( "Name", roleToString( ROLE_UI ));
 
-            auto ui     = Ui::create( this );
-            auto scene = Scene::create( getLog() );
+            if( getConfig() -> getBool( Path{ "ui", "enabled" } ))
+            {
+                auto ui     = Ui::create( this );
+                auto scene  = Scene::create( getLog() );
 
-            scene
-            -> getFont()
-            -> setFontName( getConfig() -> getString( "fontName" ))
-            -> setGliphSize( getConfig() -> getInt( "gliphSize", 16 ))
-            -> setCharSet( getConfig() -> getString( "charSet" ));
+                scene
+                -> getFont()
+                -> setFontName( getConfig() -> getString( Path{ "ui", "fontName" } ))
+                -> setGliphSize( getConfig() -> getInt( Path{ "ui", "gliphSize" }, 16 ))
+                -> setCharSet( getConfig() -> getString( Path{ "ui", "charSet" }));
 
-            scene
-            -> init()
-            -> setPayload( ui )
-            -> loop()
-            -> finit()
-            -> destroy();
+                scene
+                -> init()
+                -> setPayload( ui )
+                -> loop()
+                -> finit()
+                -> destroy();
 
-            ui -> destroy();
+                ui -> destroy();
+            }
         break;
     }
 

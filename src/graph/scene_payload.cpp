@@ -651,6 +651,3 @@ ScenePayload& ScenePayload::defaultMouseEventInformation
     -> lineEnd();
     return *this;
 }
-
-
-

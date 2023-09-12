@@ -68,7 +68,7 @@ Io* Io::call
     {
         auto config = getApplication()
         -> getConfig()
-        -> selectObject( vector <string> { "io" });
+        -> selectObject( Path { "io" });
 
         /* Read configuration */
         if( config -> getString( "source", "LOCAL" ) == "LOCAL" )
@@ -178,7 +178,7 @@ Io* Io::fileReadNet()
 {
     string net = getApplication()
     -> getConfig()
-    -> getString( vector <string> { "io", "net" });
+    -> getString( Path { "io", "net" });
     getLog() -> trace( "Net config read" ) -> prm( "file", net );
     Json::create()
     -> fromFile( net )
