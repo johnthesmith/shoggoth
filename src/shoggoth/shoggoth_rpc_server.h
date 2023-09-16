@@ -10,9 +10,15 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
+
         Application*            app     = NULL; /* Application object */
         ParamList*              data    = NULL; /* List  */
-        Sync*                   sync    = NULL; /* Synchronize table */
+
+        /*
+            State
+        */
+        Json*               netConfig           = NULL;
+        long int            lastNetConfigUpdate = 0;
 
     public:
 

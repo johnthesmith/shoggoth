@@ -2,6 +2,7 @@
     "role"                  :"ui",
     "id"                    :"ui",
     "receive_timeout_mls"   :1000,
+    "loop_sleep_mcs"        :100,
 
     "io":
     {
@@ -13,9 +14,10 @@
 
     "ui":
     {
-        "enabled"           :true,
-        "fontName"          :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
-        "gliphSize"         :64,
-        "charSet"           :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+        "enabled"                   :true,
+        "fontName"                  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+        "gliphSize"                 :64,
+        "charSet"                   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ",
+        "serverConfigTimeoutMcs"    :1000
     }
 }

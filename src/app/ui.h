@@ -17,7 +17,7 @@ class Ui : public ScenePayload
 {
     private:
 
-        Camera                  camera              = Camera();   /* Default camera */
+        Camera*                 camera              = NULL;   /* Default camera */
 
         NetGraph*               net                 = NULL;
 
@@ -36,7 +36,8 @@ class Ui : public ScenePayload
         */
         Ui
         (
-            ShoggothApplication*
+            ShoggothApplication*,
+            NetGraph*
         );
 
 
@@ -53,7 +54,8 @@ class Ui : public ScenePayload
         */
         static Ui* create
         (
-            ShoggothApplication*
+            ShoggothApplication*,
+            NetGraph*
         );
 
 
@@ -86,14 +88,14 @@ class Ui : public ScenePayload
 
         virtual void onCalc
         (
-            Scene&  /* Scene calculate */
+            Scene*  /* Scene calculate */
         );
 
 
 
         virtual void onDraw
         (
-            Scene&  /* Scene object */
+            Scene*  /* Scene object */
         );
 
 

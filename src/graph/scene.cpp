@@ -276,7 +276,6 @@ Scene* Scene::loop()
                 /* Calculate fps */
                 fps = 1000000 / ( stopDraw - current );
             }
-
         }
     }
 
@@ -284,6 +283,14 @@ Scene* Scene::loop()
 }
 
 
+
+/*
+    Window is not open
+*/
+bool Scene::windowClosed()
+{
+    return glfwWindowShouldClose( win );
+}
 
 /******************************************************************************
     Internal Events method
@@ -322,9 +329,8 @@ Scene& Scene::drawEvent()
 
             /* Pulling event for keyboard and mouse*/
             glfwPollEvents();
-
             /* Payload draw event */
-            payload -> onDraw( *this );
+            payload -> onDraw( this );
 
             /* Draw buffer to window */
             glfwSwapBuffers( win );
@@ -403,7 +409,7 @@ Scene& Scene::calcEvent()
 {
     if( isOk() && payload != NULL )
     {
-        payload -> onCalc( *this );
+        payload -> onCalc( this );
     }
     return *this;
 }

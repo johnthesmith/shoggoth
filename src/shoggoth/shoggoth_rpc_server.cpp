@@ -19,19 +19,8 @@ ShoggothRpcServer::ShoggothRpcServer
 {
     app = aApp;
     data = ParamList::create();
-
-    /* Create and fill the synchronize object */
-    sync = Sync::create( getLog() );
-
-    sync
-    -> fill
-    (
-        getApplication()
-        -> getConfig()
-        -> getObject( vector<string>{ "net", "layers" } )
-    );
-
-    resultFrom( sync );
+    netConfig = Json::create();
+    getLog() -> trace( "Shoggoth server created" );
 }
 
 
@@ -41,7 +30,8 @@ ShoggothRpcServer::ShoggothRpcServer
 */
 ShoggothRpcServer::~ShoggothRpcServer()
 {
-    sync -> destroy();
+    getLog() -> trace( "Shoggoth server destroy" );
+    netConfig -> destroy();
     data -> destroy();
 }
 
@@ -168,16 +158,25 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
     ParamList* aResults
 )
 {
-    auto net = getApplication() -> getConfig() -> getObject( "net" );
+    auto netFile = getApplication()
+    -> getConfig()
+    -> getString( Path{ "io", "net" } );
 
-    if( net != NULL )
+    /* Read config if updated */
+    if( checkFileUpdate( netFile, lastNetConfigUpdate ))
     {
-        aResults -> copyFrom( net );
+        netConfig -> fromFile( netFile );
+    }
+
+    /* Return answer for client */
+    if( netConfig -> isOk() )
+    {
+        netConfig -> copyTo( aResults );
         setAnswerResult( aResults, "ok" );
     }
     else
     {
-        setAnswerResult( aResults, "NetConfigError" );
+        setAnswerResult( aResults, netConfig -> getCode() );
     }
 
     return this;

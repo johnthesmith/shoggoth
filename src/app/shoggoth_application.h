@@ -18,7 +18,6 @@ enum Role
 
 
 
-
 class ShoggothApplication : public Application
 {
     private:
@@ -62,6 +61,7 @@ class ShoggothApplication : public Application
         (
             string
         );
+
 
 
         /*

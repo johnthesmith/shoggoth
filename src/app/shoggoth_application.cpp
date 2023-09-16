@@ -5,17 +5,13 @@
 #include "../lib/utils.h"
 #include "../lib/log.h"
 #include "../json/param_list.h"
-//#include "../graph/scene.h"
+#include "../shoggoth/shoggoth_rpc_server.h"
+#include "../lib/buffer_to_hex.h"
+
 
 /* Application libraryes */
 #include "shoggoth_application.h"
-#include "ui.h"
-#include "processor.h"
-#include "teacher.h"
-
-
-#include "../shoggoth/shoggoth_rpc_server.h"
-#include "../lib/buffer_to_hex.h"
+#include "loop.h"
 
 
 
@@ -98,7 +94,9 @@ ShoggothApplication* ShoggothApplication::run()
     for( int i = 0; i < getCli() -> getCount(); i++ )
     {
         auto param = getCli() -> getByIndex( i );
-        getLog() -> trace("") -> prm( param -> getName(), param -> getString() );
+        getLog()
+        -> trace( "" )
+        -> prm( param -> getName(), param -> getString() );
     }
     getLog() -> end();
 
@@ -109,67 +107,69 @@ ShoggothApplication* ShoggothApplication::run()
     /* Build config object */
     checkConfigUpdate();
 
-    switch
-    (
-        roleFromString( getConfig() -> getString( "role" ) )
-    )
-    {
-        case ROLE_SERVER:
-        {
-            getLog()
-            -> trace( "Application role" )
-            -> prm( "Name", roleToString( ROLE_SERVER ));
+    Loop::create ( this ) -> loop() -> destroy();
 
-            auto server = ShoggothRpcServer::create( this );
-            server -> setPort( getConfig() -> getInt( "port", 11120 ));
-            server -> up();
-            server -> destroy();
-        }
-        break;
-
-        case ROLE_TEACHER:
-        {
+//    switch
+//    (
+//        roleFromString( getConfig() -> getString( "role" ) )
+//    )
+//    {
+//        case ROLE_SERVER:
+//        {
+//            getLog()
+//            -> trace( "Application role" )
+//            -> prm( "Name", roleToString( ROLE_SERVER ));
+//
+//            auto server = ShoggothRpcServer::create( this );
+//            server -> setPort( getConfig() -> getInt( "port", 11120 ));
+//            server -> up();
+//            server -> destroy();
+//        }
+//        break;
+//
+//        case ROLE_TEACHER:
+//        {
 //            getLog()
 //            -> trace( "Application role" )
 //            -> prm( "Name", roleToString( ROLE_TEACHER ));
 //            Teacher::create( this ) -> loop() -> destroy();
-        }
-        break;
-
-        case ROLE_PROCESSOR:
-            getLog()
-            -> trace( "Application role" )
-            -> prm( "Name", roleToString( ROLE_PROCESSOR ));
-            Processor::create( this ) -> loop() -> destroy();
-        break;
-
-        case ROLE_UI:
-            getLog()
-            -> trace( "Application role" )
-            -> prm( "Name", roleToString( ROLE_UI ));
-
-            if( getConfig() -> getBool( Path{ "ui", "enabled" } ))
-            {
-                auto ui     = Ui::create( this );
-                auto scene  = Scene::create( getLog() );
-
-                scene
-                -> getFont()
-                -> setFontName( getConfig() -> getString( Path{ "ui", "fontName" } ))
-                -> setGliphSize( getConfig() -> getInt( Path{ "ui", "gliphSize" }, 16 ))
-                -> setCharSet( getConfig() -> getString( Path{ "ui", "charSet" }));
-
-                scene
-                -> init()
-                -> setPayload( ui )
-                -> loop()
-                -> finit()
-                -> destroy();
-
-                ui -> destroy();
-            }
-        break;
-    }
+//        }
+//        break;
+//
+//        case ROLE_PROCESSOR:
+//            getLog()
+//            -> trace( "Application role" )
+//            -> prm( "Name", roleToString( ROLE_PROCESSOR ));
+//            Processor::create( this ) -> loop() -> destroy();
+//        break;
+//
+//        case ROLE_UI:
+//            getLog()
+//            -> trace( "Application role" )
+//            -> prm( "Name", roleToString( ROLE_UI ));
+//
+//            if( getConfig() -> getBool( Path{ "ui", "enabled" } ))
+//            {
+//                auto ui     = Ui::create( this );
+//                auto scene  = Scene::create( getLog() );
+//
+//                scene
+//                -> getFont()
+//                -> setFontName( getConfig() -> getString( Path{ "ui", "fontName" } ))
+//                -> setGliphSize( getConfig() -> getInt( Path{ "ui", "gliphSize" }, 16 ))
+//                -> setCharSet( getConfig() -> getString( Path{ "ui", "charSet" }));
+//
+//                scene
+//                -> init()
+//                -> setPayload( ui )
+//                -> loop()
+//                -> finit()
+//                -> destroy();
+//
+//                ui -> destroy();
+//            }
+//        break;
+//    }
 
     getLog() -> end( "Application stop" );
 

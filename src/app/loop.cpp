@@ -43,7 +43,7 @@ Loop::Loop
 )
 : Payload( a ) /* Call parent constructor */
 {
-    net = Net::create( a );
+    net = NetGraph::create( a );
 }
 
 
@@ -88,6 +88,94 @@ ShoggothApplication* Loop::getApplication()
 
 
 
+bool Loop::serverControll()
+{
+    bool result =
+    getApplication()
+    -> getConfig()
+    -> getBool( Path { "server", "enabled" } );
+    if( result )
+    {
+        if( server == NULL )
+        {
+            server = ShoggothRpcServer::create( getApplication() );
+            server -> setPort
+            (
+                getApplication()
+                -> getConfig()
+                -> getInt( Path{ "server", "port" }, 11120 )
+            );
+        }
+    }
+    else
+    {
+        if( server != NULL )
+        {
+            server -> destroy();
+            server = NULL;
+        }
+    }
+    return result;
+}
+
+
+
+Loop* Loop::uiControll()
+{
+    if
+    (
+        getApplication()
+        -> getConfig()
+        -> getBool( Path { "ui", "enabled" } ))
+    {
+        if( ui == NULL )
+        {
+            ui = Ui::create( getApplication(), net );
+            scene  = Scene::create( getLog() );
+            scene
+            -> getFont()
+            -> setFontName
+            (
+                getApplication()
+                -> getConfig()
+                -> getString( Path{ "ui", "fontName" } )
+            )
+            -> setGliphSize
+            (
+                getApplication()
+                -> getConfig()
+                -> getInt( Path{ "ui", "gliphSize" }, 16 )
+            )
+            -> setCharSet
+            (
+                getApplication()
+                -> getConfig()
+                -> getString( Path{ "ui", "charSet" })
+            );
+
+            scene
+            -> init()
+            -> setPayload( ui );
+        }
+    }
+    else
+    {
+        if( ui != NULL )
+        {
+            scene
+            -> finit()
+            -> destroy();
+            ui -> destroy();
+            /* Reset UI and Scene */
+            ui = NULL;
+            scene = NULL;
+        }
+    }
+    return this;
+}
+
+
+
 /******************************************************************************
     Payload events
 */
@@ -126,7 +214,6 @@ void Loop::onLoop
             ! getApplication() -> getConfig() -> isOk()
         )
         {
-            getApplication() -> getConfig() -> setOk();
             getLog()
             -> begin( "Config updated" )
             -> prm( "File", getApplication()
@@ -134,9 +221,17 @@ void Loop::onLoop
 
             if( getApplication() -> getConfig() -> isOk())
             {
-                /* Config apply */
-                net -> applyConfig();
-                aReconfig = true;
+                this -> setOk();
+
+                if( !serverControll() )
+                {
+                    /* Config apply */
+                    net -> applyConfig();
+                    aReconfig = true;
+
+                    serverControll();
+                    uiControll();
+                }
             }
             else
             {
@@ -150,6 +245,11 @@ void Loop::onLoop
                     -> getConfig()
                     -> getMessage()
                 );
+
+                getApplication()
+                -> getConfig()
+                -> resultTo( this )
+                -> setOk();
             }
 
             getLog() -> end();
@@ -159,5 +259,36 @@ void Loop::onLoop
         lastConfigCheck = nowMoment;
     }
 
-    
+
+    if( isOk() )
+    {
+        /* Server */
+        if( server != NULL )
+        {
+            server -> up();
+        }
+        else
+        {
+            /* Processor */
+
+            /* UI works*/
+            if( ui != NULL )
+            {
+                scene -> calcEvent();
+                scene -> drawEvent();
+                aTreminated = scene -> windowClosed();
+            }
+        }
+    }
 }
+
+
+
+
+Net* event
+(
+    Event aEvent
+)
+{
+}
+

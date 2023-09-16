@@ -90,13 +90,13 @@ Scene& ScenePayload::getScene()
 */
 ScenePayload* ScenePayload::applyCameraToScene
 (
-    Camera& aCamera,    /* Camera object */
-    Scene& aScene       /* Scene object */
+    Camera* aCamera,    /* Camera object */
+    Scene* aScene       /* Scene object */
 )
 {
-    Matrix4& m = aScene.getViewMatrixRef();
-    aCamera.setViewMatrixTo( m );
-    aScene.switchToWorld();
+    Matrix4& m = aScene -> getViewMatrixRef();
+    aCamera -> setViewMatrixTo( m );
+    aScene -> switchToWorld();
     return this;
 }
 
@@ -107,10 +107,10 @@ ScenePayload* ScenePayload::applyCameraToScene
 */
 ScenePayload* ScenePayload::applyScreenToScene
 (
-    Scene& aScene       /* Scene object */
+    Scene* aScene       /* Scene object */
 )
 {
-    aScene.switchToScreen();
+    aScene -> switchToScreen();
     return this;
 }
 
@@ -141,14 +141,15 @@ void ScenePayload::onActivate
 */
 void ScenePayload::onDraw
 (
-    Scene& aScene   /* Scene object */
+    Scene* aScene   /* Scene object */
 )
 {
-    aScene.clearColor();
+    aScene -> clearColor();
 
-    aScene.begin( LINE );
+    aScene -> begin( LINE );
 
-    aScene.color( RGBA_GREEN )
+    aScene
+    -> color( RGBA_GREEN )
     -> vertex( POINT_3D_0 )
     -> vertex( POINT_3D_X )
     -> color( RGBA_BLUE ) -> vertex( POINT_3D_0 ) -> vertex( POINT_3D_Y )
@@ -163,7 +164,7 @@ void ScenePayload::onDraw
 */
 void ScenePayload::onCalc
 (
-    Scene& aScene   /* Scene object */
+    Scene* aScene   /* Scene object */
 )
 {
 //    aScene.getLog().trace( "Calculate event" );

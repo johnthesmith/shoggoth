@@ -1,0 +1,12 @@
+{
+    "io":
+    {
+        "net"   :"test/net.json"
+    },
+
+    "server":
+    {
+        "enabled"       :true,
+        "port"          :11120
+    }
+}

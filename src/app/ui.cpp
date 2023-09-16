@@ -45,11 +45,13 @@ using namespace std;
 */
 Ui::Ui
 (
-    ShoggothApplication* a
+    ShoggothApplication* a,
+    NetGraph* aNet
 )
 : ScenePayload( a ) /* Call parent constructor */
 {
-    net = NetGraph::create( a );
+    camera = Camera::create();
+    net = aNet;
 
     getLog()
     -> trace( "Config source" )
@@ -64,7 +66,7 @@ Ui::Ui
 */
 Ui::~Ui()
 {
-    net -> destroy();
+    camera -> destroy();
 }
 
 
@@ -74,10 +76,11 @@ Ui::~Ui()
 */
 Ui* Ui::create
 (
-    ShoggothApplication* a
+    ShoggothApplication* a,
+    NetGraph* aNet
 )
 {
-    return new Ui( a );
+    return new Ui( a, aNet );
 }
 
 
@@ -182,7 +185,6 @@ void Ui::onActivate
 )
 {
     aScene.setFar( 1000.0 );
-
     glEnable( GL_BLEND );
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable( GL_TEXTURE_2D );
@@ -196,55 +198,21 @@ void Ui::onActivate
 */
 void Ui::onCalc
 (
-    Scene& aScene   /* Scene object */
+    Scene* aScene   /* Scene object */
 )
 {
     /* Read config */
     auto nowMoment = now();
     if( lastConfigCheck + MILLISECOND * 1000 < nowMoment )
     {
-        /* Set ok */
-        getApplication() -> checkConfigUpdate();
-        if
-        (
-            getApplication() -> getConfigUpdated() ||
-            ! getApplication() -> getConfig() -> isOk()
-        )
-        {
-            getLog()
-            -> begin( "Config updated" )
-            -> prm( "File", getApplication() -> getConfigFileName() );
-
-            if( getApplication() -> getConfig() -> isOk())
-            {
-                net -> applyConfig();
-            }
-            else
-            {
-                /* Config error */
-                getLog()
-                -> warning( "Config error" )
-                -> prm
-                (
-                    "message",
-                    getApplication()
-                    -> getConfig()
-                    -> getMessage()
-                );
-                getApplication() -> getConfig() -> setOk();
-            }
-
-            getLog() -> end();
-        }
+        net -> readNet();
+        net -> getLayers() -> readValues() -> readErrors();
+        net -> getNerves() -> readWeights();
 
         /* Set last moment */
         lastConfigCheck = nowMoment;
     }
-
-//    net -> getLayers() -> readValues() -> readErrors();
-//    net -> getNerves() -> readWeights();
 }
-
 
 
 
@@ -253,20 +221,20 @@ void Ui::onCalc
 */
 void Ui::onDraw
 (
-    Scene& aScene   /* Scene object */
+    Scene* aScene   /* Scene object */
 )
 {
     applyCameraToScene( camera, aScene );
 
-    aScene.clearColor();
+    aScene -> clearColor();
 
     /* Draw Layers */
     net
-    -> drawLayers( &aScene, camera.getChanged() )
-    -> drawNerves( &aScene );
+    -> drawLayers( aScene, camera -> getChanged() )
+    -> drawNerves( aScene );
 
     /* Reset camera changed */
-    camera.setChanged( false );
+    camera -> setChanged( false );
 
     /*
         Switch to flat screen
@@ -275,14 +243,15 @@ void Ui::onDraw
 
 
     /* Draw Learning mode */
-    net -> drawLearningMode( &aScene );
+    net -> drawLearningMode( aScene );
 
-    aScene.drawAxisIdentity();
+    aScene -> drawAxisIdentity();
 
     /* Draw view matrix */
-    aScene.color( interfaceColor )
+    aScene
+    -> color( interfaceColor )
     -> setTextSize( 20 )
-    -> drawMatrix( Point3d( 0, aScene.getViewport().height, 0 ) );
+    -> drawMatrix( Point3d( 0, aScene -> getViewport().height, 0 ) );
 
     /*
         Draw neuron chart
@@ -292,7 +261,7 @@ void Ui::onDraw
     {
 
         aScene
-        .color( interfaceColor )
+        -> color( interfaceColor )
         -> setLineWidth( 3 )
         .begin( LOOP )
         -> sendRect
@@ -305,17 +274,17 @@ void Ui::onDraw
         )
         .end();
 
-        net -> drawNeuronChart( &aScene, neuron );
+        net -> drawNeuronChart( aScene, neuron );
     }
 
 
-    net -> drawSelectedNeurons( &aScene );
+    net -> drawSelectedNeurons( aScene );
 
     if( selectTopLeft != selectBottomRight )
     {
         /* Draw selection rect */
         aScene
-        .color( interfaceColorDark )
+        -> color( interfaceColorDark )
         -> setLineWidth( 2 )
         .begin( QUAD )
         -> sendRect( selectTopLeft, selectBottomRight )
@@ -332,7 +301,7 @@ void Ui::onDraw
         net -> getNeuronsByScreenRect( list, selectTopLeft, selectBottomRight );
 
         aScene
-        .color( interfaceColor )
+        -> color( interfaceColor )
         -> setPointSize( 4 )
         -> begin( POINT );
 
@@ -340,11 +309,11 @@ void Ui::onDraw
         (
             [ &aScene ]( Neuron* neuron ) -> bool
             {
-                aScene.vertex( neuron -> getScreen() );
+                aScene -> vertex( neuron -> getScreen() );
                 return false;
             }
         );
-        aScene.end();
+        aScene -> end();
 
         list -> destroy();
     }
@@ -369,10 +338,10 @@ void Ui::onKeyUp
             aScene.setTerminate( true );
         break;
         case KEY_LEFT_CONTROL:
-            camera.setEyeLock( false );
+            camera -> setEyeLock( false );
         break;
         case KEY_LEFT_SHIFT:
-            camera.setTargetLock( false );
+            camera -> setTargetLock( false );
         break;
     }
 }
@@ -433,10 +402,10 @@ void Ui::onKeyDown
             net -> switchLearningMode();
         break;
         case KEY_LEFT_CONTROL:
-            camera.setEyeLock( true );
+            camera -> setEyeLock( true );
         break;
         case KEY_LEFT_SHIFT:
-            camera.setTargetLock( true );
+            camera -> setTargetLock( true );
         break;
     }
 }
@@ -508,9 +477,9 @@ void Ui::onRightDrag
     const Point3d& aPoint
 )
 {
-    double k = camera.getGaze().magn() / aScene.getNear();
+    double k = camera -> getGaze().magn() / aScene.getNear();
     Point3d p = (aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()) * k;
-    camera.shift( p );
+    camera -> shift( p );
 }
 
 
@@ -541,25 +510,29 @@ void Ui::onMouseWheel
 
         if( aScene.isKey( KEY_LEFT_CONTROL ))
         {
-            camera.rotateEye( camera.getRight(), aDelta.y * 0.1 );
+            camera -> rotateEye
+            (
+                camera -> getRight(),
+                aDelta.y * 0.1
+            );
             rotation = true;
         }
 
         if( aScene.isKey( KEY_LEFT_SHIFT ))
         {
-            camera.rotateEye( camera.getTop(), aDelta.y * 0.1 );
+            camera -> rotateEye( camera -> getTop(), aDelta.y * 0.1 );
             rotation = true;
         }
 
         if( aScene.isKey( KEY_LEFT_ALT ))
         {
-            camera.rotateTop( camera.getFront(), aDelta.y * 0.1 );
+            camera -> rotateTop( camera -> getFront(), aDelta.y * 0.1 );
             rotation = true;
         }
 
         if( !rotation )
         {
-            camera.zoom( aDelta.y > 0 ? 0.9 : 1.1 );
+            camera -> zoom( aDelta.y > 0 ? 0.9 : 1.1 );
         }
     }
 }
@@ -577,6 +550,7 @@ void Ui::onLeftClick
 )
 {
 //    if( net -> setSelected( aScene ) -> getSelected() != NULL )
+
 //    {
 //        exit(0);
 //    }
@@ -596,6 +570,11 @@ void Ui::onLeftDblClick
 {
     if( net -> setSelected( &aScene ) -> getSelectedFirst() != NULL )
     {
-        camera.moveTarget( net -> getSelectedFirst() -> getWorld() );
+        camera -> moveTarget
+        (
+            net
+            -> getSelectedFirst()
+            -> getWorld()
+        );
     }
 }

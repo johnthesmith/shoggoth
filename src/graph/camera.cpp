@@ -9,6 +9,20 @@
 
 
 
+Camera* Camera::create()
+{
+    return new Camera();
+}
+
+
+
+void Camera::destroy()
+{
+    delete this;
+}
+
+
+
 /*
     Set angle of view in radians
 */

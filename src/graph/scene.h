@@ -734,4 +734,11 @@ class Scene : public Result
 
 
         Scene* changeTextBaseLine();
+
+
+
+        /*
+            Window is not open
+        */
+        bool windowClosed();
 };

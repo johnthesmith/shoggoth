@@ -179,12 +179,15 @@ Io* Io::fileReadNet()
     string net = getApplication()
     -> getConfig()
     -> getString( Path { "io", "net" });
+
     getLog() -> trace( "Net config read" ) -> prm( "file", net );
+
     Json::create()
     -> fromFile( net )
     -> copyTo( answer )
     -> resultTo( this )
     -> destroy();
+
     return this;
 }
 

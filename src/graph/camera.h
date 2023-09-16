@@ -21,6 +21,14 @@ class Camera : public Object
 
     public:
 
+
+        static Camera* create();
+
+
+
+        void destroy();
+
+
         /*
              Set angle of view in radians
         */

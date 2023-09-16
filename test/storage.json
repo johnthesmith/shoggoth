@@ -1,5 +1,0 @@
-{
-    "role"              :"storage",
-    "storagePath"       :"test",
-    "port"              :11120
-}

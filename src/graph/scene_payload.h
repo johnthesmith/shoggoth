@@ -87,8 +87,8 @@ class ScenePayload : public Payload
         */
         ScenePayload* applyCameraToScene
         (
-            Camera&,    /* Camera object */
-            Scene&      /* Scene object */
+            Camera*,    /* Camera object */
+            Scene*      /* Scene object */
         );
 
 
@@ -98,7 +98,7 @@ class ScenePayload : public Payload
         */
         ScenePayload* applyScreenToScene
         (
-            Scene&      /* Scene object */
+            Scene*      /* Scene object */
         );
 
 
@@ -123,7 +123,7 @@ class ScenePayload : public Payload
         */
         virtual void onDraw
         (
-            Scene&    /* Scene object */
+            Scene*    /* Scene object */
         );
 
 
@@ -133,7 +133,7 @@ class ScenePayload : public Payload
         */
         virtual void onCalc
         (
-            Scene&    /* Scene object */
+            Scene*    /* Scene object */
         );
 
 
