@@ -29,7 +29,10 @@ using namespace std;
 
 
 
-enum EVENDS =
+/*
+    List of events for neral net
+*/
+enum EVENTS =
 {
     TICK_BEGIN,
     TICHER_RESULT,
@@ -41,6 +44,10 @@ enum EVENDS =
 
 
 
+/*
+    List of actions like resolving
+    actions = f( event, active modules )
+*/
 enum ACTIONS =
 {
     READ_VALUES,
