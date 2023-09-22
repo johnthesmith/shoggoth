@@ -21,6 +21,7 @@ Net::Net
 
     /* Read actions */
     actions = ParamListFile::create() -> fromJsonFile( "actions.json" );
+    tasks = ParamList::create();
 }
 
 
@@ -33,6 +34,7 @@ Net::~Net()
 {
     clear();
 
+    tasks -> destroy();
     nerves -> destroy();
     layers -> destroy();
 
@@ -401,7 +403,7 @@ Net* Net::readNet()
         /* Apply net */
         if( json != NULL )
         {
-            buildSupt( json );
+            buildSuptAndTasks( json );
 
             auto configLayers = json -> getObject( "layers" );
 
@@ -728,7 +730,7 @@ Net* Net::deleteLayer
 Net* Net::loadLayer
 (
     Layer*      aLayer,
-    ParamList*  aParams
+    ParamList*  aParams     /* Layer configuration */
 )
 {
     if( this -> isOk() )
@@ -744,6 +746,8 @@ Net* Net::loadLayer
         }
         else
         {
+            /* Set event actions */
+            aLayer -> getActions() -> copyFrom( aParams -> getObject( "actions" ) );
             /* Set Size from params */
             auto paramsSize = aParams -> getObject( "size" );
             if( paramsSize != NULL )
@@ -951,22 +955,40 @@ Net* Net::setId
     P - process uses as processor
     T - process uses as teacher
 */
-Net* Net::buildSupt
+Net* Net::buildSuptAndTasks
 (
     ParamList* aConfig
 )
 {
-    auto tasks = aConfig -> getObject( "tasks" );
-    supt = tasks == NULL ? "****" :
-    (
-        aConfig -> getString( Path { "io", "source" } ) == "LOCAL" ? "*" :
-        (
-            (string) "S" +
-            ( tasks -> getObject( "UI" ) == NULL ? "*" : "U" ) +
-            ( tasks -> getObject( "PROC" ) == NULL ? "*_" : "P" ) +
-            ( tasks -> getObject( "TEACHER" ) == NULL ? "*" : "T" )
-        )
-    );
+    auto tasksSection = aConfig -> getObject( "tasks" );
+
+    supt = "****";
+    tasks -> clear();
+
+    if( aConfig -> getString( Path { "io", "source" } ) == "LOCAL" )
+    {
+        supt[ 0 ] = 'S';
+        tasks -> pushString( taskToString( TASK_SERVER ));
+    }
+
+    if( tasksSection != NULL )
+    {
+        if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
+        {
+            supt[ 1 ] = 'U';
+            tasks -> pushString( taskToString( TASK_UI ));
+        }
+        if( tasksSection -> getObject( taskToString( TASK_PROC )) != NULL )
+        {
+            supt[ 2 ] = 'P';
+            tasks -> pushString( taskToString( TASK_PROC ));
+        }
+        if( tasksSection -> getObject( taskToString( TASK_TEACHER )) != NULL )
+        {
+            supt[ 3 ] = 'T';
+            tasks -> pushString( taskToString( TASK_TEACHER ));
+        }
+    }
     return this;
 }
 
@@ -996,12 +1018,12 @@ Net* Net::event
                 {
                     switch( stringToAction( aParam -> getString()))
                     {
-                        case READ_VALUES    :layers -> readValues(); break;
-                        case WRITE_VALUES   :layers -> writeValues(); break;
-                        case READ_ERRORS    :layers -> readErrors(); break;
-                        case WRITE_ERRORS   :layers -> writeErrors(); break;
-                        case READ_WEIGHTS   :nerves -> readWeights(); break;
-                        case WRITE_WEIGHTS  :nerves -> writeWeights(); break;
+                        case READ_VALUES    :layers -> readValues( tasks ); break;
+                        case WRITE_VALUES   :layers -> writeValues( tasks ); break;
+                        case READ_ERRORS    :layers -> readErrors( tasks ); break;
+                        case WRITE_ERRORS   :layers -> writeErrors( tasks ); break;
+                        case READ_WEIGHTS   :nerves -> readWeights( /*tasks*/ ); break;
+                        case WRITE_WEIGHTS  :nerves -> writeWeights( /*tasks*/ ); break;
                         case SYNC_RESET     :calcReset(); break;
                     }
                     return false;
@@ -1010,46 +1032,4 @@ Net* Net::event
         }
     }
     return this;
-}
-
-
-
-/*
-    Return Action const by string value
-*/
-Action Net::stringToAction
-(
-    string aValue
-)
-{
-    if( aValue == "READ_VALUES" )   return READ_VALUES;
-    if( aValue == "WRITE_VALUES" )  return WRITE_VALUES;
-    if( aValue == "READ_ERRORS" )   return READ_ERRORS;
-    if( aValue == "WRITE_ERRORS" )  return WRITE_ERRORS;
-    if( aValue == "READ_WEIGHTS" )  return READ_WEIGHTS;
-    if( aValue == "WRITE_WEIGHTS" ) return WRITE_WEIGHTS;
-    if( aValue == "SYNC_RESET" )    return SYNC_RESET;
-    return ACTION_UNKNOWN;
-}
-
-
-
-/*
-    Return event string by Event
-*/
-string Net::eventToString
-(
-    Event aValue /* Event enum */
-)
-{
-    switch( aValue )
-    {
-        case LOOP_BEGIN     : return "LOOP_BEGIN";
-        case THINKING_BEGIN : return "THINKING_BEGIN";
-        case THINKING_END   : return "THINKING_END";
-        case LEARNING_END   : return "LEARNING_END";
-        case READ_NET       : return "READ_NET";
-        case TICHING_END    : return "TICHING_END";
-    }
-    return "EVENT_UNKNOWN";
 }

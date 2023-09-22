@@ -11,7 +11,7 @@
 #include "../lib/heap.h"
 
 #include "layer.h"
-
+#include "shoggoth_consts.h"
 
 
 using namespace std;
@@ -143,27 +143,38 @@ class LayerList : public Heap
         /*
             Read the layers values from io
         */
-        LayerList* readValues();
+        LayerList* readValues
+        (
+            ParamList* = NULL
+        );
 
 
 
         /*
             Write the layers values to the io
         */
-        LayerList* writeValues();
+        LayerList* writeValues
+        (
+            ParamList* = NULL
+        );
 
 
 
         /*
             Read the layers errors from io
         */
-        LayerList* readErrors();
+        LayerList* readErrors
+        (
+            ParamList* = NULL
+        );
 
 
 
         /*
             Write the layers errors to the io
         */
-        LayerList* writeErrors();
-
+        LayerList* writeErrors
+        (
+            ParamList* = NULL
+        );
 };

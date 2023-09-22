@@ -1598,62 +1598,10 @@ Layer* Layer::neuronCalcValue
 
 
 
-
-bool Layer::getReadableValues()
+/*
+    Return event actions
+*/
+ParamList* Layer::getActions()
 {
-    return readableValues;
+    return actions;
 }
-
-bool Layer::getWritableValues()
-{
-    return writableValues;
-}
-
-bool Layer::getReadableErrors()
-{
-    return readableErrors;
-}
-
-bool Layer::getWritableErrors()
-{
-    return writableErrors;
-}
-
-Layer* Layer::setReadableValues
-(
-    bool aValue
-)
-{
-    readableValues = aValue;
-    return this;
-}
-
-Layer* Layer::setWritableValues
-(
-    bool aValue
-)
-{
-    writableValues = aValue;
-    return this;
-}
-
-
-Layer* Layer::setReadableErrors
-(
-    bool aValue
-)
-{
-    readableErrors = aValue;
-    return this;
-}
-
-
-Layer* Layer::setWritableErrors
-(
-    bool aValue
-)
-{
-    writableErrors = aValue;
-    return this;
-}
-

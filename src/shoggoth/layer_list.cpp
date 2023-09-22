@@ -142,15 +142,25 @@ Layer* LayerList::getById
 /*
     Read from server
 */
-LayerList* LayerList::readValues()
+LayerList* LayerList::readValues
+(
+    ParamList* aTasks
+)
 {
     loop
     (
-        []
+        [ &aTasks ]
         ( void* aLayer )
         {
             auto iLayer = ( Layer* ) aLayer;
-            if( iLayer -> getReadableValues() )
+            if
+            (
+                aTasks == NULL ||
+                iLayer
+                -> getActions()
+                -> getObject( actionToString( READ_VALUES ))
+                -> isIntersect( aTasks )
+            )
             {
                 iLayer -> readValues();
             }
@@ -165,15 +175,25 @@ LayerList* LayerList::readValues()
 /*
     Write to server
 */
-LayerList*  LayerList::writeValues()
+LayerList*  LayerList::writeValues
+(
+    ParamList* aTasks
+)
 {
     loop
     (
-        []
+        [ &aTasks ]
         ( void* aLayer )
         {
             auto iLayer = ( Layer* ) aLayer;
-            if( iLayer -> getWritableValues() )
+            if
+            (
+                aTasks == NULL ||
+                iLayer
+                -> getActions()
+                -> getObject( actionToString( WRITE_VALUES ))
+                -> isIntersect( aTasks )
+            )
             {
                 iLayer -> writeValues();
             }
@@ -189,15 +209,25 @@ LayerList*  LayerList::writeValues()
 /*
     Read from server
 */
-LayerList* LayerList::readErrors()
+LayerList* LayerList::readErrors
+(
+    ParamList* aTasks
+)
 {
     loop
     (
-        []
+        [ &aTasks ]
         ( void* aLayer )
         {
             auto iLayer = ( Layer* ) aLayer;
-            if( iLayer -> getReadableErrors() )
+            if
+            (
+                aTasks == NULL ||
+                iLayer
+                -> getActions()
+                -> getObject( actionToString( READ_ERRORS ))
+                -> isIntersect( aTasks )
+            )
             {
                 iLayer -> readErrors();
             }
@@ -212,15 +242,25 @@ LayerList* LayerList::readErrors()
 /*
     Write to server
 */
-LayerList*  LayerList::writeErrors()
+LayerList*  LayerList::writeErrors
+(
+    ParamList* aTasks
+)
 {
     loop
     (
-        []
+        [ &aTasks ]
         ( void* aLayer )
         {
             auto iLayer = ( Layer* ) aLayer;
-            if( iLayer -> getWritableErrors() )
+            if
+            (
+                aTasks == NULL ||
+                iLayer
+                -> getActions()
+                -> getObject( actionToString( WRITE_ERRORS ))
+                -> isIntersect( aTasks )
+            )
             {
                 iLayer -> writeErrors();
             }
@@ -229,3 +269,4 @@ LayerList*  LayerList::writeErrors()
     );
     return this;
 }
+

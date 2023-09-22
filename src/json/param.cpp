@@ -468,3 +468,34 @@ Param* Param::setData
     setValue( KT_DATA, aBuffer, aSize );
     return this;
 }
+
+
+
+/*
+    Constructor with other parm
+*/
+Param* Param::copyFrom
+(
+    Param* a
+)
+{
+    setValue( a -> getType(), a -> getValue(), a -> getSize() );
+    return this;
+}
+
+
+
+/*
+    Constructor with other parm
+*/
+bool Param::isEqual
+(
+    Param* a
+)
+{
+    return
+    a -> getName() == getName() &&
+    a -> getType() == getType() &&
+    a -> getSize() == getSize() &&
+    memcmp( a -> getValue(), getValue(), getSize()) == 0;
+}

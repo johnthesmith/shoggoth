@@ -9,18 +9,21 @@
         "port"          :11120
     }
 
-    "ui":
+    "tasks":
     {
-    }
+        "TASK_UI":
+        {
+        }
 
-    "proc":
-    {
-        "enabled"           :true,
-        "loop_sleep_mcs"    :1000000,
-        "learningMode"      :false,
-        "learningSpeed"     :0.005,
-        "wakeupWeight"      :0.0001,
-        "errorNormalize"    :0.11,
-        "processorCount"    :1
-    },
+        "TASK_PROC":
+        {
+            "enabled"           :true,
+            "loop_sleep_mcs"    :1000000,
+            "learningMode"      :false,
+            "learningSpeed"     :0.005,
+            "wakeupWeight"      :0.0001,
+            "errorNormalize"    :0.11,
+            "processorCount"    :1
+        }
+    }
 }

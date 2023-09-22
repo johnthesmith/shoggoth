@@ -5,7 +5,7 @@
     },
     "tasks":
     {
-        "server":
+        "TASK_SERVER":
         {
             "enabled"       :true,
             "port"          :11120

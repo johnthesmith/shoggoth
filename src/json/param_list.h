@@ -669,5 +669,26 @@ struct ParamList : public Heap
 
 
         ParamList* getRoot();
+
+
+
+        /*
+            Return intersections with argiments
+        */
+        ParamList* intersect
+        (
+            ParamList*, /* Argument */
+            ParamList*  /* Result */
+        );
+
+
+
+        /*
+            Return true if intersections with argiment exists
+        */
+        bool isIntersect
+        (
+            ParamList* /* Argument */
+        );
 };
 

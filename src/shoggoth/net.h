@@ -23,42 +23,8 @@
 #include "bind_type.h"
 #include "layer_list.h"
 #include "nerve_list.h"
+#include "shoggoth_consts.h"
 
-
-
-
-/*
-    List of events for neral net
-*/
-
-enum Event
-{
-    EVENT_UNKNOWN,
-    LOOP_BEGIN,         /* Event for each calculation loop */
-    THINKING_BEGIN,     /* Event for begin of the value calculations */
-    THINKING_END,       /* Event for end of the value calculation */
-    LEARNING_END,       /**/
-    READ_NET,           /**/
-    TICHING_END
-};
-
-
-
-/*
-    List of actions like resolving
-    actions = f( event, active modules )
-*/
-enum Action
-{
-    ACTION_UNKNOWN,
-    READ_VALUES,
-    WRITE_VALUES,
-    READ_ERRORS,
-    WRITE_ERRORS,
-    READ_WEIGHTS,
-    WRITE_WEIGHTS,
-    SYNC_RESET
-};
 
 
 
@@ -91,8 +57,9 @@ class Net: public Result
         int calcLayerIndex              = 0;        /* Current lsyer for calculation */
 
         /* Events */
-        string      supt                = "****";   /* Roles of the Net in SUPT */
-        ParamListFile* actions          = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
+        string          supt            = "****";   /* Roles of the Net in SUPT */
+        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
+        ParamList*      tasks           = NULL;     /* List of participants tasks */
 
     public:
 
@@ -464,29 +431,9 @@ class Net: public Result
             P - process uses as processor
             T - process uses as teacher
         */
-        Net* buildSupt
+        Net* buildSuptAndTasks
         (
             ParamList*
-        );
-
-
-
-        /*
-            Return Action const by string value
-        */
-        static Action stringToAction
-        (
-            string  /* String value */
-        );
-
-
-
-        /*
-            Return event string by Event
-        */
-        string eventToString
-        (
-            Event /* Event enum */
         );
 };
 

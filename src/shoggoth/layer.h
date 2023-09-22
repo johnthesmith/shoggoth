@@ -118,15 +118,9 @@ class Layer : public Object
         int             forward                 = -1;
         int             backward                = -1;
 
-        int             count                   = 0;    /* Count fo neurons */
+        int             count                   = 0;            /* Count fo neurons */
 
-        /*
-            IO operations for layer
-        */
-        bool            readableValues          = false;
-        bool            writableValues          = false;
-        bool            readableErrors          = false;
-        bool            writableErrors          = false;
+        ParamList*      actions                 = NULL;         /* List of actions for layer */
 
         /*
             Plans of neurons data
@@ -826,40 +820,9 @@ class Layer : public Object
         );
 
 
-        /**********************************************************************
-        */
-
 
         /*
-            Set readable flag for values in layer over io
+            Return event actions
         */
-        bool getReadableValues();
-        bool getWritableValues();
-        bool getReadableErrors();
-        bool getWritableErrors();
-
-        Layer* setReadableValues
-        (
-            bool
-        );
-
-        Layer* setWritableValues
-        (
-            bool
-        );
-
-        Layer* setReadableErrors
-        (
-            bool
-        );
-
-
-
-        /*
-        */
-        Layer* setWritableErrors
-        (
-            bool
-        );
-
+        ParamList* getActions();
 };

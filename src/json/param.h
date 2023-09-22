@@ -44,6 +44,16 @@ class Param
 
 
         /*
+            Constructor with other parm
+        */
+        Param
+        (
+            Param*
+        );
+
+
+
+        /*
             Destructor
         */
         ~Param();
@@ -54,6 +64,7 @@ class Param
             Create a new Param
         */
         static Param* create();
+
 
 
 
@@ -237,4 +248,23 @@ class Param
             size_t    /* Size of buffer */
         );
 
+
+
+        /*
+            Create a new Param
+        */
+        Param* copyFrom
+        (
+            Param*
+        );
+
+
+
+        /*
+            Create a new Param
+        */
+        bool isEqual
+        (
+            Param*
+        );
 };

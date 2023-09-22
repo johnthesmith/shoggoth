@@ -12,7 +12,7 @@
 
     "tasks":
     {
-        "ui":
+        "TASK_UI":
         {
             "enabled"                   :true,
             "fontName"                  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",

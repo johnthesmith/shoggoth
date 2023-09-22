@@ -1583,3 +1583,49 @@ ParamList* ParamList::getRoot()
     }
     return result;
 }
+
+
+
+/*
+    Return intersections with argiments
+*/
+ParamList* ParamList::intersect
+(
+    ParamList* aArgument,
+    ParamList* aResult
+)
+{
+    auto ic = getCount();
+    auto jc = aArgument -> getCount();
+
+    for( int i = 0; i < ic; i ++)
+    {
+        auto pi = getByIndex( i );
+        for( int j = 0; j < jc; j ++)
+        {
+            if( pi -> isEqual( aArgument -> getByIndex( j )))
+            {
+                aResult -> push( Param::create() -> copyFrom( pi ));
+            }
+        }
+    }
+    return this;
+}
+
+
+
+/*
+    Return true if intersections with argiment exists
+*/
+bool ParamList::isIntersect
+(
+    ParamList* a
+)
+{
+    auto arg = ParamList::create();
+    intersect( a, arg );
+    auto result = arg -> getCount() > 0;
+    arg -> destroy();
+    return result;
+}
+
