@@ -2,6 +2,7 @@
 
 # Exclude execute file
 
+*.ods#
 *.save
 *.log
 *.bin

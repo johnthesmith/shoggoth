@@ -67,21 +67,4 @@ class Processor : public Payload
 
 
         virtual void onActivate();
-
-
-
-        virtual void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        );
-
-
-
-        /*
-            Read sync object from server
-        */
-        Processor* getSyncFromServer();
 };

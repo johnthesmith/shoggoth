@@ -81,7 +81,7 @@ struct ParamList : public Heap
         */
         Param* getByName
         (
-            vector <string> /* Names of parameter */
+            Path /* Names of parameter */
         );
 
 
@@ -173,7 +173,7 @@ struct ParamList : public Heap
 
         string getString
         (
-            vector <string>,/* Name of parameter */
+            Path,/* Name of parameter */
             string  = ""    /* Dafault value */
         );
 
@@ -201,7 +201,7 @@ struct ParamList : public Heap
         */
         bool getBool
         (
-            vector <string>,    /* Name path of parameter */
+            Path,    /* Name path of parameter */
             bool = false        /* default value */
         );
 
@@ -228,7 +228,7 @@ struct ParamList : public Heap
         */
         long long int getInt
         (
-            vector <string>,    /* Name of parameter */
+            Path,    /* Name of parameter */
             long long int = 0   /* default value */
         );
 
@@ -282,7 +282,7 @@ struct ParamList : public Heap
         */
         double getDouble
         (
-            vector <string>,  /* Name of parameter */
+            Path,  /* Name of parameter */
             double = 0        /* default value */
         );
 
@@ -313,7 +313,7 @@ struct ParamList : public Heap
         */
         ParamList* getData
         (
-            vector <string>,  /* Name of parameter */
+            Path,  /* Name of parameter */
             char*&,
             size_t&
         );
@@ -347,7 +347,7 @@ struct ParamList : public Heap
         */
         ParamList* getObject
         (
-            vector <string>,    /* Name of parameter */
+            Path,               /* Name of parameter */
             ParamList* = NULL   /* default value */
         );
 
@@ -357,7 +357,7 @@ struct ParamList : public Heap
         */
         ParamList* getObject
         (
-            vector <string>,    /* Path for list of keys */
+            Path,               /* Path for list of keys */
             string,             /* Key attribute name */
             string              /* Value for key attribute */
         );
@@ -369,7 +369,7 @@ struct ParamList : public Heap
         */
         ParamList* selectObject
         (
-            vector <string>
+            Path
         );
 
 
@@ -652,7 +652,7 @@ struct ParamList : public Heap
         */
         ParamList* setPath
         (
-            vector <string> /* Names of parameter */
+            Path /* Names of parameter */
         );
 
 

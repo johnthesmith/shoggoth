@@ -88,12 +88,12 @@ ShoggothApplication* Loop::getApplication()
 
 
 
-bool Loop::serverControll()
+bool Loop::serverControl()
 {
     bool result =
     getApplication()
     -> getConfig()
-    -> getBool( Path { "server", "enabled" } );
+    -> getBool( Path { "tasks", "server", "enabled" } );
     if( result )
     {
         if( server == NULL )
@@ -103,7 +103,7 @@ bool Loop::serverControll()
             (
                 getApplication()
                 -> getConfig()
-                -> getInt( Path{ "server", "port" }, 11120 )
+                -> getInt( Path{ "tasks", "server", "port" }, 11120 )
             );
         }
     }
@@ -120,13 +120,13 @@ bool Loop::serverControll()
 
 
 
-Loop* Loop::uiControll()
+Loop* Loop::uiControl()
 {
     if
     (
         getApplication()
         -> getConfig()
-        -> getBool( Path { "ui", "enabled" } ))
+        -> getBool( Path { "tasks", "ui", "enabled" } ))
     {
         if( ui == NULL )
         {
@@ -138,19 +138,19 @@ Loop* Loop::uiControll()
             (
                 getApplication()
                 -> getConfig()
-                -> getString( Path{ "ui", "fontName" } )
+                -> getString( Path{ "tasks", "ui", "fontName" } )
             )
             -> setGliphSize
             (
                 getApplication()
                 -> getConfig()
-                -> getInt( Path{ "ui", "gliphSize" }, 16 )
+                -> getInt( Path{ "tasks", "ui", "gliphSize" }, 16 )
             )
             -> setCharSet
             (
                 getApplication()
                 -> getConfig()
-                -> getString( Path{ "ui", "charSet" })
+                -> getString( Path{ "tasks", "ui", "charSet" })
             );
 
             scene
@@ -175,6 +175,40 @@ Loop* Loop::uiControll()
 }
 
 
+
+Loop* Loop::processorControl()
+{
+    if
+    (
+        getApplication()
+        -> getConfig()
+        -> getBool( Path { "tasks", "processor", "enabled" } ))
+    {
+        if( !processor )
+        {
+            processor = true;
+            /* Apply config */
+            net -> setLearningSpeed( getApplication() -> getConfig() -> getDouble( "learningSpeed", net -> getLearningSpeed() ));
+            net -> setWakeupWeight( getApplication() -> getConfig() -> getDouble( "wakeupWeight", net -> getWakeupWeight() ));
+            net -> setErrorNormalize( getApplication() -> getConfig() -> getDouble( "errorNormalize", net -> getErrorNormalize() ));
+        }
+    }
+    else
+    {
+        if( processor )
+        {
+            processor = false;
+        }
+    }
+    return this;
+}
+
+
+
+Loop* Loop::teacherControl()
+{
+    return this;
+}
 
 /******************************************************************************
     Payload events
@@ -223,14 +257,15 @@ void Loop::onLoop
             {
                 this -> setOk();
 
-                if( !serverControll() )
+                if( !serverControl() )
                 {
                     /* Config apply */
-                    net -> applyConfig();
+                    net -> readNet();
                     aReconfig = true;
-
-                    serverControll();
-                    uiControll();
+                    serverControl();
+                    processorControl();
+                    teacherControl();
+                    uiControl();
                 }
             }
             else
@@ -269,7 +304,20 @@ void Loop::onLoop
         }
         else
         {
+            /* Begin of net loop */
+            net -> event( LOOP_BEGIN );
+
+            /* Teacher */
+            if( teacher != NULL )
+            {
+                /* ... */
+            }
+
             /* Processor */
+            if( processor )
+            {
+                net -> calc();
+            }
 
             /* UI works*/
             if( ui != NULL )
@@ -281,14 +329,3 @@ void Loop::onLoop
         }
     }
 }
-
-
-
-
-Net* event
-(
-    Event aEvent
-)
-{
-}
-

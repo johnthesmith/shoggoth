@@ -3,10 +3,12 @@
     {
         "net"   :"test/net.json"
     },
-
-    "server":
+    "tasks":
     {
-        "enabled"       :true,
-        "port"          :11120
+        "server":
+        {
+            "enabled"       :true,
+            "port"          :11120
+        }
     }
 }

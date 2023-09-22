@@ -1,0 +1,75 @@
+{
+    "***T":
+    {
+    },
+    "**P*":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
+    },
+    "**PT":
+    {
+        "READ_NET"      :[ "READ_WEIGHTS" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
+    },
+    "*U**":
+    {
+        "READ_NET"      :[ "READ_WEIGHTS" ]
+    },
+    "*U*T":
+    {
+        "READ_NET"      :[ "READ_WEIGHTS" ]
+    },
+    "*UP*":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
+    },
+    "*UPT":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
+    },
+    "S**T":
+    {
+        "TEACHING_END"  :[ "WRITE_VALUES" ]
+    },
+    "S*P*":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "THINKING_BEGIN":[ "READ_VALUES" ],
+        "THINKING_END"  :[ "WRITE_VALUES" ]
+        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
+    },
+    "S*PT":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "THINKING_END"  :[ "WRITE_VALUES" ]
+        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
+        "TEACHING_END"  :[ "WRITE_VALUES" ]
+    },
+    "SU**":
+    {
+        "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ]
+    },
+    "SU*T":
+    {
+        "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ],
+        "TEACHING_END"  :[ "WRITE_VALUES" ]
+    },
+    "SUP*":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "THINKING_BEGIN":[ "READ_VALUES" ],
+        "THINKING_END"  :[ "WRITE_VALUES" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
+    },
+    "SUPT":
+    {
+        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
+        "THINKING_BEGIN":[ "READ_VALUES" ],
+        "THINKING_END"  :[ "WRITE_VALUES" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ],
+        "TEACHING_END"  :[ "WRITE_VALUES" ]
+    }
+}

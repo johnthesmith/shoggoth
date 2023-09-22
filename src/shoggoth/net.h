@@ -16,14 +16,49 @@
 
 #include "../lib/application.h"
 #include "../lib/result.h"
-#include "../json/json.h"
+#include "../json/param_list_file.h"
 #include "../graph/scene.h"
 #include "../lib/rpc_client.h"
 
 #include "bind_type.h"
 #include "layer_list.h"
 #include "nerve_list.h"
-#include "sync.h"
+
+
+
+
+/*
+    List of events for neral net
+*/
+
+enum Event
+{
+    EVENT_UNKNOWN,
+    LOOP_BEGIN,         /* Event for each calculation loop */
+    THINKING_BEGIN,     /* Event for begin of the value calculations */
+    THINKING_END,       /* Event for end of the value calculation */
+    LEARNING_END,       /**/
+    READ_NET,           /**/
+    TICHING_END
+};
+
+
+
+/*
+    List of actions like resolving
+    actions = f( event, active modules )
+*/
+enum Action
+{
+    ACTION_UNKNOWN,
+    READ_VALUES,
+    WRITE_VALUES,
+    READ_ERRORS,
+    WRITE_ERRORS,
+    READ_WEIGHTS,
+    WRITE_WEIGHTS,
+    SYNC_RESET
+};
 
 
 
@@ -54,6 +89,10 @@ class Net: public Result
 
         bool calcDirection              = false;    /* Calculation direction true - forward, false - backward */
         int calcLayerIndex              = 0;        /* Current lsyer for calculation */
+
+        /* Events */
+        string      supt                = "****";   /* Roles of the Net in SUPT */
+        ParamListFile* actions          = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
 
     public:
 
@@ -189,13 +228,6 @@ class Net: public Result
             Switch learning mode true/false
         */
         Net* switchLearningMode();
-
-
-
-        /*
-            Apply config from Json
-        */
-        Net* applyConfig();
 
 
 
@@ -412,5 +444,49 @@ class Net: public Result
             Reset forward and backward counts for layers
         */
         Net* calcReset();
+
+
+
+        /*
+            Main event handler
+        */
+        Net* event
+        (
+            Event
+        );
+
+
+
+        /*
+            Create roles strung of the process in SUPT format
+            S - process works with server otherwice with local net
+            U - process has a UI interface
+            P - process uses as processor
+            T - process uses as teacher
+        */
+        Net* buildSupt
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Return Action const by string value
+        */
+        static Action stringToAction
+        (
+            string  /* String value */
+        );
+
+
+
+        /*
+            Return event string by Event
+        */
+        string eventToString
+        (
+            Event /* Event enum */
+        );
 };
 

@@ -87,7 +87,7 @@ Param* ParamList::getByName
 */
 Param* ParamList::getByName
 (
-    vector <string> aName   /* Names of parameter */
+    Path aName   /* Names of parameter */
 )
 {
     Param* result = NULL;
@@ -262,7 +262,7 @@ string ParamList::getString
 */
 string ParamList::getString
 (
-    vector <string> aName,  /* Name of parameter */
+    Path aName,  /* Name of parameter */
     string aDefault         /* default value */
 )
 {
@@ -310,7 +310,7 @@ bool ParamList::getBool
 */
 bool ParamList::getBool
 (
-    vector <string> aName,  /* Name of parameter */
+    Path aName,  /* Name of parameter */
     bool aDefault           /* default value */
 )
 {
@@ -359,7 +359,7 @@ long long int ParamList::getInt
 */
 long long int ParamList::getInt
 (
-    vector <string> aName,  /* Name of parameter */
+    Path aName,  /* Name of parameter */
     long long int aDefault  /* default value */
 )
 {
@@ -455,7 +455,7 @@ double ParamList::getDouble
 */
 double ParamList::getDouble
 (
-    vector <string> aName,  /* Name of parameter */
+    Path aName,  /* Name of parameter */
     double aDefault         /* default value */
 )
 {
@@ -503,7 +503,7 @@ ParamList* ParamList::getData
 */
 ParamList* ParamList::getData
 (
-    vector <string> aName,  /* Name of parameter */
+    Path aName,  /* Name of parameter */
     char*& aBuffer,
     size_t& aSize
 )
@@ -559,7 +559,7 @@ ParamList* ParamList::getObject
 */
 ParamList* ParamList::getObject
 (
-    vector <string> aName,      /* Name of parameter */
+    Path aName,      /* Name of parameter */
     ParamList* aDefault         /* default value */
 )
 {
@@ -574,7 +574,7 @@ ParamList* ParamList::getObject
 */
 ParamList* ParamList::getObject
 (
-    vector <string> aPath,
+    Path aPath,
     string aNameAttr,
     string aValue
 )
@@ -615,7 +615,7 @@ ParamList* ParamList::getObject
 */
 ParamList* ParamList::selectObject
 (
-    vector <string> aPath
+    Path aPath
 )
 {
     return getObject( aPath, this );
@@ -774,7 +774,7 @@ ParamList* ParamList::setValue
 */
 ParamList* ParamList::setPath
 (
-    vector <string> aName   /* Names of parameter */
+    Path aName   /* Names of parameter */
 )
 {
     ParamList* result = this;

@@ -1,6 +1,8 @@
 #include "net.h"
 
 #include "io.h"
+#include "../json/param_list_file.h"
+
 
 /*
     Constructor
@@ -16,6 +18,9 @@ Net::Net
     /* Create layers and nerves structures */
     layers = LayerList::create();
     nerves = NerveList::create();
+
+    /* Read actions */
+    actions = ParamListFile::create() -> fromJsonFile( "actions.json" );
 }
 
 
@@ -138,14 +143,10 @@ Net* Net::calc()
 {
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
-        /* Begin of calcuation loop */
-        readNet();
         /* Reset calc stages for all layers */
         calcReset();
-        /* Read layers */
-        layers -> readValues() -> readErrors();
-        /* Read nerves */
-        nerves -> readWeights();
+        /* Event */
+        event( THINKING_BEGIN );
     }
 
     if( layers -> getCount() > 0 )
@@ -195,10 +196,18 @@ Net* Net::calc()
                     calcLayerIndex = 0;
                 }
             }
+
+            if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
+            {
+                event( THINKING_END );
+            }
         }
         else
         {
-            /* All forward calculation is complete */
+            /*
+                All forward calculation is complete
+                Begin the learning process
+            */
 
             if( calcDirection )
             {
@@ -241,6 +250,11 @@ Net* Net::calc()
                 {
                     calcLayerIndex = layers -> getCount() - 1;
                 }
+            }
+
+            if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
+            {
+                event( LEARNING_END );
             }
         }
     }
@@ -375,25 +389,6 @@ Net* Net::switchLearningMode()
 
 
 
-/*
-    Apply config from Json
-*/
-Net* Net::applyConfig()
-{
-    /* Apply base config */
-    setId( getApplication() -> getConfig() -> getString( "id" ));
-//    setLearningSpeed( json -> getDouble( "learningSpeed", getLearningSpeed() ));
-//    setWakeupWeight( json -> getDouble( "wakeupWeight", getWakeupWeight() ));
-//    setErrorNormalize( json -> getDouble( "errorNormalize", getErrorNormalize() ));
-//    setStoragePath( json -> getString( "storagePath", getStoragePath() ));
-
-    readNet();
-
-    return this;
-}
-
-
-
 Net* Net::readNet()
 {
     /* Read net */
@@ -406,6 +401,8 @@ Net* Net::readNet()
         /* Apply net */
         if( json != NULL )
         {
+            buildSupt( json );
+
             auto configLayers = json -> getObject( "layers" );
 
             if( configLayers != NULL )
@@ -501,9 +498,11 @@ Net* Net::readNet()
                     );
                 }
             }
+            event( READ_NET );
         }
     }
     io -> destroy();
+
     return this;
 }
 
@@ -941,4 +940,116 @@ Net* Net::setId
 {
     id = aValue;
     return this;
+}
+
+
+
+/*
+    Create roles strung of the process in SUPT format
+    S - process works with server otherwice with local net
+    U - process has a UI interface
+    P - process uses as processor
+    T - process uses as teacher
+*/
+Net* Net::buildSupt
+(
+    ParamList* aConfig
+)
+{
+    auto tasks = aConfig -> getObject( "tasks" );
+    supt = tasks == NULL ? "****" :
+    (
+        aConfig -> getString( Path { "io", "source" } ) == "LOCAL" ? "*" :
+        (
+            (string) "S" +
+            ( tasks -> getObject( "UI" ) == NULL ? "*" : "U" ) +
+            ( tasks -> getObject( "PROC" ) == NULL ? "*_" : "P" ) +
+            ( tasks -> getObject( "TEACHER" ) == NULL ? "*" : "T" )
+        )
+    );
+    return this;
+}
+
+
+
+/*
+    Main event handler
+*/
+Net* Net::event
+(
+    Event aEvent
+)
+{
+    if( actions != NULL )
+    {
+        auto actionsList = actions -> getObject
+        (
+            Path{ supt, eventToString( aEvent ) }
+        );
+
+        if( actionsList != NULL )
+        {
+            actionsList -> loop
+            (
+                [ this ]
+                ( Param* aParam)
+                {
+                    switch( stringToAction( aParam -> getString()))
+                    {
+                        case READ_VALUES    :layers -> readValues(); break;
+                        case WRITE_VALUES   :layers -> writeValues(); break;
+                        case READ_ERRORS    :layers -> readErrors(); break;
+                        case WRITE_ERRORS   :layers -> writeErrors(); break;
+                        case READ_WEIGHTS   :nerves -> readWeights(); break;
+                        case WRITE_WEIGHTS  :nerves -> writeWeights(); break;
+                        case SYNC_RESET     :calcReset(); break;
+                    }
+                    return false;
+                }
+            );
+        }
+    }
+    return this;
+}
+
+
+
+/*
+    Return Action const by string value
+*/
+Action Net::stringToAction
+(
+    string aValue
+)
+{
+    if( aValue == "READ_VALUES" )   return READ_VALUES;
+    if( aValue == "WRITE_VALUES" )  return WRITE_VALUES;
+    if( aValue == "READ_ERRORS" )   return READ_ERRORS;
+    if( aValue == "WRITE_ERRORS" )  return WRITE_ERRORS;
+    if( aValue == "READ_WEIGHTS" )  return READ_WEIGHTS;
+    if( aValue == "WRITE_WEIGHTS" ) return WRITE_WEIGHTS;
+    if( aValue == "SYNC_RESET" )    return SYNC_RESET;
+    return ACTION_UNKNOWN;
+}
+
+
+
+/*
+    Return event string by Event
+*/
+string Net::eventToString
+(
+    Event aValue /* Event enum */
+)
+{
+    switch( aValue )
+    {
+        case LOOP_BEGIN     : return "LOOP_BEGIN";
+        case THINKING_BEGIN : return "THINKING_BEGIN";
+        case THINKING_END   : return "THINKING_END";
+        case LEARNING_END   : return "LEARNING_END";
+        case READ_NET       : return "READ_NET";
+        case TICHING_END    : return "TICHING_END";
+    }
+    return "EVENT_UNKNOWN";
 }

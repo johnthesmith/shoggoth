@@ -29,38 +29,6 @@ using namespace std;
 
 
 
-/*
-    List of events for neral net
-*/
-enum EVENTS =
-{
-    TICK_BEGIN,
-    TICHER_RESULT,
-    READ_NET,
-    CALC_BEGIN,
-    CALC_END,
-    LEARNING_END
-};
-
-
-
-/*
-    List of actions like resolving
-    actions = f( event, active modules )
-*/
-enum ACTIONS =
-{
-    READ_VALUES,
-    WRITE_VALUES,
-    READ_ERRORS,
-    WRITE_ERRORS,
-    READ_WEIGHTS,
-    WRITE_WEIGHTS,
-    CALC_INIT
-};
-
-
-
 class Loop : public Payload
 {
     private:
@@ -69,7 +37,7 @@ class Loop : public Payload
         NetGraph*               net                 = NULL;
 
         /* Payloads object  of roles */
-        Processor*              processor           = NULL;
+        bool                    processor           = false;
         Ui*                     ui                  = NULL;
         Scene*                  scene               = NULL;
         Teacher*                teacher             = NULL;
@@ -124,8 +92,10 @@ class Loop : public Payload
         /*
             Control ui components after reconfiguration
         */
-        Loop* uiControll();
-        bool serverControll();
+        Loop* uiControl();
+        Loop* processorControl();
+        Loop* teacherControl();
+        bool serverControl();
 
         /******************************************************************************
             Payload events

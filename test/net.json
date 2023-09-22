@@ -8,13 +8,13 @@
             "size"              :[ 20, 20, 2 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "caption"           :"Main input",
-            "io":
-            {
-                "values_read"   :[ "proc", "ui" ],
-                "values_write"  :[ "treacher" ],
-                "errors_read"   :[ "ui" ],
-                "errors_write"  :[ "proc" ]
-            }
+            "actions":
+            [
+                "READ_VALUES"   :[ "proc", "ui" ],
+                "WRITE_VALUES"  :[ "treacher" ],
+                "READ_ERRORS"   :[ "ui" ],
+                "WRITE_ERRORS"  :[ "proc" ]
+            ]
         },
         "cortex_1":
         {
@@ -22,7 +22,7 @@
             "name"              :"Cortex 1",
             "size"              :[ 20, 10, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui" ],
                 "values_write"  :[ "proc" ],
@@ -36,7 +36,7 @@
             "name"              :"Cortex 2",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 2.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui" ],
                 "values_write"  :[ "proc" ],
@@ -50,7 +50,7 @@
             "name"              :"Cortex 3",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui" ],
                 "values_write"  :[ "proc" ],
@@ -64,7 +64,7 @@
             "name"              :"Cortex 4",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui" ],
                 "values_write"  :[ "proc" ],
@@ -78,7 +78,7 @@
             "name"              :"Sample",
             "size"              :[ 8, 16, 1 ],
             "position"          :[ 0.0, 0.0, 6.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui", "proc" ],
                 "values_write"  :[ "teacher" ],
@@ -92,7 +92,7 @@
             "name"              :"Result",
             "size"              :[ 8, 16, 1 ],
             "position"          :[ 0.0, 0.0, 5.0 ],
-            "io":
+            "actions":
             {
                 "values_read"   :[ "ui", "teacher" ],
                 "values_write"  :[ "proc" ],

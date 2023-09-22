@@ -9,6 +9,10 @@
         "port"          :11120
     }
 
+    "ui":
+    {
+    }
+
     "proc":
     {
         "enabled"           :true,
