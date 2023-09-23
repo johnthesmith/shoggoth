@@ -1,5 +1,5 @@
 /*
-    Shoggoth
+    Shoggoth neural net
 */
 
 #pragma once
@@ -41,7 +41,6 @@ class Net: public Result
         /* Settings */
 
         string          id              = "";       /* Net id */
-        int             processorCount  = 1;        /* Count of threads */
 
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
         double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
@@ -341,35 +340,6 @@ class Net: public Result
             Read net configuration and reallocate net objects
         */
         Net* readNet();
-
-
-
-
-        Net* setProcessorNumber
-        (
-            int
-        );
-
-
-
-        int getProcessorNumber();
-
-
-
-        /*
-            Set processors count for calculation
-        */
-        Net* setProcessorCount
-        (
-            int
-        );
-
-
-
-        /*
-            Return processors count
-        */
-        int getProcessorCount();
 
 
 

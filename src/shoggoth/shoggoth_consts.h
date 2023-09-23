@@ -1,5 +1,8 @@
-#pragma once
+/*
+    Shoggoth constants and conversion methods
+*/
 
+#pragma once
 
 
 /*
