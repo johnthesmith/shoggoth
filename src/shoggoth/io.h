@@ -14,8 +14,7 @@
 #include "../lib/result.h"
 
 #include "net.h"
-#include "rpc_protocol.h"
-
+#include "shoggoth_consts.h"
 
 
 using namespace std;

@@ -1,5 +1,5 @@
 #include "net.h"
-
+#include "shoggoth_consts.h"
 #include "io.h"
 #include "../json/param_list_file.h"
 
@@ -22,6 +22,9 @@ Net::Net
     /* Read actions */
     actions = ParamListFile::create() -> fromJsonFile( "actions.json" );
     tasks = ParamList::create();
+
+    forwardList = LayerList::create();
+    backwardList = LayerList::create();
 }
 
 
@@ -32,7 +35,11 @@ Net::Net
 */
 Net::~Net()
 {
+    /* Clear layers lists */
     clear();
+
+    forwardList -> destroy();
+    backwardList -> destroy();
 
     tasks -> destroy();
     nerves -> destroy();
@@ -139,6 +146,116 @@ Net* Net::clear()
 
 
 /*
+    Build layers calculation sequence list
+    Method fills the next lists:
+        forwardList
+        backwardList
+*/
+Net* Net::precalc()
+{
+    if( layers -> getCount() > 0 )
+    {
+        /* Reset calc stages for all layers */
+        calcReset();
+
+        /* Calculate forward */
+        bool add = false;
+        int index = 0;
+        auto stop = false;
+        while( !stop )
+        {
+            /* Get calculated layer by index */
+            Layer* layer = ( Layer* ) layers -> getByIndex( index );
+
+            if
+            (
+                /* if layer not forward calculated and ... */
+                layer -> getForwardStage( 1 ) == CALC_NOT_START &&
+                /* all parents is prepared */
+                preparedParents( layer )
+            )
+            {
+                layer -> calcStartForward() -> calcCompleteForward();
+                forwardList -> push( layer );
+                add = true;
+            }
+
+            index++;
+
+            if( index >= layers -> getCount() )
+            {
+                index = 0;
+                if( ! add )
+                {
+                    stop = true;
+                    setCode( "LoopedNetForward" );
+                }
+                else
+                {
+                    add = false;
+                }
+            }
+
+            if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
+            {
+                stop = true;
+            }
+        }
+
+        /* Calculate backward */
+        add = false;
+        index = 0;
+        stop = false;
+        while( !stop )
+        {
+            /* Get calculated layer by index */
+            Layer* layer = ( Layer* ) layers -> getByIndex( index );
+
+            if
+            (
+                /* if layer not forward calculated and ... */
+                layer -> getBackwardStage( 1 ) == CALC_NOT_START &&
+                /* all parents is prepared */
+                preparedChildren( layer )
+            )
+            {
+                layer -> calcStartBackward() -> calcCompleteBackward();
+                backwardList -> push( layer );
+                add = true;
+            }
+
+            index++;
+
+            if( index >= layers -> getCount() )
+            {
+                index = 0;
+                if( ! add )
+                {
+                    stop = true;
+                    setCode( "LoopedNetBackward" );
+                }
+                else
+                {
+                    add = false;
+                }
+            }
+
+            if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
+            {
+                stop = true;
+            }
+        }
+
+        calcReset();
+    }
+
+    return this;
+}
+
+
+
+
+/*
     Calculate all layers
 */
 Net* Net::calc()
@@ -151,32 +268,28 @@ Net* Net::calc()
         event( THINKING_BEGIN );
     }
 
+    Layer* layer = NULL;
+
     if( layers -> getCount() > 0 )
     {
-        /* Dump sync to log */
-        //sync -> toLog( calcLayerIndex );
-
         if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
         {
             /* All forward calculations is not complete */
-
-            if( !calcDirection )
+            if( calcDirection == CALC_BACKWARD )
             {
                 /* Begin of forward calculation */
                 calcLayerIndex = 0;
-                calcDirection = true;
+                calcDirection = CALC_FORWARD;
             }
 
             /* Get calculated layer by index */
-            Layer* layer =
-            ( Layer* ) layers -> getByIndex( calcLayerIndex );
+            layer = ( Layer* ) forwardList
+            -> getByIndex( calcLayerIndex );
 
             if
             (
                 /* if layer not forward calculated and ... */
-                layer -> getForwardStage( processorCount ) == CALC_NOT_START &&
-                /* all parents is prepared */
-                preparedParents( layer )
+                layer -> getForwardStage( threadCount ) == CALC_NOT_START
             )
             {
                 /* Set default thread id */
@@ -184,19 +297,15 @@ Net* Net::calc()
                 /* Layer calculation */
                 layer -> calcStartForward();
                 /* --- thread begin --- */
-                layer -> calcValue( idThread, processorCount );
+                layer -> calcValue( idThread, threadCount );
                 /* Set local sync for local works */
                 layer -> calcCompleteForward();
                  /* --- thread end --- */
-           }
+            }
 
-            if( layer -> getForwardStage( processorCount ) == CALC_COMPLETE )
+            if( layer -> getForwardStage( threadCount ) == CALC_COMPLETE )
             {
                 calcLayerIndex++;
-                if( calcLayerIndex >= layers -> getCount() )
-                {
-                    calcLayerIndex = 0;
-                }
             }
 
             if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
@@ -211,26 +320,23 @@ Net* Net::calc()
                 Begin the learning process
             */
 
-            if( calcDirection )
+            if( calcDirection == CALC_FORWARD )
             {
                 /* Begin of backward calculation */
-                calcLayerIndex = layers -> getCount() - 1;
-                calcDirection = false;
+                calcLayerIndex = 0;
+                calcDirection = CALC_BACKWARD;
             }
 
-            Layer* layer =
-            ( Layer* ) layers -> getByIndex( calcLayerIndex );
+            layer = ( Layer* ) backwardList
+            -> getByIndex( calcLayerIndex );
 
             if
             (
                 /* if layer not backward calculated and ... */
-                layer -> getBackwardStage( processorCount ) == CALC_NOT_START &&
-                /* server exists or all children is prepared */
-                preparedChildren( layer )
+                layer -> getBackwardStage( threadCount ) == CALC_NOT_START
             )
             {
                 int idThread = 0;
-
                 layer -> calcStartBackward();
 
                 /* Calculate errors */
@@ -245,13 +351,9 @@ Net* Net::calc()
                 layer -> calcCompleteBackward();
             }
 
-            if( layer -> getBackwardStage( processorCount ) == CALC_COMPLETE )
+            if( layer -> getBackwardStage( threadCount ) == CALC_COMPLETE )
             {
-                calcLayerIndex--;
-                if( calcLayerIndex < 0 )
-                {
-                    calcLayerIndex = layers -> getCount() - 1;
-                }
+                calcLayerIndex++;
             }
 
             if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
@@ -259,7 +361,11 @@ Net* Net::calc()
                 event( LEARNING_END );
             }
         }
+
+        /* Dump sync to log */
+        syncToLog( layer );
     }
+
 
     return this;
 }
@@ -284,7 +390,7 @@ bool Net::preparedParents
         [ this,  &result ]( void* parent )
         {
             result = (( Layer* ) parent )
-            -> getForwardStage( processorCount ) == CALC_COMPLETE;
+            -> getForwardStage( threadCount ) == CALC_COMPLETE;
             return !result;
         }
     );
@@ -313,7 +419,7 @@ bool Net::preparedChildren
         {
 
             result = (( Layer* ) child )
-            -> getBackwardStage( processorCount ) == CALC_COMPLETE;
+            -> getBackwardStage( threadCount ) == CALC_COMPLETE;
             return !result;
         }
     );
@@ -395,7 +501,6 @@ Net* Net::readNet()
 {
     /* Read net */
     ParamList* json = NULL;
-
     auto io = Io::create( this );
     if( io -> call( CMD_READ_NET ) -> isOk() )
     {
@@ -403,7 +508,8 @@ Net* Net::readNet()
         /* Apply net */
         if( json != NULL )
         {
-            buildSuptAndTasks( json );
+
+            buildSuptAndTasks();
 
             auto configLayers = json -> getObject( "layers" );
 
@@ -420,10 +526,12 @@ Net* Net::readNet()
                         Param* iParam
                     )
                     {
-                        auto uses = iParam
+                        /* Create layer if its in used list */
+                        auto used = iParam
                         -> getObject()
-                        -> getObject( "uses" );
-                        if( uses -> contains( id ) )
+                        -> getObject( "used" );
+
+                        if( used != NULL && used -> isIntersect( tasks ))
                         {
                             auto layerId = iParam -> getName();
                             auto layer = createLayer( layerId );
@@ -504,6 +612,9 @@ Net* Net::readNet()
         }
     }
     io -> destroy();
+
+    /* Build layers calculation sequence list */
+    precalc();
 
     return this;
 }
@@ -672,7 +783,7 @@ Layer* Net::createLayer
     {
         auto ui = getApplication()
         -> getConfig()
-        -> getString( "role" ) == "ui";
+        -> getBool( Path{ "tasks", taskToString( TASK_UI ), "enabled" });
 
         /* Create new layer object */
         result = Layer::create
@@ -747,7 +858,9 @@ Net* Net::loadLayer
         else
         {
             /* Set event actions */
-            aLayer -> getActions() -> copyFrom( aParams -> getObject( "actions" ) );
+            aLayer
+            -> getActions()
+            -> copyFrom( aParams -> getObject( "actions" ) );
             /* Set Size from params */
             auto paramsSize = aParams -> getObject( "size" );
             if( paramsSize != NULL )
@@ -850,20 +963,20 @@ Net* Net::purgeLayers
 
 
 
-Net* Net::setProcessorCount
+Net* Net::setThreadCount
 (
     int a
 )
 {
-    processorCount = a;
+    threadCount = a;
     return this;
 }
 
 
 
-int Net::getProcessorCount()
+int Net::getThreadCount()
 {
-    return processorCount;
+    return threadCount;
 }
 
 
@@ -911,24 +1024,25 @@ CalcStage Net::getCalcStage
             if( result == CALC_UNKNOWN )
             {
                 result = aDirection == CALC_BACKWARD ?
-                layer -> getBackwardStage( processorCount ) :
-                layer -> getForwardStage( processorCount );
+                layer -> getBackwardStage( threadCount ) :
+                layer -> getForwardStage( threadCount );
             }
 
             if
             (
                 aDirection != CALC_BACKWARD &&
-                result != layer -> getForwardStage( processorCount ) ||
+                result != layer -> getForwardStage( threadCount ) ||
                 aDirection != CALC_FORWARD &&
-                result != layer -> getBackwardStage( processorCount )
+                result != layer -> getBackwardStage( threadCount )
             )
             {
                 result = CALC_START;
             }
 
-            return result != CALC_START;
+            return result == CALC_START;
         }
     );
+
     return result == CALC_UNKNOWN ? CALC_COMPLETE : result;
 }
 
@@ -955,17 +1069,21 @@ Net* Net::setId
     P - process uses as processor
     T - process uses as teacher
 */
-Net* Net::buildSuptAndTasks
-(
-    ParamList* aConfig
-)
+Net* Net::buildSuptAndTasks()
 {
-    auto tasksSection = aConfig -> getObject( "tasks" );
+    auto tasksSection = getApplication()
+    -> getConfig()
+    -> getObject( "tasks" );
 
     supt = "****";
     tasks -> clear();
 
-    if( aConfig -> getString( Path { "io", "source" } ) == "LOCAL" )
+    if
+    (
+        getApplication()
+        -> getConfig()
+        -> getString( Path { "io", "source" } ) != "LOCAL"
+    )
     {
         supt[ 0 ] = 'S';
         tasks -> pushString( taskToString( TASK_SERVER ));
@@ -1002,7 +1120,7 @@ Net* Net::event
     Event aEvent
 )
 {
-    if( actions != NULL )
+    if( actions -> isOk() )
     {
         auto actionsList = actions -> getObject
         (
@@ -1031,5 +1149,71 @@ Net* Net::event
             );
         }
     }
+    else
+    {
+        getLog()
+        -> warning( "Actions Is Empty with error" )
+        -> prm( "code",  actions -> getCode());
+    }
     return this;
+}
+
+
+
+Net* Net::syncToLog
+(
+    Layer* aLayer
+)
+{
+    getLog() -> begin( "Sync dump" );
+
+    /* Dump header */
+    getLog()
+    -> trace()
+    -> setWidth( 5 )
+    -> text( "Last" )
+    -> setWidth( 20 )
+    -> text( "Layer" )
+    -> setWidth( 15 )
+    -> text( "Forward" )
+    -> setWidth( 15 )
+    -> text( "Backward" );
+
+    int c = layers -> getCount();
+    for( int i=0; i<c; i++ )
+    {
+        auto layer = layers -> getByIndex( i );
+
+        getLog()
+        -> trace()
+        -> setWidth( 5 )
+        -> text( aLayer == layer ? ">" : " " )
+        -> setWidth( 20 )
+        -> text( layer -> getNameOrId() )
+        -> setWidth( 15 )
+        -> text( calcStageToString( layer -> getForwardStage( threadCount )))
+        -> setWidth( 15 )
+        -> text( calcStageToString( layer -> getBackwardStage( threadCount )))
+        ;
+    }
+
+    getLog()
+    -> setWidth( 0 )
+    -> end();
+
+    return this;
+}
+
+
+
+bool Net::isNextLoop()
+{
+    auto result = false;
+    auto currentMoment = now();
+    if( lastLoopMoment + loopTimeoutMcs > currentMoment )
+    {
+        result = true;
+        lastLoopMoment = currentMoment;
+    }
+    return result;
 }

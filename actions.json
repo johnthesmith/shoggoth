@@ -38,14 +38,14 @@
     {
         "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
         "THINKING_BEGIN":[ "READ_VALUES" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ]
+        "THINKING_END"  :[ "WRITE_VALUES" ],
         "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
     },
     "S*PT":
     {
         "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ]
-        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
+        "THINKING_END"  :[ "WRITE_VALUES" ],
+        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ],
         "TEACHING_END"  :[ "WRITE_VALUES" ]
     },
     "SU**":

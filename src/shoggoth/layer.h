@@ -27,21 +27,10 @@
 #include "nerve_list.h"
 #include "neuron_list.h"
 #include "nerve_type.h"
-
-#include "rpc_protocol.h"
+#include "shoggoth_consts.h"
 
 
 using namespace std;
-
-
-
-enum CalcStage
-{
-    CALC_UNKNOWN,
-    CALC_NOT_START,
-    CALC_START,
-    CALC_COMPLETE
-};
 
 
 

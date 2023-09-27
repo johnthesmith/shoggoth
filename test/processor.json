@@ -1,24 +1,20 @@
 {
     "role"              :"processor",
     "id"                :"proc",
+    "loop_sleep_mcs"    :1000000,
 
     "io":
     {
         "source"        :"SERVER",
         "host"          :"127.0.0.1",
         "port"          :11120
-    }
+    },
 
     "tasks":
     {
-        "TASK_UI":
-        {
-        }
-
         "TASK_PROC":
         {
             "enabled"           :true,
-            "loop_sleep_mcs"    :1000000,
             "learningMode"      :false,
             "learningSpeed"     :0.005,
             "wakeupWeight"      :0.0001,

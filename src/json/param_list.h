@@ -201,8 +201,8 @@ struct ParamList : public Heap
         */
         bool getBool
         (
-            Path,    /* Name path of parameter */
-            bool = false        /* default value */
+            Path,           /* Name path of parameter */
+            bool = false    /* default value */
         );
 
 

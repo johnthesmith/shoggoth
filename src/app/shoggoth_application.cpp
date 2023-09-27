@@ -5,7 +5,6 @@
 #include "../lib/utils.h"
 #include "../lib/log.h"
 #include "../json/param_list.h"
-#include "../shoggoth/shoggoth_rpc_server.h"
 #include "../lib/buffer_to_hex.h"
 
 
@@ -104,72 +103,7 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
-    /* Build config object */
-    checkConfigUpdate();
-
     Loop::create ( this ) -> loop() -> destroy();
-
-//    switch
-//    (
-//        roleFromString( getConfig() -> getString( "role" ) )
-//    )
-//    {
-//        case ROLE_SERVER:
-//        {
-//            getLog()
-//            -> trace( "Application role" )
-//            -> prm( "Name", roleToString( ROLE_SERVER ));
-//
-//            auto server = ShoggothRpcServer::create( this );
-//            server -> setPort( getConfig() -> getInt( "port", 11120 ));
-//            server -> up();
-//            server -> destroy();
-//        }
-//        break;
-//
-//        case ROLE_TEACHER:
-//        {
-//            getLog()
-//            -> trace( "Application role" )
-//            -> prm( "Name", roleToString( ROLE_TEACHER ));
-//            Teacher::create( this ) -> loop() -> destroy();
-//        }
-//        break;
-//
-//        case ROLE_PROCESSOR:
-//            getLog()
-//            -> trace( "Application role" )
-//            -> prm( "Name", roleToString( ROLE_PROCESSOR ));
-//            Processor::create( this ) -> loop() -> destroy();
-//        break;
-//
-//        case ROLE_UI:
-//            getLog()
-//            -> trace( "Application role" )
-//            -> prm( "Name", roleToString( ROLE_UI ));
-//
-//            if( getConfig() -> getBool( Path{ "ui", "enabled" } ))
-//            {
-//                auto ui     = Ui::create( this );
-//                auto scene  = Scene::create( getLog() );
-//
-//                scene
-//                -> getFont()
-//                -> setFontName( getConfig() -> getString( Path{ "ui", "fontName" } ))
-//                -> setGliphSize( getConfig() -> getInt( Path{ "ui", "gliphSize" }, 16 ))
-//                -> setCharSet( getConfig() -> getString( Path{ "ui", "charSet" }));
-//
-//                scene
-//                -> init()
-//                -> setPayload( ui )
-//                -> loop()
-//                -> finit()
-//                -> destroy();
-//
-//                ui -> destroy();
-//            }
-//        break;
-//    }
 
     getLog() -> end( "Application stop" );
 

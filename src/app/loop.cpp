@@ -93,7 +93,7 @@ bool Loop::serverControl()
     bool result =
     getApplication()
     -> getConfig()
-    -> getBool( Path { "tasks", "server", "enabled" } );
+    -> getBool( Path { "tasks",  taskToString( TASK_SERVER ), "enabled" } );
     if( result )
     {
         if( server == NULL )
@@ -103,7 +103,7 @@ bool Loop::serverControl()
             (
                 getApplication()
                 -> getConfig()
-                -> getInt( Path{ "tasks", "server", "port" }, 11120 )
+                -> getInt( Path{ "tasks",  taskToString( TASK_SERVER ), "port" }, 11120 )
             );
         }
     }
@@ -126,7 +126,7 @@ Loop* Loop::uiControl()
     (
         getApplication()
         -> getConfig()
-        -> getBool( Path { "tasks", "ui", "enabled" } ))
+        -> getBool( Path { "tasks", taskToString( TASK_UI ), "enabled" } ))
     {
         if( ui == NULL )
         {
@@ -138,19 +138,19 @@ Loop* Loop::uiControl()
             (
                 getApplication()
                 -> getConfig()
-                -> getString( Path{ "tasks", "ui", "fontName" } )
+                -> getString( Path{ "tasks", taskToString( TASK_UI ), "fontName" } )
             )
             -> setGliphSize
             (
                 getApplication()
                 -> getConfig()
-                -> getInt( Path{ "tasks", "ui", "gliphSize" }, 16 )
+                -> getInt( Path{ "tasks", taskToString( TASK_UI ), "gliphSize" }, 16 )
             )
             -> setCharSet
             (
                 getApplication()
                 -> getConfig()
-                -> getString( Path{ "tasks", "ui", "charSet" })
+                -> getString( Path{ "tasks", taskToString( TASK_UI ), "charSet" })
             );
 
             scene
@@ -182,15 +182,30 @@ Loop* Loop::processorControl()
     (
         getApplication()
         -> getConfig()
-        -> getBool( Path { "tasks", "processor", "enabled" } ))
+        -> getBool( Path { "tasks",  taskToString( TASK_PROC ), "enabled" } ))
     {
         if( !processor )
         {
             processor = true;
             /* Apply config */
-            net -> setLearningSpeed( getApplication() -> getConfig() -> getDouble( "learningSpeed", net -> getLearningSpeed() ));
-            net -> setWakeupWeight( getApplication() -> getConfig() -> getDouble( "wakeupWeight", net -> getWakeupWeight() ));
-            net -> setErrorNormalize( getApplication() -> getConfig() -> getDouble( "errorNormalize", net -> getErrorNormalize() ));
+            net -> setLearningSpeed
+            (
+                getApplication()
+                -> getConfig()
+                -> getDouble( "learningSpeed", net -> getLearningSpeed() )
+            );
+            net -> setWakeupWeight
+            (
+                getApplication()
+                -> getConfig()
+                -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
+            );
+            net -> setErrorNormalize
+            (
+                getApplication()
+                -> getConfig()
+                -> getDouble( "errorNormalize", net -> getErrorNormalize() )
+            );
         }
     }
     else
@@ -305,7 +320,10 @@ void Loop::onLoop
         else
         {
             /* Begin of net loop */
-            net -> event( LOOP_BEGIN );
+            if( net -> isNextLoop() )
+            {
+                net -> event( LOOP_BEGIN );
+            }
 
             /* Teacher */
             if( teacher != NULL )

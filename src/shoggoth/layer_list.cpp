@@ -156,10 +156,13 @@ LayerList* LayerList::readValues
             if
             (
                 aTasks == NULL ||
-                iLayer
-                -> getActions()
-                -> getObject( actionToString( READ_VALUES ))
-                -> isIntersect( aTasks )
+                aTasks
+                -> isIntersect
+                (
+                    iLayer
+                    -> getActions()
+                    -> getObject( actionToString( READ_VALUES ))
+                )
             )
             {
                 iLayer -> readValues();
@@ -186,13 +189,16 @@ LayerList*  LayerList::writeValues
         ( void* aLayer )
         {
             auto iLayer = ( Layer* ) aLayer;
+
             if
             (
                 aTasks == NULL ||
-                iLayer
-                -> getActions()
-                -> getObject( actionToString( WRITE_VALUES ))
-                -> isIntersect( aTasks )
+                aTasks -> isIntersect
+                (
+                    iLayer
+                    -> getActions()
+                    -> getObject( actionToString( WRITE_VALUES ))
+                )
             )
             {
                 iLayer -> writeValues();
@@ -223,10 +229,13 @@ LayerList* LayerList::readErrors
             if
             (
                 aTasks == NULL ||
-                iLayer
-                -> getActions()
-                -> getObject( actionToString( READ_ERRORS ))
-                -> isIntersect( aTasks )
+                aTasks
+                -> isIntersect
+                (
+                    iLayer
+                    -> getActions()
+                    -> getObject( actionToString( READ_ERRORS ))
+                )
             )
             {
                 iLayer -> readErrors();
@@ -256,10 +265,13 @@ LayerList*  LayerList::writeErrors
             if
             (
                 aTasks == NULL ||
-                iLayer
-                -> getActions()
-                -> getObject( actionToString( WRITE_ERRORS ))
-                -> isIntersect( aTasks )
+                aTasks
+                -> isIntersect
+                (
+                    iLayer
+                    -> getActions()
+                    -> getObject( actionToString( WRITE_ERRORS ))
+                )
             )
             {
                 iLayer -> writeErrors();

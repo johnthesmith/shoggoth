@@ -1,14 +1,10 @@
 /*
     Shoggoth neural net
+    Its contains mail neural logic, create and connect neurons Layers through Nerves.
+    Emplements main methods for work with net
 */
 
 #pragma once
-
-/*
-    Neuron net class for Shogogth.
-    Contains list of neuron layers.
-    Emplements main methods for work with net
-*/
 
 
 
@@ -23,7 +19,6 @@
 #include "bind_type.h"
 #include "layer_list.h"
 #include "nerve_list.h"
-#include "shoggoth_consts.h"
 
 
 
@@ -32,15 +27,25 @@ class Net: public Result
 {
     private:
 
-        /* State */
+        /* Objects */
 
         Application*    application     = NULL;     /* The log object */
         NerveList*      nerves          = NULL;     /* List of nerves*/
         LayerList*      layers          = NULL;     /* The layer list object */
 
+        /* Events */
+        string          supt            = "****";   /* Roles of the Net in SUPT */
+        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
+        ParamList*      tasks           = NULL;     /* List of participants tasks */
+
+        /* Calculation state */
+        CalcDirection calcDirection     = CALC_FORWARD; /* Calculation direction */
+        int calcLayerIndex              = 0;        /* Current lsyer for calculation */
+
         /* Settings */
 
         string          id              = "";       /* Net id */
+        int             threadCount     = 1;        /* Count of threads */
 
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
         double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
@@ -50,15 +55,12 @@ class Net: public Result
 
         string  storagePath             = "net";
 
-        /* Calculation state */
+        LayerList* forwardList          = NULL;     /* Layer list with forward calculation sequence */
+        LayerList* backwardList         = NULL;     /* Layer list with backward calculation sequence */
 
-        bool calcDirection              = false;    /* Calculation direction true - forward, false - backward */
-        int calcLayerIndex              = 0;        /* Current lsyer for calculation */
 
-        /* Events */
-        string          supt            = "****";   /* Roles of the Net in SUPT */
-        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
-        ParamList*      tasks           = NULL;     /* List of participants tasks */
+        long int    lastLoopMoment      = 0;        /* */
+        long int    loopTimeoutMcs      = 1000000;
 
     public:
 
@@ -143,6 +145,13 @@ class Net: public Result
             Request actual data layer form server
         */
         Net* writeLayersToServer();
+
+
+
+        /*
+            Build layers calculation sequence list
+        */
+        Net* precalc();
 
 
 
@@ -344,6 +353,23 @@ class Net: public Result
 
 
         /*
+            Set processors count for calculation
+        */
+        Net* setThreadCount
+        (
+            int
+        );
+
+
+
+        /*
+            Return processors count
+        */
+        int getThreadCount();
+
+
+
+        /*
             Load parents layers and check forward calculation
             return true if all parents layers is forward calculated
             otherwise return false
@@ -401,9 +427,17 @@ class Net: public Result
             P - process uses as processor
             T - process uses as teacher
         */
-        Net* buildSuptAndTasks
+        Net* buildSuptAndTasks();
+
+        /* Dump sync info to log */
+        Net* syncToLog
         (
-            ParamList*
+            Layer* layer
         );
+
+
+
+
+        bool isNextLoop();
 };
 

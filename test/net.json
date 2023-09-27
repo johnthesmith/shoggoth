@@ -3,120 +3,129 @@
     {
         "retina":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
             "size"              :[ 20, 20, 2 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "caption"           :"Main input",
             "actions":
-            [
+            {
                 "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
                 "WRITE_VALUES"  :[ "TASK_TEACHER" ],
                 "READ_ERRORS"   :[ "TASK_UI" ],
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
-            ]
+            }
         },
         "cortex_1":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 1",
             "size"              :[ 20, 10, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "cortex_2":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 2",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 2.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "cortex_3":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 3",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "cortex_4":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 4",
             "size"              :[ 10, 10, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "sample":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Sample",
             "size"              :[ 8, 16, 1 ],
             "position"          :[ 0.0, 0.0, 6.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI", "TASK_PROC" ],
-                "values_write"  :[ "TASK_TEACHER" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI", "TASK_PROC" ],
+                "WRITE_VALUES"  :[ "TASK_TEACHER" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "result":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Result",
             "size"              :[ 8, 16, 1 ],
             "position"          :[ 0.0, 0.0, 5.0 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI", "TASK_TEACHER" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "command":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Command",
             "size"              :[ 1, 1, 1 ],
-            "position"          :[ 0.0, -0.5, 5.5 ]
+            "position"          :[ 0.0, -0.5, 5.5 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
         "error":
         {
+            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Error",
             "size"              :[ 1, 1, 1],
-            "position"          :[ 0.0, 0.5, 4.5 ]
+            "position"          :[ 0.0, 0.5, 4.5 ],
             "actions":
             {
-                "values_read"   :[ "TASK_UI", "TASK_TEACHER" ],
-                "values_write"  :[ "TASK_PROC" ],
-                "errors_read"   :[ "TASK_UI" ],
-                "errors_write"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
+                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         }
     },

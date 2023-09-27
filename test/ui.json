@@ -4,7 +4,7 @@
 
     "io":
     {
-        "source"            :"LOCAL",
+        "source"            :"SERVER",
         "net"               :"test/net.json",
         "host"              :"127.0.0.1",
         "port"              :11120

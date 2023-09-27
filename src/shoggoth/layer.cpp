@@ -6,8 +6,6 @@
 #include "../graph/log_points.h"
 #include "../lib/rpc_client.h"
 
-#include "rpc_protocol.h"
-
 #include "func.h"
 #include "io.h"
 #include "layer.h"
@@ -41,6 +39,9 @@ Layer::Layer
     worldExists     = aWorldExists;
     selectedExists  = aSelectedExists;
 
+    /* Actions */
+    actions         = ParamList::create();
+
     /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
 }
@@ -52,6 +53,9 @@ Layer::Layer
 */
 Layer::~Layer()
 {
+    /* Actions destroy */
+    actions -> destroy();
+
     /* Destroy neurons */
     setSize();
 

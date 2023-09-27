@@ -72,7 +72,10 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 )
 {
     auto method = aArguments -> getInt( "method" );
-    getLog() -> trace( "Method" ) -> prm( "Name", cmdToStr( ( Command ) method ));
+
+    getLog()
+    -> begin( "Method" )
+    -> prm( "Name", commandToString( ( Command ) method ));
 
     switch( method )
     {
@@ -86,6 +89,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 
         default                 :unknownMethod( aArguments, aResults); break;
     }
+
+    getLog() -> end();
 
     return this;
 }
@@ -214,6 +219,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeValues
         aArguments -> getData( "data", buffer, size );
         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
         {
+            getLog() -> trace() -> prm( "IdLayer", idLayer );
             /* Storage data */
             data
             -> setPath( vector <string>{ "layers", idLayer } )
@@ -249,7 +255,7 @@ ShoggothRpcServer* ShoggothRpcServer::readValues
 
     data -> getData
     (
-        vector <string>{ "layers", idLayer, "values" },
+        Path{ "layers", idLayer, "values" },
         buffer,
         size
     );

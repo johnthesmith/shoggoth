@@ -164,15 +164,20 @@ RpcClient* RpcClient::call
         if( isOk() )
         {
             /* Result code processing */
-            auto code = getAnswer() -> getString( vector<string>{ "result", "code" });
+            auto code = getAnswer() -> getString( Path{ "result", "code" });
             if( code != "ok" )
             {
+                /* Protocol error */
                 setCode( code );
-                getLog()
-                -> warning( "RPC call error" )
-                -> prm( "method", aMethod )
-                -> prm( "code", code );
             }
+        }
+        else
+        {
+            /* System error */
+            getLog()
+            -> warning( "RPC call error" )
+            -> prm( "method", aMethod )
+            -> prm( "code", getCode() );
         }
     }
     return this;
@@ -196,11 +201,14 @@ RpcClient* RpcClient::call
             if( code != "ok" )
             {
                 setCode( code );
-                getLog()
-                -> warning( "Rpc call error" )
-                -> prm( "method", aMethod )
-                -> prm( "code", code );
             }
+        }
+        else
+        {
+            getLog()
+            -> warning( "Rpc call error" )
+            -> prm( "method", aMethod )
+            -> prm( "code", getCode() );
         }
     }
     return this;

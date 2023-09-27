@@ -1251,7 +1251,10 @@ ParamList* ParamList::copyFrom
     ParamList* aSource
 )
 {
-    aSource -> copyTo( this );
+    if( aSource != NULL )
+    {
+        aSource -> copyTo( this );
+    }
     return this;
 }
 
@@ -1595,17 +1598,20 @@ ParamList* ParamList::intersect
     ParamList* aResult
 )
 {
-    auto ic = getCount();
-    auto jc = aArgument -> getCount();
-
-    for( int i = 0; i < ic; i ++)
+    if( aArgument != NULL )
     {
-        auto pi = getByIndex( i );
-        for( int j = 0; j < jc; j ++)
+        auto ic = getCount();
+        auto jc = aArgument -> getCount();
+
+        for( int i = 0; i < ic; i ++)
         {
-            if( pi -> isEqual( aArgument -> getByIndex( j )))
+            auto pi = getByIndex( i );
+            for( int j = 0; j < jc; j ++)
             {
-                aResult -> push( Param::create() -> copyFrom( pi ));
+                if( pi -> isEqual( aArgument -> getByIndex( j )))
+                {
+                    aResult -> push( Param::create() -> copyFrom( pi ));
+                }
             }
         }
     }

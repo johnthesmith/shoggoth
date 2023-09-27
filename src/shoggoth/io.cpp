@@ -106,17 +106,21 @@ Io* Io::call
             rpc -> destroy();
         }
 
-        /* Return code */
+        /*
+            Return code
+        */
         if( !isOk() )
         {
             getLog()
-            -> warning( "IO error" )
+            -> warning( "Shoggot IO error" )
+            -> prm( "command", commandToString( aCommand ))
             -> prm( "code", getCode() );
         }
     }
 
     return this;
 }
+
 
 
 

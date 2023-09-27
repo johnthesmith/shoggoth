@@ -1,7 +1,7 @@
 #include "../lib/rpc_server.h"
 #include "../lib/application.h"
 
-#include "../shoggoth/rpc_protocol.h"
+#include "../shoggoth/shoggoth_consts.h"
 #include "../shoggoth/sync.h"
 
 

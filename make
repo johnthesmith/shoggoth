@@ -28,10 +28,8 @@
 ./shab execute "upx -9 shoggoth"
 
 # Run
-./shab header "run"
-
-./shab execute "./shoggoth --config=test/server.json --log=storage.log --htopdebug" &
-#./shab execute "./shoggoth --config=test/processor.json --log=processor.log --htopdebug" &
-./shab execute "./shoggoth --config=test/ui.json --log=ui.log --htopdebug"
-
+#./shab header "run"
+#./shab execute "./shoggoth --config=test/server.json --log=server.log --htopdebug" &
+#./shab execute "./shoggoth --config=test/processor.json --log=processor.log --htopdebug"
+#./shab execute "./shoggoth --config=test/ui.json --log=ui.log --htopdebug"
 #./shab execute "./shoggoth --config=test/teacher.json --log=teacher.log"

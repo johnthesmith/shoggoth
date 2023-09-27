@@ -1,4 +1,4 @@
-#include "string"
+#include <string>
 #include "shoggoth_consts.h"
 
 
@@ -85,4 +85,47 @@ std::string taskToString
         case TASK_SERVER    : return "TASK_SERVER";
     }
     return "TASK_UNKNOWN";
+}
+
+
+
+/*
+    Convert command to string
+*/
+std::string commandToString
+(
+    Command a
+)
+{
+    switch( a )
+    {
+        case CMD_READ_NET       : return "READ_NET";
+        case CMD_WRITE_VALUES   : return "WRITE_VALUES";
+        case CMD_READ_VALUES    : return "READ_VALUES";
+        case CMD_WRITE_ERRORS   : return "WRITE_ERRORS";
+        case CMD_READ_ERRORS    : return "READ_ERRORS";
+        case CMD_WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
+        case CMD_READ_WEIGHTS   : return "READ_WEIGHTS";
+    }
+    return "UNKNOWN";
+}
+
+
+
+/*
+    Convert command to string
+*/
+std::string calcStageToString
+(
+    CalcStage a
+)
+{
+    switch( a )
+    {
+        case CALC_UNKNOWN   : return "CALC_UNKNOWN";
+        case CALC_NOT_START : return "CALC_NOT_START";
+        case CALC_START     : return "CALC_START";
+        case CALC_COMPLETE  : return "CALC_COMPLETE";
+    }
+    return "CALC_UNKNOWN";
 }
