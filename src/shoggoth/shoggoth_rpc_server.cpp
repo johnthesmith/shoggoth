@@ -73,9 +73,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 {
     auto method = aArguments -> getInt( "method" );
 
-    getLog()
-    -> begin( "Method" )
-    -> prm( "Name", commandToString( ( Command ) method ));
+    getLog() -> trace( commandToString( ( Command ) method ));
 
     switch( method )
     {
@@ -89,8 +87,6 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 
         default                 :unknownMethod( aArguments, aResults); break;
     }
-
-    getLog() -> end();
 
     return this;
 }
@@ -127,7 +123,7 @@ ShoggothRpcServer* ShoggothRpcServer::setAnswerResult
 )
 {
     aAnswer
-    -> setPath( vector <string> { "result" })
+    -> setPath( Path { "result" })
     -> setString(  "code", aCode );
     return this;
 }
@@ -219,10 +215,9 @@ ShoggothRpcServer* ShoggothRpcServer::writeValues
         aArguments -> getData( "data", buffer, size );
         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
         {
-            getLog() -> trace() -> prm( "IdLayer", idLayer );
             /* Storage data */
             data
-            -> setPath( vector <string>{ "layers", idLayer } )
+            -> setPath( Path{ "layers", idLayer } )
             -> setData
             (
                 "values",
@@ -303,11 +298,12 @@ ShoggothRpcServer* ShoggothRpcServer::writeErrors
         char* buffer = NULL;
         size_t size = 0;
         aArguments -> getData( "data", buffer, size );
+
         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
         {
             /* Storage data */
             data
-            -> setPath( vector <string>{ "layers", idLayer } )
+            -> setPath( Path{ "layers", idLayer } )
             -> setData
             (
                 "errors",
@@ -340,7 +336,7 @@ ShoggothRpcServer* ShoggothRpcServer::readErrors
 
     data -> getData
     (
-        vector <string>{ "layers", idLayer, "errors" },
+        Path{ "layers", idLayer, "errors" },
         buffer,
         size
     );
@@ -369,6 +365,30 @@ ShoggothRpcServer* ShoggothRpcServer::writeWeights
     ParamList* aResults
 )
 {
+    /* Read id  */
+    auto idFrom = aArguments -> getString( "idFrom" );
+    auto idTo = aArguments -> getString( "idTo" );
+
+    /* Get layer data */
+    char* buffer = NULL;
+    size_t size = 0;
+    aArguments -> getData( "data", buffer, size );
+
+    if
+    (
+        /* Arguments validation */
+        validate( idFrom != "", "IdFromIsEmpty", aResults ) &&
+        validate( idTo != "", "IdFromIsEmpty", aResults ) &&
+        validate( buffer != NULL, "DataIsEmpty", aResults )
+    )
+    {
+        /* Storage data */
+        data
+        -> setPath( Path{ "nerves", idFrom + " " + idTo } )
+        -> setData( "weights", buffer, size );
+        /* Return positive answer */
+        setAnswerResult( aResults, "ok" );
+    }
     return this;
 }
 
@@ -383,5 +403,29 @@ ShoggothRpcServer* ShoggothRpcServer::readWeights
     ParamList* aResults
 )
 {
+    /* Read id  */
+    auto idFrom = aArguments -> getString( "idFrom" );
+    auto idTo = aArguments -> getString( "idTo" );
+
+    /* Get layer data */
+    char* buffer = NULL;
+    size_t size = 0;
+
+    data -> getData
+    (
+        Path{ "nerves", idFrom + " " + idTo, "weights" },
+        buffer,
+        size
+    );
+
+    if( buffer != NULL )
+    {
+        aResults -> setData( "data", buffer, size );
+        setAnswerResult( aResults, "ok" );
+    }
+    else
+    {
+        setAnswerResult( aResults, "NerveWeightDataNotFound" );
+    }
     return this;
 }

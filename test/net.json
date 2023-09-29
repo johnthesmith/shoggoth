@@ -5,7 +5,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
-            "size"              :[ 20, 20, 2 ],
+            "size"              :[ 20, 20, 3 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "caption"           :"Main input",
             "actions":

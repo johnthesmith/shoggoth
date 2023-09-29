@@ -10,6 +10,7 @@
 #include "shoggoth_application.h"
 
 
+
 using namespace std;
 
 
@@ -19,8 +20,14 @@ class Teacher : public Payload
     private:
 
         Net*        net             = NULL;
-        Json*       batch           = NULL;
         long int    lastBatchUpdate = 0;
+
+        /*
+            Config
+        */
+        double      errorLimit      = 0;
+        string      idErrorLayer    = "";
+        ParamList*  batches         = NULL;
 
     public:
 
@@ -29,7 +36,7 @@ class Teacher : public Payload
         */
         Teacher
         (
-            ShoggothApplication*
+            Net*
         );
 
 
@@ -46,7 +53,7 @@ class Teacher : public Payload
         */
         static Teacher* create
         (
-            ShoggothApplication*
+            Net*
         );
 
 
@@ -58,6 +65,9 @@ class Teacher : public Payload
 
 
 
+        /*
+            Return application object
+        */
         ShoggothApplication* getApplication();
 
 
@@ -67,18 +77,40 @@ class Teacher : public Payload
         */
 
 
+
         /*
-            Run payload
         */
-        void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        ) override;
-
-
-
         Teacher* task();
+
+
+
+        /******************************************************************************
+            Getters and setters
+        */
+
+
+
+        Teacher* setErrorLimit
+        (
+            double
+        );
+
+
+
+        double getErrorLimit();
+
+
+
+        Teacher* setIdErrorLayer
+        (
+            string
+        );
+
+
+
+        string getIdErrorLayer();
+
+
+
+        ParamList* getBatches();
 };

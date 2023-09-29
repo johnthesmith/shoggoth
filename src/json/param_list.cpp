@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "../lib/math.h"
+#include "../lib/rnd.h"
 #include "../lib/buffer_to_hex.h"
 
 #include "param.h"
@@ -1589,6 +1590,19 @@ ParamList* ParamList::getRoot()
 
 
 
+
+/*
+    Return random param if exists
+*/
+Param* ParamList::getRnd()
+{
+    return  ( getCount() > 0 )
+    ? getByIndex( Rnd::get( 0, getCount()-1 ))
+    : NULL;
+}
+
+
+
 /*
     Return intersections with argiments
 */
@@ -1634,4 +1648,3 @@ bool ParamList::isIntersect
     arg -> destroy();
     return result;
 }
-

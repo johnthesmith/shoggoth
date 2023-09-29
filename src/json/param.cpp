@@ -486,7 +486,6 @@ Param* Param::copyFrom
 
 
 /*
-    Constructor with other parm
 */
 bool Param::isEqual
 (
@@ -498,4 +497,14 @@ bool Param::isEqual
     a -> getType() == getType() &&
     a -> getSize() == getSize() &&
     memcmp( a -> getValue(), getValue(), getSize()) == 0;
+}
+
+
+
+/*
+    Return true if paramete is object
+*/
+bool Param::isObject()
+{
+    return getType() == KT_OBJECT;
 }

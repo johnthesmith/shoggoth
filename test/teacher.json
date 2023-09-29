@@ -1,41 +1,42 @@
 {
-    "role"          :"teacher",
-    "id"            :"teacher",
-    "storagePath"   :"test",
+    "netLoopTimeoutMcs"     :1000000,
 
-    "error"         :"error",
-
-    "use":
+    "io":
     {
-        "error"     :[ "receive" ],
-        "retina"    :[ "receive", "send" ],
-        "sample"    :[ "receive", "send" ]
+        "source"            :"SERVER",
+        "net"               :"test/net.json",
+        "host"              :"127.0.0.1",
+        "port"              :11120
     },
 
-    "batches":
-    [
+    "tasks":
+    {
+        "TASK_TEACHER":
         {
-            "sample":
+            "enabled"           :true,
+            "idErrorLayer"      :"error",
+            "errorLimit"        :0.01,
+
+            "batches":
             [
-                "cat"
-            ],
-            "retina":
-            [
-                "./test/cat1.png",
-                "./test/cat2.png"
-            ]
-        },
-        {
-            "sample":
-            [
-                "dog",
-                "little dog"
-            ],
-            "reting":
-            [
-                "./test/dog1.png",
-                "./test/dog2.png"
+                {
+                    "sample":
+                    [
+                        { "text"    :"cat" }
+                    ],
+                    "retina":
+                    [
+                        { "image"  :"./test/cat1.png" },
+                        { "folder" :"./test/cat2.png" },
+                        { "rnd"    :1.0 },
+                        { "text"   :"asdasdas" },
+                        { "guid"   :"asdasdasdas" },
+                        { "vlue"   :1.0 }
+                    ]
+                }
             ]
         }
-    ]
+    }
 }
+
+

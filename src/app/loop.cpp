@@ -222,6 +222,32 @@ Loop* Loop::processorControl()
 
 Loop* Loop::teacherControl()
 {
+    auto cfg = getApplication()
+    -> getConfig()
+    -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
+
+    if( cfg != NULL && cfg -> getBool( "enabled" ))
+    {
+        if( teacher == NULL )
+        {
+            teacher = Teacher::create( (Net*) net );
+        }
+        /* Read config */
+        /* Read batches list */
+        teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
+        /* Read layer with errors */
+        teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
+        /* Read error limit */
+        teacher -> setErrorLimit( cfg -> getDouble( "errorLimit" ));
+    }
+    else
+    {
+        if( teacher )
+        {
+            teacher -> destroy();
+        }
+    }
+
     return this;
 }
 
@@ -328,7 +354,7 @@ void Loop::onLoop
             /* Teacher */
             if( teacher != NULL )
             {
-                /* ... */
+                teacher -> task();
             }
 
             /* Processor */

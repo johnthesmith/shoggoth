@@ -267,4 +267,11 @@ class Param
         (
             Param*
         );
+
+
+
+        /*
+            Return true if paramete is objec
+        */
+        bool isObject();
 };

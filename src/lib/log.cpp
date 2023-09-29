@@ -615,7 +615,10 @@ Log* Log::end
     long long momentBegin = beginStack -> top();
     beginStack -> pop();
     long long delta = momentLineBegin - momentBegin;
-    prm( "Length", delta );
+    pushColor();
+    setColor( colorLabel );
+    value( delta );
+    popColor();
 
     return this;
 }

@@ -461,3 +461,31 @@ void toLowerCase
         a[ i ] = tolower( a[ i ] );
     }
 }
+
+
+
+void b
+(
+    string a
+)
+{
+    cout << a << "\n";
+    if( a == "break" )
+    {
+        exit( 0 );
+    }
+}
+
+
+
+void b
+(
+    double a
+)
+{
+    cout << a << "\n";
+    if( a == 0 )
+    {
+        exit( 0 );
+    }
+}

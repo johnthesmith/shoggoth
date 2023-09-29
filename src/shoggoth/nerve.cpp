@@ -369,8 +369,8 @@ Nerve* Nerve::readWeights()
 
     io
     -> getRequest()
-    -> setString( "from", parent -> getId())
-    -> setString( "to", child -> getId());
+    -> setString( "idFrom", parent -> getId())
+    -> setString( "idTo", child -> getId());
 
     if( io -> call( CMD_READ_WEIGHTS ) -> isOk() )
     {
@@ -399,8 +399,8 @@ Nerve* Nerve::writeWeights()
 
     io
     -> getRequest()
-    -> setString( "from", parent -> getId())
-    -> setString( "to", child -> getId())
+    -> setString( "idFrom", parent -> getId())
+    -> setString( "idTo", child -> getId())
     -> setData
     (
         "data",

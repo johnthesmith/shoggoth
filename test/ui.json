@@ -10,6 +10,8 @@
         "port"              :11120
     },
 
+    "netLoopTimeoutMcs"     :1000000,
+
     "tasks":
     {
         "TASK_UI":
@@ -17,8 +19,7 @@
             "enabled"                   :true,
             "fontName"                  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
             "gliphSize"                 :64,
-            "charSet"                   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ",
-            "serverConfigTimeoutMcs"    :1000
+            "charSet"                   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
         }
     }
 }

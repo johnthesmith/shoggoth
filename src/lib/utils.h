@@ -219,3 +219,18 @@ void toLowerCase
 (
     string&
 );
+
+
+
+
+void b
+(
+    string = "break"
+);
+
+
+
+void b
+(
+    double = 0
+);

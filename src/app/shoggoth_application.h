@@ -77,7 +77,9 @@ class ShoggothApplication : public Application
         string getConfigFileName();
 
 
+
         ShoggothApplication* checkConfigUpdate();
+
 
 
         bool getConfigUpdated();

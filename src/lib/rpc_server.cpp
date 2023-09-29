@@ -3,6 +3,7 @@
 
 #include "rpc_server.h"
 #include "buffer_to_hex.h"
+#include "../json/param_list_log.h"
 
 
 
@@ -93,7 +94,7 @@ RpcServer* RpcServer::onReadAfter
     auto header = SockRpcHeader::create( aBuffer );
     if( header.isValid() )
     {
-        getLog() -> trace( "RPC Server onReadAfter" ) -> lineEnd();
+        getLog() -> begin( "RPC Server onReadAfter" ) -> lineEnd();
 
         auto buffer = aBuffer -> getBuffer();
 
@@ -111,13 +112,17 @@ RpcServer* RpcServer::onReadAfter
         );
 
         /* Call onAfter method for server */
+        ParamListLog::dump( getLog(), arguments, "arguments" );
         onCallAfter( arguments, answer );
+        ParamListLog::dump( getLog(), answer, "answer" );
 
         /* Send answer to client */
         write( answer, aHandle );
 
         arguments -> destroy();
         answer -> destroy();
+
+        getLog() -> end() -> lineEnd();
     }
     else
     {

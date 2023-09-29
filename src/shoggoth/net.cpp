@@ -600,7 +600,9 @@ Net* Net::readNet()
                                 }
                                 else
                                 {
-                                    getLog() -> warning( "Layers not found for nerve" ) -> prm( "id", idNerve );
+                                    getLog()
+                                    -> info( "Layers not found for nerve" )
+                                    -> prm( "id", idNerve );
                                 }
                             }
                             return false;
@@ -1140,8 +1142,8 @@ Net* Net::event
                         case WRITE_VALUES   :layers -> writeValues( tasks ); break;
                         case READ_ERRORS    :layers -> readErrors( tasks ); break;
                         case WRITE_ERRORS   :layers -> writeErrors( tasks ); break;
-                        case READ_WEIGHTS   :nerves -> readWeights( /*tasks*/ ); break;
-                        case WRITE_WEIGHTS  :nerves -> writeWeights( /*tasks*/ ); break;
+                        case READ_WEIGHTS   :nerves -> readWeights(); break;
+                        case WRITE_WEIGHTS  :nerves -> writeWeights(); break;
                         case SYNC_RESET     :calcReset(); break;
                     }
                     return false;

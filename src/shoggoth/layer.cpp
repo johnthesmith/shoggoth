@@ -1049,6 +1049,22 @@ Layer* Layer::writeValues()
 
 
 
+
+Layer* Layer::valuesFromBuffer
+(
+    char* aBuffer,
+    size_t  aSize
+)
+{
+    if( aBuffer != NULL && aSize == count * sizeof( double ) )
+    {
+        memcpy( values, aBuffer, aSize );
+    }
+    return this;
+}
+
+
+
 /*
     Read value from io
 */
@@ -1065,11 +1081,7 @@ Layer* Layer::readValues()
         char* buffer = NULL;
         size_t size = 0;
         io -> getAnswer() -> getData( "data", buffer, size );
-
-        if( buffer != NULL && size == count * sizeof( double ) )
-        {
-            memcpy( values, buffer, size );
-        }
+        valuesFromBuffer( buffer, size );
     }
 
     io -> destroy();

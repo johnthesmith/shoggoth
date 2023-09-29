@@ -671,6 +671,12 @@ struct ParamList : public Heap
         ParamList* getRoot();
 
 
+        /*
+            Return random param if exists
+        */
+        Param* getRnd();
+
+
 
         /*
             Return intersections with argiments

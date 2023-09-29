@@ -515,6 +515,14 @@ class Layer : public Object
 
 
 
+        Layer* valuesFromBuffer
+        (
+            char*,
+            size_t
+        );
+
+
+
         /*
             Read values from io
         */
