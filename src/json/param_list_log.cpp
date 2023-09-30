@@ -36,7 +36,6 @@ void ParamListLog::dumpInternal
     int         depth
 )
 {
-    aLog -> begin( aSection );
     int c = aParamList -> getCount();
     for( int i = 0; i < c; i++ )
     {
@@ -47,6 +46,7 @@ void ParamListLog::dumpInternal
             case KT_OBJECT:
                 if( p -> getObject() != NULL )
                 {
+                    aLog -> begin( aSection );
                     dumpInternal
                     (
                         aLog,
@@ -54,6 +54,7 @@ void ParamListLog::dumpInternal
                         p -> getName(),
                         depth + 1
                     );
+                    aLog -> end();
                 }
             break;
             case KT_DATA:
@@ -95,6 +96,4 @@ void ParamListLog::dumpInternal
         }
 
     };
-    aLog -> end();
-
 }
