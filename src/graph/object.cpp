@@ -28,7 +28,6 @@
 #include "object.h"
 #include "matrix.h"
 
-
 /*
     Directive set eye position
 */
@@ -37,8 +36,11 @@ Object& Object::setEye
     const Point3d& a
 )
 {
-    changed = !eye.cmp( a );
-    eye = a;
+    changed = eye != a;
+    if( changed )
+    {
+        eye = a;
+    }
     return *this;
 }
 
@@ -123,8 +125,11 @@ Object& Object::setTarget
     const Point3d& a
 )
 {
-    target = a;
-    changed = true;
+    changed = target != a;
+    if( changed )
+    {
+        target = a;
+    }
     return *this;
 }
 

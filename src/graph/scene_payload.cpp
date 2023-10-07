@@ -471,7 +471,7 @@ void ScenePayload::onMouseMove
 /*
     Mouse left drag begin
 */
-void ScenePayload::onLeftDragBegin
+bool ScenePayload::onLeftDragBegin
 (
     Scene& aScene,      /* Scene object */
     const Point3d& aPoint
@@ -485,6 +485,8 @@ void ScenePayload::onLeftDragBegin
     -> prm( "left control", aScene.isKey( KEY_LEFT_CONTROL ))
     -> prm( "left alt", aScene.isKey( KEY_LEFT_ALT ))
     -> lineEnd();
+
+    return true;
 }
 
 

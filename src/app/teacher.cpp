@@ -5,8 +5,8 @@
 #include "../lib/math.h"
 #include "../lib/rnd.h"
 #include "../json/param_list_log.h"
-
-
+#include "../lib/utils.h"
+#include "teacher_consts.h"
 
 using namespace std;
 
@@ -40,7 +40,7 @@ Teacher::~Teacher()
 
 
 /*
-    Creator
+    Create the teacher object
 */
 Teacher* Teacher::create
 (
@@ -53,7 +53,7 @@ Teacher* Teacher::create
 
 
 /*
-    Destructor
+    Destroy the teache
 */
 void Teacher::destroy()
 {
@@ -76,91 +76,76 @@ ShoggothApplication* Teacher::getApplication()
     Methods
 */
 
-
-
 Teacher* Teacher::task()
 {
     getLog() -> begin( "Check" );
 
+    /* Retrive error layer by id */
     auto error = net -> getLayers() -> getById( idErrorLayer );
 
     if( error != NULL )
     {
+        /* Check error limit */
         if( error -> getValue() <= errorLimit )
         {
+            /* Check new batch */
             getLog() -> begin( "New batch" );
             auto item = batches -> getRnd();
             if( item != NULL && item -> isObject() )
             {
+                /* Batch precessing */
                 auto batch = item -> getObject();
-                ParamListLog::dump( getLog(), batch );
                 batch -> loop
                 (
                     [ this ]
                     ( Param* aParam )
                     {
+                        /* Layer processing */
                         auto layerId = aParam -> getName();
                         auto jobs = aParam -> getObject();
                         auto layer = net -> getLayers() -> getById( layerId );
+                        getLog()
+                        -> begin( "Layer" )
+                        -> prm( "id", layerId );
                         if( layer != NULL )
                         {
                             auto job = jobs -> getRnd();
-                            if( job != NULL )
+                            if( job != NULL && job -> isObject() )
                             {
-                                char* buffer = NULL;
-                                size_t size = 0;
-//                                buildValueVuffer( job, buffer, size );
-                                if( size != 0 )
-                                {
-                                    layer -> valuesFromBuffer( buffer, size );
-                                }
+                                buildValueBuffer( job -> getObject(), layer );
+                            }
+                            else
+                            {
+                                getLog()
+                                -> warning( "Job is not a object" );
                             }
                         }
+                        else
+                        {
+                            getLog()
+                            -> warning( "Layer not found" )
+                            -> prm( "id", layerId );
+                        }
+                        getLog()
+                        -> end();
                         return false;
                     }
                 );
-
-//            auto a = Rnd::get( 0, 10 );
-//            Rnd::storeSeed( a );
-
-//            auto retina = net -> getLayers() -> getById( "retina" );
-//            auto sample = net -> getLayers() -> getById( "sample" );
-//
-//    if( retina != NULL && sample != NULL )
-//    {
-//        /* Set retina */
-////        retina -> neurons -> loop
-////        (
-////            []( Neuron* neuron )
-////            {
-////                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
-////                return false;
-////            }
-////        );
-////        retina -> saveValue();
-////
-////        /* Set sample */
-////        auto hid = Hid().setString( to_string( a ));
-////        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-////        {
-////            sample -> neurons
-////            -> getByIndex( i )
-////            -> setValue
-////            (
-////                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-////            );
-////            sample -> saveValue();
-////        }
-//    }
-//    else
-//    {
-//        getLog() -> warning( "NoLayerRetinaOrSampleInNet" );
-//    }
-//
-//            Rnd::restoreSeed();
+                net -> event( TEACHING_END );
+            }
+            else
+            {
+                getLog()
+                -> warning( "Batch is not a object" );
             }
             getLog() -> end();
         }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Error layer not found" )
+        -> prm( "id", idErrorLayer );
     }
     getLog() -> end();
 
@@ -215,4 +200,56 @@ string Teacher::getIdErrorLayer()
 ParamList* Teacher::getBatches()
 {
     return batches;
+}
+
+
+
+
+/*
+    Create buffer for job
+*/
+Teacher* Teacher::buildValueBuffer
+(
+    ParamList* aJob,
+    Layer* aLayer
+)
+{
+    ParamListLog::dump( getLog(), aJob );
+
+    auto cmdName    = aJob -> getString( "cmd" );
+    auto cmdCode    = stringToTeacherTask( cmdName );
+
+    switch( cmdCode )
+    {
+        case TEACHER_TASK_NOISE:
+        {
+            aLayer -> noiseValue
+            (
+                aJob -> getInt( "seed", 0 ),
+                aJob -> getDouble( "min", 0.0 ),
+                aJob -> getDouble( "max", 1.0 )
+            );
+            break;
+        }
+        case TEACHER_TASK_HID:
+        {
+            break;
+        }
+        case TEACHER_TASK_IMAGE:
+        {
+            aLayer -> imageToValue
+            (
+                aJob -> getString( "file" )
+            );
+            break;
+        }
+        default:
+        {
+            getLog()
+            -> warning( "Unknown batch command" )
+            -> prm( "Command", cmdName );
+            break;
+        }
+    }
+    return this;
 }

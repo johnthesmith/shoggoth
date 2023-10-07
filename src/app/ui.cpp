@@ -122,54 +122,6 @@ Ui* Ui::help()
 
 
 
-Ui* Ui::fillScreen
-(
-    int a
-)
-{
-//    Rnd::storeSeed( a );
-//
-//    auto retina = net -> getLayers() -> getById( "retina" );
-//    auto sample = net -> getLayers() -> getById( "sample" );
-//
-//    if( retina != NULL && sample != NULL )
-//    {
-//        /* Set retina */
-//        retina -> neurons -> loop
-//        (
-//            []( Neuron* neuron )
-//            {
-//                neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
-//                return false;
-//            }
-//        );
-//        retina -> saveValue();
-//
-//        /* Set sample */
-//        auto hid = Hid().setString( to_string( a ));
-//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-//        {
-//            sample -> neurons
-//            -> getByIndex( i )
-//            -> setValue
-//            (
-//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-//            );
-//            sample -> saveValue();
-//        }
-//    }
-//    else
-//    {
-//        getLog() -> warning( "NoLayerRetina" );
-//    }
-//
-//    Rnd::restoreSeed();
-
-    return this;
-}
-
-
-
 /******************************************************************************
     Events
 */
@@ -263,7 +215,7 @@ void Ui::onDraw
         aScene
         -> color( interfaceColor )
         -> setLineWidth( 3 )
-        .begin( LOOP )
+        -> begin( LOOP )
         -> sendRect
         (
             Rect2d().setCenterSize
@@ -272,9 +224,9 @@ void Ui::onDraw
                 Point2d( 10.0, 10.0 )
             )
         )
-        .end();
+        -> end();
 
-        net -> drawNeuronChart( aScene, neuron );
+        net -> drawNeuronChart( aScene, net -> getSelectedNeurons() );
     }
 
 
@@ -286,14 +238,14 @@ void Ui::onDraw
         aScene
         -> color( interfaceColorDark )
         -> setLineWidth( 2 )
-        .begin( QUAD )
+        -> begin( QUAD )
         -> sendRect( selectTopLeft, selectBottomRight )
-        .end()
+        -> end()
         -> color( interfaceColor )
         -> setLineWidth( 1 )
-        .begin( LOOP )
+        -> begin( LOOP )
         -> sendRect( selectTopLeft, selectBottomRight )
-        .end()
+        -> end()
         ;
 
         /* Draw selected neurons */
@@ -304,7 +256,6 @@ void Ui::onDraw
         -> color( interfaceColor )
         -> setPointSize( 4 )
         -> begin( POINT );
-
         list -> loop
         (
             [ &aScene ]( Neuron* neuron ) -> bool
@@ -317,6 +268,25 @@ void Ui::onDraw
 
         list -> destroy();
     }
+
+    /* Draw screen cursor radius */
+    aScene
+    -> color( interfaceColor )
+    -> setLineWidth( 2 )
+    -> begin( LOOP )
+    -> sendRect
+    (
+        Rect2d().setCenterSize
+        (
+            aScene -> getMouseCurrentScreen(),
+            Point2d
+            (
+                net -> getCursorRadius(),
+                net -> getCursorRadius()
+            )
+        )
+    )
+    -> end();
 }
 
 
@@ -348,6 +318,7 @@ void Ui::onKeyUp
 
 
 
+
 /*
     Keyboard up event
 */
@@ -370,7 +341,7 @@ void Ui::onKeyDown
         case KEY_7:
         case KEY_8:
         case KEY_9:
-            fillScreen( aKey );
+//            fillScreen( aKey );
         break;
 
         case KEY_H:
@@ -419,6 +390,22 @@ void Ui::onMouseMove
     const Point3d& aPoint
 )
 {
+    if
+    (
+        !aScene.isMouseLeftDrag() &&
+        aScene.isMouseButton( MB_LEFT )
+    )
+    {
+        if( aScene.isKey( KEY_LEFT_CONTROL ))
+        {
+            net -> addSelectedByCursor( &aScene );
+        }
+
+        if( aScene.isKey( KEY_LEFT_ALT ))
+        {
+            net -> removeSelectedByCursor( &aScene );
+        }
+    }
 }
 
 
@@ -426,14 +413,18 @@ void Ui::onMouseMove
 /*
     Mouse left drag begin
 */
-void Ui::onLeftDragBegin
+bool Ui::onLeftDragBegin
 (
     Scene& aScene,      /* Scene object */
     const Point3d& aPoint
 )
 {
-    selectTopLeft = aScene.getMouseCurrentScreen();
-    selectBottomRight = selectTopLeft;
+//    if( aScene.isKey( KEY_LEFT_SHIFT ))
+//    {
+//        selectTopLeft = aScene.getMouseCurrentScreen();
+//        selectBottomRight = selectTopLeft;
+//    }
+    return false;
 }
 
 
@@ -447,9 +438,12 @@ void Ui::onLeftDragEnd
     const Point3d& aPoint
 )
 {
-    net -> selectNeuronsByRect( selectTopLeft, selectBottomRight );
-    selectTopLeft = POINT_3D_0;
-    selectBottomRight = POINT_3D_0;
+//    if( aScene.isKey( KEY_LEFT_SHIFT ))
+//    {
+//        net -> selectNeuronsByRect( selectTopLeft, selectBottomRight );
+//        selectTopLeft = POINT_3D_0;
+//        selectBottomRight = POINT_3D_0;
+//    }
 }
 
 
@@ -489,21 +483,68 @@ void Ui::onRightDrag
 */
 void Ui::onMouseWheel
 (
-    Scene& aScene,      /* Scene object */
+    Scene& aScene,          /* Scene object */
     const Point3d& aDelta
 )
 {
-    Neuron* neuron = net -> getSelectedFirst();
-    if(  neuron != NULL )
+    auto operation = false;
+
+    if( aScene.isKey( KEY_S ))
     {
-        /* Neuron value Control*/
-        neuron -> setValue
+        net -> setCursorRadius
         (
-            neuron -> getValue() + aDelta.y *
-            ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+            net -> getCursorRadius() * ( aDelta.y > 0.0 ? 1.1 : 0.9 )
         );
+        operation = true;
     }
-    else
+
+    if( aScene.isKey( KEY_V ))
+    {
+        if( net -> getSelectedNeurons() -> getCount() > 0 )
+        {
+            auto avgValue = net -> getSelectedNeurons() -> calcAvgValue();
+            net -> getSelectedNeurons() -> loop
+            (
+                [ &aScene, &aDelta, &avgValue ]
+                ( Neuron* aNeuron )
+                {
+                    /* Neuron value Control*/
+                    aNeuron -> setValue
+                    (
+                        avgValue + aDelta.y *
+                        ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+                    );
+                    return false;
+                }
+            );
+        }
+        operation = true;
+    }
+
+    if( aScene.isKey( KEY_E ))
+    {
+        if( net -> getSelectedNeurons() -> getCount() > 0 )
+        {
+            auto avgError = net -> getSelectedNeurons() -> calcAvgError();
+            net -> getSelectedNeurons() -> loop
+            (
+                [ &aScene, &aDelta, &avgError ]
+                ( Neuron* aNeuron )
+                {
+                    /* Neuron value Control*/
+                    aNeuron -> setError
+                    (
+                        avgError + aDelta.y *
+                        ( aScene.isKey( KEY_LEFT_SHIFT ) ? 0.01 : 0.1 )
+                    );
+                    return false;
+                }
+            );
+        }
+        operation = true;
+    }
+
+    if( !operation )
     {
         /* Camera control*/
         bool rotation = false;
@@ -549,11 +590,6 @@ void Ui::onLeftClick
     const int aMode         /* Key mode */
 )
 {
-//    if( net -> setSelected( aScene ) -> getSelected() != NULL )
-
-//    {
-//        exit(0);
-//    }
 }
 
 
@@ -568,7 +604,12 @@ void Ui::onLeftDblClick
     const int aMode         /* Key mode */
 )
 {
-    if( net -> setSelected( &aScene ) -> getSelectedFirst() != NULL )
+    if
+    (
+        net
+        -> setSelected( &aScene )
+        -> getSelectedFirst() != NULL
+    )
     {
         camera -> moveTarget
         (

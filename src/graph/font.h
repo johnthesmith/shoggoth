@@ -2,6 +2,11 @@
 
 #include <functional>   /* for lyambda */
 
+
+/* TODO next 2 lines must be removed */
+#include <GL/gl.h>
+#include <GL/glu.h>
+
 #include "../lib/result.h"
 #include "../lib/log.h"
 #include "../lib/heap.h"

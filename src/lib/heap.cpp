@@ -222,7 +222,7 @@ Heap* Heap::expand
 
 
 /*
-    Push elemen
+    Push one elemen
 */
 Heap* Heap::push
 (
@@ -301,7 +301,6 @@ void* Heap::remove
 
 
 
-
 /*
     Remove with lyambda
 */
@@ -345,6 +344,28 @@ Heap* Heap::remove
 
     resize( countKeep );
 
+    return this;
+}
+
+
+
+/*
+    Remove all elements form  this,
+    contains in the argument
+*/
+Heap* Heap::remove
+(
+    Heap* aRemove
+)
+{
+//    remove
+//    (
+//        [ &aRemove ]
+//        ( void* aItem )
+//        {
+//            return aRemove -> indexBy( aItem ) >= 0;
+//        }
+//    );
     return this;
 }
 
@@ -443,4 +464,74 @@ Heap* Heap::loop
 void* Heap::getFirst()
 {
     return getCount() > 0 ? getByIndex( 0 ) : NULL;
+}
+
+
+
+
+/*
+    Merge two heaps
+    Each elemento of Argument heap will add to This heap
+    if it not exists in This
+*/
+Heap* Heap::merge
+(
+    Heap* a
+)
+{
+    return merge
+    (
+        a,
+        [ this ]
+        ( void* aItem )
+        {
+            return indexBy( aItem ) < 0;
+        }
+    );
+}
+
+
+
+/*
+    Merge two heaps
+    Each elemento of Argument heap will add to This heap
+    if it not exists in This
+*/
+Heap* Heap::merge
+(
+    Heap* a,
+    function <bool ( void* )> callback
+)
+{
+    /* Get size of arguments */
+    int c = a -> getCount();
+
+    /* Create the new heap with size equals the arguemnts */
+    auto searched = Heap::create() -> resize( c );
+
+    /*
+        New elements searching for this in argiments
+        and store it to the Searched.
+    */
+    int addIndex = 0;
+    for( int i = 0; i < c; i++ )
+    {
+        auto item = a -> getByIndex( i );
+        if( callback( item ))
+        {
+            searched -> setByIndex( addIndex, item );
+            addIndex++;
+        }
+    }
+
+    /* Cut the list of searched elements */
+    searched -> resize( addIndex );
+
+    /* Add list of new heap in to this */
+    add( searched );
+
+    /* Destroy list of new heap */
+    searched -> destroy();
+
+    return this;
 }

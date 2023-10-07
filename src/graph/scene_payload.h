@@ -307,7 +307,7 @@ class ScenePayload : public Payload
         /*
             Mouse left drag begin
         */
-        virtual void onLeftDragBegin
+        virtual bool onLeftDragBegin
         (
             Scene&,             /* Scene object */
             const Point3d&

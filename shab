@@ -1,12 +1,18 @@
 #!/bin/bash
 
 #==============================================================================
-# This is the simple maker for Shabnigroth project
+# This is a simple maker for Shoggoth project
 # 2023.01.30
 #
-# still@itserv.ru
-# igorptx@gmail.com
-
+# Authors
+#   still@itserv.ru
+#   igorptx@gmail.com
+#
+# commands
+#   header [text for output]
+#   install apt [packeges list]
+#   execute [shell commands]
+#   build [path/file.cpp]
 
 
 #==============================================================================
@@ -169,6 +175,16 @@ function header {
 }
 
 
+function install {
+    header "install $2"
+    case $1 in
+        "apt")
+            sudo apt install -y $2
+        ;;
+    esac
+}
+
+
 
 # Begin build
 function begin {
@@ -226,6 +242,9 @@ case $1 in
     ;;
     "build")
         build "$2"
+    ;;
+    "install")
+        install "$2" "$3"
     ;;
     "execute")
         if [ ! -f "$Error" ]

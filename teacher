@@ -1,2 +1,2 @@
 #!/bin/bash
-./shoggoth --config=test/teacher.json --log=teacher.log --htopdebug
+./shoggoth --config=test/teacher.json

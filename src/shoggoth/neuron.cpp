@@ -90,7 +90,7 @@ Point3d Neuron::getWorld()
 
 
 /*
-    Set neuron screen position
+    Set neuron value
 */
 Neuron* Neuron::setValue
 (
@@ -104,11 +104,35 @@ Neuron* Neuron::setValue
 
 
 /*
-    Return neuron screen position
+    Return neuron value
 */
 double Neuron::getValue()
 {
     return layer -> getNeuronValue( index );
+}
+
+
+
+/*
+    Set neuron error
+*/
+Neuron* Neuron::setError
+(
+    double aValue
+)
+{
+    layer -> setNeuronError( index, aValue );
+    return this;
+}
+
+
+
+/*
+    Return neuron error
+*/
+double Neuron::getError()
+{
+    return layer -> getNeuronError( index );
 }
 
 

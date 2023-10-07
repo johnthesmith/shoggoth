@@ -37,6 +37,7 @@ void ParamListLog::dumpInternal
 )
 {
     int c = aParamList -> getCount();
+    aLog -> begin( aSection );
     for( int i = 0; i < c; i++ )
     {
         auto p = aParamList -> getByIndex( i );
@@ -46,15 +47,13 @@ void ParamListLog::dumpInternal
             case KT_OBJECT:
                 if( p -> getObject() != NULL )
                 {
-                    aLog -> begin( aSection );
                     dumpInternal
                     (
                         aLog,
                         p -> getObject(),
-                        p -> getName(),
+                        p -> getName( to_string( i ) ),
                         depth + 1
                     );
-                    aLog -> end();
                 }
             break;
             case KT_DATA:
@@ -94,6 +93,6 @@ void ParamListLog::dumpInternal
                 ;
             break;
         }
-
     };
+    aLog -> end();
 }

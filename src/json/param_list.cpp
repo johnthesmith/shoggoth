@@ -927,10 +927,10 @@ ParamList* ParamList::setDouble
     }
     else
     {
+        p = getByIndex( i );
         /* Parameter exists */
-        if( p -> getType() !=  KT_DOUBLE )
+        if( p != NULL && p -> getType() !=  KT_DOUBLE )
         {
-            p = getByIndex( i );
             /* And it is not a string */
             p -> destroy();
             p = Param::create() -> setName( aName );
@@ -1597,7 +1597,7 @@ ParamList* ParamList::getRoot()
 Param* ParamList::getRnd()
 {
     return  ( getCount() > 0 )
-    ? getByIndex( Rnd::get( 0, getCount()-1 ))
+    ? getByIndex( Rnd::get( 0, getCount() - 1 ))
     : NULL;
 }
 

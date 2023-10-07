@@ -1,6 +1,5 @@
 {
-    "receive_timeout_mls"   :1000,
-    "loop_sleep_mcs"        :100,
+    "loop_sleep_mcs"        :10000,
 
     "io":
     {
@@ -16,10 +15,11 @@
     {
         "TASK_UI":
         {
-            "enabled"                   :true,
-            "fontName"                  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
-            "gliphSize"                 :64,
-            "charSet"                   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+
+            "enabled"   :true,
+            "fontName"  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "gliphSize" :64,
+            "charSet"   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
         }
     }
 }

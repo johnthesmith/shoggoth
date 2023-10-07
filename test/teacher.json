@@ -1,39 +1,50 @@
 {
-    "netLoopTimeoutMcs"     :1000000,
-
+    "loop_sleep_mcs"    :1000000,
     "io":
     {
         "source"            :"SERVER",
         "net"               :"test/net.json",
         "host"              :"127.0.0.1",
         "port"              :11120
-    },
+   },
 
     "tasks":
     {
         "TASK_TEACHER":
         {
-            "enabled"           :true,
-            "idErrorLayer"      :"error",
-            "errorLimit"        :0.01,
+            "enabled"               :true,
+            "idErrorLayer"          :"error",
+            "errorLimit"            :0.01,
 
             "batches":
             [
                 {
                     "sample":
                     [
-                        { "text"    :"cat" }
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/cat00001.png" },
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/cat00001.png" }
                     ],
                     "retina":
                     [
-                        { "image"  :"./test/cat1.png" },
-                        { "folder" :"./test/cat2.png" },
-                        { "rnd"    :1.0 },
-                        { "text"   :"asdasdas" },
-                        { "guid"   :"asdasdasdas" },
-                        { "vlue"   :1.0 }
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/cat00001.png" },
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/cat00002.png" },
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/cat00003.png" },
+                        {}
                     ]
-                }
+                },
+                {
+                    "sample":
+                    [
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/tree00001.png" },
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/tree00001.png" }
+                    ],
+                    "retina":
+                    [
+                        { "cmd"     :"TEACHER_TASK_IMAGE", "file"  :"./patterns/tree00001.png" },
+                        {}
+                    ]
+                },
+                {}
             ]
         }
     }

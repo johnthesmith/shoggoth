@@ -1,8 +1,14 @@
 #pragma once
 
+/* TODO next 2 lines must be removed */
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+
 #include <GLES3/gl31.h>
 #include <GLFW/glfw3.h>
 #include <GL/glext.h>
+
 
 #include "../lib/log.h"
 #include "../lib/result.h"

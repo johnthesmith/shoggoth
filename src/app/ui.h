@@ -18,17 +18,16 @@ class Ui : public ScenePayload
 {
     private:
 
-        Camera*                 camera              = NULL;   /* Default camera */
+        Camera*     camera              = NULL;   /* Default camera */
 
-        NetGraph*               net                 = NULL;
+        NetGraph*   net                 = NULL;
+        Point3d     selectTopLeft       = POINT_3D_0;
+        Point3d     selectBottomRight   = POINT_3D_0;
 
-        Point3d                 selectTopLeft       = POINT_3D_0;
-        Point3d                 selectBottomRight   = POINT_3D_0;
+        Rgba        interfaceColor      = Rgba( 0.4, 1.0, 0.7, 0.7 );
+        Rgba        interfaceColorDark  = Rgba( 0.1, 0.4, 0.2, 0.7 );
 
-        Rgba                    interfaceColor      = Rgba( 0.4, 1.0, 0.7, 0.7 );
-        Rgba                    interfaceColorDark  = Rgba( 0.1, 0.4, 0.2, 0.7 );
-
-        long int                lastConfigCheck     = 0;
+        long int    lastConfigCheck     = 0;
 
     public:
 
@@ -101,6 +100,9 @@ class Ui : public ScenePayload
 
 
 
+        /*
+            Event on key up
+        */
         virtual void onKeyUp
         (
             Scene&,   /* Scene object */
@@ -138,7 +140,7 @@ class Ui : public ScenePayload
             Mouse left drag begin
             Set left-top corner of selection box
         */
-        virtual void onLeftDragBegin
+        virtual bool onLeftDragBegin
         (
             Scene&,             /* Scene object */
             const Point3d&
@@ -217,6 +219,9 @@ class Ui : public ScenePayload
         );
 
 
+
+        /*
+        */
         Ui* fillScreen
         (
             int

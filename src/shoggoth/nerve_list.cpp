@@ -142,7 +142,7 @@ NerveList* NerveList::removeByLayer
 {
     auto removed = NerveList::create();
 
-    remove
+    Heap::remove
     (
         [ &aLayer ]
         ( void* iNerve )

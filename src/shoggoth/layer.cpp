@@ -139,12 +139,10 @@ Layer* Layer::neuronPointsCalc
 
         /* Draw layer box */
         outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
-
         getLog() -> begin( "Calculate neurons world position" )-> prm( "Layer", getNameOrId() );
 
         /* Claculate step in world for neurons */
         auto step = box / ( size - POINT_3I_I );
-
         /* Calculate ege in the world and start point in the world */
         Point3d ege = box * -0.5 + getEye();
         Point3d p = ege;
@@ -170,7 +168,7 @@ Layer* Layer::neuronPointsCalc
 
         getLog() -> end();
 
-        pointsRecalc = true;
+        setPointsRecalc( true );
     }
 
     return this;
@@ -263,9 +261,9 @@ Layer* Layer::learning
     double  aWakeupWeight
 )
 {
-//    bool calculatedErrorFinish = true;
-//
-//    /* Calculate neurons */
+    bool calculatedErrorFinish = true;
+
+    /* Calculate neurons */
 //    neurons -> loop
 //    (
 //        [
@@ -382,6 +380,23 @@ Layer* Layer::setSize
             clearErrors();
         }
 
+        /* Resize world plan */
+        if( worldExists )
+        {
+            /* Delete old plan */
+            if( world != NULL )
+            {
+                delete [] world;
+            }
+
+            /*Create new plan */
+            world = new Point3d[ newCount ];
+            /* Clear world position */
+            clearWorld();
+            /* Recalculate neuron points */
+            neuronPointsCalc( true );
+        }
+
         /* Resize screen plan */
         if( screenExists )
         {
@@ -394,20 +409,6 @@ Layer* Layer::setSize
             /*Create new plan */
             screen = new Point3d[ newCount ];
             clearScreen();
-        }
-
-        /* Resize world plan */
-        if( worldExists )
-        {
-            /* Delete old plan */
-            if( world != NULL )
-            {
-                delete [] world;
-            }
-
-            /*Create new plan */
-            world = new Point3d[ newCount ];
-            clearWorld();
         }
 
         /* Resize selected plan */
@@ -423,9 +424,6 @@ Layer* Layer::setSize
             selected = new bool[ newCount ];
             clearSelected();
         }
-
-        /* Recalculate neuron points */
-        neuronPointsCalc( true );
 
         getLog() -> end();
     }
@@ -456,10 +454,48 @@ Layer* Layer::setSize
                 jsonSize -> getInt( 2 )
             )
         );
+
+        /* Set neurons recalculation task if draw size was changed */
+        if(  getChanged() )
+        {
+            setPointsRecalc( false );
+        }
     }
     return this;
 }
 
+
+
+/*
+    Set draw size for layer
+*/
+Layer* Layer::setDrawSize
+(
+    ParamList* a
+)
+{
+    auto jsonPosition = a -> getObject( "drawSize" );
+    if( jsonPosition != NULL )
+    {
+        setDrawSize
+        (
+            Point3d
+            (
+                jsonPosition -> getDouble( 0 ),
+                jsonPosition -> getDouble( 1 ),
+                jsonPosition -> getDouble( 2 )
+            )
+        );
+
+        /* Set neurons recalculation task if draw size was changed */
+        if(  getChanged() )
+        {
+            setPointsRecalc( false );
+        }
+    }
+
+    return this;
+}
 
 
 
@@ -483,7 +519,12 @@ Layer* Layer::setPosition
                 jsonPosition -> getDouble( 2 )
             )
         );
-        pointsRecalc = false;
+
+        /* Set neurons recalculation task if position was changed */
+        if(  getChanged() )
+        {
+            setPointsRecalc( false );
+        }
     }
     return this;
 }
@@ -582,7 +623,11 @@ Layer* Layer::setDrawSize
     const Point3d& a
 )
 {
-    drawSize = a;
+    if( drawSize != a )
+    {
+        drawSize = a;
+        setChanged( true );
+    }
     return this;
 }
 
@@ -656,8 +701,9 @@ Layer* Layer::getNeuronsByScreenRect
 */
 Layer* Layer::getNeuronsByScreenPos
 (
-    NeuronList* aList,
-    const Point3d& aPosition
+    NeuronList*     aList,
+    const Point3d&  aPosition,
+    const int       aScreenRadius
 )
 {
     auto list = new int[ count ];
@@ -666,7 +712,11 @@ Layer* Layer::getNeuronsByScreenPos
     /* Coolect indexes to list */
     for( int i = 0; i < count; i++ )
     {
-        if( getNeuronScreen( i ).distXY( aPosition ) < 10.0 )
+        if
+        (
+            getNeuronScreen( i )
+            .distXY( aPosition ) < aScreenRadius
+        )
         {
             list[ iBuffer ] = i;
             iBuffer++;
@@ -698,6 +748,9 @@ Layer* Layer::switchShowBinds()
     }
     return this;
 }
+
+
+
 
 
 
@@ -783,56 +836,31 @@ double Layer::getValue()
 
 
 /*
-    Set source filename
-*/
-Layer* Layer::setSourcePath
-(
-    string a
-)
-{
-    sourcePath = a;
-    return this;
-}
-
-
-
-/*
-    Return the source filename
-*/
-string Layer::getSourcePath()
-{
-    return sourcePath;
-}
-
-
-
-/*
     Set bitmap to neurons
 */
-Layer* Layer::setBitmap
+Layer* Layer::bitmapToValue
 (
     Bitmap* a
 )
 {
     auto w = a -> getWidth();
     auto h = a -> getHeight();
+//
+//    if( w > 0 && h > 0 && size.x > 0 && size.y > 0 )
+//    {
+//        double kx = (double) size.x / (double) w;
+//        double ky = (double) size.y / (double) h;
+//
+//        double scale = min( kx, ky );
+//
+//        a -> scale( ( int ) ( w * scale ), (int) ( h * scale ) );
+//    }
+//    w = a -> getWidth();
+//    h = a -> getHeight();
 
-    if( w > 0 && h > 0 && size.x > 0 && size.y > 0 )
-    {
-        double kx = (double) size.x / (double) w;
-        double ky = (double) size.y / (double) h;
-
-        double scale = min( kx, ky );
-
-        a -> scale( ( int ) ( w * scale ), (int) ( h * scale ) );
-    }
-
-    w = a -> getWidth();
-    h = a -> getHeight();
-
-    /* Shift */
-    int sx = ( size.x - w ) / 2;
-    int sy = ( size.y - h ) / 2;
+//    /* Shift */
+//    int sx = ( size.x - w ) / 2;
+//    int sy = ( size.y - h ) / 2;
 
     Rgba rgba;
 
@@ -842,15 +870,22 @@ Layer* Layer::setBitmap
         {
             for( int x = 0; x < size.x; x++ )
             {
-                a -> getRgba( x, y, rgba );
+                a -> getRgba
+                (
+                    ( double ) x / ( double ) size.x * w,
+                    (1-(( double ) y / ( double ) size.y )) * h - 1,
+                    rgba
+                );
+
                 setNeuronValue
                 (
-                    indexByPos( Point3i( x + sx , y + sy, z )),
+                    indexByPos( Point3i( x, y, z )),
                     rgba.getGray()
                 );
             }
         }
     }
+
 
     return this;
 }
@@ -860,56 +895,51 @@ Layer* Layer::setBitmap
 /*
     Load bitmap from source file name and set it
 */
-Layer* Layer::loadSource()
+Layer* Layer::imageToValue
+(
+    string aFileName
+)
 {
-    auto fileName = getSourceFilename();
-    auto fileExt = getFileExt( fileName );
-
-    if( fileExt == "jpg" )
+    if( isOk() )
     {
-        /* Load from bitmap */
-        auto bitmap = Bitmap::create() -> load( fileName );
-
-        if( bitmap -> isOk() )
+        auto fileExt = getFileExt( aFileName );
+        if( fileExt == "png" )
         {
-            getLog()
-            -> trace( "Load image" )
-            -> prm( "Layer", getNameOrId() )
-            -> prm( "File", getSourceFilename() )
-            -> prm( "width", bitmap -> getWidth() )
-            -> prm( "height", bitmap -> getHeight() )
-            -> lineEnd();
-            setBitmap( bitmap );
-        }
-        else
-        {
-            getLog() -> warning( bitmap -> getMessage() );
-        }
-        bitmap -> destroy();
-    }
-    else
-    {
-        if( fileExt == "uuid" )
-        {
-            /* Load uuid from file */
-            Hid h;
-//            h.loadUuid( fileName );
-//            applyUuid( h );
-        }
-        else
-        {
-            if( fileExt == "json" )
+            /* Load from bitmap */
+            auto bitmap = Bitmap::create() -> load( aFileName );
+            if( bitmap -> isOk() )
             {
-                /* Load from json file */
+                getLog()
+                -> trace( "Image loaded" )
+                -> prm( "Layer", getNameOrId() )
+                -> prm( "File", aFileName )
+                -> prm( "width", bitmap -> getWidth() )
+                -> prm( "height", bitmap -> getHeight() )
+                -> lineEnd();
+                bitmapToValue( bitmap );
             }
             else
             {
-                /* Reset layer */
-                clearValues();
+                getLog()
+                -> warning( "File read error" )
+                -> prm( "code", bitmap -> getCode() )
+                -> prm( "message", bitmap -> getMessage() );
             }
+            bitmap -> destroy();
+        }
+        else
+        {
+            getLog()
+            -> warning( "Unknown image format" )
+            -> prm( "extention", fileExt );
         }
     }
-
+    else
+    {
+        getLog()
+        -> warning( "Write unable image to the value because layer has the error" )
+        -> prm( "code", getCode() );
+    }
     return this;
 }
 
@@ -923,21 +953,6 @@ Layer* Layer::applyUuid
     for( int i = 0; i < count; i++ )
     {
         setNeuronValue( i, a.getBit( i ) ? 1.0 : 0.0 );
-    }
-    return this;
-}
-
-
-/*
-    Apply bitmap from source file name and set it
-*/
-Layer* Layer::applyImage()
-{
-    auto update = fileLastUpdate( getSourceFilename() );
-    if( update != lastSourceUpdate )
-    {
-        loadSource();
-        lastSourceUpdate = update;
     }
     return this;
 }
@@ -989,29 +1004,29 @@ string Layer::getStorageValueName()
 /*
     Return the source filename
 */
-string Layer::getSourceFilename()
-{
-    string result
-    = sourcePath == ""
-    ? getLayerPath() + "/source/"
-    : sourcePath;
-
-    vector <string> exts = { "uuid", "jpg", "json" };
-
-    auto list = getFileList( result );
-
-    for( int i; i < list.size(); i++ )
-    {
-        auto ext = getFileExt( list[ i ] );
-
-        if( find( exts.begin(), exts.end(), ext ) != exts.end() )
-        {
-            result = result + list[ i ];
-            break;
-        }
-    }
-    return result;
-}
+//string Layer::getSourceFilename()
+//{
+//    string result
+//    = sourcePath == ""
+//    ? getLayerPath() + "/source/"
+//    : sourcePath;
+//
+//    vector <string> exts = { "uuid", "jpg", "json" };
+//
+//    auto list = getFileList( result );
+//
+//    for( int i; i < list.size(); i++ )
+//    {
+//        auto ext = getFileExt( list[ i ] );
+//
+//        if( find( exts.begin(), exts.end(), ext ) != exts.end() )
+//        {
+//            result = result + list[ i ];
+//            break;
+//        }
+//    }
+//    return result;
+//}
 
 
 
@@ -1173,7 +1188,7 @@ int Layer::calcNeuronTo
 }
 
 
-/********************************************************************
+/******************************************************************************
     Layer calculateion service
 */
 
@@ -1261,14 +1276,23 @@ Layer* Layer::setNeuronValue
     double aValue          /* Value */
 )
 {
-    if( values != NULL && aIndex >= 0 && aIndex < count )
+    if( values != NULL )
     {
-        values[ aIndex ] = aValue;
+        if( aIndex >= 0 && aIndex < count )
+        {
+            values[ aIndex ] = aValue;
+        }
+        else
+        {
+            setResult( "IndexValueOutOfRangeForSet" );
+exit(0);
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "ValueArrayNotDefinedForSet" );
     }
+
     return this;
 }
 
@@ -1284,15 +1308,21 @@ double Layer::getNeuronValue
 {
     double result = 0.0;
 
-    if( values != NULL && aIndex >= 0 && aIndex < count )
+    if( values != NULL )
     {
-        result = values[ aIndex ];
+        if( aIndex >= 0 && aIndex < count )
+        {
+            result = values[ aIndex ];
+        }
+        else
+        {
+            setResult( "IndexValueOutOfRangeForGet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "ValueArrayNotDefinedForGet" );
     }
-
     return result;
 }
 
@@ -1313,7 +1343,7 @@ Layer* Layer::setNeuronError
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "SetIndexValueOutOfRange" );
     }
     return this;
 }
@@ -1336,7 +1366,7 @@ double Layer::getNeuronError
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "GettingIndexValueOutOfRange" );
     }
 
     return result;
@@ -1353,13 +1383,20 @@ Layer* Layer::setNeuronWorld
     Point3d& aValue       /* Value */
 )
 {
-    if( world != NULL && aIndex >= 0 && aIndex < count )
+    if( world != NULL )
     {
-        world[ aIndex ] = aValue;
+        if( aIndex >= 0 && aIndex < count )
+        {
+            world[ aIndex ] = aValue;
+        }
+        else
+        {
+            setResult( "IndexWorldOutOfRangeForSet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "NeuronWorldArrayNotDefinedForSet" );
     }
     return this;
 }
@@ -1376,15 +1413,21 @@ Point3d Layer::getNeuronWorld
 {
     auto result = POINT_3D_0;
 
-    if( world != NULL && aIndex >= 0 && aIndex < count )
+    if( world != NULL )
     {
-        result = world[ aIndex ];
+        if( aIndex >= 0 && aIndex < count )
+        {
+            result = world[ aIndex ];
+        }
+        else
+        {
+            setResult( "IndexWorldPointsOutOfRangeForGet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "WorldPointsNotDefinedforForGet" );
     }
-
     return result;
 }
 
@@ -1399,13 +1442,20 @@ Layer* Layer::setNeuronScreen
     Point3d& aValue      /* Value */
 )
 {
-    if( screen != NULL && aIndex >= 0 && aIndex < count )
+    if( screen != NULL )
     {
-        screen[ aIndex ] = aValue;
+        if( aIndex >= 0 && aIndex < count )
+        {
+            screen[ aIndex ] = aValue;
+        }
+        else
+        {
+            setResult( "IndexWorldPointsOutOfRangeForSet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "WorldPointsNotDefinedforForSet" );
     }
     return this;
 }
@@ -1422,15 +1472,21 @@ Point3d Layer::getNeuronScreen
 {
     auto result = POINT_3D_0;
 
-    if( screen != NULL && aIndex >= 0 && aIndex < count )
+    if( screen != NULL )
     {
-        result = screen[ aIndex ];
+        if( aIndex >= 0 && aIndex < count )
+        {
+            result = screen[ aIndex ];
+        }
+        else
+        {
+            setResult( "IndexScreenPointsOutOfRangeForGet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "ScreenPointsNotDefinedforForGet" );
     }
-
     return result;
 }
 
@@ -1446,13 +1502,20 @@ Layer* Layer::setNeuronSelected
     bool aValue     /* Value */
 )
 {
-    if( selected != NULL && aIndex >= 0 && aIndex < count )
+    if( selected != NULL )
     {
-        selected[ aIndex ] = aValue;
+        if( aIndex >= 0 && aIndex < count )
+        {
+            selected[ aIndex ] = aValue;
+        }
+        else
+        {
+            setResult( "IndexScreenPointsOutOfRangeForSet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "ScreenPointsNotDefinedForSet" );
     }
     return this;
 }
@@ -1469,15 +1532,21 @@ Point3d Layer::getNeuronSelected
 {
     auto result = false;
 
-    if( selected != NULL && aIndex >= 0 && aIndex < count )
+    if( selected != NULL )
     {
-        result = selected[ aIndex ];
+        if( aIndex >= 0 && aIndex < count )
+        {
+            result = selected[ aIndex ];
+        }
+        else
+        {
+            setResult( "IndexSelectedOutOfRangeForGet" );
+        }
     }
     else
     {
-        setResult( "IndexValueOutOfRange" );
+        setResult( "SelectedNotDefinedForGet" );
     }
-
     return result;
 }
 
@@ -1621,3 +1690,50 @@ ParamList* Layer::getActions()
 {
     return actions;
 }
+
+
+
+/******************************************************************************
+    Fill layer
+*/
+
+
+
+/*
+    Noise fill values of layer neurons
+*/
+Layer* Layer::noiseValue
+(
+    int     aSeed,
+    double  aMin,
+    double  aMax
+)
+{
+    Rnd::storeSeed( aSeed );
+
+    for( int i = 0; i < count; i ++ )
+    {
+        setNeuronValue( i, Rnd::get( 0.0, 1.0 ) );
+    }
+
+    Rnd::restoreSeed();
+
+    return this;
+}
+
+
+
+
+      /* Set sample */
+//        auto hid = Hid().setString( to_string( a ));
+//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
+//        {
+//            sample -> neurons
+//            -> getByIndex( i )
+//            -> setValue
+//            (
+//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
+//            );
+//            sample -> saveValue();
+//        }
+//    }

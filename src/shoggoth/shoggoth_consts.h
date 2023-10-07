@@ -16,7 +16,7 @@ enum Event
     THINKING_END,       /* Event for end of the value calculation */
     LEARNING_END,       /**/
     READ_NET,           /**/
-    TICHING_END
+    TEACHING_END
 };
 
 

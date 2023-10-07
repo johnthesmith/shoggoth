@@ -137,7 +137,7 @@ NetGraph* NetGraph::drawLayer
         /*  Draw layer box */
         aScene
         -> setLineWidth( 1 )
-        .polygonMode( POLYGON_LINE )
+        -> polygonMode( POLYGON_LINE )
         .color( interfaceColorDark )
         -> begin( QUAD )
         -> sendQube( aLayer -> getEye(), aLayer -> getOuterBox() )
@@ -366,39 +366,38 @@ NetGraph* NetGraph::drawLearningMode
 NetGraph* NetGraph::drawNeuronChart
 (
     Scene* aScene,
-    Neuron* aNeuron
+    NeuronList* aNeuronList
 )
 {
-//    Chart2d::create()
-//    -> setXMin( -2.0 )
-//    -> setXMax( 2.0 )
-//    -> setYMin( -2.0 )
-//    -> setYMax( 2.0 )
-//    -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
-//    -> setBackColor( interfaceColorDark )
-//    -> setLineColor( interfaceColor )
-//    -> drawBack( aScene )
-//
-//    -> setLineWeight( 1.0 )
-//    -> draw( aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
-//    -> draw( aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
-//    -> draw( aScene, FUNC_V_LINE, 1.0 )
-//
-//    -> setLineWeight( 2.0 )
-//    -> setLineColor( RGBA_ORANGE )
-//    -> drawX( aScene, aNeuron -> getNeuronValue() )
-//    -> setLineColor( RGBA_RED )
-//    -> drawX( aScene, aNeuron -> getError() )
-//
-//    -> setLineColor( interfaceColor )
-//    -> setLineWeight( 1.0 )
-//    -> drawX( aScene, 0.0 )
-//    -> drawX( aScene, 1.0 )
-//    -> drawX( aScene, -1.0 )
-//    -> drawY( aScene, 0.0 )
-//    -> drawY( aScene, 1.0 )
-//    -> drawY( aScene, -1.0)
-//    -> destroy();
+    Chart2d::create()
+    -> setXMin( -2.0 )
+    -> setXMax( 2.0 )
+    -> setYMin( -2.0 )
+    -> setYMax( 2.0 )
+    -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
+    -> setBackColor( interfaceColorDark )
+    -> setLineColor( interfaceColor )
+    -> drawBack( aScene )
+    -> setLineWeight( 1.0 )
+    -> draw( aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
+    -> draw( aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
+    -> draw( aScene, FUNC_V_LINE, 1.0 )
+
+    -> setLineWeight( 2.0 )
+    -> setLineColor( RGBA_ORANGE )
+    -> drawX( aScene, aNeuronList -> calcAvgValue() )
+    -> setLineColor( RGBA_RED )
+    -> drawX( aScene, aNeuronList -> calcAvgError() )
+
+    -> setLineColor( interfaceColor )
+    -> setLineWeight( 1.0 )
+    -> drawX( aScene, 0.0 )
+    -> drawX( aScene, 1.0 )
+    -> drawX( aScene, -1.0 )
+    -> drawY( aScene, 0.0 )
+    -> drawY( aScene, 1.0 )
+    -> drawY( aScene, -1.0)
+    -> destroy();
 
     return this;
 }
@@ -611,7 +610,7 @@ NetGraph* NetGraph::getNeuronsByScreenPos
 {
     getLayers() -> loop
     (
-        [ &aNeuronList, &aPosition ]
+        [ this, &aNeuronList, &aPosition ]
         (
             void* iLayer
         ) -> bool
@@ -619,7 +618,8 @@ NetGraph* NetGraph::getNeuronsByScreenPos
             (( Layer* ) iLayer ) -> getNeuronsByScreenPos
             (
                 aNeuronList,
-                aPosition
+                aPosition,
+                cursorRadius
             );
             return false;
         }
@@ -650,9 +650,8 @@ NetGraph* NetGraph::setSelected
 
 
 
-
 /*
-    On mouse left click event
+    Set selected neurons
 */
 NetGraph* NetGraph::setSelected
 (
@@ -660,7 +659,77 @@ NetGraph* NetGraph::setSelected
 )
 {
     selected -> resize( 0 );
-    getNeuronsByScreenPos( selected, aScene -> getMouseCurrentScreen() );
+    getNeuronsByScreenPos
+    (
+        selected,
+        aScene -> getMouseCurrentScreen()
+    );
     return this;
 }
 
+
+
+/*
+    Add selected neurons
+*/
+NetGraph* NetGraph::addSelectedByCursor
+(
+    Scene* aScene /* Scene object */
+)
+{
+    auto current = NeuronList::create();
+    getNeuronsByScreenPos
+    (
+        current,
+        aScene -> getMouseCurrentScreen()
+    );
+    selected -> merge( current );
+    current -> destroy();
+    return this;
+}
+
+
+
+/*
+    Remove selected neurons by scene
+*/
+NetGraph* NetGraph::removeSelectedByCursor
+(
+    Scene* aScene /* Scene object */
+)
+{
+    auto current = NeuronList::create();
+    getNeuronsByScreenPos
+    (
+        current,
+        aScene -> getMouseCurrentScreen()
+    );
+    selected -> remove( current );
+    current -> destroy();
+    return this;
+}
+
+
+
+
+/*
+    Return screen radius
+*/
+double NetGraph::getCursorRadius()
+{
+    return cursorRadius;
+}
+
+
+
+/*
+    Set screen radius
+*/
+NetGraph* NetGraph::setCursorRadius
+(
+    double a /* Pixel radius */
+)
+{
+    cursorRadius = a;
+    return this;
+}

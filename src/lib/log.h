@@ -4,6 +4,8 @@
 #include "console.h"
 #include "text_align.h"
 
+
+
 using namespace std; /* для того что бы std:: не приходилось каждый раз писать */
 
 

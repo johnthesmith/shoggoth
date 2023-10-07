@@ -281,6 +281,8 @@ void Loop::onLoop
     auto nowMoment = now();
     if( lastConfigCheck + MILLISECOND * 100 < nowMoment )
     {
+        getLog() -> begin( "Check config updated" );
+
         /* Set ok */
         getApplication() -> checkConfigUpdate();
         if
@@ -333,6 +335,7 @@ void Loop::onLoop
 
         /* Set last moment */
         lastConfigCheck = nowMoment;
+        getLog() -> end();
     }
 
 

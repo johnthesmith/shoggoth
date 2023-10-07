@@ -103,7 +103,10 @@ class Param
         /*
             Get Param name
         */
-        string getName();
+        string getName
+        (
+            string = ""
+        );
 
 
 

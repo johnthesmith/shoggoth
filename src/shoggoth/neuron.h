@@ -90,6 +90,23 @@ class Neuron
 
 
 
+        /*
+            Set neuron error
+        */
+        Neuron* setError
+        (
+            double
+        );
+
+
+
+        /*
+            Return neuron error
+        */
+        double getError();
+
+
+
 
         /*
             Return neuron screen position
@@ -124,6 +141,4 @@ class Neuron
         (
             Point3d&
         );
-
-
 };

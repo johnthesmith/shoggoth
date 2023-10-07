@@ -1,7 +1,5 @@
 {
-    "role"              :"processor",
-    "id"                :"proc",
-    "loop_sleep_mcs"    :1000000,
+    "loop_sleep_mcs"    :100,
 
     "io":
     {

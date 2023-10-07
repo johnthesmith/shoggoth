@@ -11,6 +11,7 @@ using namespace std;
 const string RESULT_OK = "ok";
 
 
+
 class Result
 {
     private:

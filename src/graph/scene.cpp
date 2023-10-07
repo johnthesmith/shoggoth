@@ -624,14 +624,16 @@ Scene& Scene::mouseMoveEvent
         /* Mouse left drag control */
         if( isMouseButton( MB_LEFT ) )
         {
-            if( mouseLeftDrag )
+            if( isMouseLeftDrag() )
             {
                 payload -> onLeftDrag( *this, Point3d( aX, aY ));
             }
             else
             {
-                payload -> onLeftDragBegin( *this, Point3d( aX, aY ));
-                mouseLeftDrag = true;
+                mouseLeftDrag = payload -> onLeftDragBegin
+                (
+                    *this, Point3d( aX, aY )
+                );
             }
         }
 
@@ -824,13 +826,13 @@ Scene* Scene::setPointSize
 /*
     Set
 */
-Scene& Scene::setLineWidth
+Scene* Scene::setLineWidth
 (
     const float a
 )
 {
     glLineWidth( a );
-    return *this;
+    return this;
 }
 
 
@@ -959,7 +961,7 @@ Scene& Scene::sendQube
 /*
     Draw qube
 */
-Scene& Scene::sendRect
+Scene* Scene::sendRect
 (
     Point3d& aTopLeft,
     Point3d& aBottomRight
@@ -973,7 +975,7 @@ Scene& Scene::sendRect
     vertex( Point3d( mx + w, my, 0));
     vertex( Point3d( mx + w, my + h, 0));
     vertex( Point3d( mx, my + h, 0));
-    return *this;
+    return this;
 }
 
 
@@ -981,7 +983,7 @@ Scene& Scene::sendRect
 /*
     Draw quad
 */
-Scene& Scene::sendRect
+Scene* Scene::sendRect
 (
     const Rect2d& aRect
 )
@@ -995,7 +997,7 @@ Scene& Scene::sendRect
     vertex( p3 );
     vertex( p4 );
 
-    return *this;
+    return this;
 }
 
 
@@ -1705,3 +1707,16 @@ Scene* Scene::changeTextBaseLine()
     return this;
 }
 
+
+
+bool Scene::isMouseLeftDrag()
+{
+    return mouseLeftDrag;
+}
+
+
+
+bool Scene::isMouseRightDrag()
+{
+    return mouseRightDrag;
+}

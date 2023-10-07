@@ -1,7 +1,9 @@
 #include "net.h"
 #include "shoggoth_consts.h"
 #include "io.h"
+#include "shoggoth_consts.h"
 #include "../json/param_list_file.h"
+#include "../json/param_list_log.h"
 
 
 /*
@@ -70,7 +72,6 @@ void Net::destroy()
 {
     delete ( this );
 }
-
 
 
 
@@ -499,6 +500,7 @@ Net* Net::switchLearningMode()
 
 Net* Net::readNet()
 {
+    getLog() -> begin( "Read net" );
     /* Read net */
     ParamList* json = NULL;
     auto io = Io::create( this );
@@ -617,6 +619,8 @@ Net* Net::readNet()
 
     /* Build layers calculation sequence list */
     precalc();
+
+    getLog() -> end();
 
     return this;
 }
@@ -883,6 +887,7 @@ Net* Net::loadLayer
                 aLayer
                 -> setSize( aParams )
                 -> setPosition( aParams )
+                -> setDrawSize( aParams )
                 ;
             }
         }
@@ -1122,6 +1127,8 @@ Net* Net::event
     Event aEvent
 )
 {
+    getLog() -> begin( "Neural net event" ) -> prm( "name", eventToString( aEvent ));
+
     if( actions -> isOk() )
     {
         auto actionsList = actions -> getObject
@@ -1157,6 +1164,9 @@ Net* Net::event
         -> warning( "Actions Is Empty with error" )
         -> prm( "code",  actions -> getCode());
     }
+
+    getLog() -> end() -> lineEnd();
+
     return this;
 }
 

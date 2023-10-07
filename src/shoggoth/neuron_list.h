@@ -12,6 +12,7 @@ using namespace std;
 
 
 class Neuron;
+class Layer;
 
 
 
@@ -41,6 +42,17 @@ class NeuronList : public Heap
         int indexBy
         (
             Neuron*
+        );
+
+
+
+        /*
+            Return index by layer and index at him
+        */
+        int indexBy
+        (
+            Layer*,
+            int
         );
 
 
@@ -85,5 +97,33 @@ class NeuronList : public Heap
             function <bool ( Neuron* )>,
             int = 0,
             int = 0
+        );
+
+
+
+        /*
+            Calculate average value
+        */
+        double calcAvgValue();
+
+
+
+        /*
+            Calculate average error
+        */
+        double calcAvgError();
+
+
+
+        NeuronList* merge
+        (
+            NeuronList*
+        );
+
+
+
+        NeuronList* remove
+        (
+            NeuronList*
         );
 };

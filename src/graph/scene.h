@@ -345,7 +345,7 @@ class Scene : public Result
         /*
             Set width of the line
         */
-        Scene& setLineWidth
+        Scene* setLineWidth
         (
             const float /* Point size at pixels */
         );
@@ -390,7 +390,7 @@ class Scene : public Result
         /*
             Draw qube
         */
-        Scene& sendRect
+        Scene* sendRect
         (
             Point3d&,   /* left top */
             Point3d&    /* bottom right */
@@ -401,7 +401,7 @@ class Scene : public Result
         /*
             Draw quad
         */
-        Scene& sendRect
+        Scene* sendRect
         (
             const Rect2d&
         );
@@ -741,4 +741,9 @@ class Scene : public Result
             Window is not open
         */
         bool windowClosed();
+
+
+
+        bool isMouseLeftDrag();
+        bool isMouseRightDrag();
 };

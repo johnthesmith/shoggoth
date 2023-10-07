@@ -113,4 +113,15 @@ class Teacher : public Payload
 
 
         ParamList* getBatches();
+
+
+
+        /*
+            Create buffer for job
+        */
+        Teacher* buildValueBuffer
+        (
+            ParamList*,
+            Layer*
+        );
 };

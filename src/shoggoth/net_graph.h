@@ -1,4 +1,14 @@
+/*
+    Shoggoth neural net library.
+    Extends the Net class for UI.
+    Contains methods for drawing net in UI interface.
+    2023
+*/
+
+
+
 #pragma once
+
 
 
 #include "../graph/scene.h"
@@ -49,6 +59,7 @@ class NetGraph : public Net
         Rgba            colorErrorZ         = Rgba( 1.0, 1.0, 1.0, 0.3 );
         Rgba            colorErrorP         = Rgba( 1.0, 0.0, 0.0, 1.0 );
 
+        double          cursorRadius        = 10.0;
     public:
         /*
             Constructor
@@ -94,7 +105,7 @@ class NetGraph : public Net
         NetGraph* drawNeuronChart
         (
             Scene*,
-            Neuron*
+            NeuronList*
         );
 
 
@@ -257,14 +268,55 @@ class NetGraph : public Net
 
 
 
+        /*
+            Set list of selected neurons
+        */
         NetGraph* setSelected
         (
             Neuron*
         );
 
 
+
         NetGraph* setSelected
         (
             Scene*
+        );
+
+
+
+        /*
+            Add new selected neurons
+        */
+        NetGraph* addSelectedByCursor
+        (
+            Scene*  /* Scene object */
+        );
+
+
+
+        /*
+            Remove selected neurons
+        */
+        NetGraph* removeSelectedByCursor
+        (
+            Scene*  /* Scene object */
+        );
+
+
+
+        /*
+            Return screen radius
+        */
+        double getCursorRadius();
+
+
+
+        /*
+            Set screen radius
+        */
+        NetGraph* setCursorRadius
+        (
+            double /* Pixel radius */
         );
 };

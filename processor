@@ -1,2 +1,2 @@
 #!/bin/bash
-./shoggoth --config=test/processor.json --log=processor.log --htopdebug
+./shoggoth --config=test/processor.json

@@ -99,9 +99,6 @@ class Layer : public Object
         BindDrawMode    showBinds               = BDM_HIDDEN;   /* Bind draw mode */
         bool            showLayer               = true;         /* SHow layer cover */
 
-        string          sourcePath              = "";           /* Source file for upload to neuron */
-        long long int   lastSourceUpdate        = 0;
-
         string          storagePath             = "";
 
         int             forward                 = -1;
@@ -365,6 +362,13 @@ class Layer : public Object
 
 
 
+        Layer* setDrawSize
+        (
+            ParamList*
+        );
+
+
+
         Layer* setPointsRecalc
         (
             bool a
@@ -412,7 +416,8 @@ class Layer : public Object
         Layer* getNeuronsByScreenPos
         (
             NeuronList*,        /* List of neurons */
-            const Point3d&      /* Top left point */
+            const Point3d&,     /* Top left point */
+            const int           /* Screen radius */
         );
 
 
@@ -484,13 +489,6 @@ class Layer : public Object
         (
             string
         );
-
-
-
-        /*
-            Return source file name
-        */
-        string getSourceFilename();
 
 
 
@@ -767,7 +765,7 @@ class Layer : public Object
         /*
             Set bitmap to neurons
         */
-        Layer* setBitmap
+        Layer* bitmapToValue
         (
             Bitmap*
         );
@@ -777,7 +775,10 @@ class Layer : public Object
         /*
             Load bitmap from source file name and set it
         */
-        Layer* loadSource();
+        Layer* imageToValue
+        (
+            string  /* File name */
+        );
 
 
 
@@ -822,4 +823,17 @@ class Layer : public Object
             Return event actions
         */
         ParamList* getActions();
+
+
+
+        /*
+            Noise fill values of layer neurons
+        */
+        Layer* noiseValue
+        (
+            int,        /* Random seed */
+            double,     /* Min value */
+            double      /* Max value */
+        );
+
 };

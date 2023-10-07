@@ -163,8 +163,20 @@ class Heap : public Result
         Heap* remove
         (
             function <bool ( void* )>,
-            Heap* = NULL                /* Warning!!! Must be empty */
+            Heap* = NULL                  /* Removind. Warning!!! Must be empty */
         );
+
+
+
+        /*
+            Remove all elements form  this,
+            contains in the argument
+        */
+        virtual Heap* remove
+        (
+            Heap* aRemove
+        );
+
 
 
         /*
@@ -192,4 +204,29 @@ class Heap : public Result
             Return first element or null if not exists
         */
         void* getFirst();
+
+
+
+        /*
+            Merge two heaps
+            Each elemento of Argument heap will add to This heap
+            if it not exists in This
+        */
+        virtual Heap* merge
+        (
+            Heap* /* Heap for merging */
+        );
+
+
+
+        /*
+            Merge two heaps
+            Each elemento of Argument heap will add to This heap
+            if it not exists in This
+        */
+        virtual Heap* merge
+        (
+            Heap*, /* Heap for merging */
+            function <bool ( void* )>
+        );
 };

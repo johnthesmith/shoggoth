@@ -65,9 +65,12 @@ Param* Param::setName
 /*
     Get Param name
 */
-string Param::getName()
+string Param::getName
+(
+    string a
+)
 {
-    return name;
+    return name == "" ? a : name ;
 }
 
 

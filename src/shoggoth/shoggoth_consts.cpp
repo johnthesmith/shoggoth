@@ -62,7 +62,7 @@ std::string eventToString
         case THINKING_END   : return "THINKING_END";
         case LEARNING_END   : return "LEARNING_END";
         case READ_NET       : return "READ_NET";
-        case TICHING_END    : return "TICHING_END";
+        case TEACHING_END   : return "TEACHING_END";
     }
     return "EVENT_UNKNOWN";
 }
