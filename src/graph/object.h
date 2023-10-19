@@ -16,10 +16,10 @@ class Object : public Result
 {
     private:
 
-       /* Object settings */
-        Point3d          eye             = POINT_3D_I;  /* Set on begin of coordinates */
-        Point3d          target          = POINT_3D_0;  /* Look at far */
-        Point3d          top             = POINT_3D_Y;  /* And top on top */
+        /* Object settings */
+        Point3d         eye             = POINT_3D_I;  /* Position of object */
+        Point3d         target          = POINT_3D_0;  /* Look at far */
+        Point3d         top             = POINT_3D_Y;  /* And top */
 
         bool            changed         = true;
 
@@ -35,7 +35,7 @@ class Object : public Result
         /*
             Directive set eye position
         */
-        Object& setEye
+        Object* setEye
         (
             const Point3d&
         );
@@ -62,7 +62,7 @@ class Object : public Result
         /*
             Set top normal vector
         */
-        Object& setTop
+        Object* setTop
         (
             const Point3d&
         );
@@ -261,5 +261,4 @@ class Object : public Result
         (
             bool
         );
-
 };

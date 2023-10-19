@@ -1,7 +1,7 @@
 {
     "io":
     {
-        "net"   :"test/net.json"
+        "net"   :"net/net.json"
     },
     "tasks":
     {

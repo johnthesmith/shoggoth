@@ -16,10 +16,26 @@
 #include "../graph/scene.h"
 #include "../lib/rpc_client.h"
 
-#include "bind_type.h"
 #include "layer_list.h"
 #include "nerve_list.h"
 
+
+
+/*
+    Lambda function for nerve weights loop
+*/
+typedef
+function
+<
+    bool
+    (
+        int,        /* Index of weight in a nerve */
+        Neuron*,    /* Neuron in tne parent layer */
+        Neuron*,    /* Neuron in the child layer*/
+        Nerve*      /* Nerve object */
+    )
+>
+IndexWeightLambda;
 
 
 
@@ -51,7 +67,7 @@ class Net: public Result
         double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
         double  errorNormalize          = 0.0;      /* 0.0 - full error transfer,  1.0 - full dependency from sum weight of layer */
         double  sensivity               = 10;       /* Sensivity of neuronet [ 0; +oo], Set to sensivity of each layer */
-        bool    learningMode            = false;    /* True for backweard calculation in learning */
+        bool    learningMode            = true;     /* True for backweard calculation in learning */
 
         string  storagePath             = "net";
 
@@ -439,5 +455,13 @@ class Net: public Result
 
 
         bool isNextLoop();
+
+
+
+        bool nerveWeightLoop
+        (
+            NeuronList*,
+            IndexWeightLambda
+        );
 };
 

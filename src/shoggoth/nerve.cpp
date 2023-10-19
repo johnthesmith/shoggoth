@@ -283,6 +283,21 @@ double Nerve::getWeight
 
 
 /*
+    Set weight by index
+*/
+Nerve* Nerve::setWeight
+(
+    int aIndex,
+    double aValue
+)
+{
+    weights[ aIndex ] = aValue;
+    return this;
+}
+
+
+
+/*
     Return the weights from and to indexes by child index
 */
 Nerve* Nerve::getWeightsRangeByChildIndex
@@ -312,10 +327,40 @@ Nerve* Nerve::getWeightsRangeByChildIndex
 
 
 /*
+    Return the weights from and to indexes by parent index
+*/
+Nerve* Nerve::getWeightsRangeByParentIndex
+(
+    int aIndex, /* index of parent neuron */
+    int &aFrom, /* index of weights begin for neurn */
+    int &aTo,   /* index of weights eend for neuron */
+    int &aStep  /* step for shift between from and to */
+)
+{
+    switch( nerveType )
+    {
+        case ALL_TO_ALL:
+            aFrom = aIndex;
+            aTo = weightsCount - parent-> getNeuronsCount() + aIndex + 1;
+            aStep = parent -> getNeuronsCount();
+        break;
+        case ONE_TO_ONE:
+            double cp = parent -> getNeuronsCount();
+            double cc = child -> getNeuronsCount();
+            double m = max( cp, cc );
+            aFrom = (int) ceil( aIndex * m / cp );
+            aTo = (int) ceil(( aIndex + 1 ) * m / cp );
+            aStep = 1;
+        break;
+    }
+    return this;
+}
+
+
+
+/*
     Nerve IO
 */
-
-
 
 Nerve* Nerve::readFromBuffer
 (
@@ -413,4 +458,46 @@ Nerve* Nerve::writeWeights()
     -> destroy();
 
     return this;
+}
+
+
+
+/*
+    Return weight index in nerve by neurons index
+*/
+int Nerve::getIndexByNeuronsIndex
+(
+    int aIndexNeuronParent,
+    int aIndexNeuronChild
+)
+{
+    int result = -1;
+
+    switch( nerveType )
+    {
+        case ALL_TO_ALL:
+        {
+            int from, to = 0;
+            getWeightsRangeByChildIndex( aIndexNeuronChild, from, to );
+            result = from + aIndexNeuronParent;
+        }
+        break;
+        case ONE_TO_ONE:
+        {
+            int fromChild, toChild = 0;
+            int fromParent, toParent, step = 0;
+            getWeightsRangeByParentIndex( aIndexNeuronParent, fromParent, toParent, step );
+            getWeightsRangeByChildIndex( aIndexNeuronChild, fromChild, toChild );
+            if( fromParent > fromChild && fromParent < toChild )
+            {
+                result = fromParent;
+            }
+            if( fromChild >= fromParent && fromChild < toParent )
+            {
+                result = fromChild;
+            }
+        }
+        break;
+    }
+    return result;
 }

@@ -78,15 +78,23 @@ ShoggothApplication* Teacher::getApplication()
 
 Teacher* Teacher::task()
 {
-    getLog() -> begin( "Check" );
+    getLog() -> begin( "Check error level" );
 
     /* Retrive error layer by id */
-    auto error = net -> getLayers() -> getById( idErrorLayer );
+    auto errorLayer = net -> getLayers() -> getById( idErrorLayer );
 
-    if( error != NULL )
+    if( errorLayer != NULL )
     {
+        auto error = errorLayer -> getValue();
+
+        getLog()
+        -> trace( "Compare" )
+        -> prm( "error", error )
+        -> prm( "error limit", errorLimit )
+        ;
+
         /* Check error limit */
-        if( error -> getValue() <= errorLimit )
+        if( error <= errorLimit )
         {
             /* Check new batch */
             getLog() -> begin( "New batch" );
@@ -140,6 +148,10 @@ Teacher* Teacher::task()
             }
             getLog() -> end();
         }
+        else
+        {
+            getLog() -> trace( "Hight error rate" );
+        }
     }
     else
     {
@@ -148,7 +160,6 @@ Teacher* Teacher::task()
         -> prm( "id", idErrorLayer );
     }
     getLog() -> end();
-
 
     return this;
 }

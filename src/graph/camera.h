@@ -9,10 +9,10 @@
 
 #include <math.h>
 
-#include "object.h"
+#include "temporal_object.h"
 #include "point3.h"
 
-class Camera : public Object
+class Camera : public TemporalObject
 {
     private:
 

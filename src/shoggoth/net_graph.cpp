@@ -208,6 +208,7 @@ NetGraph* NetGraph::drawNerve
         case BDM_HIDDEN:
         break;
         case BDM_TYPE:
+        case BDM_SIGNAL:
         case BDM_WEIGHT:
             aScene -> setLineWidth( 1 );
             aScene -> begin( LINE );
@@ -243,6 +244,23 @@ NetGraph* NetGraph::drawNerve
                         }
                     break;
                     case BDM_WEIGHT:
+                        switch( neuronDrawMode )
+                        {
+                            case NDM_VALUE:
+                                color = getBindValueColor
+                                (
+                                    aNerve -> getWeight( i )
+                                );
+                            break;
+                            case NDM_ERROR:
+                                color = getBindErrorColor
+                                (
+                                    aNerve -> getWeight( i )
+                                );
+                            break;
+                        }
+                    break;
+                    case BDM_SIGNAL:
                         switch( neuronDrawMode )
                         {
                             case NDM_VALUE:
@@ -388,6 +406,8 @@ NetGraph* NetGraph::drawNeuronChart
     -> drawX( aScene, aNeuronList -> calcAvgValue() )
     -> setLineColor( RGBA_RED )
     -> drawX( aScene, aNeuronList -> calcAvgError() )
+    -> setLineColor( RGBA_GREEN )
+    -> drawX( aScene, avgWeightBySelect() )
 
     -> setLineColor( interfaceColor )
     -> setLineWeight( 1.0 )
@@ -446,13 +466,17 @@ NetGraph* NetGraph::drawSelectedNeurons
 {
     aScene
     -> color( interfaceColor )
-    -> setPointSize( 4 )
+    -> setPointSize( 6 )
     -> begin( POINT );
     selected -> loop
     (
         [ &aScene ]( Neuron* iNeuron ) -> bool
         {
-            aScene -> vertex( iNeuron -> getScreen() );
+            auto s = iNeuron -> getScreen();
+            if( s.z < 1 )
+            {
+                aScene -> vertex( s.setZ( 0 ) );
+            }
             return false;
         }
     );
@@ -558,7 +582,8 @@ NetGraph* NetGraph::switchShowBinds()
     switch( showBinds )
     {
         case BDM_HIDDEN: showBinds = BDM_WEIGHT; break;
-        case BDM_WEIGHT: showBinds = BDM_TYPE; break;
+        case BDM_WEIGHT: showBinds = BDM_SIGNAL; break;
+        case BDM_SIGNAL: showBinds = BDM_TYPE; break;
         case BDM_TYPE: showBinds = BDM_HIDDEN; break;
     }
 
@@ -732,4 +757,36 @@ NetGraph* NetGraph::setCursorRadius
 {
     cursorRadius = a;
     return this;
+}
+
+
+
+/*
+    Return average weights for selected neurons
+*/
+double NetGraph::avgWeightBySelect()
+{
+    int total = 0;
+    double sum = 0;
+
+    nerveWeightLoop
+    (
+        getSelectedNeurons(),
+        [
+            &total, &sum
+        ]
+        (
+            int aWeightIndex,
+            Neuron* aNeuronFrom,
+            Neuron* aNeuronTo,
+            Nerve* aNerve
+        )
+        {
+            total ++;
+            sum += aNerve -> getWeight( aWeightIndex );
+            return false;
+        }
+    );
+
+    return total == 0.0 ? 0.0 : (double)sum / total;
 }

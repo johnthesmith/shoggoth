@@ -1,7 +1,7 @@
 /*
     Object
 
-    Class has:
+    The class has a:
     - eye - point of view
     - target - point for Front direction
     - top - normalized vector for top directio
@@ -28,10 +28,13 @@
 #include "object.h"
 #include "matrix.h"
 
+
+
+
 /*
     Directive set eye position
 */
-Object& Object::setEye
+Object* Object::setEye
 (
     const Point3d& a
 )
@@ -41,7 +44,7 @@ Object& Object::setEye
     {
         eye = a;
     }
-    return *this;
+    return this;
 }
 
 
@@ -77,14 +80,14 @@ Point3d& Object::getEye()
 /*
     Set top normal vector
 */
-Object& Object::setTop
+Object* Object::setTop
 (
     const Point3d& a
 )
 {
     top = a;
     changed = true;
-    return *this;
+    return this;
 }
 
 

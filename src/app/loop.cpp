@@ -277,6 +277,8 @@ void Loop::onLoop
     bool&           aReconfig
 )
 {
+    getLog() -> begin( "Loop" );
+
     /* Read config */
     auto nowMoment = now();
     if( lastConfigCheck + MILLISECOND * 100 < nowMoment )
@@ -375,4 +377,6 @@ void Loop::onLoop
             }
         }
     }
+
+    getLog() -> end();
 }

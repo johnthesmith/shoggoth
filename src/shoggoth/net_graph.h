@@ -319,4 +319,11 @@ class NetGraph : public Net
         (
             double /* Pixel radius */
         );
+
+
+
+        /*
+            Return average weights for selected neurons
+        */
+        double avgWeightBySelect();
 };

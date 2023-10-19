@@ -263,4 +263,36 @@ NerveList*  NerveList::writeWeights()
 
 
 
+/*
+    Find and return list of the nerves
+    by parent and child layers
+*/
+NerveList* NerveList::selectByLayers
+(
+    Layer* aParent,
+    Layer* aChild,
+    NerveList* aFoundedNerves
+)
+{
+    loop
+    (
+        [ &aFoundedNerves, &aParent, &aChild ]
+        (
+            void* aItem
+        )
+        {
+            auto nerve = ( Nerve* ) aItem;
+            if
+            (
+                nerve -> getParent() == aParent &&
+                nerve -> getChild() == aChild
+            )
+            {
+                aFoundedNerves -> push( nerve );
+            }
+            return false;
+        }
+    );
+    return this;
+}
 

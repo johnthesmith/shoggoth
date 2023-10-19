@@ -1,2 +1,2 @@
 #!/bin/bash
-./shoggoth --config=test/processor.json
+./shoggoth --config=net/processor.json

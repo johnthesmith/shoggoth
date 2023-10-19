@@ -32,7 +32,8 @@
     },
     "S**T":
     {
-        "TEACHING_END"  :[ "WRITE_VALUES" ]
+        "TEACHING_END"  :[ "WRITE_VALUES" ],
+        "LOOP_BEGIN"    :[ "READ_VALUES" ]
     },
     "S*P*":
     {

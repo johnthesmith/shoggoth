@@ -8,9 +8,9 @@
 #include "../lib/result.h"
 #include "../lib/log.h"
 
-#include "bind_type.h"
-#include "nerve_type.h"
 
+
+#include "shoggoth_consts.h"
 
 
 class Layer;
@@ -129,6 +129,16 @@ class Nerve: public Result
         int getWeightsCount();
 
 
+        /*
+            Set weight by index
+        */
+        Nerve* setWeight
+        (
+            int     /* Index of weight */,
+            double  /* Value for bind */
+        );
+
+
 
         static BindType bindTypeFromString
         (
@@ -187,6 +197,19 @@ class Nerve: public Result
 
 
         /*
+            Return the weights from and to indexes by parent index
+        */
+        Nerve* getWeightsRangeByParentIndex
+        (
+            int aIndex, /* index of parent neuron */
+            int &aFrom, /* index of weights begin for neurn */
+            int &aTo,   /* index of weights eend for neuron */
+            int &aStep  /* step for shift between from and to */
+        );
+
+
+
+        /*
             Load nerve weights from buffer
         */
         Nerve* readFromBuffer
@@ -219,4 +242,16 @@ class Nerve: public Result
             Write weights array to the io
         */
         Nerve* writeWeights();
+
+
+
+        /*
+            Return weight index  in nerve by neurons index
+        */
+        int getIndexByNeuronsIndex
+        (
+            int,    /* index From */
+            int     /* index To */
+        );
+
 };

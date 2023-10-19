@@ -1,7 +1,7 @@
 #include "net.h"
-#include "shoggoth_consts.h"
 #include "io.h"
 #include "shoggoth_consts.h"
+#include "neuron.h"
 #include "../json/param_list_file.h"
 #include "../json/param_list_log.h"
 
@@ -337,19 +337,25 @@ Net* Net::calc()
                 layer -> getBackwardStage( threadCount ) == CALC_NOT_START
             )
             {
+                /* Set default thread id */
                 int idThread = 0;
+                /* Layer calculation */
                 layer -> calcStartBackward();
-
+                /* --- thread begin --- */
                 /* Calculate errors */
+
                 layer -> learning
                 (
                     errorNormalize,
                     learningSpeed,
-                    wakeupWeight
+                    wakeupWeight,
+                    idThread,
+                    threadCount
                 );
 
                 /* Set local sync for local works */
                 layer -> calcCompleteBackward();
+                /* --- thread end --- */
             }
 
             if( layer -> getBackwardStage( threadCount ) == CALC_COMPLETE )
@@ -366,7 +372,6 @@ Net* Net::calc()
         /* Dump sync to log */
         syncToLog( layer );
     }
-
 
     return this;
 }
@@ -1222,10 +1227,88 @@ bool Net::isNextLoop()
 {
     auto result = false;
     auto currentMoment = now();
-    if( lastLoopMoment + loopTimeoutMcs > currentMoment )
+
+    if( lastLoopMoment + loopTimeoutMcs < currentMoment )
     {
         result = true;
         lastLoopMoment = currentMoment;
     }
     return result;
+}
+
+
+
+
+bool Net::nerveWeightLoop
+(
+    NeuronList* a,
+    IndexWeightLambda aCallback
+)
+{
+    a -> loop
+    (
+        [ &a, this, &aCallback ]
+        (
+            Neuron* fromNeuron
+        )
+        {
+            a -> loop
+            (
+                [ &fromNeuron, this, &aCallback ]
+                (
+                    Neuron* toNeuron
+                )
+                {
+                    auto fromLayer = fromNeuron -> getLayer();
+                    auto toLayer = toNeuron -> getLayer();
+
+                    auto foundedNerves = NerveList::create();
+                    nerves -> selectByLayers
+                    (
+                        fromLayer,
+                        toLayer,
+                        foundedNerves
+                    );
+
+                    foundedNerves -> loop
+                    (
+                        [
+                            &fromNeuron,
+                            &toNeuron,
+                            &aCallback
+                        ]
+                        (
+                            void* aItem
+                        )
+                        {
+                            auto nerve = (Nerve*)aItem;
+                            auto indexFrom = fromNeuron -> getIndex();
+                            auto indexTo = toNeuron -> getIndex();
+                            auto weightIndex = nerve -> getIndexByNeuronsIndex
+                            (
+                                indexFrom,  /* in parent layer */
+                                indexTo     /* in child layer */
+                            );
+                            if( weightIndex >= 0 )
+                            {
+                                aCallback
+                                (
+                                    weightIndex,
+                                    fromNeuron,
+                                    toNeuron,
+                                    nerve
+                                );
+                            }
+                            return false;
+                        }
+                    );
+
+                    foundedNerves -> destroy();
+                    return false;
+                }
+            );
+            return false;
+        }
+    );
+    return this;
 }

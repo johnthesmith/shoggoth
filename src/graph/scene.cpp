@@ -215,18 +215,29 @@ Scene* Scene::init
 
 Scene* Scene::finit()
 {
-    /* destroy Window */
-    if( isWindow() )
-    {
-        glfwDestroyWindow( win );
-        win = NULL;
-    }
+    closeWindow();
 
     /* terminate opengl */
     if( glInit )
     {
         glfwTerminate();
         glInit = false;     /* Set initialize flag to false */
+    }
+    return this;
+}
+
+
+
+/*
+    Close main scene window
+*/
+Scene* Scene::closeWindow()
+{
+    /* destroy Window */
+    if( isWindow() )
+    {
+        glfwDestroyWindow( win );
+        win = NULL;
     }
     return this;
 }
@@ -1105,7 +1116,6 @@ Point3d Scene::getScreenByWorld
         (GLdouble*)&r.y,
         (GLdouble*)&r.z
     );
-    r.z = 0.0;
     return r;
 }
 
@@ -1123,7 +1133,7 @@ Point3d Scene::getWorldByScreen
     auto r = Point3d();
     gluUnProject
     (
-        a.x, viewport.height - a.y, a.z,
+        a.x, /*viewport.height -*/ a.y, a.z,
         (GLdouble*)&viewMatrix,
         (GLdouble*)&projectionMatrix,
         (GLint*)&viewport,

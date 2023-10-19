@@ -345,6 +345,17 @@ struct Point3d
 
 
     /*
+        Linear interpolate from this for 0 to argument for 1
+    */
+    Point3d& itpLin
+    (
+        const Point3d&,
+        const double
+    );
+
+
+
+    /*
         Convert Point3d to string
     */
     string toString() const;

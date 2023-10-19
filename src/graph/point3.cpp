@@ -605,6 +605,23 @@ Point3d& Point3d::max
 
 
 
+/*
+    Linear interpolate from this for 0 to argument for 1
+*/
+Point3d& Point3d::itpLin
+(
+    const Point3d& a,
+    const double t
+)
+{
+    x += ( a.x - x ) * t;
+    y += ( a.y - y ) * t;
+    z += ( a.z - z ) * t;
+    return *this;
+}
+
+
+
 
 /*
     Convert Point3d to string

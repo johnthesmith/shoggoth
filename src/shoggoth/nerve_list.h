@@ -157,5 +157,15 @@ class NerveList :  public Heap
 
 
         NerveList* writeWeights();
+
+
+
+        NerveList* selectByLayers
+        (
+            Layer*, /* parent layer */
+            Layer*, /* child layer */
+            NerveList* /* Founded Nerves */
+        );
+
 };
 

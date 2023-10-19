@@ -26,7 +26,6 @@
 
 #include "nerve_list.h"
 #include "neuron_list.h"
-#include "nerve_type.h"
 #include "shoggoth_consts.h"
 
 
@@ -38,6 +37,7 @@ enum BindDrawMode
 {
     BDM_HIDDEN,
     BDM_WEIGHT,
+    BDM_SIGNAL,
     BDM_TYPE
 };
 
@@ -65,7 +65,26 @@ function
         double  /* Weight of bind */
     )
 >
-parensLambda;
+parentsLambda;
+
+
+
+/*
+    Lambda function for return children neurons for parent
+*/
+typedef
+function
+<
+    bool
+    (
+        Layer*, /* return layer with children neurons */
+        int,    /* return child neuron index*/
+        Nerve*, /* return nerve */
+        double, /* return weight of bind */
+        int     /* return weight index */
+    )
+>
+childrenLambda;
 
 
 
@@ -255,7 +274,9 @@ class Layer : public Object
         (
             double, /* errorNormalize */
             double, /* learningSpeed */
-            double  /* wakeupWeight */
+            double, /* wakeupWeight */
+            int,
+            int
         );
 
 
@@ -814,7 +835,18 @@ class Layer : public Object
         Layer* parentsLoop
         (
             int,    /* Index of neuron for loop by his parents */
-            parensLambda callback
+            parentsLambda
+        );
+
+
+
+        /*
+            Loop for each child of i neuron
+        */
+        Layer* childrenLoop
+        (
+            int,
+            childrenLambda
         );
 
 
@@ -834,6 +866,19 @@ class Layer : public Object
             int,        /* Random seed */
             double,     /* Min value */
             double      /* Max value */
+        );
+
+
+
+        /*
+            Calculate neuron
+        */
+        Layer* neuronLearning
+        (
+            int,    /* Index */
+            double, /* ErrorNormalize */
+            double, /* LearningSpeed */
+            double  /* WakeupWeight */
         );
 
 };

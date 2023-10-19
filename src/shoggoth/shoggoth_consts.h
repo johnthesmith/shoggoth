@@ -6,6 +6,17 @@
 
 
 /*
+    Type of nerves
+*/
+enum NerveType
+{
+    ALL_TO_ALL,
+    ONE_TO_ONE
+};
+
+
+
+/*
     List of events for neral net
 */
 enum Event
@@ -92,6 +103,16 @@ enum Command
     CMD_READ_ERRORS,    /* Server return the layer errors data */
     CMD_WRITE_WEIGHTS,  /* Server receive the nerve weights data */
     CMD_READ_WEIGHTS    /* Server return the nerve weights data */
+};
+
+
+
+enum BindType
+{
+    BT_VALUE,           /* Spred value */
+    BT_SAMPLE,          /**/
+    BT_COMMAND,
+    BT_ERROR_TO_VALUE
 };
 
 

@@ -29,6 +29,8 @@ class Ui : public ScenePayload
 
         long int    lastConfigCheck     = 0;
 
+        string      selectedLayerId     = "";
+
     public:
 
         /*
@@ -74,7 +76,7 @@ class Ui : public ScenePayload
         Ui* help();
 
 
-        /******************************************************************************
+        /**********************************************************************
             Events
         */
 

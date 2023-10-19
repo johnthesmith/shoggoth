@@ -746,4 +746,8 @@ class Scene : public Result
 
         bool isMouseLeftDrag();
         bool isMouseRightDrag();
+
+
+        /* Close main scene window */
+        Scene* closeWindow();
 };

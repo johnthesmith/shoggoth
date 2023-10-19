@@ -258,47 +258,24 @@ Layer* Layer::learning
 (
     double  aErrorNormalize,
     double  aLearningSpeed,
-    double  aWakeupWeight
+    double  aWakeupWeight,
+    int     aProcessorNumber,
+    int     aProcessorCount
 )
 {
-    bool calculatedErrorFinish = true;
+    int b = calcNeuronFrom( aProcessorNumber, aProcessorCount );
+    int e = calcNeuronTo( aProcessorNumber, aProcessorCount );
 
-    /* Calculate neurons */
-//    neurons -> loop
-//    (
-//        [
-//            &calculatedErrorFinish,
-//            &aLoopParity,
-//            &aErrorNormalize,
-//            &aLearningSpeed,
-//            &aWakeupWeight
-//        ]
-//        ( Neuron* neuron ) -> bool
-//        {
-//            if( neuron -> getLoopParityError() != aLoopParity )
-//            {
-//                /* Calc neuron */
-//                neuron -> learning
-//                (
-//                    aLoopParity,
-//                    aErrorNormalize,
-//                    aLearningSpeed,
-//                    aWakeupWeight
-//                );
-//                /* Accumulate layer finish value */
-//                calculatedErrorFinish
-//                = calculatedErrorFinish
-//                && ( neuron -> getLoopParityError() == aLoopParity );
-//            }
-//            return false;
-//        }
-//    );
-//
-//    /* Fixing the loop parity for layer */
-//    if( calculatedErrorFinish )
-//    {
-//        loopParityError = aLoopParity;
-//    }
+    for( int i = b; i < e; i ++ )
+    {
+        neuronLearning
+        (
+            i,
+            aErrorNormalize,
+            aLearningSpeed,
+            aWakeupWeight
+        );
+    }
 
     return this;
 }
@@ -712,10 +689,11 @@ Layer* Layer::getNeuronsByScreenPos
     /* Coolect indexes to list */
     for( int i = 0; i < count; i++ )
     {
+        auto s = getNeuronScreen( i );
         if
         (
-            getNeuronScreen( i )
-            .distXY( aPosition ) < aScreenRadius
+            s.z < 1.0 &&
+            s.distXY( aPosition ) < aScreenRadius
         )
         {
             list[ iBuffer ] = i;
@@ -724,11 +702,16 @@ Layer* Layer::getNeuronsByScreenPos
     }
 
     int c = aList -> getCount();
+
     /* Resize the rusult buffer */
     aList -> resize( c + iBuffer );
     for( int i = 0; i < iBuffer; i++ )
     {
-        aList -> setByIndex( c + i, Neuron::create( this, list[ i ]));
+        aList -> setByIndex
+        (
+            c + i,
+            Neuron::create( this, list[ i ])
+        );
     }
 
     delete [] list;
@@ -845,7 +828,7 @@ Layer* Layer::bitmapToValue
 {
     auto w = a -> getWidth();
     auto h = a -> getHeight();
-//
+
 //    if( w > 0 && h > 0 && size.x > 0 && size.y > 0 )
 //    {
 //        double kx = (double) size.x / (double) w;
@@ -1057,6 +1040,8 @@ Layer* Layer::writeValues()
         io
         -> call( CMD_WRITE_VALUES )
         -> destroy();
+
+        getLog() -> trace( "Write layer values" ) -> prm( "id", this -> getId() );
     }
 
     return this;
@@ -1097,6 +1082,7 @@ Layer* Layer::readValues()
         size_t size = 0;
         io -> getAnswer() -> getData( "data", buffer, size );
         valuesFromBuffer( buffer, size );
+        getLog() -> trace( "Read layer values" ) -> prm( "id", this -> getId() );
     }
 
     io -> destroy();
@@ -1121,6 +1107,8 @@ Layer* Layer::writeErrors()
         io
         -> call( CMD_WRITE_ERRORS )
         -> destroy();
+
+        getLog() -> trace( "Write layer errors" ) -> prm( "id", this -> getId() );
     }
 
     return this;
@@ -1148,6 +1136,7 @@ Layer* Layer::readErrors()
         if( buffer != NULL && size == count * sizeof( double ) )
         {
             memcpy( errors, buffer, size );
+            getLog() -> trace( "Read layer errors" ) -> prm( "id", this -> getId() );
         }
     }
 
@@ -1285,7 +1274,6 @@ Layer* Layer::setNeuronValue
         else
         {
             setResult( "IndexValueOutOfRangeForSet" );
-exit(0);
         }
     }
     else
@@ -1551,6 +1539,7 @@ Point3d Layer::getNeuronSelected
 }
 
 
+//TODO Проверить parentsLoop и childrenLoop
 
 
 /*
@@ -1559,7 +1548,7 @@ Point3d Layer::getNeuronSelected
 Layer* Layer::parentsLoop
 (
     int aIndex,
-    parensLambda aCallback
+    parentsLambda aCallback
 )
 {
     /* Loop by nerves */
@@ -1599,6 +1588,54 @@ Layer* Layer::parentsLoop
 
 
 /*
+    Loop for each child of i neuron
+*/
+Layer* Layer::childrenLoop
+(
+    int aIndex,
+    childrenLambda aCallback
+)
+{
+    /* Loop by nerves */
+    getNet() -> getNerves() -> loop
+    (
+        [ this, &aCallback, &aIndex ]
+        ( void* aNerve )
+        {
+            auto iNerve = ( Nerve* ) aNerve;
+            if( iNerve -> getParent() == this )
+            {
+                int from = 0;
+                int to = 0;
+                int step = 0;
+
+                iNerve -> getWeightsRangeByParentIndex
+                (
+                    aIndex, from, to, step
+                );
+
+                /* Loop by weights */
+                for( int i = from; i < to;  i += step )
+                {
+                    aCallback
+                    (
+                        iNerve -> getChild(),
+                        iNerve -> getChildByWeightIndex( i ),
+                        iNerve,
+                        iNerve -> getWeight( i ),
+                        i
+                    );
+                }
+            }
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
     Calculate neuron
 */
 Layer* Layer::neuronCalcValue
@@ -1612,8 +1649,6 @@ Layer* Layer::neuronCalcValue
     int countSample         = 0;
     int countValue          = 0;
 
-    bool stop = false;
-
     /* Neuron has a binds and it is not a Receptor */
     parentsLoop
     (
@@ -1623,7 +1658,6 @@ Layer* Layer::neuronCalcValue
             &summValue,
             &summSample,
             &summCommand,
-            &stop,
             &countSample,
             &countValue
         ]
@@ -1658,25 +1692,133 @@ Layer* Layer::neuronCalcValue
         }
     );
 
-    if( !stop )
+
+    if( countValue > 0 )
     {
-        if( countValue > 0 )
-        {
-            setNeuronValue( aIndex,  FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
-        }
-        if( countSample > 0 )
-        {
-            setNeuronError
-            (
-                aIndex,
-                FUNC_SIGMOID_LINE_MINUS_PLUS
-                (
-                    ( summSample - getValue() ) * ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
-                    1.0
-                )
-            );
-        }
+        setNeuronValue( aIndex,  FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
     }
+    if( countSample > 0 )
+    {
+        setNeuronError
+        (
+            aIndex,
+            FUNC_SIGMOID_LINE_MINUS_PLUS
+            (
+                ( summSample - getValue() ) * ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
+                1.0
+            )
+        );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Calculate neuron
+*/
+Layer* Layer::neuronLearning
+(
+    int aIndex,
+    double  aErrorNormalize,
+    double  aLearningSpeed,
+    double  aWakeupWeight
+)
+{
+    /* Define variables */
+    double summWeight   = 0.0;
+    double summError    = 0.0;
+    int countValue      = 0;
+
+    /* Caclulate error form all children for current neuron */
+    childrenLoop
+    (
+        aIndex,
+        [
+            this,
+            &summWeight,
+            &summError,
+            &countValue,
+            &aIndex
+        ]
+        (
+            Layer* aChild,
+            int aChildIndex,
+            Nerve* aNerve,
+            double aWeight,
+            int aWeightIndex    /* Not use */
+        ) -> bool
+        {
+            switch( aNerve -> getBindType())
+            {
+                case BT_VALUE:
+                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
+                    summWeight += abs( aWeight );
+                break;
+            }
+            return false;
+        }
+    );
+
+    /* Neuron error is calculated */
+    /* If children neurons afected the parent neuron ... */
+    if( summWeight > EPSILON_D )
+    {
+        setNeuronError
+        (
+            aIndex,
+            FUNC_SIGMOID_LINE_MINUS_PLUS
+            (
+                summError / ( 1 + summWeight * aErrorNormalize ),
+                1.0
+            )
+        );
+    }
+
+    /* Learning */
+    childrenLoop
+    (
+        aIndex,
+        [
+            this,
+            &aLearningSpeed,
+            &aWakeupWeight,
+            &aIndex
+        ]
+        (
+            Layer* aChildLayer,
+            int aChildIndex,
+            Nerve* aNerve,
+            double aWeight,
+            int aWeightIndex
+        ) -> bool
+        {
+            switch( aNerve -> getBindType())
+            {
+                case BT_VALUE:
+                {
+                    /*
+                        Calculate delta
+                    */
+                    double e = aWakeupWeight;   /* epsilon for zero weight подъем нулевых связей */
+                    double w = abs( aWeight );
+                    double wv = ( w < e ? e : w ) * getNeuronValue( aIndex );
+                    double deltaWeight = getNeuronError( aIndex ) * wv;
+                    aNerve -> setWeight
+                    (
+                        aWeightIndex,
+                        FUNC_SIGMOID_LINE_MINUS_PLUS
+                        (
+                            aWeight + deltaWeight * aLearningSpeed,
+                            1.0
+                        )
+                    );
+                }
+            }
+            return false;
+        }
+    );
 
     return this;
 }
@@ -1720,20 +1862,3 @@ Layer* Layer::noiseValue
 
     return this;
 }
-
-
-
-
-      /* Set sample */
-//        auto hid = Hid().setString( to_string( a ));
-//        for( int i = 0; i < sample -> neurons -> getCount(); i ++ )
-//        {
-//            sample -> neurons
-//            -> getByIndex( i )
-//            -> setValue
-//            (
-//                hid.getBit( i ) && net -> getLearningMode() ? 1.0 : 0.0
-//            );
-//            sample -> saveValue();
-//        }
-//    }

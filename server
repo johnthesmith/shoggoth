@@ -1,2 +1,2 @@
 #!/bin/bash
-./shoggoth --config=test/server.json
+./shoggoth --config=net/server.json

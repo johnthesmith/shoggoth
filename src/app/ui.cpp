@@ -158,9 +158,6 @@ void Ui::onCalc
     if( lastConfigCheck + MILLISECOND * 1000 < nowMoment )
     {
         net -> readNet();
-        net -> getLayers() -> readValues() -> readErrors();
-        net -> getNerves() -> readWeights();
-
         /* Set last moment */
         lastConfigCheck = nowMoment;
     }
@@ -176,9 +173,14 @@ void Ui::onDraw
     Scene* aScene   /* Scene object */
 )
 {
-    applyCameraToScene( camera, aScene );
-
     aScene -> clearColor();
+
+
+    applyScreenToScene( aScene );
+
+    net -> drawSelectedNeurons( aScene );
+
+    applyCameraToScene( camera, aScene );
 
     /* Draw Layers */
     net
@@ -332,6 +334,9 @@ void Ui::onKeyDown
 {
     switch( aKey )
     {
+        case KEY_ESCAPE:
+            aScene . closeWindow();
+        break;
         case KEY_1:
         case KEY_2:
         case KEY_3:
@@ -344,9 +349,44 @@ void Ui::onKeyDown
 //            fillScreen( aKey );
         break;
 
+        case KEY_LEFT_BRACKET:
+        {
+            auto index = net -> getLayers() -> getIndexById( selectedLayerId );
+            index = ( index <= 0 ? net -> getLayers() -> getCount() : index ) - 1;
+            auto layer = net -> getLayers() -> getByIndex( index );
+
+            if( layer != NULL )
+            {
+                camera
+                -> setTop( POINT_3D_Y )
+                -> setEye( layer -> getEye() + POINT_3D_I * 2 )
+                -> setTarget( layer -> getEye() );
+                selectedLayerId = layer -> getId();
+            }
+        }
+        break;
+
+        case KEY_RIGHT_BRACKET:
+        {
+            auto index = net -> getLayers() -> getIndexById( selectedLayerId );
+            index = index >= net -> getLayers() -> getCount() - 1 ? 0 : ( index + 1 );
+            auto layer = net -> getLayers() -> getByIndex( index );
+
+            if( layer != NULL )
+            {
+                camera
+                -> setTop( POINT_3D_Y )
+                -> setEye( layer -> getEye() + POINT_3D_I * 2 )
+                -> setTarget( layer -> getEye() );
+                selectedLayerId = layer -> getId();
+            }
+        }
+        break;
+
         case KEY_H:
             help();
         break;
+
         case KEY_R:
             net -> getSelectedNeurons() -> loop
             (
@@ -472,7 +512,10 @@ void Ui::onRightDrag
 )
 {
     double k = camera -> getGaze().magn() / aScene.getNear();
-    Point3d p = (aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()) * k;
+    Point3d p =
+    (
+        aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()
+    ) * k;
     camera -> shift( p );
 }
 
@@ -488,6 +531,90 @@ void Ui::onMouseWheel
 )
 {
     auto operation = false;
+
+    if( aScene.isKey( KEY_W ))
+    {
+        int total = 0;
+        double sum = 0;
+
+        net -> nerveWeightLoop
+        (
+            net -> getSelectedNeurons(),
+            [
+                &total, &sum
+            ]
+            (
+                int aWeightIndex,
+                Neuron* aNeuronFrom,
+                Neuron* aNeuronTo,
+                Nerve* aNerve
+            )
+            {
+                total ++;
+                sum += aNerve -> getWeight( aWeightIndex );
+                return false;
+            }
+        );
+
+        if( total != 0 )
+        {
+            auto avgWeight = (double)sum / total;
+
+            net -> nerveWeightLoop
+            (
+                net -> getSelectedNeurons(),
+                [
+                    &avgWeight, &aDelta
+                ]
+                (
+                    int aWeightIndex,
+                    Neuron* aNeuronFrom,
+                    Neuron* aNeuronTo,
+                    Nerve* aNerve
+                )
+                {
+                    aNerve -> setWeight( aWeightIndex, avgWeight + aDelta.y * 0.1 );
+                    return false;
+                }
+            );
+        }
+
+        operation = true;
+    }
+
+
+    if( aScene.isKey( KEY_P ))
+    {
+        net -> getSelectedNeurons() -> loop
+        (
+            []
+            ( Neuron* aNeuron )
+            {
+                aNeuron -> getLayer() -> childrenLoop
+                (
+                    aNeuron -> getIndex(),
+                    [
+                        &aNeuron
+                    ]
+                    (
+                        Layer* aParentLayer,
+                        int aParentIndex,
+                        Nerve* aNerve,
+                        double aWeight,
+                        int aIndexWeight
+                    )
+                    {
+                        aParentLayer -> setNeuronValue( aParentIndex, aNeuron -> getValue() );
+                        aNerve -> setWeight( aIndexWeight, 1 );
+                        return false;
+                    }
+                );
+                return false;
+            }
+        );
+        operation = true;
+    }
+
 
     if( aScene.isKey( KEY_S ))
     {

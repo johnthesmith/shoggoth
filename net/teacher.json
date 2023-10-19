@@ -3,7 +3,7 @@
     "io":
     {
         "source"            :"SERVER",
-        "net"               :"test/net.json",
+        "net"               :"net/net.json",
         "host"              :"127.0.0.1",
         "port"              :11120
    },
