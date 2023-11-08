@@ -140,7 +140,7 @@
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :0.0,
-            "maxWeight"         :0.0
+            "maxWeight"         :1.0
         },
         {
             "uses"              :[ "proc", "ui" ],
@@ -149,7 +149,7 @@
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :0.0,
-            "maxWeight"         :0.0
+            "maxWeight"         :1.0
         },
         {
             "uses"              :[ "proc", "ui" ],
@@ -158,7 +158,7 @@
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :0.0,
-            "maxWeight"         :0.0
+            "maxWeight"         :1.0
         },
         {
             "uses"              :[ "proc", "ui" ],
@@ -167,7 +167,7 @@
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :0.0,
-            "maxWeight"         :0.0
+            "maxWeight"         :1.0
         },
         {
             "uses"              :[ "proc", "ui" ],
@@ -176,7 +176,7 @@
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :0.0,
-            "maxWeight"         :0.0
+            "maxWeight"         :1.0
         },
         {
             "uses"              :[ "proc", "ui" ],

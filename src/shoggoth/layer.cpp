@@ -1539,7 +1539,6 @@ Point3d Layer::getNeuronSelected
 }
 
 
-//TODO Проверить parentsLoop и childrenLoop
 
 
 /*
@@ -1702,128 +1701,6 @@ Layer* Layer::neuronCalcValue
     {
         setNeuronValue( aIndex,  FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
     }
-    if( countSample > 0 )
-    {
-        setNeuronError
-        (
-            aIndex,
-            FUNC_SIGMOID_LINE_MINUS_PLUS
-            (
-                ( summSample - getValue() ) * ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
-                1.0
-            )
-        );
-    }
-
-    return this;
-}
-
-
-
-/*
-    Calculate neuron
-*/
-Layer* Layer::neuronLearning
-(
-    int aIndex,
-    double  aErrorNormalize,
-    double  aLearningSpeed,
-    double  aWakeupWeight
-)
-{
-    /* Define variables */
-    double summWeight   = 0.0;
-    double summError    = 0.0;
-    int countValue      = 0;
-
-    /* Caclulate error form all children for current neuron */
-    childrenLoop
-    (
-        aIndex,
-        [
-            this,
-            &summWeight,
-            &summError,
-            &countValue,
-            &aIndex
-        ]
-        (
-            Layer* aChild,
-            int aChildIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex    /* Not use */
-        ) -> bool
-        {
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
-                    summWeight += abs( aWeight );
-                break;
-            }
-            return false;
-        }
-    );
-
-    /* Neuron error is calculated */
-    /* If children neurons afected the parent neuron ... */
-    if( summWeight > EPSILON_D )
-    {
-        setNeuronError
-        (
-            aIndex,
-            FUNC_SIGMOID_LINE_MINUS_PLUS
-            (
-                summError / ( 1 + summWeight * aErrorNormalize ),
-                1.0
-            )
-        );
-    }
-
-    /* Learning */
-    childrenLoop
-    (
-        aIndex,
-        [
-            this,
-            &aLearningSpeed,
-            &aWakeupWeight,
-            &aIndex
-        ]
-        (
-            Layer* aChildLayer,
-            int aChildIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex
-        ) -> bool
-        {
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                {
-                    /*
-                        Calculate delta
-                    */
-                    double e = aWakeupWeight;   /* epsilon for zero weight подъем нулевых связей */
-                    double w = abs( aWeight );
-                    double wv = ( w < e ? e : w ) * getNeuronValue( aIndex );
-                    double deltaWeight = getNeuronError( aIndex ) * wv;
-                    aNerve -> setWeight
-                    (
-                        aWeightIndex,
-                        FUNC_SIGMOID_LINE_MINUS_PLUS
-                        (
-                            aWeight + deltaWeight * aLearningSpeed,
-                            1.0
-                        )
-                    );
-                }
-            }
-            return false;
-        }
-    );
 
     if( countSample > 0 )
     {
