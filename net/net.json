@@ -139,7 +139,7 @@
             "idTo"              :"cortex_1",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :0.0,
+            "minWeight"         :-1.0,
             "maxWeight"         :1.0
         },
         {
@@ -148,7 +148,7 @@
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :0.0,
+            "minWeight"         :-1.0,
             "maxWeight"         :1.0
         },
         {
@@ -157,7 +157,7 @@
             "idTo"              :"cortex_3",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :0.0,
+            "minWeight"         :-1.0,
             "maxWeight"         :1.0
         },
         {
@@ -166,7 +166,7 @@
             "idTo"              :"cortex_4",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :0.0,
+            "minWeight"         :-1.0,
             "maxWeight"         :1.0
         },
         {
@@ -175,7 +175,7 @@
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :0.0,
+            "minWeight"         :-1.0,
             "maxWeight"         :1.0
         },
         {
