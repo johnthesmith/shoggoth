@@ -14,7 +14,7 @@
         {
             "enabled"               :true,
             "idErrorLayer"          :"error",
-            "errorLimit"            :0.01,
+            "errorLimit"            :0.1,
 
             "batches":
             [

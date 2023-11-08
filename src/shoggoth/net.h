@@ -78,6 +78,14 @@ class Net: public Result
         long int    lastLoopMoment      = 0;        /* */
         long int    loopTimeoutMcs      = 1000000;
 
+        /*
+            Calculation debug mode
+            With calcDebug == true each calculation loop will be
+            stoped till calcTick is not true.
+        */
+        bool        calcDebug           = false;
+        bool        calcTick            = false;
+
     public:
 
         /*
@@ -463,5 +471,31 @@ class Net: public Result
             NeuronList*,
             IndexWeightLambda
         );
+
+
+
+        Net* setCalcTick();
+
+
+
+        bool getCalcTick();
+
+
+
+        Net* setCalcDebug
+        (
+            bool
+        );
+
+
+        bool getCalcDebug();
+
+
+        int getCalcLayerIndex();
+
+
+
+        LayerList* getForwardList();
+        LayerList* getBackwardList();
 };
 

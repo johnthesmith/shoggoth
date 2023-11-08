@@ -153,16 +153,7 @@ void Ui::onCalc
     Scene* aScene   /* Scene object */
 )
 {
-    /* Read config */
-    auto nowMoment = now();
-    if( lastConfigCheck + MILLISECOND * 1000 < nowMoment )
-    {
-        net -> readNet();
-        /* Set last moment */
-        lastConfigCheck = nowMoment;
-    }
 }
-
 
 
 /*
@@ -194,7 +185,6 @@ void Ui::onDraw
         Switch to flat screen
     */
     applyScreenToScene( aScene );
-
 
     /* Draw Learning mode */
     net -> drawLearningMode( aScene );
@@ -230,6 +220,9 @@ void Ui::onDraw
 
         net -> drawNeuronChart( aScene, net -> getSelectedNeurons() );
     }
+
+    /* Daraw sync */
+    net -> syncToScene( aScene );
 
 
     net -> drawSelectedNeurons( aScene );
@@ -334,6 +327,9 @@ void Ui::onKeyDown
 {
     switch( aKey )
     {
+        case KEY_T:
+            net -> setCalcTick();
+        break;
         case KEY_ESCAPE:
             aScene . closeWindow();
         break;

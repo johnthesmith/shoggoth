@@ -326,4 +326,11 @@ class NetGraph : public Net
             Return average weights for selected neurons
         */
         double avgWeightBySelect();
+
+
+
+        NetGraph* syncToScene
+        (
+            Scene*
+        );
 };

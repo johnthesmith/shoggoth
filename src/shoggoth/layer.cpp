@@ -1574,7 +1574,8 @@ Layer* Layer::parentsLoop
                         iNerve -> getParent(),
                         iNerve -> getParentByWeightIndex( i ),
                         iNerve,
-                        iNerve -> getWeight( i )
+                        iNerve -> getWeight( i ),
+                        i
                     );
                 }
             }
@@ -1643,9 +1644,9 @@ Layer* Layer::neuronCalcValue
     int aIndex
 )
 {
-    double summValue        = 0;
-    double summCommand      = 0;
-    double summSample       = 0;
+    double summValue        = 0.0;
+    double summCommand      = 0.0;
+    double summSample       = 0.0;
     int countSample         = 0;
     int countValue          = 0;
 
@@ -1665,7 +1666,8 @@ Layer* Layer::neuronCalcValue
             Layer* aParentLayer,
             int aParentIndex,
             Nerve* aNerve,
-            double aWeight
+            double aWeight,
+            int aWeightIndex /* not use */
         ) -> bool
         {
             auto w = aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
@@ -1677,7 +1679,10 @@ Layer* Layer::neuronCalcValue
                     countValue ++;
                 break;
                 case BT_ERROR_TO_VALUE:
-                    summValue += abs( aParentLayer -> getNeuronError( aParentIndex ) * aWeight );
+                    summValue += abs
+                    (
+                        aParentLayer -> getNeuronError( aParentIndex ) * aWeight
+                    );
                     countValue++;
                 break;
                 case BT_COMMAND:
@@ -1804,6 +1809,137 @@ Layer* Layer::neuronLearning
                     double e = aWakeupWeight;   /* epsilon for zero weight подъем нулевых связей */
                     double w = abs( aWeight );
                     double wv = ( w < e ? e : w ) * getNeuronValue( aIndex );
+                    double deltaWeight = getNeuronError( aIndex ) * wv;
+                    aNerve -> setWeight
+                    (
+                        aWeightIndex,
+                        FUNC_SIGMOID_LINE_MINUS_PLUS
+                        (
+                            aWeight + deltaWeight * aLearningSpeed,
+                            1.0
+                        )
+                    );
+                }
+            }
+            return false;
+        }
+    );
+
+    if( countSample > 0 )
+    {
+        setNeuronError
+        (
+            aIndex,
+            FUNC_SIGMOID_LINE_MINUS_PLUS
+            (
+                ( summSample - getNeuronValue( aIndex ) ) *
+                ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
+                1.0
+            )
+        );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Calculate neuron
+*/
+Layer* Layer::neuronLearning
+(
+    int aIndex,
+    double  aErrorNormalize,    /**/
+    double  aLearningSpeed,     /* k for weight changing */
+    double  aWakeupWeight
+)
+{
+    /* Define variables */
+    double summWeight   = 0.0;
+    double summError    = 0.0;
+    int countValue      = 0;
+
+    /* Caclulate error form all children for current neuron */
+    childrenLoop
+    (
+        aIndex,
+        [
+            this,
+            &summWeight,
+            &summError,
+            &countValue,
+            &aIndex
+        ]
+        (
+            Layer* aChild,
+            int aChildIndex,
+            Nerve* aNerve,
+            double aWeight,
+            int aWeightIndex    /* Not use */
+        ) -> bool
+        {
+            switch( aNerve -> getBindType())
+            {
+                case BT_VALUE:
+                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
+                    summWeight += abs( aWeight );
+                break;
+            }
+            return false;
+        }
+    );
+
+    /* Neuron error is calculated */
+    /* If children neurons afected the parent neuron ... */
+    if( summWeight > EPSILON_D )
+    {
+        /*
+            Сумму ошибок всех дочерних нейронов и делим
+            на сумму весов для дочерних нейронов + 1
+            что бы исклюить деление на 0. Считаем что +1 это мелоч
+            aErrorNormalize - сила распространения ошибки.
+        */
+        setNeuronError
+        (
+            aIndex,
+            FUNC_SIGMOID_LINE_MINUS_PLUS
+            (
+                summError / ( 1.0 + summWeight * aErrorNormalize ),
+                1.0
+            )
+        );
+    }
+
+    /* Learning */
+    parentsLoop
+    (
+        aIndex,
+        [
+            this,
+            &aLearningSpeed,
+            &aWakeupWeight,
+            &aIndex
+        ]
+        (
+            Layer*  aParentLayer,
+            int     aParentIndex,
+            Nerve*  aNerve,
+            double  aWeight,
+            int     aWeightIndex
+        ) -> bool
+        {
+            switch( aNerve -> getBindType())
+            {
+                case BT_VALUE:
+                {
+                    /*
+                        Calculate delta
+                    */
+                    double w = abs( aWeight );
+                    /* aWakeupWeight epsilon for zero weight подъем нулевых связей */
+                    double wv = ( w < aWakeupWeight ? aWakeupWeight : w )
+                    * aParentLayer -> getNeuronValue( aParentIndex );
                     double deltaWeight = getNeuronError( aIndex ) * wv;
                     aNerve -> setWeight
                     (

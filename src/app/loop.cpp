@@ -178,33 +178,37 @@ Loop* Loop::uiControl()
 
 Loop* Loop::processorControl()
 {
-    if
-    (
-        getApplication()
-        -> getConfig()
-        -> getBool( Path { "tasks",  taskToString( TASK_PROC ), "enabled" } ))
+    auto taskProc =
+    getApplication()
+    -> getConfig()
+    -> getObject( Path { "tasks",  taskToString( TASK_PROC )} );
+
+    if( taskProc != NULL && taskProc -> getBool( "enabled" ))
     {
         if( !processor )
         {
             processor = true;
+
             /* Apply config */
             net -> setLearningSpeed
             (
-                getApplication()
-                -> getConfig()
+                taskProc
                 -> getDouble( "learningSpeed", net -> getLearningSpeed() )
             );
             net -> setWakeupWeight
             (
-                getApplication()
-                -> getConfig()
+                taskProc
                 -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
             );
             net -> setErrorNormalize
             (
-                getApplication()
-                -> getConfig()
+                taskProc
                 -> getDouble( "errorNormalize", net -> getErrorNormalize() )
+            );
+            net -> setCalcDebug
+            (
+                taskProc
+                -> getBool( "debug", net -> getCalcDebug() )
             );
         }
     }

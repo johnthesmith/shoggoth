@@ -329,90 +329,90 @@ Neuron* Neuron::learning
     double aWakeupWeight
 )
 {
-//    double summWeight   = 0.0;
-//    double summError    = 0.0;
-//    int countValue      = 0;
-//    bool stop           = false;  /* Stop calculating */
-//
-//    /* This neuron is not result and must take the error from parents */
-//    childrenBinds -> loop
-//    (
-//        [
-//            this,
-//            &summWeight,
-//            &summError,
-//            &countValue,
-//            &aLoopParity,
-//            &stop
-//        ]
-//        ( Bind* bind ) -> bool
-//        {
-//            /* Get a nauron */
-//            Neuron* iNeuron = bind -> getChild();
-//            /* Calculate summ */
-//            switch( bind -> getType())
-//            {
-//                case BT_VALUE:
-//                    summError += iNeuron -> getError() * bind -> getWeight();
-//                    summWeight += abs( bind -> getWeight() );
-//                    countValue ++;
-//                break;
-//            }
-//            /* Check parent parity and compare with current loop parity */
-//            stop = iNeuron -> getLoopParityError() != aLoopParity;
-//            return stop;
-//        }
-//    );
-//
-//    if( !stop )
-//    {
-//        /* Neuron error is calculated */
-//        if( countValue > 0 && summWeight > EPSILON_D )
-//        {
-//            setError
-//            (
-//                FUNC_SIGMOID_LINE_MINUS_PLUS
-//                (
-//                    summError / ( 1 + summWeight * aErrorNormalize ),
-//                    1.0
-//                )
-//            );
-//        }
-//        setLoopParityError( aLoopParity );
-//
-//
-//        /* Learning */
-//        parentBinds -> loop
-//        (
-//            [ this, aLearningSpeed, aWakeupWeight ]( Bind* bind ) -> bool
-//            {
-//                /* Get a neuron */
-//                Neuron* parentNeuron = bind -> getParent();
-//
-//                if( bind -> getType() == BT_VALUE )
-//                {
-//                    /*
-//                        Calculate delta
-//                    */
-//                    double s = aLearningSpeed;  /* Learning speed */
-//                    double e = aWakeupWeight;   /* epsilon for zero weight подъем нулевых связей */
-//                    double w = abs( bind -> getWeight());
-//                    double wv = ( w < e ? e : w ) * parentNeuron -> getValue();
-//                    double deltaWeight = error * wv;
-//
-//                    bind -> setWeight
-//                    (
-//                        FUNC_SIGMOID_LINE_MINUS_PLUS
-//                        (
-//                            bind -> getWeight() + deltaWeight * s,
-//                            1.0
-//                        )
-//                    );
-//                }
-//                return false;
-//            }
-//        );
-//    }
+    double summWeight   = 0.0;
+    double summError    = 0.0;
+    int countValue      = 0;
+    bool stop           = false;  /* Stop calculating */
+
+    /* This neuron is not result and must take the error from parents */
+    childrenBinds -> loop
+    (
+        [
+            this,
+            &summWeight,
+            &summError,
+            &countValue,
+            &aLoopParity,
+            &stop
+        ]
+        ( Bind* bind ) -> bool
+        {
+            /* Get a nauron */
+            Neuron* iNeuron = bind -> getChild();
+            /* Calculate summ */
+            switch( bind -> getType())
+            {
+                case BT_VALUE:
+                    summError += iNeuron -> getError() * bind -> getWeight();
+                    summWeight += abs( bind -> getWeight() );
+                    countValue ++;
+                break;
+            }
+            /* Check parent parity and compare with current loop parity */
+            stop = iNeuron -> getLoopParityError() != aLoopParity;
+            return stop;
+        }
+    );
+
+    if( !stop )
+    {
+        /* Neuron error is calculated */
+        if( countValue > 0 && summWeight > EPSILON_D )
+        {
+            setError
+            (
+                FUNC_SIGMOID_LINE_MINUS_PLUS
+                (
+                    summError / ( 1 + summWeight * aErrorNormalize ),
+                    1.0
+                )
+            );
+        }
+        setLoopParityError( aLoopParity );
+
+
+        /* Learning */
+        parentBinds -> loop
+        (
+            [ this, aLearningSpeed, aWakeupWeight ]( Bind* bind ) -> bool
+            {
+                /* Get a neuron */
+                Neuron* parentNeuron = bind -> getParent();
+
+                if( bind -> getType() == BT_VALUE )
+                {
+                    /*
+                        Calculate delta
+                    */
+                    double s = aLearningSpeed;  /* Learning speed */
+                    double e = aWakeupWeight;   /* epsilon for zero weight подъем нулевых связей */
+                    double w = abs( bind -> getWeight());
+                    double wv = ( w < e ? e : w ) * parentNeuron -> getValue();
+                    double deltaWeight = error * wv;
+
+                    bind -> setWeight
+                    (
+                        FUNC_SIGMOID_LINE_MINUS_PLUS
+                        (
+                            bind -> getWeight() + deltaWeight * s,
+                            1.0
+                        )
+                    );
+                }
+                return false;
+            }
+        );
+    }
 
     return this;
 }

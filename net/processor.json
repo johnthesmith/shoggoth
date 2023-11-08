@@ -1,5 +1,5 @@
 {
-    "loop_sleep_mcs"    :100,
+    "loop_sleep_mcs"    :1,
 
     "io":
     {
@@ -14,7 +14,7 @@
         {
             "enabled"           :true,
             "learningMode"      :false,
-            "learningSpeed"     :0.005,
+            "learningSpeed"     :0.1,
             "wakeupWeight"      :0.0001,
             "errorNormalize"    :0.11,
             "processorCount"    :1

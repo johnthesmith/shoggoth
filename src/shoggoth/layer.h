@@ -62,7 +62,8 @@ function
         Layer*, /* Layer with parent neurons */
         int,    /* Neuron index*/
         Nerve*, /* Nerve */
-        double  /* Weight of bind */
+        double, /* Weight of bind */
+        int     /* return weight index */
     )
 >
 parentsLambda;
@@ -875,7 +876,7 @@ class Layer : public Object
         */
         Layer* neuronLearning
         (
-            int,    /* Index */
+            int,    /* Index of neuron */
             double, /* ErrorNormalize */
             double, /* LearningSpeed */
             double  /* WakeupWeight */

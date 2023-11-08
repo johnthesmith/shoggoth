@@ -790,3 +790,67 @@ double NetGraph::avgWeightBySelect()
 
     return total == 0.0 ? 0.0 : (double)sum / total;
 }
+
+
+
+NetGraph* NetGraph::syncToScene
+(
+    Scene*  aScene
+)
+{
+    auto textPoint = Point3d
+    (
+        aScene -> getViewport().width * 0.5,
+        aScene -> getViewport().height -30,
+        0
+    );
+
+    aScene
+    -> color( Rgba( RGBA_WHITE ))
+    -> setTextTop( POINT_3D_Y)
+    -> setTextRight( POINT_3D_X)
+    -> setTextPosition( textPoint )
+    -> setTextSize( 20 )
+    -> setTextBaseLine( BASE_LINE_TOP )
+    -> setTextHorisontalAlign( ALIGN_LEFT )
+    -> text( "Last" )
+    -> textTab( 100 )
+    -> text( "Layer" )
+    -> textTab( 300 )
+    -> text( "Forward" )
+    -> textTab( 300 )
+    -> text( "Backward" )
+    -> textCR()
+    ;
+
+
+    Layer* currentLayer = NULL;
+
+    if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
+    {
+        currentLayer = getForwardList() -> getByIndex( getCalcLayerIndex());
+    }
+    else
+    {
+        currentLayer = getBackwardList() -> getByIndex( getCalcLayerIndex());
+    }
+
+    int c = getLayers() -> getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        auto iLayer = getLayers() -> getByIndex( i );
+
+        aScene
+        -> text( iLayer == currentLayer ? ">" : "-" )
+        -> textTab( 100 )
+        -> text( iLayer -> getNameOrId() )
+        -> textTab( 300 )
+        -> text( calcStageToString( iLayer -> getForwardStage( getThreadCount() )))
+        -> textTab( 300 )
+        -> text( calcStageToString( iLayer -> getBackwardStage( getThreadCount() )))
+        -> textCR()
+        ;
+    }
+
+    return this;
+}

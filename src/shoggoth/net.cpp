@@ -156,6 +156,13 @@ Net* Net::precalc()
 {
     if( layers -> getCount() > 0 )
     {
+        /* Reset calculateion index */
+        calcLayerIndex = 0;
+
+        /* Clear forward and backward lists */
+        forwardList -> resize( 0 );
+        backwardList -> resize( 0 );
+
         /* Reset calc stages for all layers */
         calcReset();
 
@@ -261,116 +268,119 @@ Net* Net::precalc()
 */
 Net* Net::calc()
 {
-    if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
+    if( getCalcTick() )
     {
-        /* Reset calc stages for all layers */
-        calcReset();
-        /* Event */
-        event( THINKING_BEGIN );
-    }
-
-    Layer* layer = NULL;
-
-    if( layers -> getCount() > 0 )
-    {
-        if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
+        if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
         {
-            /* All forward calculations is not complete */
-            if( calcDirection == CALC_BACKWARD )
-            {
-                /* Begin of forward calculation */
-                calcLayerIndex = 0;
-                calcDirection = CALC_FORWARD;
-            }
-
-            /* Get calculated layer by index */
-            layer = ( Layer* ) forwardList
-            -> getByIndex( calcLayerIndex );
-
-            if
-            (
-                /* if layer not forward calculated and ... */
-                layer -> getForwardStage( threadCount ) == CALC_NOT_START
-            )
-            {
-                /* Set default thread id */
-                int idThread = 0;
-                /* Layer calculation */
-                layer -> calcStartForward();
-                /* --- thread begin --- */
-                layer -> calcValue( idThread, threadCount );
-                /* Set local sync for local works */
-                layer -> calcCompleteForward();
-                 /* --- thread end --- */
-            }
-
-            if( layer -> getForwardStage( threadCount ) == CALC_COMPLETE )
-            {
-                calcLayerIndex++;
-            }
-
-            if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
-            {
-                event( THINKING_END );
-            }
+            /* Reset calc stages for all layers */
+            calcReset();
+            /* Event */
+            event( THINKING_BEGIN );
         }
-        else
+
+        Layer* layer = NULL;
+
+        if( layers -> getCount() > 0 )
         {
-            /*
-                All forward calculation is complete
-                Begin the learning process
-            */
-
-            if( calcDirection == CALC_FORWARD )
+            if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
             {
-                /* Begin of backward calculation */
-                calcLayerIndex = 0;
-                calcDirection = CALC_BACKWARD;
-            }
+                /* All forward calculations is not complete */
+                if( calcDirection == CALC_BACKWARD )
+                {
+                    /* Begin of forward calculation */
+                    calcLayerIndex = 0;
+                    calcDirection = CALC_FORWARD;
+                }
 
-            layer = ( Layer* ) backwardList
-            -> getByIndex( calcLayerIndex );
+                /* Get calculated layer by index */
+                layer = ( Layer* ) forwardList
+                -> getByIndex( calcLayerIndex );
 
-            if
-            (
-                /* if layer not backward calculated and ... */
-                layer -> getBackwardStage( threadCount ) == CALC_NOT_START
-            )
-            {
-                /* Set default thread id */
-                int idThread = 0;
-                /* Layer calculation */
-                layer -> calcStartBackward();
-                /* --- thread begin --- */
-                /* Calculate errors */
-
-                layer -> learning
+                if
                 (
-                    errorNormalize,
-                    learningSpeed,
-                    wakeupWeight,
-                    idThread,
-                    threadCount
-                );
+                    /* if layer not forward calculated and ... */
+                    layer -> getForwardStage( threadCount ) == CALC_NOT_START
+                )
+                {
+                    /* Set default thread id */
+                    int idThread = 0;
+                    /* Layer calculation */
+                    layer -> calcStartForward();
+                    /* --- thread begin --- */
+                    layer -> calcValue( idThread, threadCount );
+                    /* Set local sync for local works */
+                    layer -> calcCompleteForward();
+                     /* --- thread end --- */
+                }
 
-                /* Set local sync for local works */
-                layer -> calcCompleteBackward();
-                /* --- thread end --- */
+                if( layer -> getForwardStage( threadCount ) == CALC_COMPLETE )
+                {
+                    calcLayerIndex++;
+                }
+
+                if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
+                {
+                    event( THINKING_END );
+                }
             }
-
-            if( layer -> getBackwardStage( threadCount ) == CALC_COMPLETE )
+            else
             {
-                calcLayerIndex++;
+                /*
+                    All forward calculation is complete
+                    Begin the learning process
+                */
+
+                if( calcDirection == CALC_FORWARD )
+                {
+                    /* Begin of backward calculation */
+                    calcLayerIndex = 0;
+                    calcDirection = CALC_BACKWARD;
+                }
+
+                layer = ( Layer* ) backwardList
+                -> getByIndex( calcLayerIndex );
+
+                if
+                (
+                    /* if layer not backward calculated and ... */
+                    layer -> getBackwardStage( threadCount ) == CALC_NOT_START
+                )
+                {
+                    /* Set default thread id */
+                    int idThread = 0;
+                    /* Layer calculation */
+                    layer -> calcStartBackward();
+                    /* --- thread begin --- */
+                    /* Calculate errors */
+
+                    layer -> learning
+                    (
+                        errorNormalize,
+                        learningSpeed,
+                        wakeupWeight,
+                        idThread,
+                        threadCount
+                    );
+
+                    /* Set local sync for local works */
+                    layer -> calcCompleteBackward();
+                    /* --- thread end --- */
+                }
+
+                if( layer -> getBackwardStage( threadCount ) == CALC_COMPLETE )
+                {
+                    calcLayerIndex++;
+                }
+
+                if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
+                {
+                    event( LEARNING_END );
+                }
             }
 
-            if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
-            {
-                event( LEARNING_END );
-            }
+            /* Dump sync to log */
+            syncToLog( layer );
         }
-
-        /* Dump sync to log */
-        syncToLog( layer );
     }
 
     return this;
@@ -506,6 +516,7 @@ Net* Net::switchLearningMode()
 Net* Net::readNet()
 {
     getLog() -> begin( "Read net" );
+
     /* Read net */
     ParamList* json = NULL;
     auto io = Io::create( this );
@@ -1132,7 +1143,9 @@ Net* Net::event
     Event aEvent
 )
 {
-    getLog() -> begin( "Neural net event" ) -> prm( "name", eventToString( aEvent ));
+    getLog()
+    -> begin( "Neural net event" )
+    -> prm( "name", eventToString( aEvent ));
 
     if( actions -> isOk() )
     {
@@ -1311,4 +1324,83 @@ bool Net::nerveWeightLoop
         }
     );
     return this;
+}
+
+
+
+/*
+    Set calculation stop flag
+*/
+Net* Net::setCalcTick()
+{
+    calcTick = true;
+    return this;
+}
+
+
+
+/*
+    Return calculation stop flag
+*/
+bool Net::getCalcTick()
+{
+    bool result = !calcDebug || calcTick;
+    calcTick = false;
+    return result;
+}
+
+
+
+/*
+    Set calculation debug mode flag
+*/
+Net* Net::setCalcDebug
+(
+    bool a
+)
+{
+    calcDebug = a;
+    return this;
+}
+
+
+
+/*
+    Return calculation debug mode flag
+*/
+bool Net::getCalcDebug()
+{
+    return calcDebug;
+}
+
+
+
+/*
+    Return the current calculated layer index
+*/
+int Net::getCalcLayerIndex()
+{
+    return calcLayerIndex;
+}
+
+
+
+/*
+    Return pointer of forward calulation list
+*/
+
+LayerList* Net::getForwardList()
+{
+    return forwardList;
+}
+
+
+
+/*
+    Return pointer of backward calulation list
+*/
+
+LayerList* Net::getBackwardList()
+{
+    return backwardList;
 }

@@ -57,6 +57,8 @@ int Points3d::indexBy
     Point3d* a
 )
 {
+    typedef long intptr_t;
+
     intptr_t first = ( intptr_t ) items;
     intptr_t find = ( intptr_t ) a;
     intptr_t delta = find - first;
