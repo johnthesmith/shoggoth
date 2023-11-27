@@ -1,5 +1,5 @@
 {
-    "loop_sleep_mcs"    :1,
+    "loop_sleep_mcs"    :10,
 
     "io":
     {
@@ -13,8 +13,9 @@
         "TASK_PROC":
         {
             "enabled"           :true,
+            "debug"             :false,
             "learningMode"      :false,
-            "learningSpeed"     :0.1,
+            "learningSpeed"     :0.002,
             "wakeupWeight"      :0.0001,
             "errorNormalize"    :0.11,
             "processorCount"    :1

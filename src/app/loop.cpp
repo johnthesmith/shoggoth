@@ -239,6 +239,7 @@ Loop* Loop::teacherControl()
         /* Read config */
         /* Read batches list */
         teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
+
         /* Read layer with errors */
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
         /* Read error limit */

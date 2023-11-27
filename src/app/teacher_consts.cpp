@@ -13,13 +13,13 @@ std::string teacherTaskToString
 {
     switch( a )
     {
-        case TEACHER_TASK_VALUE   : return "TEACHER_TASK_VALUE,";
-        case TEACHER_TASK_IMAGE   : return "TEACHER_TASK_IMAGE";
-        case TEACHER_TASK_GUID    : return "TEACHER_TASK_GUID";
-        case TEACHER_TASK_HID     : return "TEACHER_TASK_HID";
-        case TEACHER_TASK_NOISE   : return "TEACHER_TASK_NOISE";
+        case TEACHER_CMD_VALUE_TO_LAYER   : return "VALUE_TO_LAYER";
+        case TEACHER_CMD_IMAGE_TO_LAYER   : return "IMAGE_TO_LAYER";
+        case TEACHER_CMD_FOLDER_TO_LAYER  : return "FOLDER_TO_LAYER";
+        case TEACHER_CMD_GUID_TO_LAYER    : return "GUID_TO_LAYER";
+        case TEACHER_CMD_HID_TO_LAYER     : return "HID_TO_LAYER";
     }
-    return "TEACHER_TASK_UNKNOWN";
+    return "TEACHER_CMD_UNKNOWN";
 }
 
 
@@ -32,10 +32,10 @@ TeacherTask stringToTeacherTask
     std::string a
 )
 {
-    if( a == "TEACHER_TASK_VALUE" ) return TEACHER_TASK_VALUE;
-    if( a == "TEACHER_TASK_IMAGE" ) return TEACHER_TASK_IMAGE;
-    if( a == "TEACHER_TASK_GUID" )  return TEACHER_TASK_GUID;
-    if( a == "TEACHER_TASK_HID" )   return TEACHER_TASK_HID;
-    if( a == "TEACHER_TASK_NOISE" )  return TEACHER_TASK_NOISE;
-    return TEACHER_TASK_UNKNOWN;
+    if( a == "VALUE_TO_LAYER" )     return TEACHER_CMD_VALUE_TO_LAYER;
+    if( a == "IMAGE_TO_LAYER" )     return TEACHER_CMD_IMAGE_TO_LAYER;
+    if( a == "FOLDER_TO_LAYER" )    return TEACHER_CMD_FOLDER_TO_LAYER;
+    if( a == "GUID_TO_LAYER" )      return TEACHER_CMD_GUID_TO_LAYER;
+    if( a == "HID_TO_LAYER" )       return TEACHER_CMD_HID_TO_LAYER;
+    return TEACHER_CMD_UNKNOWN;
 }

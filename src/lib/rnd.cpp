@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "rnd.h"
 
 
@@ -55,7 +56,7 @@ void Rnd::calcSeed()
 double Rnd::get()
 {
     calcSeed();
-    return (double) seed / (double) 0xFFFFFFFFFFFF;
+    return (double) seed / (double) 0x1000000000000;
 }
 
 
@@ -69,8 +70,9 @@ int Rnd::get
     int aMax
 )
 {
-    return aMin + get() * ( aMax - aMin );
+    return aMin + floor( get() * ( aMax + 1  - aMin ));
 }
+
 
 
 
@@ -83,7 +85,7 @@ unsigned int Rnd::get
     unsigned int aMax
 )
 {
-    return aMin + get() * ( aMax - aMin );
+    return aMin + floor( get() * ( aMax + 1  - aMin ));
 }
 
 
@@ -97,7 +99,7 @@ unsigned long long Rnd::get
     unsigned long long aMax
 )
 {
-    return aMin + get() * ( aMax - aMin );
+    return aMin + floor( get() * ( aMax + 1  - aMin ));
 }
 
 
@@ -111,7 +113,7 @@ double Rnd::get
     double aMax
 )
 {
-    return aMin + get() * ( aMax - aMin );
+    return aMin + floor( get() * ( aMax + 1  - aMin ));
 }
 
 

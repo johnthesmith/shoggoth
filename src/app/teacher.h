@@ -116,12 +116,15 @@ class Teacher : public Payload
 
 
 
-        /*
-            Create buffer for job
-        */
-        Teacher* buildValueBuffer
+        Teacher* cmdValueToLayer
         (
-            ParamList*,
-            Layer*
+            ParamList*
+        );
+
+
+
+        Teacher* cmdImageToLayer
+        (
+            ParamList*
         );
 };

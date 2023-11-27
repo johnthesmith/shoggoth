@@ -92,6 +92,7 @@ enum CalcStage
 
 
 /*
+    Shoggoth protocol commands
 */
 enum Command
 {

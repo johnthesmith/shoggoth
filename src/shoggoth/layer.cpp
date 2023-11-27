@@ -1102,7 +1102,7 @@ Layer* Layer::writeErrors()
         auto io = Io::create( net );
         io -> getRequest()
         -> setString( "idLayer", this -> getId() )
-        -> setData( "data", (char*)values, count * sizeof( double ) );
+        -> setData( "data", (char*)errors, count * sizeof( double ) );
 
         io
         -> call( CMD_WRITE_ERRORS )
@@ -1646,8 +1646,10 @@ Layer* Layer::neuronCalcValue
     double summValue        = 0.0;
     double summCommand      = 0.0;
     double summSample       = 0.0;
+    double summErrorValue   = 0.0;
     int countSample         = 0;
     int countValue          = 0;
+    int countErrorValue     = 0;
 
     /* Neuron has a binds and it is not a Receptor */
     parentsLoop
@@ -1659,7 +1661,9 @@ Layer* Layer::neuronCalcValue
             &summSample,
             &summCommand,
             &countSample,
-            &countValue
+            &countValue,
+            &countErrorValue,
+            &summErrorValue
         ]
         (
             Layer* aParentLayer,
@@ -1678,11 +1682,11 @@ Layer* Layer::neuronCalcValue
                     countValue ++;
                 break;
                 case BT_ERROR_TO_VALUE:
-                    summValue += abs
+                    summErrorValue += abs
                     (
                         aParentLayer -> getNeuronError( aParentIndex ) * aWeight
                     );
-                    countValue++;
+                    countErrorValue++;
                 break;
                 case BT_COMMAND:
                     summCommand += w;
@@ -1696,10 +1700,15 @@ Layer* Layer::neuronCalcValue
         }
     );
 
-
     if( countValue > 0 )
     {
-        setNeuronValue( aIndex,  FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
+        setNeuronValue( aIndex, FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
+    }
+
+    if( countErrorValue > 0 )
+    {
+        /* Write avg error from parent to layer */
+        setNeuronValue( aIndex, summErrorValue / countErrorValue );
     }
 
     if( countSample > 0 )
@@ -1868,7 +1877,7 @@ Layer* Layer::noiseValue
 
     for( int i = 0; i < count; i ++ )
     {
-        setNeuronValue( i, Rnd::get( 0.0, 1.0 ) );
+        setNeuronValue( i, Rnd::get( aMin, aMax ) );
     }
 
     Rnd::restoreSeed();

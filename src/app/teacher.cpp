@@ -19,7 +19,8 @@ Teacher::Teacher
 (
     Net* aNet
 )
-: Payload( aNet -> getApplication() ) /* Call parent constructor */
+/* Call parent constructor */
+: Payload( aNet -> getApplication() )
 {
     aNet -> getLog() -> trace( "Create teacher" );
     batches = ParamList::create();
@@ -76,6 +77,10 @@ ShoggothApplication* Teacher::getApplication()
     Methods
 */
 
+
+/*
+
+*/
 Teacher* Teacher::task()
 {
     getLog() -> begin( "Check error level" );
@@ -98,6 +103,7 @@ Teacher* Teacher::task()
         {
             /* Check new batch */
             getLog() -> begin( "New batch" );
+
             auto item = batches -> getRnd();
             if( item != NULL && item -> isObject() )
             {
@@ -108,34 +114,35 @@ Teacher* Teacher::task()
                     [ this ]
                     ( Param* aParam )
                     {
-                        /* Layer processing */
-                        auto layerId = aParam -> getName();
-                        auto jobs = aParam -> getObject();
-                        auto layer = net -> getLayers() -> getById( layerId );
-                        getLog()
-                        -> begin( "Layer" )
-                        -> prm( "id", layerId );
-                        if( layer != NULL )
+                        auto obj = aParam -> getObject();
+                        if( obj != NULL )
                         {
-                            auto job = jobs -> getRnd();
-                            if( job != NULL && job -> isObject() )
-                            {
-                                buildValueBuffer( job -> getObject(), layer );
-                            }
-                            else
-                            {
-                                getLog()
-                                -> warning( "Job is not a object" );
-                            }
-                        }
-                        else
-                        {
+                            auto command = obj -> getString( "cmd" );
                             getLog()
-                            -> warning( "Layer not found" )
-                            -> prm( "id", layerId );
+                            -> begin( "Command" )
+                            -> prm( "cmd", command );
+                            ParamListLog::dump( getLog(), obj, "Arguments" );
+                            switch( stringToTeacherTask( command ))
+                            {
+                                case TEACHER_CMD_VALUE_TO_LAYER:
+                                    cmdValueToLayer( obj );
+                                break;
+                                case TEACHER_CMD_IMAGE_TO_LAYER:
+                                    cmdImageToLayer( obj );
+                                break;
+                                case TEACHER_CMD_FOLDER_TO_LAYER:
+                                    cmdFolderToLayer( obj );
+                                break;
+                                case TEACHER_CMD_GUID_TO_LAYER:
+                                break;
+                                case TEACHER_CMD_HID_TO_LAYER:
+                                break;
+                                default:
+                                    getLog() -> warning( "Unknown command" );
+                                break;
+                            }
+                            getLog() -> end();
                         }
-                        getLog()
-                        -> end();
                         return false;
                     }
                 );
@@ -143,8 +150,7 @@ Teacher* Teacher::task()
             }
             else
             {
-                getLog()
-                -> warning( "Batch is not a object" );
+                getLog() -> warning( "Batch is not a object" );
             }
             getLog() -> end();
         }
@@ -215,52 +221,97 @@ ParamList* Teacher::getBatches()
 
 
 
-
 /*
-    Create buffer for job
+    Fill layer with values
 */
-Teacher* Teacher::buildValueBuffer
+Teacher* Teacher::cmdValueToLayer
 (
-    ParamList* aJob,
-    Layer* aLayer
+    ParamList* a
 )
 {
-    ParamListLog::dump( getLog(), aJob );
-
-    auto cmdName    = aJob -> getString( "cmd" );
-    auto cmdCode    = stringToTeacherTask( cmdName );
-
-    switch( cmdCode )
+    auto layerId = a -> getString( "layer" );
+    auto layer = net -> getLayers() -> getById( layerId );
+    if( layer != NULL )
     {
-        case TEACHER_TASK_NOISE:
+        layer -> noiseValue
+        (
+            a -> getInt( "seed", 0 ),
+            a -> getDouble( "min", 0.0 ),
+            a -> getDouble( "max", 1.0 )
+        );
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
+    }
+    return this;
+}
+
+
+
+/*
+    Fill layer from image
+*/
+Teacher* Teacher::cmdImageToLayer
+(
+    ParamList* a
+)
+{
+    auto layerId = a -> getString( "layer" );
+    auto layer = net -> getLayers() -> getById( layerId );
+    if( layer != NULL )
+    {
+        auto files = a -> getObject( "files" );
+        if( files != NULL )
         {
-            aLayer -> noiseValue
-            (
-                aJob -> getInt( "seed", 0 ),
-                aJob -> getDouble( "min", 0.0 ),
-                aJob -> getDouble( "max", 1.0 )
-            );
-            break;
+            auto file = files -> getRnd() -> getString();
+            if( file != "" )
+            {
+                layer -> imageToValue( file );
+            }
         }
-        case TEACHER_TASK_HID:
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
+    }
+    return this;
+}
+
+
+
+/*
+    Fill layer from folder image
+*/
+Teacher* Teacher::cmdFolderToLayer
+(
+    ParamList* a
+)
+{
+    auto layerId = a -> getString( "layer" );
+    auto layer = net -> getLayers() -> getById( layerId );
+    if( layer != NULL )
+    {
+        auto folder = a -> getObject( "folder" );
+        if( files != NULL )
         {
-            break;
+// TODO
+            auto file = files -> getRnd() -> getString();
+            if( file != "" )
+            {
+                layer -> imageToValue( file );
+            }
         }
-        case TEACHER_TASK_IMAGE:
-        {
-            aLayer -> imageToValue
-            (
-                aJob -> getString( "file" )
-            );
-            break;
-        }
-        default:
-        {
-            getLog()
-            -> warning( "Unknown batch command" )
-            -> prm( "Command", cmdName );
-            break;
-        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
     }
     return this;
 }

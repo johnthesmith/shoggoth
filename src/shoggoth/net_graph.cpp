@@ -163,7 +163,11 @@ NetGraph* NetGraph::drawLayer
         -> setTextSize( 0.05 )
         -> textCR()
         -> color( Rgba( RGBA_RED ))
-        -> text( "Error:" + to_string( aLayer -> getError()) );
+        -> text( "Error:" + to_string( aLayer -> getError()) )
+        -> textCR()
+        -> color( Rgba( RGBA_ORANGE ))
+        -> text( "Value:" + to_string( aLayer -> getValue()) )
+        ;
     }
 
     return this;

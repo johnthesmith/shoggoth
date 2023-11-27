@@ -4,7 +4,7 @@
     "io":
     {
         "source"            :"SERVER",
-        "net"               :"net/net.json",
+        "_net"               :"net/net.json",
         "host"              :"127.0.0.1",
         "port"              :11120
     },
@@ -21,12 +21,12 @@
             "gliphSize" :64,
             "charSet"   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
         },
-        "TASK_PROC":
+        "_TASK_PROC":
         {
-            "enabled"           :true,
+            "enabled"           :false,
             "debug"             :false,
             "learningMode"      :false,
-            "learningSpeed"     :0.005,
+            "learningSpeed"     :0.002,
             "wakeupWeight"      :0.0001,
             "errorNormalize"    :0.11,
             "processorCount"    :1

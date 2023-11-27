@@ -5,7 +5,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
-            "size"              :[ 10, 10, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "caption"           :"Main input",
@@ -21,7 +21,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 1",
-            "size"              :[ 20, 10, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "actions":
             {
@@ -35,7 +35,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 2",
-            "size"              :[ 10, 10, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 2.0 ],
             "actions":
             {
@@ -49,7 +49,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 3",
-            "size"              :[ 10, 10, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
             "actions":
             {
@@ -63,7 +63,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 4",
-            "size"              :[ 10, 10, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
             "actions":
             {
@@ -77,8 +77,9 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Sample",
-            "size"              :[ 8, 16, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 6.0 ],
+            "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_PROC" ],
@@ -91,8 +92,9 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Result",
-            "size"              :[ 8, 16, 1 ],
+            "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 5.0 ],
+            "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
@@ -120,7 +122,7 @@
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Error",
             "size"              :[ 1, 1, 1],
-            "position"          :[ 0.0, 0.5, 4.5 ],
+            "position"          :[ 0.0, 2.0, 5.0 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
@@ -202,15 +204,6 @@
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"COMMAND",
-            "minWeight"         :1.0,
-            "maxWeight"         :1.0
-        },
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"cortex_4",
-            "idTo"              :"error",
-            "nerveType"         :"ONE_TO_ONE",
-            "bindType"          :"ERROR_TO_VALUE",
             "minWeight"         :1.0,
             "maxWeight"         :1.0
         },

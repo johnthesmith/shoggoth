@@ -1145,7 +1145,9 @@ Net* Net::event
 {
     getLog()
     -> begin( "Neural net event" )
-    -> prm( "name", eventToString( aEvent ));
+    -> prm( "name", eventToString( aEvent ))
+    -> prm( "supt", supt )
+    -> lineEnd();
 
     if( actions -> isOk() )
     {
