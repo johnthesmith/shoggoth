@@ -296,15 +296,16 @@ Teacher* Teacher::cmdFolderToLayer
     auto layer = net -> getLayers() -> getById( layerId );
     if( layer != NULL )
     {
-        auto folder = a -> getObject( "folder" );
-        if( files != NULL )
+        auto folder = a -> getString( "folder", "" );
+        if( folder != "" )
         {
-// TODO
-            auto file = files -> getRnd() -> getString();
-            if( file != "" )
+            auto files = ParamList::create() -> filesFromPath( folder );
+            auto file = files -> getRnd();
+            if( file != NULL )
             {
-                layer -> imageToValue( file );
+                layer -> imageToValue( folder +  "/" + file -> getString() );
             }
+            files -> destroy();
         }
     }
     else

@@ -440,6 +440,11 @@ Nerve* Nerve::readWeights()
 */
 Nerve* Nerve::writeWeights()
 {
+    getLog()
+    -> begin( "Write weights" )
+    -> prm( "parent", parent -> getId())
+    -> prm( "child", child -> getId());
+
     auto io = Io::create( net );
 
     io
@@ -456,6 +461,8 @@ Nerve* Nerve::writeWeights()
     io
     -> call( CMD_WRITE_WEIGHTS )
     -> destroy();
+
+    getLog() -> end();
 
     return this;
 }

@@ -1155,7 +1155,6 @@ Net* Net::event
         (
             Path{ supt, eventToString( aEvent ) }
         );
-
         if( actionsList != NULL )
         {
             actionsList -> loop

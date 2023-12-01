@@ -696,5 +696,15 @@ struct ParamList : public Heap
         (
             ParamList* /* Argument */
         );
+
+
+
+        /*
+            Fill files from path to the param list
+        */
+        ParamList* filesFromPath
+        (
+            string
+        );
 };
 

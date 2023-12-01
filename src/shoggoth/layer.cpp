@@ -1099,6 +1099,7 @@ Layer* Layer::writeErrors()
 {
     if( errors != NULL )
     {
+        getLog() -> begin( "Write layer errors" ) -> prm( "id", this -> getId() );
         auto io = Io::create( net );
         io -> getRequest()
         -> setString( "idLayer", this -> getId() )
@@ -1108,7 +1109,7 @@ Layer* Layer::writeErrors()
         -> call( CMD_WRITE_ERRORS )
         -> destroy();
 
-        getLog() -> trace( "Write layer errors" ) -> prm( "id", this -> getId() );
+        getLog() -> end();
     }
 
     return this;

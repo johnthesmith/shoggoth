@@ -5,7 +5,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 64, 64, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "caption"           :"Main input",
@@ -23,6 +23,7 @@
             "name"              :"Cortex 1",
             "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
+            "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -37,6 +38,7 @@
             "name"              :"Cortex 2",
             "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 2.0 ],
+            "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -51,6 +53,7 @@
             "name"              :"Cortex 3",
             "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
+            "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -65,6 +68,7 @@
             "name"              :"Cortex 4",
             "size"              :[ 20, 20, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
+            "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],

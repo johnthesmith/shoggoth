@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <cstring>
 #include <sstream>
 
@@ -1647,4 +1648,21 @@ bool ParamList::isIntersect
     auto result = arg -> getCount() > 0;
     arg -> destroy();
     return result;
+}
+
+
+
+/*
+    Fill files from path to the param list
+*/
+ParamList* ParamList::filesFromPath
+(
+    string a    /* Path */
+)
+{
+    for( auto& p:filesystem::directory_iterator( a ))
+    {
+        pushString( p.path().filename().string());
+    }
+    return this;
 }
