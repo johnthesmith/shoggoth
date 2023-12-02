@@ -16,12 +16,12 @@
 /* Local libraries */
 #include "../lib/payload.h"
 #include "../shoggoth/net_graph.h"
-#include "../shoggoth/shoggoth_rpc_server.h"
 
 /* Payloads */
 #include "ui.h"
 #include "teacher.h"
 #include "processor.h"
+#include "server.h"
 
 
 
@@ -37,11 +37,11 @@ class Loop : public Payload
         NetGraph*               net                 = NULL;
 
         /* Payloads object  of roles */
-        bool                    processor           = false;
         Ui*                     ui                  = NULL;
         Scene*                  scene               = NULL;
         Teacher*                teacher             = NULL;
-        ShoggothRpcServer*      server              = NULL;
+        Processor*              processor           = NULL;
+        Server*                 server              = NULL;
 
         /* State */
         long int                lastConfigCheck     = 0;
@@ -95,7 +95,8 @@ class Loop : public Payload
         Loop* uiControl();
         Loop* processorControl();
         Loop* teacherControl();
-        bool serverControl();
+
+
 
         /******************************************************************************
             Payload events
@@ -113,7 +114,4 @@ class Loop : public Payload
             unsigned int&,
             bool&
         );
-
-
-
 };

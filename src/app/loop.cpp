@@ -54,6 +54,10 @@ Loop::Loop
 Loop::~Loop()
 {
     net -> destroy();
+    if( teacher != NULL) teacher -> destroy();
+    if( processor != NULL) processor -> destroy();
+    if( server != NULL) server -> destroy();
+    if( ui != NULL) ui -> destroy();
 }
 
 
@@ -88,34 +92,57 @@ ShoggothApplication* Loop::getApplication()
 
 
 
-bool Loop::serverControl()
+
+Loop* Loop::processorControl()
 {
-    bool result =
+    auto taskProc =
     getApplication()
     -> getConfig()
-    -> getBool( Path { "tasks",  taskToString( TASK_SERVER ), "enabled" } );
-    if( result )
+    -> getObject( Path { "tasks",  taskToString( TASK_PROC )} );
+
+    if( taskProc != NULL && taskProc -> getBool( "enabled" ))
     {
-        if( server == NULL )
+        if( processor == NULL )
         {
-            server = ShoggothRpcServer::create( getApplication() );
-            server -> setPort
+            processor   = Processor::create( net );
+            server      = Server::create( net );
+            server -> setId( "server" );
+            server -> run( true );
+
+            /* Apply config */
+            net -> setLearningSpeed
             (
-                getApplication()
-                -> getConfig()
-                -> getInt( Path{ "tasks",  taskToString( TASK_SERVER ), "port" }, 11120 )
+                taskProc
+                -> getDouble( "learningSpeed", net -> getLearningSpeed() )
+            );
+            net -> setWakeupWeight
+            (
+                taskProc
+                -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
+            );
+            net -> setErrorNormalize
+            (
+                taskProc
+                -> getDouble( "errorNormalize", net -> getErrorNormalize() )
+            );
+            net -> setCalcDebug
+            (
+                taskProc
+                -> getBool( "debug", net -> getCalcDebug() )
             );
         }
     }
     else
     {
-        if( server != NULL )
+        if( processor )
         {
+            processor -> destroy();
+            processor = NULL;
             server -> destroy();
             server = NULL;
         }
     }
-    return result;
+    return this;
 }
 
 
@@ -176,54 +203,6 @@ Loop* Loop::uiControl()
 
 
 
-Loop* Loop::processorControl()
-{
-    auto taskProc =
-    getApplication()
-    -> getConfig()
-    -> getObject( Path { "tasks",  taskToString( TASK_PROC )} );
-
-    if( taskProc != NULL && taskProc -> getBool( "enabled" ))
-    {
-        if( !processor )
-        {
-            processor = true;
-
-            /* Apply config */
-            net -> setLearningSpeed
-            (
-                taskProc
-                -> getDouble( "learningSpeed", net -> getLearningSpeed() )
-            );
-            net -> setWakeupWeight
-            (
-                taskProc
-                -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
-            );
-            net -> setErrorNormalize
-            (
-                taskProc
-                -> getDouble( "errorNormalize", net -> getErrorNormalize() )
-            );
-            net -> setCalcDebug
-            (
-                taskProc
-                -> getBool( "debug", net -> getCalcDebug() )
-            );
-        }
-    }
-    else
-    {
-        if( processor )
-        {
-            processor = false;
-        }
-    }
-    return this;
-}
-
-
-
 Loop* Loop::teacherControl()
 {
     auto cfg = getApplication()
@@ -250,6 +229,7 @@ Loop* Loop::teacherControl()
         if( teacher )
         {
             teacher -> destroy();
+            teacher = NULL;
         }
     }
 
@@ -306,17 +286,12 @@ void Loop::onLoop
             if( getApplication() -> getConfig() -> isOk())
             {
                 this -> setOk();
-
-                if( !serverControl() )
-                {
-                    /* Config apply */
-                    net -> readNet();
-                    aReconfig = true;
-                    serverControl();
-                    processorControl();
-                    teacherControl();
-                    uiControl();
-                }
+                /* Config apply */
+                net -> readNet();
+                aReconfig = true;
+                processorControl();
+                teacherControl();
+                uiControl();
             }
             else
             {
@@ -348,38 +323,30 @@ void Loop::onLoop
 
     if( isOk() )
     {
-        /* Server */
-        if( server != NULL )
+        /* Begin of net loop */
+        if( net -> isNextLoop() )
         {
-            server -> up();
+            net -> event( LOOP_BEGIN );
         }
-        else
+
+        /* Teacher */
+        if( teacher != NULL )
         {
-            /* Begin of net loop */
-            if( net -> isNextLoop() )
-            {
-                net -> event( LOOP_BEGIN );
-            }
+            teacher -> task();
+        }
 
-            /* Teacher */
-            if( teacher != NULL )
-            {
-                teacher -> task();
-            }
+        /* Processor */
+        if( processor )
+        {
+            processor -> run();
+        }
 
-            /* Processor */
-            if( processor )
-            {
-                net -> calc();
-            }
-
-            /* UI works*/
-            if( ui != NULL )
-            {
-                scene -> calcEvent();
-                scene -> drawEvent();
-                aTreminated = scene -> windowClosed();
-            }
+        /* UI works*/
+        if( ui != NULL )
+        {
+            scene -> calcEvent();
+            scene -> drawEvent();
+            aTreminated = scene -> windowClosed();
         }
     }
 

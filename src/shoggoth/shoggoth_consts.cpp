@@ -82,7 +82,6 @@ std::string taskToString
         case TASK_UI        : return "TASK_UI";
         case TASK_PROC      : return "TASK_PROC";
         case TASK_TEACHER   : return "TASK_TEACHER";
-        case TASK_SERVER    : return "TASK_SERVER";
     }
     return "TASK_UNKNOWN";
 }

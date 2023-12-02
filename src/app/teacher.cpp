@@ -35,7 +35,7 @@ Teacher::Teacher
 Teacher::~Teacher()
 {
     batches -> destroy();
-    getLog() -> trace( "Destroy teacher" );
+    getLog() -> trace( "Teacher destroyd" );
 }
 
 

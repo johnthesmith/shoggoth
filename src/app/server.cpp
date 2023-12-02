@@ -12,23 +12,7 @@
 
 
 /* Local libraries */
-#include "../graph/log_points.h"
-#include "../graph/draw_mode.h"
-
-#include "../shoggoth/neuron.h"
-#include "../shoggoth/func.h"
-#include "../shoggoth/shoggoth_consts.h"
-
-#include "../lib/rnd.h"
-#include "../lib/hid.h"
-#include "../lib/moment.h"
-#include "../lib/utils.h"
-#include "../json/json.h"
-
-#include "../math.h"
-
-/* User libraries */
-#include "processor.h"
+#include "server.h"
 
 
 
@@ -40,7 +24,7 @@ using namespace std;
 /*
     Constructor
 */
-Processor::Processor
+Server::Server
 (
     Net* aNet
 )
@@ -48,7 +32,7 @@ Processor::Processor
 : Payload( aNet -> getApplication() )
 {
     auto app = aNet -> getApplication();
-    aNet -> getLog() -> trace( "Create processor" );
+    aNet -> getLog() -> trace( "Create Server" );
     net = aNet;
 }
 
@@ -59,9 +43,9 @@ Processor::Processor
 /*
     Destructor
 */
-Processor::~Processor()
+Server::~Server()
 {
-    getLog() -> trace( "Processor destroyd" );
+    getLog() -> trace( "Server destroyd" );
 }
 
 
@@ -69,12 +53,12 @@ Processor::~Processor()
 /*
     Creator
 */
-Processor* Processor::create
+Server* Server::create
 (
     Net* a
 )
 {
-    return new Processor( a );
+    return new Server( a );
 }
 
 
@@ -82,14 +66,14 @@ Processor* Processor::create
 /*
     Destructor
 */
-void Processor::destroy()
+void Server::destroy()
 {
     delete this;
 }
 
 
 
-ShoggothApplication* Processor::getApplication()
+ShoggothApplication* Server::getApplication()
 {
     return ( ShoggothApplication* ) Payload::getApplication();
 }
@@ -105,7 +89,7 @@ ShoggothApplication* Processor::getApplication()
 /*
     Activate payload
 */
-void Processor::onActivate()
+void Server::onActivate()
 {
 }
 
@@ -114,7 +98,14 @@ void Processor::onActivate()
 /*
     Run net calculateion
 */
-void Processor::onRun()
+void Server::onRun()
 {
-    net -> calc();
+    /* Read port */
+    auto listenPort = getApplication()
+    -> getConfig()
+    -> getInt( Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" }, 11120 );
+
+    auto srv = ShoggothRpcServer::create( getApplication() );
+    srv -> setPort( listenPort );
+    srv -> up() -> destroy();
 }

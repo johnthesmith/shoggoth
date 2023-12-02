@@ -10,7 +10,6 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-
         Application*            app     = NULL; /* Application object */
         ParamList*              data    = NULL; /* List  */
 

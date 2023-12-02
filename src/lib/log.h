@@ -133,11 +133,15 @@ class Log
         /* Получить статус активности вывода в логфайл */
         bool getEnabled();
 
+
+
         /* Установить активность вывода в логфайл */
-        Log* setEnable
+        Log* setEnabled
         (
             bool
         );
+
+
 
         Log* write
         (
@@ -395,4 +399,12 @@ class Log
         */
         string getFileName();
 
+
+        /*
+            Clone log settings
+        */
+        Log* clone
+        (
+            Log*
+        );
 };

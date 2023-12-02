@@ -1,15 +1,15 @@
 /* Default libraries */
 #include <iostream>
 #include <unistd.h>         /* usleep */
-
-/* Local libraries */
-#include "payload.h"
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+
+/* Local libraries */
+#include "payload.h"
+#include "rnd.h"
+
 
 
 using namespace std;
@@ -34,6 +34,12 @@ Payload::Payload
 */
 Payload::~Payload()
 {
+    if( threadObject != NULL )
+    {
+        terminate();
+        threadObject -> join();
+        delete threadObject;
+    }
     getLog() -> trace( "Destroy payload" );
 }
 
@@ -63,11 +69,11 @@ void Payload::destroy()
 
 
 /*
-    Get scene value
+    Get application log or personal payloads log if exists
 */
 Log* Payload::getLog()
 {
-    return application -> getLog();
+    return log == NULL ? application -> getLog() : log;
 }
 
 
@@ -82,27 +88,101 @@ Application* Payload::getApplication()
 
 
 
-//void term_handler(int i)
-//{
-//    cout << "Terminating\n";
-//}
-
-
-
-Payload* Payload::loop()
+/*
+    Run payload
+*/
+Payload* Payload::run
+(
+    bool aThread    /* True for run like thread */
+)
 {
-    bool            terminated  = false;
+    if( aThread )
+    {
+        /* Run loop in the personal thread if it does not early */
+        if( threadObject != NULL )
+        {
+            log = Log::create()
+            -> clone( application -> getLog() )
+            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
+            threadObject = new thread
+            (
+                [ this ]
+                ()
+                {
+                    onRun();
+                    log -> close() -> destroy();
+                    log = NULL;
+                }
+            );
+        }
+        else
+        {
+            application -> getLog() -> warning( "thread already runing" );
+        }
+    }
+    else
+    {
+        onRun();
+    }
+    return this;
+}
+
+
+
+/*
+    Mail loop
+*/
+Payload* Payload::loop
+(
+    bool aThread    /* True for run like thread */
+)
+{
+    if( aThread )
+    {
+        /* Run loop in the personal thread if it does not early */
+        if( threadObject != NULL )
+        {
+            log = Log::create()
+            -> clone( application -> getLog() )
+            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
+            threadObject = new thread
+            (
+                [ this ]
+                ()
+                {
+                    internalLoop();
+                    log -> close() -> destroy();
+                    log = NULL;
+                }
+            );
+        }
+        else
+        {
+            application -> getLog() -> warning( "thread already runing" );
+        }
+    }
+    else
+    {
+        /* Run loop in the parent thread */
+        internalLoop();
+    }
+
+    return this;
+}
+
+
+
+/*
+    Internal loop emplimentation
+    This method calls a user onLoop
+*/
+Payload* Payload::internalLoop()
+{
+    terminated  = false;
+
     bool            idling      = true;
     bool            reconfig    = true;
     unsigned int    sleep       = 0;
-
-//    struct sigaction sa;
-//    sigset_t newset;
-//    sigemptyset(&newset);                   // чистимся
-//    sigaddset( &newset, SIGINT );           // добавляем сигнал SIGHUP
-//    sigprocmask(SIG_BLOCK, &newset, 0);     // блокируем его
-//    sa.sa_handler = term_handler;           // указываем обработчик
-//    sigaction(  SIGINT, &sa, 0);            // обрабатываем сигнал SIGTERM
 
     while( !terminated )
     {
@@ -128,6 +208,22 @@ Payload* Payload::loop()
 
 
 /*
+    Set terminate flag
+*/
+Payload* Payload::terminate()
+{
+    terminated = true;
+    return this;
+}
+
+
+
+/******************************************************************************
+    Events
+*/
+
+
+/*
     Loop for payload
 */
 void Payload::onLoop
@@ -143,5 +239,28 @@ void Payload::onLoop
 
 
 
+/*
+    On Run event
+*/
+void Payload::onRun()
+{
+    getLog() -> trace( "Run" );
+}
 
 
+/******************************************************************************
+    Setters and getters
+*/
+
+
+/*
+    Set payload id
+*/
+Payload* Payload::setId
+(
+    string aId
+)
+{
+    id = aId;
+    return this;
+}

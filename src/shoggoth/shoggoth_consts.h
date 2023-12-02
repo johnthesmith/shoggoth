@@ -58,8 +58,7 @@ enum Task
     TASK_UNKNOWN,
     TASK_UI,
     TASK_PROC,
-    TASK_TEACHER,
-    TASK_SERVER
+    TASK_TEACHER
 };
 
 

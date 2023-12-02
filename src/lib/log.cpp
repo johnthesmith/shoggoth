@@ -110,7 +110,10 @@ bool Log::getEnabled()
 /*
     Установить активность вывода в логфайл
 */
-Log* Log::setEnable( bool a )
+Log* Log::setEnabled
+(
+    bool a
+)
 {
     enabled = a;
     return this;
@@ -905,4 +908,21 @@ Log* Log::setFileName
 string Log::getFileName()
 {
     return fileName;
+}
+
+
+
+
+/*
+    Clone log settings
+*/
+Log* Log::clone
+(
+    Log* aSource
+)
+{
+    setEnabled( aSource -> getEnabled());
+    setColored( aSource -> getColored());
+    setFileName( aSource -> getFileName());
+    return this;
 }

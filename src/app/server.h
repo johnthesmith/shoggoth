@@ -6,13 +6,14 @@
 #include "../shoggoth/sync.h"
 
 #include "shoggoth_application.h"
+#include "../shoggoth/shoggoth_rpc_server.h"
 
 
 using namespace std;
 
 
 
-class Processor : public Payload
+class Server : public Payload
 {
     private:
 
@@ -26,7 +27,7 @@ class Processor : public Payload
         /*
             Constructor
         */
-        Processor
+        Server
         (
             Net*
         );
@@ -36,14 +37,14 @@ class Processor : public Payload
         /*
             Destructor
         */
-        ~Processor();
+        ~Server();
 
 
 
         /*
             Creator
         */
-        static Processor* create
+        static Server* create
         (
             Net*
         );
@@ -61,7 +62,8 @@ class Processor : public Payload
 
 
 
-        Processor* help();
+        Server* help();
+
 
 
         /******************************************************************************
@@ -70,10 +72,5 @@ class Processor : public Payload
 
         virtual void onActivate();
 
-
-
-        /*
-            Run net calculateion
-        */
         virtual void onRun();
 };

@@ -1109,7 +1109,7 @@ Net* Net::buildSuptAndTasks()
     )
     {
         supt[ 0 ] = 'S';
-        tasks -> pushString( taskToString( TASK_SERVER ));
+//        tasks -> pushString( taskToString( TASK_SERVER ));
     }
 
     if( tasksSection != NULL )
