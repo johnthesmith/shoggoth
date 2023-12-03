@@ -9,21 +9,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-
 /* Local libraries */
 #include "../graph/log_points.h"
 #include "../graph/draw_mode.h"
-
-#include "../shoggoth/neuron.h"
-#include "../shoggoth/func.h"
 
 #include "../lib/rnd.h"
 #include "../lib/hid.h"
 #include "../lib/moment.h"
 #include "../lib/utils.h"
 #include "../json/json.h"
-
-#include "../math.h"
 
 /* User libraries */
 #include "loop.h"
