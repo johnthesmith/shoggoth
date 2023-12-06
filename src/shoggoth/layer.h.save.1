@@ -165,6 +165,7 @@ class Layer : public Object
         */
         Layer
         (
+            Log*,
             Net*,
             string = "",    /* id */
             bool = true,    /* valuesExists */
@@ -189,6 +190,7 @@ class Layer : public Object
         */
         static Layer* create
         (
+            Log*,
             Net*,           /* Net object */
             string = "",
             bool = true,    /* valuesExists */
@@ -203,7 +205,10 @@ class Layer : public Object
         /*
             Destructor
         */
-        void destroy();
+        void destroy
+        (
+            Log*
+        );
 
 
 
@@ -330,6 +335,7 @@ class Layer : public Object
         */
         Layer* setSize
         (
+            Log*,
             const Point3i& = POINT_3I_0
         );
 
@@ -530,7 +536,10 @@ class Layer : public Object
         /*
             Send values to io
         */
-        Layer* writeValues();
+        Layer* writeValues
+        (
+            Log*
+        );
 
 
 
@@ -545,7 +554,8 @@ class Layer : public Object
         /*
             Read values from io
         */
-        Layer* readValues();
+        Layer* readValues(
+        );
 
 
 
@@ -771,6 +781,7 @@ class Layer : public Object
         */
         Layer* neuronPointsCalc
         (
+            aLog,
             bool
         );
 
@@ -798,6 +809,7 @@ class Layer : public Object
         */
         Layer* imageToValue
         (
+            Log*,
             string  /* File name */
         );
 
@@ -890,13 +902,6 @@ class Layer : public Object
 
         /* Move values and errors from processor cache to data */
         Layer* cacheToData();
-
-
-        /*
-            Return the log object
-        */
-        Log* getLog();
-
 };
 
 

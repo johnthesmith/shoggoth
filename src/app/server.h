@@ -17,9 +17,11 @@ class Server : public Payload
 {
     private:
 
+        /* SHoggoth */
         Net*                    net                 = NULL;
-        thread*                 server              = NULL;
-
+        //        thread*                 server              = NULL;
+        thread*                 serverThread        = NULL;
+        ShoggothRpcServer*      srv                 = NULL;
         long int                lastConfigCheck     = 0;
 
     public:
@@ -67,10 +69,14 @@ class Server : public Payload
 
 
         /******************************************************************************
+            Events
         */
 
-
-        virtual void onActivate();
-
-        virtual void onRun();
+        virtual void onLoop
+        (
+            bool&,
+            bool&,
+            unsigned int&,
+            bool&
+        );
 };

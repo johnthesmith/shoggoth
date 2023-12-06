@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include "result.h"
 #include "log.h"
 #include "../json/param_list.h"
@@ -21,6 +22,9 @@ class Application : public Result
         ParamList*      cli     = NULL;
         ParamListFile*  config  = NULL;
         Log*            log     = NULL;
+
+        /* List of logs for application */
+        map <string, Log*> logList;
 
     public:
 
@@ -61,13 +65,6 @@ class Application : public Result
 
 
         /*
-            Return log object
-        */
-        Log* getLog();
-
-
-
-        /*
             Return config object
         */
         ParamList* getCli();
@@ -78,4 +75,39 @@ class Application : public Result
             Return config object
         */
         ParamListFile* getConfig();
+
+
+
+
+        /**********************************************************************
+            Log operations
+        */
+
+
+
+        /*
+            Create new log
+        */
+        Log* createThreadLog();
+
+
+
+        /*
+            Destroy log by id
+        */
+        Application* destroyThreadLog();
+
+
+
+        /*
+            Return log object
+        */
+        Log* getLog();
+
+
+
+        /*
+            Return thread id for current payload
+        */
+        string getThreadId();
 };

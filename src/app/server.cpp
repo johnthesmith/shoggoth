@@ -87,25 +87,67 @@ ShoggothApplication* Server::getApplication()
 
 
 /*
-    Activate payload
-*/
-void Server::onActivate()
-{
-}
-
-
-
-/*
     Run net calculateion
 */
-void Server::onRun()
+void Server::onLoop
+(
+    bool&           aTreminated,
+    bool&           aIdling,
+    unsigned int&   aSleep,
+    bool&           aReconfig
+)
 {
-    /* Read port */
-    auto listenPort = getApplication()
-    -> getConfig()
-    -> getInt( Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" }, 11120 );
+    if( !getPause() )
+    {
+        /* Confirm work mode */
+        setPaused( false );
 
-    auto srv = ShoggothRpcServer::create( getApplication() );
-    srv -> setPort( listenPort );
-    srv -> up() -> destroy();
+        /* Work loop */
+        if( srv == NULL )
+        {
+            getLog() -> begin( "Server" );
+
+            /* Read port */
+            auto listenPort = getApplication()
+            -> getConfig()
+            -> getInt
+            (
+                Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
+                11120
+            );
+
+            getLog() -> trace() -> prm( "Listenen port", listenPort ) -> lineEnd();
+
+            srv = ShoggothRpcServer::create( getApplication(), getLog() );
+            srv -> setPort( listenPort );
+
+            serverThread = new thread
+            (
+                [ this ]
+                ()
+                {
+                    srv -> up() -> destroy();
+                }
+            );
+        }
+    }
+    else
+    {
+        if( srv != NULL )
+        {
+            /* Stop sochet and destroy server */
+            srv -> down() -> destroy();
+            srv = NULL;
+
+            /* Finalize and destroy server thread */
+            serverThread -> join();
+            delete serverThread;
+            serverThread = NULL;
+
+            /* Close server log section */
+            getLog() -> end( "" );
+        }
+        /* Confirm pause mode */
+        setPaused( true );
+    }
 }

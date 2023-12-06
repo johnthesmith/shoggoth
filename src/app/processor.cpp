@@ -103,18 +103,24 @@ ShoggothApplication* Processor::getApplication()
 
 
 /*
-    Activate payload
-*/
-void Processor::onActivate()
-{
-}
-
-
-
-/*
     Run net calculateion
 */
-void Processor::onRun()
+void Processor::onLoop
+(
+    bool&           aTreminated,
+    bool&           aIdling,
+    unsigned int&   aSleep,
+    bool&           aReconfig
+)
 {
-    net -> calc();
+    if( !getPause() )
+    {
+        /* Confirm work mode */
+        setPaused( false );
+        net -> calc();
+    }
+    else
+    {
+        setPaused( true );
+    }
 }

@@ -76,6 +76,13 @@ class RpcServer : public SockRpc
 
 
         /*
+            Down server
+        */
+        RpcServer* down();
+
+
+
+        /*
             Server on call before event
             Method may be ovverided
         */

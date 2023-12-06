@@ -52,13 +52,24 @@ RpcServer* RpcServer::create
 */
 RpcServer* RpcServer::up()
 {
-    this -> openHandle() -> listen();
-    if( !this -> isOk() )
+    openHandle() -> listen();
+    if( !isOk() )
     {
         getLog()
         -> warning( "Server up error" )
-        -> prm( "code", this -> getCode());
+        -> prm( "code", getCode());
     }
+    return this;
+}
+
+
+
+/*
+    Down server
+*/
+RpcServer* RpcServer::down()
+{
+    closeHandle();
     return this;
 }
 

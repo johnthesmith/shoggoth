@@ -99,18 +99,20 @@ Payload* Payload::run
     if( aThread )
     {
         /* Run loop in the personal thread if it does not early */
-        if( threadObject != NULL )
+        if( threadObject == NULL )
         {
             log = Log::create()
             -> clone( application -> getLog() )
-            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
+            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" )
+            -> begin( "" ) -> lineEnd();
+
             threadObject = new thread
             (
                 [ this ]
                 ()
                 {
                     onRun();
-                    log -> close() -> destroy();
+                    log -> end() -> close() -> destroy();
                     log = NULL;
                 }
             );
@@ -140,18 +142,23 @@ Payload* Payload::loop
     if( aThread )
     {
         /* Run loop in the personal thread if it does not early */
-        if( threadObject != NULL )
+        if( threadObject == NULL )
         {
-            log = Log::create()
-            -> clone( application -> getLog() )
-            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
             threadObject = new thread
             (
                 [ this ]
                 ()
                 {
+                    /* Log create and registration */
+                    log = application -> createThreadLog()
+                    -> clone( application -> getLog() )
+                    -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
+
+                    /* Run loop */
                     internalLoop();
-                    log -> close() -> destroy();
+
+                    /* Destroy and nullate log */
+                    application -> destroyThreadLog();
                     log = NULL;
                 }
             );
@@ -234,7 +241,7 @@ void Payload::onLoop
     bool&           aReconfig
 )
 {
-    getLog() -> trace( "Loop" );
+    getLog() -> trace( "Paylaod default on loop event" );
 }
 
 
@@ -263,4 +270,53 @@ Payload* Payload::setId
 {
     id = aId;
     return this;
+}
+
+
+
+
+/*
+    Set order for pause
+*/
+Payload* Payload::setPause
+(
+    bool a
+)
+{
+    pause = a;
+    return this;
+}
+
+
+
+/*
+    Get order for pause
+*/
+bool Payload::getPause()
+{
+    return pause;
+}
+
+
+
+/*
+    Set paused confirmation
+*/
+Payload* Payload::setPaused
+(
+    bool a
+)
+{
+    paused = a;
+    return this;
+}
+
+
+
+/*
+    Get paused confirmation
+*/
+bool Payload::getPaused()
+{
+    return paused;
 }

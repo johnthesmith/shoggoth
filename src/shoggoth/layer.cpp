@@ -1885,3 +1885,28 @@ Layer* Layer::noiseValue
 
     return this;
 }
+
+
+
+//
+///* Move values and errors data to processor cache */
+//Layer* Layer::dataToCache()
+//{
+//    if( count != cacheCount )
+//    {
+//        if( errorCache != NULL )
+//        {
+//            delete errorsCache valuesCache;
+//        }
+//
+//    }
+//    return this;
+//}
+//
+//
+//
+///* Move values and errors from processor cache to data */
+//Layer* Layer::cacheToData()
+//{
+//    return this;
+//}

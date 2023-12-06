@@ -1,5 +1,7 @@
+#include <sstream>
 #include <iostream>
 #include <cstring>
+#include <thread>
 #include "application.h"
 #include "utils.h"
 
@@ -90,16 +92,6 @@ void Application::destroy()
 
 
 /*
-    Return log object
-*/
-Log* Application::getLog()
-{
-    return log;
-}
-
-
-
-/*
     Return cli config object
 */
 ParamList* Application::getCli()
@@ -115,4 +107,77 @@ ParamList* Application::getCli()
 ParamListFile* Application::getConfig()
 {
     return config;
+}
+
+
+
+/**********************************************************************
+    Log operations
+*/
+
+
+/*
+    Create new log
+*/
+Log* Application::createThreadLog()
+{
+    auto threadId = getThreadId();
+    auto result = getLog();
+
+    if( result == log && threadId != "" )
+    {
+        /* Create and retrn new log */
+        result = Log::create() -> clone( log );
+        /* Registrate in list of the logs */
+        logList[ threadId ] = result;
+    }
+    return result;
+}
+
+
+
+/*
+    Destroy log by id
+*/
+Application*  Application::destroyThreadLog()
+{
+    auto threadId = getThreadId();
+
+    auto result = getLog();
+    if( result != log )
+    {
+        logList[ threadId ] -> destroy();
+        logList.erase( threadId );
+    }
+    return this;
+}
+
+
+
+
+/*
+    Return log object by id log
+    or default log application
+*/
+Log* Application::getLog()
+{
+    auto threadId = getThreadId();
+
+    return
+    threadId != "" && logList.find( threadId ) != logList.end()
+    ? logList[ threadId ]
+    : log;
+}
+
+
+
+/*
+    Return thread id for current payload
+*/
+string Application::getThreadId()
+{
+    auto threadId = this_thread::get_id();
+    stringstream s;
+    s << threadId;
+    return s.str();
 }

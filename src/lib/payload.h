@@ -30,7 +30,11 @@ class Payload : public Result
         Log*            log             = NULL;
         thread*         threadObject    = NULL;
         bool            terminated      = false;
+
+        /* States */
         string          id              = "";
+        bool            pause           = false;    /* The process need to the pause */
+        bool            paused          = false;    /* The pProcess already at pause */
 
         /*
             Internal loop emplimentation
@@ -146,4 +150,38 @@ class Payload : public Result
         (
             string
         );
+
+
+
+        /*
+            Set order for pause
+        */
+        Payload* setPause
+        (
+            bool
+        );
+
+
+
+        /*
+            Get order for pause
+        */
+        bool getPause();
+
+
+
+        /*
+            Set paused confirmation
+        */
+        Payload* setPaused
+        (
+            bool
+        );
+
+
+
+        /*
+            Get paused confirmation
+        */
+        bool getPaused();
 };

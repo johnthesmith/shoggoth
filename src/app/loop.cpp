@@ -98,11 +98,6 @@ Loop* Loop::processorControl()
     {
         if( processor == NULL )
         {
-            processor   = Processor::create( net );
-            server      = Server::create( net );
-            server -> setId( "server" );
-            server -> run( true );
-
             /* Apply config */
             net -> setLearningSpeed
             (
@@ -124,6 +119,14 @@ Loop* Loop::processorControl()
                 taskProc
                 -> getBool( "debug", net -> getCalcDebug() )
             );
+
+            /* Create server and processor payloads */
+            processor   = Processor::create( net );
+            server      = Server::create( net );
+
+            /* Run server and processor thread */
+            server -> setId( "server_thread" ) -> loop( true );
+            processor -> setId( "processor_thread" ) -> loop( true );
         }
     }
     else
@@ -132,6 +135,7 @@ Loop* Loop::processorControl()
         {
             processor -> destroy();
             processor = NULL;
+
             server -> destroy();
             server = NULL;
         }
@@ -327,12 +331,6 @@ void Loop::onLoop
         if( teacher != NULL )
         {
             teacher -> task();
-        }
-
-        /* Processor */
-        if( processor )
-        {
-            processor -> run();
         }
 
         /* UI works*/

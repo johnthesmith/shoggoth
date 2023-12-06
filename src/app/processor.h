@@ -65,15 +65,18 @@ class Processor : public Payload
 
 
         /******************************************************************************
+            Events
         */
-
-
-        virtual void onActivate();
-
 
 
         /*
             Run net calculateion
         */
-        virtual void onRun();
+        virtual void onLoop
+        (
+            bool&,
+            bool&,
+            unsigned int&,
+            bool&
+        );
 };
