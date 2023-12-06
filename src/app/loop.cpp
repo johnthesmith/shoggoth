@@ -13,7 +13,6 @@
 #include "../graph/log_points.h"
 #include "../graph/draw_mode.h"
 
-#include "../lib/rnd.h"
 #include "../lib/hid.h"
 #include "../lib/moment.h"
 #include "../lib/utils.h"
