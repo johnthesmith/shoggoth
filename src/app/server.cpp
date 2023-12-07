@@ -105,7 +105,7 @@ void Server::onLoop
         /* Work loop */
         if( srv == NULL )
         {
-            getLog() -> begin( "Server" );
+            getLog() -> begin( "Server starting" );
 
             /* Read port */
             auto listenPort = getApplication()
@@ -116,9 +116,9 @@ void Server::onLoop
                 11120
             );
 
-            getLog() -> trace() -> prm( "Listenen port", listenPort ) -> lineEnd();
+            getLog() -> prm( "Listenen port", listenPort );
 
-            srv = ShoggothRpcServer::create( getApplication(), getLog() );
+            srv = ShoggothRpcServer::create( getApplication());
             srv -> setPort( listenPort );
 
             serverThread = new thread
@@ -126,9 +126,19 @@ void Server::onLoop
                 [ this ]
                 ()
                 {
+                    /* Thread Log create */
+                    getApplication() -> createThreadLog( "server_listener" );
+                    /* Up the therver lisener and destroy it after close  */
+                    getLog() -> begin( "Listen thread" );
                     srv -> up() -> destroy();
+                    srv = NULL;
+                    getLog() -> end();
+                    /* Thread log destroy */
+                    getApplication() -> destroyThreadLog();
                 }
             );
+
+            getLog() -> end( "" );
         }
     }
     else
@@ -136,16 +146,11 @@ void Server::onLoop
         if( srv != NULL )
         {
             /* Stop sochet and destroy server */
-            srv -> down() -> destroy();
-            srv = NULL;
-
+            srv -> down();
             /* Finalize and destroy server thread */
             serverThread -> join();
             delete serverThread;
             serverThread = NULL;
-
-            /* Close server log section */
-            getLog() -> end( "" );
         }
         /* Confirm pause mode */
         setPaused( true );

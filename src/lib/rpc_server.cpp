@@ -16,13 +16,13 @@ using namespace std;
 */
 RpcServer::RpcServer
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 ):
 SockRpc
 (
-    aLog,
+    aLogManager,
     aDomain,
     aType
 )
@@ -36,13 +36,18 @@ SockRpc
 */
 RpcServer* RpcServer::create
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new RpcServer( aLog, aDomain, aType );
+    return new RpcServer
+    (
+        aLogManager,
+        aDomain,
+        aType
+    );
 }
 
 

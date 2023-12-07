@@ -12,13 +12,13 @@ using namespace std;
 */
 RpcClient::RpcClient
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 ):
 SockRpc
 (
-    aLog,
+    aLogManager,
     aDomain,
     aType
 )
@@ -44,13 +44,13 @@ RpcClient::~RpcClient()
 */
 RpcClient* RpcClient::create
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new RpcClient( aLog, aDomain, aType );
+    return new RpcClient( aLogManager, aDomain, aType );
 }
 
 
@@ -60,13 +60,13 @@ RpcClient* RpcClient::create
 */
 RpcClient* RpcClient::create
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     string          aIp,
     unsigned int    aPort
 
 )
 {
-    auto result = new RpcClient( aLog );
+    auto result = new RpcClient( aLogManager );
     result -> setIp( aIp) -> setPort( aPort );
     return result;
 }

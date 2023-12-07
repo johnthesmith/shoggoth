@@ -34,17 +34,18 @@ class Loop : public Payload
     private:
 
         /* Neural net object */
-        NetGraph*               net                 = NULL;
+        NetGraph*   net             = NULL;
 
         /* Payloads object  of roles */
-        Ui*                     ui                  = NULL;
-        Scene*                  scene               = NULL;
-        Teacher*                teacher             = NULL;
-        Processor*              processor           = NULL;
-        Server*                 server              = NULL;
+        Ui*         ui              = NULL;
+        Scene*      scene           = NULL;
+        Teacher*    teacher         = NULL;
+        Processor*  processor       = NULL;
+        Server*     server          = NULL;
 
         /* State */
-        long int                lastConfigCheck     = 0;
+        long int    lastConfigCheck = 0;
+
     public:
 
         /*
@@ -81,10 +82,16 @@ class Loop : public Payload
 
 
 
+        /*
+            Return application object
+        */
         ShoggothApplication* getApplication() override;
 
 
 
+        /*
+            Help method
+        */
         Loop* help();
 
 
@@ -103,10 +110,10 @@ class Loop : public Payload
         */
 
 
-        virtual void onActivate();
 
-
-
+        /*
+            Main loop event
+        */
         virtual void onLoop
         (
             bool&,

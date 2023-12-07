@@ -8,7 +8,6 @@
 
 /* Local libraries */
 #include "payload.h"
-#include "rnd.h"
 
 
 
@@ -101,18 +100,16 @@ Payload* Payload::run
         /* Run loop in the personal thread if it does not early */
         if( threadObject == NULL )
         {
-            log = Log::create()
-            -> clone( application -> getLog() )
-            -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" )
-            -> begin( "" ) -> lineEnd();
-
             threadObject = new thread
             (
                 [ this ]
                 ()
                 {
+                    /* Log create and registration */
+                    log = application -> createThreadLog( id );
+                    /* Run work */
                     onRun();
-                    log -> end() -> close() -> destroy();
+                    application -> destroyThreadLog();
                     log = NULL;
                 }
             );
@@ -150,13 +147,9 @@ Payload* Payload::loop
                 ()
                 {
                     /* Log create and registration */
-                    log = application -> createThreadLog()
-                    -> clone( application -> getLog() )
-                    -> setFileName(( id == "" ? Rnd::getUuid() : id ) + ".log" );
-
+                    log = application -> createThreadLog( id );
                     /* Run loop */
                     internalLoop();
-
                     /* Destroy and nullate log */
                     application -> destroyThreadLog();
                     log = NULL;

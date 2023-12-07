@@ -262,7 +262,6 @@ Net* Net::precalc()
 
 
 
-
 /*
     Calculate all layers
 */

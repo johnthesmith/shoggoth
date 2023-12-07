@@ -7,19 +7,17 @@
 ShoggothRpcServer::ShoggothRpcServer
 (
     Application*    aApp,
-    Log*            aLog,
     SocketDomain    aDomain,
     SocketType      aType
 )
 :RpcServer
 (
-    aLog,
+    aApp -> getLogManager(),
     aDomain,
     aType
 )
 {
     app         = aApp;
-    localLog    = aLog;
     data        = ParamList::create();
     netConfig   = Json::create();
 
@@ -46,13 +44,12 @@ ShoggothRpcServer::~ShoggothRpcServer()
 ShoggothRpcServer* ShoggothRpcServer::create
 (
     Application*    aApp,
-    Log*            aLog,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new ShoggothRpcServer( aApp, aLog, aDomain, aType );
+    return new ShoggothRpcServer( aApp, aDomain, aType );
 }
 
 

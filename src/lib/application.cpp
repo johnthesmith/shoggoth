@@ -1,7 +1,5 @@
-#include <sstream>
 #include <iostream>
 #include <cstring>
-#include <thread>
 #include "application.h"
 #include "utils.h"
 
@@ -16,9 +14,10 @@ Application::Application
 )
 {
     /* Create base coponents */
-    log     = Log::create();
-    config  = ParamListFile::create();
-    cli     = ParamList::create();
+    log         = Log::create();
+    logManager  = LogManager::create( log );
+    config      = ParamListFile::create();
+    cli         = ParamList::create();
 
     /* Fill config from cli */
     for( int i = 1; i < aCount; i++ )
@@ -60,9 +59,10 @@ Application::Application
 */
 Application::~Application()
 {
-    cli -> destroy();
-    config -> destroy();
-    log -> destroy();
+    cli         -> destroy();
+    config      -> destroy();
+    log         -> destroy();
+    logManager  -> destroy();
 }
 
 
@@ -112,26 +112,29 @@ ParamListFile* Application::getConfig()
 
 
 /**********************************************************************
-    Log operations
+    Log manager operations
 */
+
+
+/*
+    Return Log manager
+*/
+LogManager* Application::getLogManager()
+{
+    return logManager;
+}
+
 
 
 /*
     Create new log
 */
-Log* Application::createThreadLog()
+Log* Application::createThreadLog
+(
+    string aId
+)
 {
-    auto threadId = getThreadId();
-    auto result = getLog();
-
-    if( result == log && threadId != "" )
-    {
-        /* Create and retrn new log */
-        result = Log::create() -> clone( log );
-        /* Registrate in list of the logs */
-        logList[ threadId ] = result;
-    }
-    return result;
+    return getLogManager() -> createLog( aId );
 }
 
 
@@ -141,17 +144,9 @@ Log* Application::createThreadLog()
 */
 Application*  Application::destroyThreadLog()
 {
-    auto threadId = getThreadId();
-
-    auto result = getLog();
-    if( result != log )
-    {
-        logList[ threadId ] -> destroy();
-        logList.erase( threadId );
-    }
+    getLogManager() -> destroyLog();
     return this;
 }
-
 
 
 
@@ -161,23 +156,5 @@ Application*  Application::destroyThreadLog()
 */
 Log* Application::getLog()
 {
-    auto threadId = getThreadId();
-
-    return
-    threadId != "" && logList.find( threadId ) != logList.end()
-    ? logList[ threadId ]
-    : log;
-}
-
-
-
-/*
-    Return thread id for current payload
-*/
-string Application::getThreadId()
-{
-    auto threadId = this_thread::get_id();
-    stringstream s;
-    s << threadId;
-    return s.str();
+    return getLogManager() -> getLog();
 }

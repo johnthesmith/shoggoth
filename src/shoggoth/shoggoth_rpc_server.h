@@ -10,7 +10,6 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-        Log*                localLog    = NULL;
         Application*        app         = NULL; /* Application object */
         ParamList*          data        = NULL; /* List  */
 
@@ -28,7 +27,6 @@ class ShoggothRpcServer : public RpcServer
         ShoggothRpcServer
         (
             Application*,
-            Log*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -48,7 +46,6 @@ class ShoggothRpcServer : public RpcServer
         static ShoggothRpcServer* create
         (
             Application*,
-            Log*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );

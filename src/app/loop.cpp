@@ -11,12 +11,8 @@
 
 /* Local libraries */
 #include "../graph/log_points.h"
-#include "../graph/draw_mode.h"
-
-#include "../lib/hid.h"
 #include "../lib/moment.h"
 #include "../lib/utils.h"
-#include "../json/json.h"
 
 /* User libraries */
 #include "loop.h"
@@ -78,6 +74,9 @@ void Loop::destroy()
 
 
 
+/*
+    Return application object
+*/
 ShoggothApplication* Loop::getApplication()
 {
     return ( ShoggothApplication* ) Payload::getApplication();
@@ -233,6 +232,8 @@ Loop* Loop::teacherControl()
     return this;
 }
 
+
+
 /******************************************************************************
     Payload events
 */
@@ -240,16 +241,7 @@ Loop* Loop::teacherControl()
 
 
 /*
-    Activate payload
-*/
-void Loop::onActivate()
-{
-}
-
-
-
-/*
-    Main calc method
+    Main loop event
 */
 void Loop::onLoop
 (
@@ -259,11 +251,9 @@ void Loop::onLoop
     bool&           aReconfig
 )
 {
-    getLog() -> begin( "Loop" );
-
     /* Read config */
     auto nowMoment = now();
-    if( lastConfigCheck + MILLISECOND * 100 < nowMoment )
+    if( lastConfigCheck + MILLISECOND * 1000 < nowMoment )
     {
         getLog() -> begin( "Check config updated" );
 
@@ -340,6 +330,4 @@ void Loop::onLoop
             aTreminated = scene -> windowClosed();
         }
     }
-
-    getLog() -> end();
 }

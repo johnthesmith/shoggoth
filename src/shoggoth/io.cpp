@@ -94,7 +94,7 @@ Io* Io::call
             /* Server operation */
             auto rpc = RpcClient::create
             (
-                net -> getLog(),
+                getApplication() -> getLogManager(),
                 host,
                 port
             )

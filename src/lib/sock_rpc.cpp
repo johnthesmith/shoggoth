@@ -12,12 +12,12 @@ using namespace std;
 */
 SockRpc::SockRpc
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 )
 {
-    log = aLog;
+    logManager = aLogManager;
     domain = aDomain;
     type = aType;
 }
@@ -29,13 +29,13 @@ SockRpc::SockRpc
 */
 SockRpc* SockRpc::create
 (
-    Log*            aLog,
+    LogManager*     aLogManager,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new SockRpc( aLog, aDomain, aType );
+    return new SockRpc( aLogManager, aDomain, aType );
 }
 
 
@@ -45,7 +45,7 @@ SockRpc* SockRpc::create
 */
 Log* SockRpc::getLog()
 {
-    return log;
+    return logManager -> getLog();
 }
 
 
