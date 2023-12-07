@@ -77,8 +77,8 @@ Log* LogManager::createLog
         -> clone( log )
         -> setFileName( aId + ".log")
         -> trace( "Thread log started" )
-        -> prm( "thread id", threadId )
         -> prm( "log id", aId )
+        -> prm( "thread id", threadId )
         -> lineEnd();
         /* Registrate in list of the logs */
         logList[ threadId ] = result;
