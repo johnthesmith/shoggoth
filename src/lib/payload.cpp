@@ -35,6 +35,7 @@ Payload::~Payload()
 {
     if( threadObject != NULL )
     {
+        pause();
         terminate();
         threadObject -> join();
         delete threadObject;
@@ -72,7 +73,7 @@ void Payload::destroy()
 */
 Log* Payload::getLog()
 {
-    return log == NULL ? application -> getLog() : log;
+    return application -> getLog();
 }
 
 
@@ -106,11 +107,10 @@ Payload* Payload::run
                 ()
                 {
                     /* Log create and registration */
-                    log = application -> createThreadLog( id );
+                    application -> createThreadLog( id );
                     /* Run work */
                     onRun();
                     application -> destroyThreadLog();
-                    log = NULL;
                 }
             );
         }
@@ -147,12 +147,11 @@ Payload* Payload::loop
                 ()
                 {
                     /* Log create and registration */
-                    log = application -> createThreadLog( id );
+                    application -> createThreadLog( id );
                     /* Run loop */
                     internalLoop();
                     /* Destroy and nullate log */
                     application -> destroyThreadLog();
-                    log = NULL;
                 }
             );
         }
@@ -179,29 +178,26 @@ Payload* Payload::loop
 Payload* Payload::internalLoop()
 {
     terminated  = false;
-
-    bool            idling      = true;
-    bool            reconfig    = true;
-    unsigned int    sleep       = 0;
-
     while( !terminated )
     {
-        if( reconfig )
+        /* Confirm work mode */
+        if( state == THREAD_STATE_WORK )
         {
-            sleep = getApplication()
-            -> getConfig()
-            -> getInt( "loop_sleep_mcs", 1000000 );
-            reconfig = false;
+            onLoop();
         }
 
-        onLoop( terminated, idling, sleep, reconfig );
+        /* Confirm pause processor */
+        if( state == THREAD_STATE_WAIT_PAUSE )
+        {
+            state = THREAD_STATE_PAUSE;
+            onPause();
+        }
 
         if( idling )
         {
-            usleep( sleep );
+            usleep( loopTimeoutMcs );
         }
     }
-
     return this;
 }
 
@@ -218,6 +214,46 @@ Payload* Payload::terminate()
 
 
 
+/*
+    Set idling mode
+*/
+Payload* Payload::setIdling
+(
+    bool a   /* Value */
+)
+{
+    idling = a;
+    return this;
+}
+
+
+
+
+/*
+    Set loop time out at microseconds
+*/
+Payload* Payload::setLoopTimeoutMcs
+(
+    unsigned int a    /* Value */
+)
+{
+    loopTimeoutMcs = a;
+    return this;
+}
+
+
+
+/*
+   Rreturn loop time out at microseconds
+*/
+unsigned int Payload::getLoopTimeoutMcs()
+{
+    return loopTimeoutMcs;
+}
+
+
+
+
 /******************************************************************************
     Events
 */
@@ -226,13 +262,7 @@ Payload* Payload::terminate()
 /*
     Loop for payload
 */
-void Payload::onLoop
-(
-    bool&           aTreminated,
-    bool&           aIdling,
-    unsigned int&   aSleep,
-    bool&           aReconfig
-)
+void Payload::onLoop()
 {
     getLog() -> trace( "Paylaod default on loop event" );
 }
@@ -246,6 +276,37 @@ void Payload::onRun()
 {
     getLog() -> trace( "Run" );
 }
+
+
+
+/*
+    On pause event
+*/
+void Payload::onPause()
+{
+    getLog() -> trace( "Process pause begin" );
+}
+
+
+
+/*
+    On pause event when process paused
+*/
+void Payload::onPaused()
+{
+    getLog() -> trace( "Process paused" );
+}
+
+
+
+/*
+    On resume event
+*/
+void Payload::onResume()
+{
+    getLog() -> trace( "Process resume" );
+}
+
 
 
 /******************************************************************************
@@ -267,49 +328,58 @@ Payload* Payload::setId
 
 
 
+/******************************************************************************
+    Control
+*/
+
 
 /*
-    Set order for pause
+    Set pause
 */
-Payload* Payload::setPause
-(
-    bool a
-)
+Payload* Payload::pause()
 {
-    pause = a;
+    if( state == THREAD_STATE_WORK )
+    {
+        state = THREAD_STATE_WAIT_PAUSE;
+        onPause();
+    }
     return this;
 }
 
 
 
 /*
-    Get order for pause
+    Continue process after pause
 */
-bool Payload::getPause()
+Payload* Payload::resume()
 {
-    return pause;
-}
-
-
-
-/*
-    Set paused confirmation
-*/
-Payload* Payload::setPaused
-(
-    bool a
-)
-{
-    paused = a;
+    if( state == THREAD_STATE_PAUSE )
+    {
+        state = THREAD_STATE_WORK;
+        onResume();
+    }
     return this;
 }
 
 
 
 /*
-    Get paused confirmation
+    Wait pause
 */
-bool Payload::getPaused()
+Payload* Payload::waitPause()
 {
-    return paused;
+    if( state == THREAD_STATE_WAIT_PAUSE )
+    {
+        getLog()
+        -> begin( "Thread pause waiting" )
+        -> lineEnd();
+
+        while( state == THREAD_STATE_WAIT_PAUSE )
+        {
+            usleep( 1000 );
+        };
+
+        getLog() -> end() -> lineEnd();
+    }
+    return this;
 }

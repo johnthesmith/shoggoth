@@ -47,9 +47,8 @@ Processor::Processor
 /* Call parent constructor */
 : Payload( aNet -> getApplication() )
 {
-    auto app = aNet -> getApplication();
-    aNet -> getLog() -> trace( "Create processor" );
     net = aNet;
+    net -> getApplication() -> getLog() -> trace( "Create processor" );
 }
 
 
@@ -105,22 +104,7 @@ ShoggothApplication* Processor::getApplication()
 /*
     Run net calculateion
 */
-void Processor::onLoop
-(
-    bool&           aTreminated,
-    bool&           aIdling,
-    unsigned int&   aSleep,
-    bool&           aReconfig
-)
+void Processor::onLoop()
 {
-    if( !getPause() )
-    {
-        /* Confirm work mode */
-        setPaused( false );
-        net -> calc();
-    }
-    else
-    {
-        setPaused( true );
-    }
+    net -> calc();
 }

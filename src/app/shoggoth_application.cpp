@@ -103,7 +103,7 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
-    Loop::create ( this ) -> loop() -> destroy();
+    Loop::create ( this ) -> resume() -> loop() -> destroy();
 
     getLog() -> end( "Application stop" );
 

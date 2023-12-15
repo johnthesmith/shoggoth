@@ -72,11 +72,5 @@ class Processor : public Payload
         /*
             Run net calculateion
         */
-        virtual void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        );
+        virtual void onLoop();
 };

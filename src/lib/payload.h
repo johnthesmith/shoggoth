@@ -21,26 +21,44 @@ using namespace std;
 
 
 
+enum ThreadState
+{
+    THREAD_STATE_WAIT_PAUSE,
+    THREAD_STATE_PAUSE,
+    THREAD_STATE_WORK
+};
+
+
+
 class Payload : public Result
 {
     private:
 
         /* Application object*/
         Application*    application     = NULL;
-        Log*            log             = NULL;
         thread*         threadObject    = NULL;
         bool            terminated      = false;
 
         /* States */
+        unsigned int    loopTimeoutMcs  = 0;
+        bool            idling          = true;
         string          id              = "";
-        bool            pause           = false;    /* The process need to the pause */
-        bool            paused          = false;    /* The pProcess already at pause */
+        ThreadState     state           = THREAD_STATE_PAUSE;
 
         /*
             Internal loop emplimentation
             This method calls a user onLoop
         */
         Payload* internalLoop();
+
+        /*
+            Set paused confirmation
+        */
+        Payload* setPaused
+        (
+            bool
+        );
+
 
     public:
 
@@ -107,6 +125,36 @@ class Payload : public Result
         Payload* terminate();
 
 
+
+        /*
+            Set idling mode
+                true - pause will work
+                false - pause will be skip
+        */
+        Payload* setIdling
+        (
+            bool    /* Value */
+        );
+
+
+
+        /*
+            Set loop time out at microseconds
+        */
+        Payload* setLoopTimeoutMcs
+        (
+            unsigned int /* Value */
+        );
+
+
+
+        /*
+            Get loop time out at microseconds
+        */
+        unsigned int getLoopTimeoutMcs();
+
+
+
         /******************************************************************************
             Events
         */
@@ -115,13 +163,7 @@ class Payload : public Result
             User emplementaion
             This method must be overriden
         */
-        virtual void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        );
+        virtual void onLoop();
 
 
 
@@ -130,6 +172,28 @@ class Payload : public Result
             This method must be overriden
         */
         virtual void onRun();
+
+
+
+        /*
+            On pause event
+        */
+        virtual void onPause();
+
+
+
+        /*
+            On pause event when process paused
+        */
+        virtual void onPaused();
+
+
+
+        /*
+            On resume event
+        */
+        virtual void onResume();
+
 
 
 
@@ -156,32 +220,19 @@ class Payload : public Result
         /*
             Set order for pause
         */
-        Payload* setPause
-        (
-            bool
-        );
+        Payload* pause();
 
 
 
         /*
-            Get order for pause
+            Continue process after pause
         */
-        bool getPause();
+        Payload* resume();
 
 
 
         /*
-            Set paused confirmation
+            Wait pause
         */
-        Payload* setPaused
-        (
-            bool
-        );
-
-
-
-        /*
-            Get paused confirmation
-        */
-        bool getPaused();
+        Payload* waitPause();
 };

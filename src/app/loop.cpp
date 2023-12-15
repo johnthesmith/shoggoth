@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>         /* usleep */
 
 /* File read */
 #include <streambuf>
@@ -42,11 +43,11 @@ Loop::Loop
 */
 Loop::~Loop()
 {
+    if( teacher != NULL)    teacher -> destroy();
+    if( processor != NULL)  processor -> destroy();
+    if( server != NULL)     server -> destroy();
+    if( ui != NULL)         ui -> destroy();
     net -> destroy();
-    if( teacher != NULL) teacher -> destroy();
-    if( processor != NULL) processor -> destroy();
-    if( server != NULL) server -> destroy();
-    if( ui != NULL) ui -> destroy();
 }
 
 
@@ -84,48 +85,61 @@ ShoggothApplication* Loop::getApplication()
 
 
 
-
 Loop* Loop::processorControl()
 {
     auto taskProc =
     getApplication()
     -> getConfig()
-    -> getObject( Path { "tasks",  taskToString( TASK_PROC )} );
+    -> getObject
+    (
+        Path { "tasks",  taskToString( TASK_PROC )}
+    );
 
     if( taskProc != NULL && taskProc -> getBool( "enabled" ))
     {
+        /* Apply config */
+        net -> setLearningSpeed
+        (
+            taskProc
+            -> getDouble( "learningSpeed", net -> getLearningSpeed() )
+        );
+        net -> setWakeupWeight
+        (
+            taskProc
+            -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
+        );
+        net -> setErrorNormalize
+        (
+            taskProc
+            -> getDouble( "errorNormalize", net -> getErrorNormalize() )
+        );
+        net -> setCalcDebug
+        (
+            taskProc
+            -> getBool( "debug", net -> getCalcDebug() )
+        );
+
         if( processor == NULL )
         {
-            /* Apply config */
-            net -> setLearningSpeed
-            (
-                taskProc
-                -> getDouble( "learningSpeed", net -> getLearningSpeed() )
-            );
-            net -> setWakeupWeight
-            (
-                taskProc
-                -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
-            );
-            net -> setErrorNormalize
-            (
-                taskProc
-                -> getDouble( "errorNormalize", net -> getErrorNormalize() )
-            );
-            net -> setCalcDebug
-            (
-                taskProc
-                -> getBool( "debug", net -> getCalcDebug() )
-            );
-
             /* Create server and processor payloads */
-            processor   = Processor::create( net );
             server      = Server::create( net );
+            processor   = Processor::create( net );
 
             /* Run server and processor thread */
             server -> setId( "server_thread" ) -> loop( true );
             processor -> setId( "processor_thread" ) -> loop( true );
         }
+
+        server -> setLoopTimeoutMcs( 1000000 );
+        server -> resume();
+
+        processor
+        -> setLoopTimeoutMcs
+        (
+            taskProc
+            -> getDouble( "loopSleepMcs", processor -> getLoopTimeoutMcs() )
+        );
+        processor -> resume();
     }
     else
     {
@@ -134,8 +148,8 @@ Loop* Loop::processorControl()
             processor -> destroy();
             processor = NULL;
 
-            server -> destroy();
-            server = NULL;
+//            server -> destroy();
+//            server = NULL;
         }
     }
     return this;
@@ -243,91 +257,91 @@ Loop* Loop::teacherControl()
 /*
     Main loop event
 */
-void Loop::onLoop
-(
-    bool&           aTreminated,
-    bool&           aIdling,
-    unsigned int&   sleep,
-    bool&           aReconfig
-)
+void Loop::onLoop()
 {
-    /* Read config */
-    auto nowMoment = now();
-    if( lastConfigCheck + MILLISECOND * 1000 < nowMoment )
+    /* Set ok */
+    getApplication() -> checkConfigUpdate();
+    if
+    (
+        getApplication() -> getConfigUpdated() ||
+        ! getApplication() -> getConfig() -> isOk()
+    )
     {
-        getLog() -> begin( "Check config updated" );
+        getLog()
+        -> begin( "Config updated" )
+        -> prm( "File", getApplication() -> getConfigFileName() )
+        -> lineEnd();
 
-        /* Set ok */
-        getApplication() -> checkConfigUpdate();
-        if
-        (
-            getApplication() -> getConfigUpdated() ||
-            ! getApplication() -> getConfig() -> isOk()
-        )
+        if( getApplication() -> getConfig() -> isOk())
         {
-            getLog()
-            -> begin( "Config updated" )
-            -> prm( "File", getApplication()
-            -> getConfigFileName() );
-
-            if( getApplication() -> getConfig() -> isOk())
-            {
-                this -> setOk();
-                /* Config apply */
-                net -> readNet();
-                aReconfig = true;
-                processorControl();
-                teacherControl();
-                uiControl();
-            }
-            else
-            {
-                /* Config error */
-                getLog()
-                -> warning( "Config error" )
-                -> prm
-                (
-                    "message",
-                    getApplication()
-                    -> getConfig()
-                    -> getMessage()
-                );
-
+            this -> setOk();
+            /* Set pause for main thread */
+            setLoopTimeoutMcs
+            (
                 getApplication()
                 -> getConfig()
-                -> resultTo( this )
-                -> setOk();
-            }
+                -> getDouble( "loopSleepMcs", getLoopTimeoutMcs() )
+            );
 
-            getLog() -> end();
+            /* Paused processes */
+            if( processor != NULL ) processor -> pause();
+            if( server != NULL )    server -> pause();
+
+            /* Process pause waiting */
+            if( processor != NULL ) processor -> waitPause();
+            if( server != NULL )    server -> waitPause();
+
+            /* Config apply */
+            net -> readNet();
+
+            /* Reinit process */
+            processorControl();
+//            teacherControl();
+//            uiControl();
+        }
+        else
+        {
+            /* Config error */
+            getLog()
+            -> warning( "Config error" )
+            -> prm
+            (
+                "message",
+                getApplication()
+                -> getConfig()
+                -> getMessage()
+            );
+
+            getApplication()
+            -> getConfig()
+            -> resultTo( this )
+            -> setOk();
         }
 
-        /* Set last moment */
-        lastConfigCheck = nowMoment;
         getLog() -> end();
     }
 
 
-    if( isOk() )
-    {
-        /* Begin of net loop */
-        if( net -> isNextLoop() )
-        {
-            net -> event( LOOP_BEGIN );
-        }
-
-        /* Teacher */
-        if( teacher != NULL )
-        {
-            teacher -> task();
-        }
-
-        /* UI works*/
-        if( ui != NULL )
-        {
-            scene -> calcEvent();
-            scene -> drawEvent();
-            aTreminated = scene -> windowClosed();
-        }
-    }
+//    if( isOk() )
+//    {
+//        /* Begin of net loop */
+//        if( net -> isNextLoop() )
+//        {
+//            net -> event( LOOP_BEGIN );
+//        }
+//
+//        /* Teacher */
+//        if( teacher != NULL )
+//        {
+//            teacher -> task();
+//        }
+//
+//        /* UI works*/
+//        if( ui != NULL )
+//        {
+//            scene -> calcEvent();
+//            scene -> drawEvent();
+//            aTreminated = scene -> windowClosed();
+//        }
+//    }
 }

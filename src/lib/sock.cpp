@@ -2,6 +2,7 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <vector>
 #include <cstring>
 #include "sock.h"
@@ -56,6 +57,10 @@ Sock* Sock::openHandle
     {
         domain  = aDomain;
         handle = socket( aDomain, aType, 0 );
+
+        /* Nonblock socket enabled */
+        fcntl( handle, F_SETFL, O_NONBLOCK);
+
         if( !isOpen() )
         {
             setCode( "SocketCreateError" );
@@ -185,31 +190,33 @@ Sock* Sock::listen()
                 }
                 else
                 {
-                    connected = true;           /* Set connected flag */
-                    bool terminated = false;    /* Listening will continue while not trminated */
-
-                    while( !terminated )
+                    while( isOpen())
                     {
                         /* Define address structiure and his size */
                         struct sockaddr remoteAddressStruct;
                         unsigned int remoteSize = sizeof( remoteAddressStruct );
 
                         /* The socket waiting request */
-                        int request = accept( handle, &remoteAddressStruct, &remoteSize );
+                        int request = accept
+                        (
+                            handle,
+                            &remoteAddressStruct,
+                            &remoteSize
+                        );
 
-                        if( request < 0 )
-                        {
-                            setCode( "RequestError" );
-                            terminated = true;
-                        }
-                        else
+                        if( request >= 0 )
                         {
                             auto remoteAddress = ipToString
                             (
-                                (( sockaddr_in* ) &remoteAddressStruct ) -> sin_addr.s_addr
+                                (( sockaddr_in* ) &remoteAddressStruct )
+                                -> sin_addr.s_addr
                             );
                             readInternal( request, remoteAddress );
                             close( request );
+                        }
+                        else
+                        {
+                           usleep( 1000 );
                         }
                     }
                 }

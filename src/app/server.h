@@ -72,11 +72,13 @@ class Server : public Payload
             Events
         */
 
-        virtual void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        );
+        virtual void onLoop();
+
+        /*
+            Run net calculateion
+        */
+        virtual void onResume();
+
+        virtual void onPause();
+
 };

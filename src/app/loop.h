@@ -114,11 +114,5 @@ class Loop : public Payload
         /*
             Main loop event
         */
-        virtual void onLoop
-        (
-            bool&,
-            bool&,
-            unsigned int&,
-            bool&
-        );
+        virtual void onLoop();
 };

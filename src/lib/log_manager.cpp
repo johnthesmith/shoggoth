@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include <cstring>
 #include <thread>
@@ -24,7 +25,7 @@ LogManager::LogManager
 */
 LogManager::~LogManager()
 {
-    for( auto item : logList)
+    for( auto item : logList )
     {
         item.second
         -> close()
@@ -75,7 +76,7 @@ Log* LogManager::createLog
         result
         = Log::create()
         -> clone( log )
-        -> setFileName( aId + ".log")
+        -> setFileName( aId + ".log" )
         -> trace( "Thread log started" )
         -> prm( "log id", aId )
         -> prm( "thread id", threadId )

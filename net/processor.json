@@ -1,5 +1,5 @@
 {
-    "loop_sleep_mcs"        :100,
+   "loopSleepMcs"  :1000,
 
     "io":
     {
@@ -12,6 +12,7 @@
         {
             "enabled"           :true,
             "debug"             :false,
+            "loopSleepMcs"      :100,
             "learningMode"      :false,
             "learningSpeed"     :0.002,
             "wakeupWeight"      :0.0001,

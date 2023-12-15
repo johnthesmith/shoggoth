@@ -1,5 +1,7 @@
+#include <thread>
 #include <iostream>
 #include <cstring>
+#include <sstream>
 
 #include "rpc_server.h"
 #include "buffer_to_hex.h"
@@ -58,6 +60,7 @@ RpcServer* RpcServer::create
 RpcServer* RpcServer::up()
 {
     openHandle() -> listen();
+
     if( !isOk() )
     {
         getLog()
@@ -74,6 +77,7 @@ RpcServer* RpcServer::up()
 */
 RpcServer* RpcServer::down()
 {
+    getLog() -> trace( "RPC server downing" ) -> lineEnd();
     closeHandle();
     return this;
 }

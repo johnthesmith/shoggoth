@@ -31,9 +31,8 @@ Server::Server
 /* Call parent constructor */
 : Payload( aNet -> getApplication() )
 {
-    auto app = aNet -> getApplication();
-    aNet -> getLog() -> trace( "Create Server" );
     net = aNet;
+    net -> getApplication() -> getLog() -> trace( "Create server" );
 }
 
 
@@ -89,70 +88,67 @@ ShoggothApplication* Server::getApplication()
 /*
     Run net calculateion
 */
-void Server::onLoop
-(
-    bool&           aTreminated,
-    bool&           aIdling,
-    unsigned int&   aSleep,
-    bool&           aReconfig
-)
+void Server::onLoop()
 {
-    if( !getPause() )
-    {
-        /* Confirm work mode */
-        setPaused( false );
+    getLog() -> trace( "Server alive" );
+}
 
-        /* Work loop */
-        if( srv == NULL )
+
+
+/*
+    Run net calculateion
+*/
+void Server::onResume()
+{
+    getLog() -> begin( "Server start" );
+
+    /* Read port */
+    auto listenPort = getApplication()
+    -> getConfig()
+    -> getInt
+    (
+        Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
+        11120
+    );
+
+    getLog() -> prm( "Listenen port", listenPort );
+
+    srv = ShoggothRpcServer::create( getApplication());
+    srv -> setPort( listenPort );
+
+    serverThread = new thread
+    (
+        [ this ]
+        ()
         {
-            getLog() -> begin( "Server starting" );
-
-            /* Read port */
-            auto listenPort = getApplication()
-            -> getConfig()
-            -> getInt
-            (
-                Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
-                11120
-            );
-
-            getLog() -> prm( "Listenen port", listenPort );
-
-            srv = ShoggothRpcServer::create( getApplication());
-            srv -> setPort( listenPort );
-
-            serverThread = new thread
-            (
-                [ this ]
-                ()
-                {
-                    /* Thread Log create */
-                    getApplication() -> createThreadLog( "server_listener" );
-                    /* Up the therver lisener and destroy it after close  */
-                    getLog() -> begin( "Listen thread" );
-                    srv -> up() -> destroy();
-                    srv = NULL;
-                    getLog() -> end();
-                    /* Thread log destroy */
-                    getApplication() -> destroyThreadLog();
-                }
-            );
-
-            getLog() -> end( "" );
+            /* Thread Log create */
+            getApplication() -> createThreadLog( "server_listener" );
+            /* Up the therver lisener and destroy it after close  */
+            getLog() -> begin( "Listen thread" ) -> lineEnd();
+            srv -> up() -> destroy();
+            srv = NULL;
+            getLog() -> end() -> lineEnd();
+            /* Thread log destroy */
+            getApplication() -> destroyThreadLog();
         }
-    }
-    else
+    );
+
+    getLog() -> end();
+}
+
+
+
+void Server::onPause()
+{
+    getLog() -> begin( "Server stop" );
+    if( srv != NULL )
     {
-        if( srv != NULL )
-        {
-            /* Stop sochet and destroy server */
-            srv -> down();
-            /* Finalize and destroy server thread */
-            serverThread -> join();
-            delete serverThread;
-            serverThread = NULL;
-        }
-        /* Confirm pause mode */
-        setPaused( true );
+        /* Stop sochet and destroy server */
+        srv -> down();
+        /* Finalize and destroy server thread */
+        serverThread -> join();
+        delete serverThread;
+        serverThread = NULL;
     }
+    getLog() -> end();
 }

@@ -74,7 +74,6 @@ class Net: public Result
         LayerList* forwardList          = NULL;     /* Layer list with forward calculation sequence */
         LayerList* backwardList         = NULL;     /* Layer list with backward calculation sequence */
 
-
         long int    lastLoopMoment      = 0;        /* */
         long int    loopTimeoutMcs      = 1000000;
 

@@ -1143,10 +1143,12 @@ Net* Net::event
 )
 {
     getLog()
+    -> trace( "Neural net event" )
     -> begin( "Neural net event" )
     -> prm( "name", eventToString( aEvent ))
     -> prm( "supt", supt )
-    -> lineEnd();
+    -> lineEnd()
+    ;
 
     if( actions -> isOk() )
     {
@@ -1183,7 +1185,10 @@ Net* Net::event
         -> prm( "code",  actions -> getCode());
     }
 
-    getLog() -> end() -> lineEnd();
+    getLog()
+    -> end()
+    -> lineEnd()
+    ;
 
     return this;
 }
