@@ -22,9 +22,10 @@ Teacher::Teacher
 /* Call parent constructor */
 : Payload( aNet -> getApplication() )
 {
-    aNet -> getLog() -> trace( "Create teacher" );
-    batches = ParamList::create();
     net = aNet;
+    net -> getApplication() -> getLog() -> trace( "Create teacher" );
+
+    batches = ParamList::create();
 }
 
 
@@ -316,3 +317,20 @@ Teacher* Teacher::cmdFolderToLayer
     }
     return this;
 }
+
+
+
+/******************************************************************************
+    Methods
+*/
+
+
+
+/*
+    Run net calculateion
+*/
+void Processor::onLoop()
+{
+    task();
+}
+

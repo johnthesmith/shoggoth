@@ -58,11 +58,10 @@ std::string eventToString
     switch( a )
     {
         case LOOP_BEGIN     : return "LOOP_BEGIN";
-        case THINKING_BEGIN : return "THINKING_BEGIN";
-        case THINKING_END   : return "THINKING_END";
-        case LEARNING_END   : return "LEARNING_END";
+        case LOOP_END       : return "LOOP_END";
         case READ_NET       : return "READ_NET";
-        case TEACHING_END   : return "TEACHING_END";
+        case TEACHER_BEGIN  : return "TEACHER_BEGIN";
+        case TEACHER_END    : return "TEACHER_END";
     }
     return "EVENT_UNKNOWN";
 }

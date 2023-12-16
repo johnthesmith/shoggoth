@@ -22,12 +22,11 @@ enum NerveType
 enum Event
 {
     EVENT_UNKNOWN,
-    LOOP_BEGIN,         /* Event for each calculation loop */
-    THINKING_BEGIN,     /* Event for begin of the value calculations */
-    THINKING_END,       /* Event for end of the value calculation */
-    LEARNING_END,       /**/
+    LOOP_BEGIN,         /* Event for each main loop begin */
+    LOOP_END,           /* Event for each main loop end */
     READ_NET,           /**/
-    TEACHING_END
+    TEACHER_BEGIN,      /* Begin of teacher loop */
+    TEACHER_END         /* End o teeacher loop */
 };
 
 

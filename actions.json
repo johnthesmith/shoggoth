@@ -1,76 +1,32 @@
 {
-    "***T":
+    "P**":
     {
+        "READ_NET"      :[ "SYNC_RESET" ]
     },
-    "**P*":
+    "*T*":
     {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
+        "TEACHER_BEGIN" :[ "READ_VALUES" ],
+        "TEACHER_END"   :[ "WRITE_VALUES" ]
     },
-    "**PT":
-    {
-        "READ_NET"      :[ "READ_WEIGHTS" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
-    },
-    "*U**":
-    {
-        "READ_NET"      :[ "READ_WEIGHTS" ]
-    },
-    "*U*T":
-    {
-        "READ_NET"      :[ "READ_WEIGHTS" ]
-    },
-    "*UP*":
-    {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
-    },
-    "*UPT":
-    {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS" ]
-    },
-    "S**T":
-    {
-        "TEACHING_END"  :[ "WRITE_VALUES" ],
-        "LOOP_BEGIN"    :[ "READ_VALUES" ]
-    },
-    "S*P*":
-    {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "THINKING_BEGIN":[ "READ_VALUES" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
-    },
-    "S*PT":
-    {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ],
-        "TEACHING_END"  :[ "WRITE_VALUES" ]
-    },
-    "SU**":
+    "**U":
     {
         "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ]
     },
-    "SU*T":
+    "P*U":
     {
-        "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ],
-        "TEACHING_END"  :[ "WRITE_VALUES" ]
+        "READ_NET"      :[ "SYNC_RESET" ]
     },
-    "SUP*":
+    "PT*":
     {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "THINKING_BEGIN":[ "READ_VALUES" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ]
+        "READ_NET"      :[ "SYNC_RESET" ]
     },
-    "SUPT":
+    "*TU":
     {
-        "READ_NET"      :[ "SYNC_RESET", "READ_WEIGHTS" ],
-        "THINKING_BEGIN":[ "READ_VALUES" ],
-        "THINKING_END"  :[ "WRITE_VALUES" ],
-        "LEARNING_END"  :[ "WRITE_WEIGHTS", "WRITE_ERRORS" ],
-        "TEACHING_END"  :[ "WRITE_VALUES" ]
+        "TEACHER_BEGIN" :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ],
+        "TEACHER_END"   :[ "WRITE_VALUES" ]
+    },
+    "PTU":
+    {
+        "READ_NET"      :[ "SYNC_RESET" ]
     }
 }

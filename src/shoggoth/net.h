@@ -50,8 +50,8 @@ class Net: public Result
         LayerList*      layers          = NULL;     /* The layer list object */
 
         /* Events */
-        string          supt            = "****";   /* Roles of the Net in SUPT */
-        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( supt, event ) */
+        string          ptu            = "***";     /* Roles of the Net in PTU */
+        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( ptu, event ) */
         ParamList*      tasks           = NULL;     /* List of participants tasks */
 
         /* Calculation state */
@@ -444,13 +444,12 @@ class Net: public Result
 
 
         /*
-            Create roles strung of the process in SUPT format
-            S - process works with server otherwice with local net
-            U - process has a UI interface
+            Create roles strung of the process in ptu format
             P - process uses as processor
             T - process uses as teacher
+            U - process has a UI interface
         */
-        Net* buildSuptAndTasks();
+        Net* buildPtuAndTasks();
 
         /* Dump sync info to log */
         Net* syncToLog

@@ -223,12 +223,11 @@ Loop* Loop::teacherControl()
     {
         if( teacher == NULL )
         {
-            teacher = Teacher::create( (Net*) net );
+            teacher = Teacher::create(( Net* ) net );
         }
         /* Read config */
         /* Read batches list */
         teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
-
         /* Read layer with errors */
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
         /* Read error limit */
@@ -286,17 +285,19 @@ void Loop::onLoop()
             /* Paused processes */
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
+            if( teacher != NULL )   teacher -> pause();
 
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
+            if( teacher != NULL )   teacher -> waitPause();
 
             /* Config apply */
             net -> readNet();
 
             /* Reinit process */
             processorControl();
-//            teacherControl();
+            teacherControl();
 //            uiControl();
         }
         else
@@ -328,12 +329,6 @@ void Loop::onLoop()
 //        if( net -> isNextLoop() )
 //        {
 //            net -> event( LOOP_BEGIN );
-//        }
-//
-//        /* Teacher */
-//        if( teacher != NULL )
-//        {
-//            teacher -> task();
 //        }
 //
 //        /* UI works*/

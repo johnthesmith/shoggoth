@@ -274,7 +274,7 @@ Net* Net::calc()
             /* Reset calc stages for all layers */
             calcReset();
             /* Event */
-            event( THINKING_BEGIN );
+            // event( THINKING_BEGIN );
         }
 
         Layer* layer = NULL;
@@ -319,7 +319,7 @@ Net* Net::calc()
 
                 if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
                 {
-                    event( THINKING_END );
+                    // event( THINKING_END );
                 }
             }
             else
@@ -373,7 +373,7 @@ Net* Net::calc()
 
                 if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
                 {
-                    event( LEARNING_END );
+                    // event( LEARNING_END );
                 }
             }
 
@@ -526,7 +526,7 @@ Net* Net::readNet()
         if( json != NULL )
         {
 
-            buildSuptAndTasks();
+            buildPtuAndTasks();
 
             auto configLayers = json -> getObject( "layers" );
 
@@ -1085,48 +1085,37 @@ Net* Net::setId
 
 
 /*
-    Create roles strung of the process in SUPT format
+    Create roles strung of the process in Ptu format
     S - process works with server otherwice with local net
     U - process has a UI interface
     P - process uses as processor
     T - process uses as teacher
 */
-Net* Net::buildSuptAndTasks()
+Net* Net::buildPtuAndTasks()
 {
     auto tasksSection = getApplication()
     -> getConfig()
     -> getObject( "tasks" );
 
-    supt = "****";
+    ptu = "***";
     tasks -> clear();
-
-    if
-    (
-        getApplication()
-        -> getConfig()
-        -> getString( Path { "io", "source" } ) != "LOCAL"
-    )
-    {
-        supt[ 0 ] = 'S';
-//        tasks -> pushString( taskToString( TASK_SERVER ));
-    }
 
     if( tasksSection != NULL )
     {
-        if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
-        {
-            supt[ 1 ] = 'U';
-            tasks -> pushString( taskToString( TASK_UI ));
-        }
         if( tasksSection -> getObject( taskToString( TASK_PROC )) != NULL )
         {
-            supt[ 2 ] = 'P';
+            ptu[ 0 ] = 'P';
             tasks -> pushString( taskToString( TASK_PROC ));
         }
         if( tasksSection -> getObject( taskToString( TASK_TEACHER )) != NULL )
         {
-            supt[ 3 ] = 'T';
+            ptu[ 1 ] = 'T';
             tasks -> pushString( taskToString( TASK_TEACHER ));
+        }
+        if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
+        {
+            ptu[ 2 ] = 'U';
+            tasks -> pushString( taskToString( TASK_UI ));
         }
     }
     return this;
@@ -1146,7 +1135,7 @@ Net* Net::event
     -> trace( "Neural net event" )
     -> begin( "Neural net event" )
     -> prm( "name", eventToString( aEvent ))
-    -> prm( "supt", supt )
+    -> prm( "ptu", ptu )
     -> lineEnd()
     ;
 
@@ -1154,7 +1143,7 @@ Net* Net::event
     {
         auto actionsList = actions -> getObject
         (
-            Path{ supt, eventToString( aEvent ) }
+            Path{ ptu, eventToString( aEvent ) }
         );
         if( actionsList != NULL )
         {
