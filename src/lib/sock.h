@@ -5,6 +5,7 @@
     https://rsdn.org/article/unix/sockets.xml
 */
 
+#include <vector>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <functional>       /* for lyambda */
@@ -38,23 +39,35 @@ enum SocketType
 
 
 /*
+    Cliients connections for server
+*/
+struct Сonnections
+{
+    int     handle = 0;     /* client connection handle after accept */
+    string  address = "";   /* client ip address */
+};
+
+
+/*
     Socket class definition
 */
 class Sock : public Result
 {
     private:
 
-    int                 handle              = -1;       /* handle of socket */
-    SocketDomain        domain              = SD_INET;
-    unsigned int        queueSize           = 50;       /* Resuest queue size */
-    unsigned int        packetSize          = 512;      /* Data packet size */
-    bool                connected           = false;
+        vector <Сonnections> connections;                  /* list of handles */
 
-    char*               resultBuffer        =  NULL;
-    unsigned int        resultBufferSize    = 0;
-    string              remoteAddress       = "";
-    string              ip                  = "127.0.0.1";
-    unsigned short int  port                = 42;
+        int                 handle              = -1;       /* handle of socket */
+        SocketDomain        domain              = SD_INET;
+        unsigned int        queueSize           = 50;       /* Resuest queue size */
+        unsigned int        packetSize          = 512;      /* Data packet size */
+        bool                connected           = false;
+
+        char*               resultBuffer        =  NULL;
+        unsigned int        resultBufferSize    = 0;
+        string              remoteAddress       = "";
+        string              ip                  = "127.0.0.1";
+        unsigned short int  port                = 42;
 
 
     /*

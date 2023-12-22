@@ -32,8 +32,8 @@ echo "" >> processor.log
 ## Make executable file
 ./shab header "make"
 ./shab execute "g++ -O3 -o shoggoth OBJECT_PATH/*.o -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw -lMagick++"
-./shab header "compress"
-./shab execute "upx -9 shoggoth"
+#./shab header "compress"
+#./shab execute "upx -9 shoggoth"
 
 # Run
 #./shab header "run"

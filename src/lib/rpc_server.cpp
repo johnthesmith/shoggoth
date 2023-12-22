@@ -117,7 +117,6 @@ RpcServer* RpcServer::onReadAfter
         getLog() -> begin( "RPC Server onReadAfter" ) -> lineEnd();
 
         auto buffer = aBuffer -> getBuffer();
-
         char* pointer = &buffer[ sizeof( SockRpcHeader ) ];
 
         /* Get method arguments */

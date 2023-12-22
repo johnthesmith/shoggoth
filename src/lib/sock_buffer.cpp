@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstring>
 #include "sock_buffer.h"
 
@@ -88,9 +89,16 @@ SockBuffer* SockBuffer::buildResultBuffer()
 
         /* Collect and Destroy buffers */
         unsigned int collectedSize = 0;
+
         for( auto item:items )
         {
-            memcpy( &resultBuffer[ collectedSize ], item -> getPointer(), item -> getReadSize() );
+
+            memcpy
+            (
+                &resultBuffer[ collectedSize ],
+                item -> getPointer(),
+                item -> getReadSize()
+            );
             collectedSize += item -> getReadSize();
         }
 

@@ -75,105 +75,6 @@ ShoggothApplication* Teacher::getApplication()
 
 
 /******************************************************************************
-    Methods
-*/
-
-
-/*
-
-*/
-Teacher* Teacher::task()
-{
-    getLog() -> begin( "Check error level" );
-
-    /* Retrive error layer by id */
-    auto errorLayer = net -> getLayers() -> getById( idErrorLayer );
-
-    if( errorLayer != NULL )
-    {
-        auto error = errorLayer -> getValue();
-
-        getLog()
-        -> trace( "Compare" )
-        -> prm( "error", error )
-        -> prm( "error limit", errorLimit )
-        ;
-
-        /* Check error limit */
-        if( error <= errorLimit )
-        {
-            /* Check new batch */
-            getLog() -> begin( "New batch" );
-
-            auto item = batches -> getRnd();
-            if( item != NULL && item -> isObject() )
-            {
-                /* Batch precessing */
-                auto batch = item -> getObject();
-                batch -> loop
-                (
-                    [ this ]
-                    ( Param* aParam )
-                    {
-                        auto obj = aParam -> getObject();
-                        if( obj != NULL )
-                        {
-                            auto command = obj -> getString( "cmd" );
-                            getLog()
-                            -> begin( "Command" )
-                            -> prm( "cmd", command );
-                            ParamListLog::dump( getLog(), obj, "Arguments" );
-                            switch( stringToTeacherTask( command ))
-                            {
-                                case TEACHER_CMD_VALUE_TO_LAYER:
-                                    cmdValueToLayer( obj );
-                                break;
-                                case TEACHER_CMD_IMAGE_TO_LAYER:
-                                    cmdImageToLayer( obj );
-                                break;
-                                case TEACHER_CMD_FOLDER_TO_LAYER:
-                                    cmdFolderToLayer( obj );
-                                break;
-                                case TEACHER_CMD_GUID_TO_LAYER:
-                                break;
-                                case TEACHER_CMD_HID_TO_LAYER:
-                                break;
-                                default:
-                                    getLog() -> warning( "Unknown command" );
-                                break;
-                            }
-                            getLog() -> end();
-                        }
-                        return false;
-                    }
-                );
-                net -> event( TEACHING_END );
-            }
-            else
-            {
-                getLog() -> warning( "Batch is not a object" );
-            }
-            getLog() -> end();
-        }
-        else
-        {
-            getLog() -> trace( "Hight error rate" );
-        }
-    }
-    else
-    {
-        getLog()
-        -> warning( "Error layer not found" )
-        -> prm( "id", idErrorLayer );
-    }
-    getLog() -> end();
-
-    return this;
-}
-
-
-
-/******************************************************************************
     Setters and getters
 */
 
@@ -321,16 +222,99 @@ Teacher* Teacher::cmdFolderToLayer
 
 
 /******************************************************************************
-    Methods
+    Events
 */
 
 
 
 /*
-    Run net calculateion
+    Run teacher loop
 */
-void Processor::onLoop()
+void Teacher::onLoop()
 {
-    task();
-}
+    getLog() -> begin( "Check error level" );
 
+    net -> event( TEACHER_BEGIN );
+
+    /* Retrive error layer by id */
+    auto errorLayer = net -> getLayers() -> getById( idErrorLayer );
+
+    if( errorLayer != NULL )
+    {
+        auto error = errorLayer -> getValue();
+
+        getLog()
+        -> trace( "Compare" )
+        -> prm( "error", error )
+        -> prm( "error limit", errorLimit )
+        ;
+
+        /* Check error limit */
+        if( error <= errorLimit )
+        {
+            /* Check new batch */
+            getLog() -> begin( "New batch" );
+
+            auto item = batches -> getRnd();
+            if( item != NULL && item -> isObject() )
+            {
+                /* Batch precessing */
+                auto batch = item -> getObject();
+                batch -> loop
+                (
+                    [ this ]
+                    ( Param* aParam )
+                    {
+                        auto obj = aParam -> getObject();
+                        if( obj != NULL )
+                        {
+                            auto command = obj -> getString( "cmd" );
+                            getLog()
+                            -> begin( "Command" )
+                            -> prm( "cmd", command );
+                            ParamListLog::dump( getLog(), obj, "Arguments" );
+                            switch( stringToTeacherTask( command ))
+                            {
+                                case TEACHER_CMD_VALUE_TO_LAYER:
+                                    cmdValueToLayer( obj );
+                                break;
+                                case TEACHER_CMD_IMAGE_TO_LAYER:
+                                    cmdImageToLayer( obj );
+                                break;
+                                case TEACHER_CMD_FOLDER_TO_LAYER:
+                                    cmdFolderToLayer( obj );
+                                break;
+                                case TEACHER_CMD_GUID_TO_LAYER:
+                                break;
+                                case TEACHER_CMD_HID_TO_LAYER:
+                                break;
+                                default:
+                                    getLog() -> warning( "Unknown command" );
+                                break;
+                            }
+                            getLog() -> end();
+                        }
+                        return false;
+                    }
+                );
+                net -> event( TEACHER_END );
+            }
+            else
+            {
+                getLog() -> warning( "Batch is not a object" );
+            }
+            getLog() -> end();
+        }
+        else
+        {
+            getLog() -> trace( "Hight error rate" );
+        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Error layer not found" )
+        -> prm( "id", idErrorLayer );
+    }
+    getLog() -> end();
+}

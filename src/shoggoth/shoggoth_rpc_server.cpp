@@ -74,7 +74,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 {
     auto method = aArguments -> getInt( "method" );
 
-    getLog() -> trace( commandToString( ( Command ) method ));
+    getLog() -> trace( commandToString( ( Command ) method )) -> lineEnd();
 
     switch( method )
     {

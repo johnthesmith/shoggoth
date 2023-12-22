@@ -1,5 +1,5 @@
 {
-   "loopSleepMcs"  :1000,
+   "loopSleepMcs"  :1000000,
 
     "io":
     {

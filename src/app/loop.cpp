@@ -148,8 +148,8 @@ Loop* Loop::processorControl()
             processor -> destroy();
             processor = NULL;
 
-//            server -> destroy();
-//            server = NULL;
+            server -> destroy();
+            server = NULL;
         }
     }
     return this;
@@ -215,7 +215,8 @@ Loop* Loop::uiControl()
 
 Loop* Loop::teacherControl()
 {
-    auto cfg = getApplication()
+    auto cfg =
+    getApplication()
     -> getConfig()
     -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
 
@@ -224,14 +225,23 @@ Loop* Loop::teacherControl()
         if( teacher == NULL )
         {
             teacher = Teacher::create(( Net* ) net );
+            teacher -> setId( "teacher_thread" ) -> loop( true );
         }
-        /* Read config */
+
         /* Read batches list */
         teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
         /* Read layer with errors */
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
         /* Read error limit */
         teacher -> setErrorLimit( cfg -> getDouble( "errorLimit" ));
+
+        teacher
+        -> setLoopTimeoutMcs
+        (
+            cfg
+            -> getDouble( "loopSleepMcs", teacher -> getLoopTimeoutMcs() )
+        )
+        -> resume();
     }
     else
     {
@@ -258,6 +268,8 @@ Loop* Loop::teacherControl()
 */
 void Loop::onLoop()
 {
+    net -> event( LOOP_BEGIN );
+
     /* Set ok */
     getApplication() -> checkConfigUpdate();
     if
@@ -320,7 +332,10 @@ void Loop::onLoop()
         }
 
         getLog() -> end();
+
+        net -> event( LOOP_END );
     }
+
 
 
 //    if( isOk() )
@@ -328,7 +343,6 @@ void Loop::onLoop()
 //        /* Begin of net loop */
 //        if( net -> isNextLoop() )
 //        {
-//            net -> event( LOOP_BEGIN );
 //        }
 //
 //        /* UI works*/

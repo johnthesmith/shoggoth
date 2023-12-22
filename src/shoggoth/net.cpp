@@ -525,7 +525,6 @@ Net* Net::readNet()
         /* Apply net */
         if( json != NULL )
         {
-
             buildPtuAndTasks();
 
             auto configLayers = json -> getObject( "layers" );

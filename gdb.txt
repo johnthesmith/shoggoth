@@ -1,0 +1,6 @@
+Starting program: /home/still/code/shoggoth/shoggoth --config=net/processor.json
+                                                                                           [New LWP 2619328]
+[New LWP 2619329]
+
+Thread 1 "shoggoth" received signal SIGINT, Interrupt.
+0x00007ffff76e56f1 in ?? ()

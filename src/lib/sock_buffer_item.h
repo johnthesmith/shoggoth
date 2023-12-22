@@ -9,7 +9,7 @@ class SockBufferItem
     private:
 
         char*           pointer     = NULL;
-        unsigned int    realSize    = 0;
+        unsigned int    realSize    = 0;        /* */
         unsigned int    readSize    = 0;
 
     public:
@@ -67,6 +67,13 @@ class SockBufferItem
             Return the readed bytes
         */
         unsigned int getReadSize();
+
+
+
+        /*
+            Return the real size
+        */
+        unsigned int getRealSize();
 
 };
 

@@ -80,3 +80,13 @@ unsigned int SockBufferItem::getReadSize()
 {
     return readSize;
 }
+
+
+
+/*
+    Return the real size
+*/
+unsigned int SockBufferItem::getRealSize()
+{
+    return realSize;
+}

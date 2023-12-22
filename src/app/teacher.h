@@ -78,12 +78,6 @@ class Teacher : public Payload
 
 
 
-        /*
-        */
-        Teacher* task();
-
-
-
         /******************************************************************************
             Getters and setters
         */
@@ -134,4 +128,17 @@ class Teacher : public Payload
         (
             ParamList*
         );
+
+
+
+        /******************************************************************************
+            Events
+        */
+
+
+
+        /*
+            Run teacher loop
+        */
+        void onLoop();
 };
