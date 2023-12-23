@@ -1066,6 +1066,22 @@ Layer* Layer::valuesFromBuffer
 
 
 /*
+    Return buffer and size of buffer of values
+*/
+Layer* Layer::getValuesBuffer
+(
+    char* &aBuffer, /* Buffer pointer */
+    size_t &aSize   /* Size of buffer */
+)
+{
+    aBuffer = ( char* )values;
+    aSize = count * sizeof( double );
+    return this;
+}
+
+
+
+/*
     Read value from io
 */
 Layer* Layer::readValues()
@@ -1143,6 +1159,37 @@ Layer* Layer::readErrors()
 
     io -> destroy();
 
+    return this;
+}
+
+
+
+Layer* Layer::errorsFromBuffer
+(
+    char* aBuffer,
+    size_t aSize
+)
+{
+    if( aBuffer != NULL && aSize == count * sizeof( double ) )
+    {
+        memcpy( errors, aBuffer, aSize );
+    }
+    return this;
+}
+
+
+
+/*
+    Return buffer and size of buffer of errors
+*/
+Layer* Layer::getErrorsBuffer
+(
+    char* &aBuffer, /* Buffer pointer */
+    size_t &aSize   /* Size of buffer */
+)
+{
+    aBuffer = ( char* )errors;
+    aSize = count * sizeof( double );
     return this;
 }
 

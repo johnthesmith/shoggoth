@@ -1,5 +1,5 @@
 #include "io.h"
-
+#include "../json/param_list_log.h"
 
 
 using namespace std;
@@ -116,7 +116,7 @@ Io* Io::call
             -> prm( "command", commandToString( aCommand ))
             -> prm( "code", getCode() );
 
-            LogParams::dump( getLog(),resuest );
+            ParamListLog::dump( getLog(), request );
         }
     }
 

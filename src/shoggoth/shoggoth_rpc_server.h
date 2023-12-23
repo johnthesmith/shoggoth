@@ -1,8 +1,8 @@
 #include "../lib/rpc_server.h"
-#include "../lib/application.h"
 
-#include "../shoggoth/shoggoth_consts.h"
-#include "../shoggoth/sync.h"
+#include "shoggoth_consts.h"
+#include "sync.h"
+#include "net_graph.h"
 
 
 
@@ -10,14 +10,7 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-        Application*        app         = NULL; /* Application object */
-        ParamList*          data        = NULL; /* List  */
-
-        /*
-            State
-        */
-        Json*               netConfig           = NULL;
-        long int            lastNetConfigUpdate = 0;
+        Net*               net         = NULL; /* Net object */
 
     public:
 
@@ -26,7 +19,7 @@ class ShoggothRpcServer : public RpcServer
         */
         ShoggothRpcServer
         (
-            Application*,
+            Net*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -45,7 +38,7 @@ class ShoggothRpcServer : public RpcServer
         */
         static ShoggothRpcServer* create
         (
-            Application*,
+            Net*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );

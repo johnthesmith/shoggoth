@@ -550,6 +550,17 @@ class Layer : public Object
 
 
         /*
+            Return buffer and size of buffer of values
+        */
+        Layer* getValuesBuffer
+        (
+            char*&,  /* Buffer pointer */
+            size_t&  /* Size of buffer */
+        );
+
+
+
+        /*
             Send errors to io
         */
         Layer* writeErrors();
@@ -560,6 +571,26 @@ class Layer : public Object
             Read errors from io
         */
         Layer* readErrors();
+
+
+
+        /*
+            Return buffer and size of buffer of errors
+        */
+        Layer* getErrorsBuffer
+        (
+            char*&, /* Buffer pointer */
+            size_t& /* Size of buffer */
+        );
+
+
+
+        Layer* errorsFromBuffer
+        (
+            char*,
+            size_t
+        );
+
 
 
 

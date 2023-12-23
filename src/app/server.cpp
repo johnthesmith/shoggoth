@@ -37,8 +37,6 @@ Server::Server
 
 
 
-
-
 /*
     Destructor
 */
@@ -113,7 +111,7 @@ void Server::onResume()
 
     getLog() -> prm( "Listenen port", listenPort );
 
-    srv = ShoggothRpcServer::create( getApplication());
+    srv = ShoggothRpcServer::create( net );
     srv -> setPort( listenPort );
 
     serverThread = new thread

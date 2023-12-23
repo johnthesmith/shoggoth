@@ -1,4 +1,6 @@
 #include "shoggoth_rpc_server.h"
+#include "io.h"
+
 
 
 /*
@@ -6,21 +8,18 @@
 */
 ShoggothRpcServer::ShoggothRpcServer
 (
-    Application*    aApp,
+    Net*            aNet,
     SocketDomain    aDomain,
     SocketType      aType
 )
 :RpcServer
 (
-    aApp -> getLogManager(),
+    aNet -> getApplication() -> getLogManager(),
     aDomain,
     aType
 )
 {
-    app         = aApp;
-    data        = ParamList::create();
-    netConfig   = Json::create();
-
+    net         = aNet;
     getLog() -> trace( "Shoggoth server created" ) -> lineEnd();
 }
 
@@ -32,8 +31,6 @@ ShoggothRpcServer::ShoggothRpcServer
 ShoggothRpcServer::~ShoggothRpcServer()
 {
     getLog() -> trace( "Shoggoth server destroy" );
-    netConfig -> destroy();
-    data -> destroy();
 }
 
 
@@ -43,13 +40,13 @@ ShoggothRpcServer::~ShoggothRpcServer()
 */
 ShoggothRpcServer* ShoggothRpcServer::create
 (
-    Application*    aApp,
+    Net*            aNet,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new ShoggothRpcServer( aApp, aDomain, aType );
+    return new ShoggothRpcServer( aNet, aDomain, aType );
 }
 
 
@@ -57,7 +54,7 @@ ShoggothRpcServer* ShoggothRpcServer::create
 
 Application* ShoggothRpcServer::getApplication()
 {
-    return app;
+    return net -> getApplication();
 }
 
 
@@ -160,26 +157,23 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
     ParamList* aResults
 )
 {
-    auto netFile = getApplication()
-    -> getConfig()
-    -> getString( Path{ "io", "net" } );
-
-    /* Read config if updated */
-    if( checkFileUpdate( netFile, lastNetConfigUpdate ))
+    ParamList* json = NULL;
+    auto io = Io::create( net );
+    if( io -> call( CMD_READ_NET ) -> isOk() )
     {
-        netConfig -> fromFile( netFile );
+        json = io -> getAnswer();
+        /* Apply net */
+        if( json != NULL )
+        {
+            json -> copyTo( aResults );
+            setAnswerResult( aResults, "ok" );
+        }
+        else
+        {
+            setAnswerResult( aResults, io -> getCode() );
+        }
     }
-
-    /* Return answer for client */
-    if( netConfig -> isOk() )
-    {
-        netConfig -> copyTo( aResults );
-        setAnswerResult( aResults, "ok" );
-    }
-    else
-    {
-        setAnswerResult( aResults, netConfig -> getCode() );
-    }
+    io -> destroy();
 
     return this;
 }
@@ -189,7 +183,6 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
 
 /*
     Remote host send layer data
-
     Arguments
         idLayer
         data
@@ -210,26 +203,26 @@ ShoggothRpcServer* ShoggothRpcServer::writeValues
         validate( idLayer != "", "IdLayerIsEmpty", aResults )
     )
     {
-        /* Get layer data */
-        char* buffer = NULL;
-        size_t size = 0;
-        aArguments -> getData( "data", buffer, size );
-        if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+        auto layer = net -> getLayerById( idLayer );
+        if( layer == NULL )
         {
-            /* Storage data */
-            data
-            -> setPath( Path{ "layers", idLayer } )
-            -> setData
-            (
-                "values",
-                buffer,
-                size
-            );
-            /* Return positive answer */
-            setAnswerResult( aResults, "ok" );
+            setAnswerResult( aResults, "LayerUnknown" );
+        }
+        else
+        {
+            /* Get layer data */
+            char* buffer = NULL;
+            size_t size = 0;
+            aArguments -> getData( "data", buffer, size );
+
+            if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+            {
+                layer -> valuesFromBuffer( buffer, size );
+                /* Return positive answer */
+                setAnswerResult( aResults, "ok" );
+            }
         }
     }
-
     return this;
 }
 
@@ -244,26 +237,38 @@ ShoggothRpcServer* ShoggothRpcServer::readValues
     ParamList* aResults
 )
 {
+    /* Read id layer */
     auto idLayer = aArguments -> getString( "idLayer" );
-
-    char* buffer = NULL;
-    size_t size = 0;
-
-    data -> getData
+    if
     (
-        Path{ "layers", idLayer, "values" },
-        buffer,
-        size
-    );
+        /* Arguments validation */
+        validate( idLayer != "", "IdLayerIsEmpty", aResults )
+    )
+    {
+        auto layer = net -> getLayerById( idLayer );
+        if( layer == NULL )
+        {
+            setAnswerResult( aResults, "LayerUnknown" );
+        }
+        else
+        {
+            char* buffer = NULL;
+            size_t size = 0;
 
-    if( buffer != NULL )
-    {
-        aResults -> setData( "data", buffer, size );
-        setAnswerResult( aResults, "ok" );
-    }
-    else
-    {
-        setAnswerResult( aResults, "LayerDataNotFound" );
+            /* Get pointer of buffer array */
+            layer -> getValuesBuffer( buffer, size );
+
+            if( buffer != NULL )
+            {
+                aResults -> setData( "data", buffer, size );
+                /* Return positive answer */
+                setAnswerResult( aResults, "ok" );
+            }
+            else
+            {
+                setAnswerResult( aResults, "LayerDataNotFound" );
+            }
+        }
     }
 
     return this;
@@ -295,27 +300,25 @@ ShoggothRpcServer* ShoggothRpcServer::writeErrors
         validate( idLayer != "", "IdLayerIsEmpty", aResults )
     )
     {
-        /* Get layer data */
-        char* buffer = NULL;
-        size_t size = 0;
-        aArguments -> getData( "data", buffer, size );
-
-        if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+        auto layer = net -> getLayerById( idLayer );
+        if( layer == NULL )
         {
-            /* Storage data */
-            data
-            -> setPath( Path{ "layers", idLayer } )
-            -> setData
-            (
-                "errors",
-                buffer,
-                size
-            );
-            /* Return positive answer */
-            setAnswerResult( aResults, "ok" );
+            setAnswerResult( aResults, "LayerUnknown" );
+        }
+        else
+        {
+            /* Get layer data */
+            char* buffer = NULL;
+            size_t size = 0;
+            aArguments -> getData( "data", buffer, size );
+            if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+            {
+                layer -> errorsFromBuffer( buffer, size );
+                /* Return positive answer */
+                setAnswerResult( aResults, "ok" );
+            }
         }
     }
-
     return this;
 }
 
@@ -330,28 +333,39 @@ ShoggothRpcServer* ShoggothRpcServer::readErrors
     ParamList* aResults
 )
 {
+    /* Read id layer */
     auto idLayer = aArguments -> getString( "idLayer" );
-
-    char* buffer = NULL;
-    size_t size = 0;
-
-    data -> getData
+    if
     (
-        Path{ "layers", idLayer, "errors" },
-        buffer,
-        size
-    );
-
-    if( buffer != NULL )
+        /* Arguments validation */
+        validate( idLayer != "", "IdLayerIsEmpty", aResults )
+    )
     {
-        aResults -> setData( "data", buffer, size );
-        setAnswerResult( aResults, "ok" );
-    }
-    else
-    {
-        setAnswerResult( aResults, "LayerDataNotFound" );
-    }
+        auto layer = net -> getLayerById( idLayer );
+        if( layer == NULL )
+        {
+            setAnswerResult( aResults, "LayerUnknown" );
+        }
+        else
+        {
+            char* buffer = NULL;
+            size_t size = 0;
 
+            /* Get pointer of buffer array */
+            layer -> getErrorsBuffer( buffer, size );
+
+            if( buffer != NULL )
+            {
+                aResults -> setData( "data", buffer, size );
+                /* Return positive answer */
+                setAnswerResult( aResults, "ok" );
+            }
+            else
+            {
+                setAnswerResult( aResults, "LayerDataNotFound" );
+            }
+        }
+    }
     return this;
 }
 
@@ -366,30 +380,30 @@ ShoggothRpcServer* ShoggothRpcServer::writeWeights
     ParamList* aResults
 )
 {
-    /* Read id  */
-    auto idFrom = aArguments -> getString( "idFrom" );
-    auto idTo = aArguments -> getString( "idTo" );
-
-    /* Get layer data */
-    char* buffer = NULL;
-    size_t size = 0;
-    aArguments -> getData( "data", buffer, size );
-
-    if
-    (
-        /* Arguments validation */
-        validate( idFrom != "", "IdFromIsEmpty", aResults ) &&
-        validate( idTo != "", "IdFromIsEmpty", aResults ) &&
-        validate( buffer != NULL, "DataIsEmpty", aResults )
-    )
-    {
-        /* Storage data */
-        data
-        -> setPath( Path{ "nerves", idFrom + " " + idTo } )
-        -> setData( "weights", buffer, size );
-        /* Return positive answer */
-        setAnswerResult( aResults, "ok" );
-    }
+//    /* Read id  */
+//    auto idFrom = aArguments -> getString( "idFrom" );
+//    auto idTo = aArguments -> getString( "idTo" );
+//
+//    /* Get layer data */
+//    char* buffer = NULL;
+//    size_t size = 0;
+//    aArguments -> getData( "data", buffer, size );
+//
+//    if
+//    (
+//        /* Arguments validation */
+//        validate( idFrom != "", "IdFromIsEmpty", aResults ) &&
+//        validate( idTo != "", "IdFromIsEmpty", aResults ) &&
+//        validate( buffer != NULL, "DataIsEmpty", aResults )
+//    )
+//    {
+//        /* Storage data */
+//        data
+//        -> setPath( Path{ "nerves", idFrom + " " + idTo } )
+//        -> setData( "weights", buffer, size );
+//        /* Return positive answer */
+//    }
+    setAnswerResult( aResults, "MethodNotEmplimented" );
     return this;
 }
 
@@ -404,29 +418,30 @@ ShoggothRpcServer* ShoggothRpcServer::readWeights
     ParamList* aResults
 )
 {
-    /* Read id  */
-    auto idFrom = aArguments -> getString( "idFrom" );
-    auto idTo = aArguments -> getString( "idTo" );
-
-    /* Get layer data */
-    char* buffer = NULL;
-    size_t size = 0;
-
-    data -> getData
-    (
-        Path{ "nerves", idFrom + " " + idTo, "weights" },
-        buffer,
-        size
-    );
-
-    if( buffer != NULL )
-    {
-        aResults -> setData( "data", buffer, size );
-        setAnswerResult( aResults, "ok" );
-    }
-    else
-    {
-        setAnswerResult( aResults, "NerveWeightDataNotFound" );
-    }
+//    /* Read id  */
+//    auto idFrom = aArguments -> getString( "idFrom" );
+//    auto idTo = aArguments -> getString( "idTo" );
+//
+//    /* Get layer data */
+//    char* buffer = NULL;
+//    size_t size = 0;
+//
+//    data -> getData
+//    (
+//        Path{ "nerves", idFrom + " " + idTo, "weights" },
+//        buffer,
+//        size
+//    );
+//
+//    if( buffer != NULL )
+//    {
+//        aResults -> setData( "data", buffer, size );
+//        setAnswerResult( aResults, "ok" );
+//    }
+//    else
+//    {
+//        setAnswerResult( aResults, "NerveWeightDataNotFound" );
+//    }
+    setAnswerResult( aResults, "MethodNotEmplimented" );
     return this;
 }
