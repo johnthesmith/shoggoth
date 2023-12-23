@@ -115,6 +115,8 @@ Io* Io::call
             -> warning( "Shoggot IO error" )
             -> prm( "command", commandToString( aCommand ))
             -> prm( "code", getCode() );
+
+            LogParams::dump( getLog(),resuest );
         }
     }
 
