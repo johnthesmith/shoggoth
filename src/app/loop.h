@@ -38,7 +38,6 @@ class Loop : public Payload
 
         /* Payloads object  of roles */
         Ui*         ui              = NULL;
-        Scene*      scene           = NULL;
         Teacher*    teacher         = NULL;
         Processor*  processor       = NULL;
         Server*     server          = NULL;

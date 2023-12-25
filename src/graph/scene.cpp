@@ -337,9 +337,9 @@ Scene& Scene::drawEvent()
 //glEnable( GL_LINE_SMOOTH);
 //glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-
             /* Pulling event for keyboard and mouse*/
             glfwPollEvents();
+
             /* Payload draw event */
             payload -> onDraw( this );
 
@@ -684,7 +684,7 @@ Scene* Scene::setPayload
 )
 {
     payload = a;
-    payload -> setScene( *this );
+    payload -> setScene( this );
 
     if( isOk() && payload != NULL && isInit() )
     {

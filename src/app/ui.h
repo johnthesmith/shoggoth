@@ -38,7 +38,6 @@ class Ui : public ScenePayload
         */
         Ui
         (
-            ShoggothApplication*,
             NetGraph*
         );
 
@@ -56,7 +55,6 @@ class Ui : public ScenePayload
         */
         static Ui* create
         (
-            ShoggothApplication*,
             NetGraph*
         );
 
@@ -74,6 +72,16 @@ class Ui : public ScenePayload
 
 
         Ui* help();
+
+
+
+        /*
+        */
+        Ui* fillScreen
+        (
+            int
+        );
+
 
 
         /**********************************************************************
@@ -223,9 +231,11 @@ class Ui : public ScenePayload
 
 
         /*
+            Run ui loop
         */
-        Ui* fillScreen
-        (
-            int
-        );
+        virtual void onLoop();
+
+
+        virtual void onLoopBefore();
+
 };

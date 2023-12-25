@@ -45,13 +45,14 @@ using namespace std;
 */
 Ui::Ui
 (
-    ShoggothApplication* a,
     NetGraph* aNet
 )
-: ScenePayload( a ) /* Call parent constructor */
+: ScenePayload( aNet -> getApplication() ) /* Call parent constructor */
 {
-    camera = Camera::create();
     net = aNet;
+
+    camera = Camera::create();
+    setScene( Scene::create( getLog() ));
 
     getLog()
     -> trace( "Config source" )
@@ -66,6 +67,7 @@ Ui::Ui
 */
 Ui::~Ui()
 {
+    getScene() -> finit() -> destroy();
     camera -> destroy();
 }
 
@@ -76,11 +78,10 @@ Ui::~Ui()
 */
 Ui* Ui::create
 (
-    ShoggothApplication* a,
     NetGraph* aNet
 )
 {
-    return new Ui( a, aNet );
+    return new Ui( aNet );
 }
 
 
@@ -165,7 +166,6 @@ void Ui::onDraw
 )
 {
     aScene -> clearColor();
-
 
     applyScreenToScene( aScene );
 
@@ -741,4 +741,24 @@ void Ui::onLeftDblClick
             -> getWorld()
         );
     }
+}
+
+
+
+/*
+    Run ui loop
+*/
+void Ui::onLoop()
+{
+    getScene() -> calcEvent();
+    getScene() -> drawEvent();
+}
+
+
+
+void Ui::onLoopBefore()
+{
+    getScene()
+    -> init()
+    -> setPayload( this );
 }

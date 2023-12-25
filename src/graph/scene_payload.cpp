@@ -66,10 +66,10 @@ void ScenePayload::destroy()
 */
 ScenePayload* ScenePayload::setScene
 (
-    Scene& a
+    Scene* a
 )
 {
-    scene = &a;
+    scene = a;
     return this;
 }
 
@@ -78,9 +78,9 @@ ScenePayload* ScenePayload::setScene
 /*
     Get scene value
 */
-Scene& ScenePayload::getScene()
+Scene* ScenePayload::getScene()
 {
-    return *scene;
+    return scene;
 }
 
 

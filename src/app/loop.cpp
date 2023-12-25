@@ -159,17 +159,18 @@ Loop* Loop::processorControl()
 
 Loop* Loop::uiControl()
 {
-    if
-    (
-        getApplication()
-        -> getConfig()
-        -> getBool( Path { "tasks", taskToString( TASK_UI ), "enabled" } ))
+    auto cfg =
+    getApplication()
+    -> getConfig()
+    -> getObject( Path{ "tasks", taskToString( TASK_UI )} );
+
+    if( cfg != NULL && cfg -> getBool( "enabled" ))
     {
         if( ui == NULL )
         {
-            ui = Ui::create( getApplication(), net );
-            scene  = Scene::create( getLog() );
-            scene
+            ui = Ui::create( net );
+            ui
+            -> getScene()
             -> getFont()
             -> setFontName
             (
@@ -189,23 +190,20 @@ Loop* Loop::uiControl()
                 -> getConfig()
                 -> getString( Path{ "tasks", taskToString( TASK_UI ), "charSet" })
             );
-
-            scene
-            -> init()
-            -> setPayload( ui );
+            ui -> setId( "ui_thread" ) -> loop( true );
         }
+
+        ui
+        -> setLoopTimeoutMcs( cfg -> getDouble( "loopSleepMcs", 100 ))
+        -> resume();
     }
     else
     {
         if( ui != NULL )
         {
-            scene
-            -> finit()
-            -> destroy();
             ui -> destroy();
             /* Reset UI and Scene */
             ui = NULL;
-            scene = NULL;
         }
     }
     return this;
@@ -298,11 +296,13 @@ void Loop::onLoop()
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
             if( teacher != NULL )   teacher -> pause();
+            if( ui != NULL )        ui -> pause();
 
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
             if( teacher != NULL )   teacher -> waitPause();
+            if( ui != NULL )        ui -> waitPause();
 
             /* Config apply */
             net -> readNet();
@@ -310,7 +310,7 @@ void Loop::onLoop()
             /* Reinit process */
             processorControl();
             teacherControl();
-//            uiControl();
+            uiControl();
         }
         else
         {
@@ -338,19 +338,5 @@ void Loop::onLoop()
 
 
 
-//    if( isOk() )
-//    {
-//        /* Begin of net loop */
-//        if( net -> isNextLoop() )
-//        {
-//        }
-//
-//        /* UI works*/
-//        if( ui != NULL )
-//        {
-//            scene -> calcEvent();
-//            scene -> drawEvent();
 //            aTreminated = scene -> windowClosed();
-//        }
-//    }
 }

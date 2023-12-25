@@ -70,7 +70,7 @@ class ScenePayload : public Payload
         */
         ScenePayload* setScene
         (
-            Scene&
+            Scene*
         );
 
 
@@ -78,7 +78,7 @@ class ScenePayload : public Payload
         /*
             Get scene value
         */
-        Scene& getScene();
+        Scene* getScene();
 
 
 

@@ -178,6 +178,9 @@ Payload* Payload::loop
 Payload* Payload::internalLoop()
 {
     terminated  = false;
+
+    onLoopBefore();
+
     while( !terminated )
     {
         /* Confirm work mode */
@@ -198,6 +201,9 @@ Payload* Payload::internalLoop()
             usleep( loopTimeoutMcs );
         }
     }
+
+    onLoopAfter();
+
     return this;
 }
 
@@ -260,11 +266,31 @@ unsigned int Payload::getLoopTimeoutMcs()
 
 
 /*
-    Loop for payload
+    Payload loop before default even
 */
 void Payload::onLoop()
 {
-    getLog() -> trace( "Paylaod default on loop event" );
+    getLog() -> trace( "Payload loop default event" );
+}
+
+
+
+/*
+    Payload loop before default even
+*/
+void Payload::onLoopBefore()
+{
+    getLog() -> trace( "Payload loop before default event" );
+}
+
+
+
+/*
+    Payload loop after default event
+*/
+void Payload::onLoopAfter()
+{
+    getLog() -> trace( "Payload loop after default event" );
 }
 
 

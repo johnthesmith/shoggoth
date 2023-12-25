@@ -168,6 +168,20 @@ class Payload : public Result
 
 
         /*
+            Payload loop before default even
+        */
+        virtual void onLoopBefore();
+
+
+
+        /*
+            Payload loop after default event
+        */
+        virtual void onLoopAfter();
+
+
+
+        /*
             User emplementaion
             This method must be overriden
         */
@@ -235,4 +249,5 @@ class Payload : public Result
             Wait pause
         */
         Payload* waitPause();
+
 };
