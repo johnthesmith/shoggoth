@@ -19,9 +19,15 @@
 */
 NetGraph::NetGraph
 (
-    Application* a
+    Application* aApplication,
+    SockManager* aSockManager
 )
-: Net( a ) /* Call parent constructor */
+/* Call parent constructor */
+: Net
+(
+    aApplication,
+    aSockManager
+)
 {
     selected = NeuronList::create();
 }
@@ -43,10 +49,11 @@ NetGraph::~NetGraph()
 */
 NetGraph* NetGraph:: create
 (
-    Application*    a
+    Application* aApplication,
+    SockManager* aSockManager
 )
 {
-    return new NetGraph( a );
+    return new NetGraph( aApplication, aSockManager );
 }
 
 

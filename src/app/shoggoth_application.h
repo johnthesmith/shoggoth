@@ -2,6 +2,7 @@
 
 /* Local libraries */
 #include "../lib/application.h"
+#include "../lib/sock_manager.h"
 
 
 using namespace std;
@@ -25,6 +26,7 @@ class ShoggothApplication : public Application
         bool                    configUpdated       = false;
         long int                lastConfigUpdate    = 0;
         long int                lastNetUpdate       = 0;
+        SockManager*            sockManager         = NULL;
 
     public:
 
@@ -33,6 +35,10 @@ class ShoggothApplication : public Application
             int,        /* cli argumends count */
             char**      /* cli arguments */
         );
+
+
+
+        ~ShoggothApplication();
 
 
 
@@ -83,5 +89,8 @@ class ShoggothApplication : public Application
 
 
         bool getConfigUpdated();
+
+
+        SockManager* getSockManager();
 };
 

@@ -15,6 +15,7 @@ ShoggothRpcServer::ShoggothRpcServer
 :RpcServer
 (
     aNet -> getApplication() -> getLogManager(),
+    aNet -> getSockManager(),
     aDomain,
     aType
 )

@@ -29,7 +29,16 @@ ShoggothApplication::ShoggothApplication
     aList
 )
 {
+    sockManager = SockManager::create();
 }
+
+
+
+ShoggothApplication::~ShoggothApplication()
+{
+    sockManager -> destroy();
+}
+
 
 
 
@@ -153,4 +162,11 @@ bool ShoggothApplication::getConfigUpdated()
     bool result = configUpdated;
     configUpdated = false;
     return result;
+}
+
+
+
+SockManager* ShoggothApplication::getSockManager()
+{
+    return sockManager;
 }

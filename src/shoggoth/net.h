@@ -45,7 +45,8 @@ class Net: public Result
 
         /* Objects */
 
-        Application*    application     = NULL;     /* The log object */
+        Application*    application     = NULL;     /* The application object */
+        SockManager*    sockManager     = NULL;     /* Socket manager object */
         NerveList*      nerves          = NULL;     /* List of nerves*/
         LayerList*      layers          = NULL;     /* The layer list object */
 
@@ -92,7 +93,8 @@ class Net: public Result
         */
         Net
         (
-            Application*    /* Application object */
+            Application*,   /* Application object */
+            SockManager*
         );
 
 
@@ -109,7 +111,8 @@ class Net: public Result
         */
         static Net* create
         (
-            Application*
+            Application*,
+            SockManager*
         );
 
 
@@ -495,5 +498,8 @@ class Net: public Result
 
         LayerList* getForwardList();
         LayerList* getBackwardList();
+
+        SockManager* getSockManager();
+
 };
 

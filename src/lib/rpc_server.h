@@ -50,6 +50,7 @@ class RpcServer : public SockRpc
         RpcServer
         (
             LogManager*,
+            SockManager*        = NULL,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -62,6 +63,7 @@ class RpcServer : public SockRpc
         static RpcServer* create
         (
             LogManager*,
+            SockManager*        = NULL,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );

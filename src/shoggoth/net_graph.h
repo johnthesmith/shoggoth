@@ -66,7 +66,8 @@ class NetGraph : public Net
         */
         NetGraph
         (
-            Application*    /* Application object */
+            Application*,  /* Application object */
+            SockManager*
         );
 
 
@@ -83,7 +84,8 @@ class NetGraph : public Net
         */
         static NetGraph* create
         (
-            Application*
+            Application*,
+            SockManager*
         );
 
 

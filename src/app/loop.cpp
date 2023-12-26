@@ -33,7 +33,7 @@ Loop::Loop
 )
 : Payload( a ) /* Call parent constructor */
 {
-    net = NetGraph::create( a );
+    net = NetGraph::create( a, a -> getSockManager()  );
 }
 
 

@@ -11,10 +11,12 @@
 */
 Net::Net
 (
-    Application* a    /* Log object */
+    Application* aApplication,  /* Application object */
+    SockManager* aSockManager   /* Socket manager object */
 )
 {
-    application = a;
+    application = aApplication;
+    sockManager = aSockManager;
     application -> getLog() -> trace( "Create net" );
 
     /* Create layers and nerves structures */
@@ -57,10 +59,11 @@ Net::~Net()
 */
 Net* Net::create
 (
-    Application* a
+    Application* a,
+    SockManager* sockManager
 )
 {
-    return new Net( a );
+    return new Net( a, sockManager );
 }
 
 
@@ -1396,4 +1399,15 @@ LayerList* Net::getForwardList()
 LayerList* Net::getBackwardList()
 {
     return backwardList;
+}
+
+
+
+/*
+    Return socket manager object
+*/
+
+SockManager* Net::getSockManager()
+{
+    return sockManager;
 }

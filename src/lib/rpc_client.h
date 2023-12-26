@@ -10,6 +10,7 @@
 
 #include "sock_rpc.h"
 #include "../json/param_list.h"
+#include "../lib/sock_manager.h"
 
 
 
@@ -26,8 +27,6 @@ class RpcClient : public SockRpc
 
         bool ownerAnswer    = true;
         bool ownerRequest   = true;
-
-
 
         /*
             On before read
@@ -60,6 +59,7 @@ class RpcClient : public SockRpc
         RpcClient
         (
             LogManager*,
+            SockManager*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -79,6 +79,7 @@ class RpcClient : public SockRpc
         static RpcClient* create
         (
             LogManager*,
+            SockManager*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -92,6 +93,7 @@ class RpcClient : public SockRpc
         static RpcClient* create
         (
             LogManager*,
+            SockManager*,
             string,
             unsigned int
         );

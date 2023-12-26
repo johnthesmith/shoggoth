@@ -9,6 +9,7 @@
 
 #include "log_manager.h"
 #include "sock.h"
+#include "sock_manager.h"
 #include "../json/param_list.h"
 
 
@@ -74,6 +75,7 @@ class SockRpc : public Sock
     private:
 
         LogManager*     logManager  = NULL;
+        SockManager*    sockManager = NULL;
         SocketDomain    domain      = SD_INET;
         SocketType      type        = ST_TCP;
 
@@ -97,6 +99,7 @@ class SockRpc : public Sock
         SockRpc
         (
             LogManager*,
+            SockManager*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );
@@ -109,6 +112,7 @@ class SockRpc : public Sock
         static SockRpc* create
         (
             LogManager*,
+            SockManager*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP
         );

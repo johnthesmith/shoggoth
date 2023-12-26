@@ -13,6 +13,7 @@ using namespace std;
 SockRpc::SockRpc
 (
     LogManager*     aLogManager,
+    SockManager*    aSockManager,
     SocketDomain    aDomain,
     SocketType      aType
 )
@@ -30,12 +31,13 @@ SockRpc::SockRpc
 SockRpc* SockRpc::create
 (
     LogManager*     aLogManager,
+    SockManager*    aSockManager,
     SocketDomain    aDomain,
     SocketType      aType
 
 )
 {
-    return new SockRpc( aLogManager, aDomain, aType );
+    return new SockRpc( aLogManager, aSockManager, aDomain, aType );
 }
 
 
