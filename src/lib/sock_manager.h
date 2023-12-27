@@ -3,7 +3,6 @@
 #include <string>
 #include <map>
 
-#include "sock.h"
 
 
 using namespace std;
@@ -17,8 +16,8 @@ class SockManager
         /* List of handles for threads */
         map
         <
-            string,         /* Full sock threadId@sockId */
-            Sock*           /* Sock */
+            string,         /* thread_id@user_id */
+            int             /* sock handle */
         >
         handles;
 
@@ -28,7 +27,7 @@ class SockManager
         */
         string getId
         (
-            string /* Sock id */
+            string /* User id */
         );
 
     public:
@@ -36,7 +35,6 @@ class SockManager
         /**********************************************************************
             Sock operations
         */
-
 
 
         /*
@@ -61,13 +59,23 @@ class SockManager
 
 
         /*
-            Create new sock or treturn exists by id
+            Add handle for sock manager
+            Unsafe! Do not  use it. Only for Sock.
         */
-        Sock* getSock
+        SockManager* addHandle
         (
-            string          = "defaul", /* Sock id  from user */
-            SocketDomain    = SD_INET,
-            SocketType      = ST_TCP
+            string, /* User id */
+            int     /* Handle */
+        );
+
+
+
+        /*
+            Return handle by thread and user id
+        */
+        int getHandle
+        (
+            string  = "defaul" /* User id */
         );
 
 
@@ -75,17 +83,5 @@ class SockManager
         /*
             Close and destroy sock
         */
-        SockManager* closeSock
-        (
-            string  = "default" /* Handle id */
-        );
-
-
-        /*
-            Return sock object by user id for thread
-        */
-        Sock* findSock
-        (
-            string /* Sock id */
-        );
+        SockManager* closeHandlesByThread();
 };

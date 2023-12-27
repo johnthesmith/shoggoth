@@ -12,11 +12,11 @@
 */
 SockManager::~SockManager()
 {
+    /* Close all socks for SockManager */
     for( auto item : handles )
     {
-        item.second
-        -> closeHandle()
-        -> destroy();
+        /* Close handle for sock */
+        close( item.second );
     }
 }
 
@@ -42,32 +42,35 @@ void SockManager::destroy()
 
 
 
+/*
+    Add handle for sock manager
+    Unsafe! Do not  use it. Only for Sock.
+*/
+SockManager* addHandle
+(
+    string aUserId, /* User id */
+    int    aHandle  /* Handle */
+)
+{
+    handles[ getId( aUserId )] = aHandle;
+    return this;
+}
+
+
 
 /*
     Create new Sock or exists Sock return
 */
-Sock* SockManager::getSock
+int SockManager::getHandle
 (
-    string          aSockId,   /* Sock id from user */
-    SocketDomain    aDomain,
-    SocketType      aType
+    string aUserId,   /* User id */
 )
 {
     /* Find the Sock by sock id */
     auto id = getId( aSockId );
-    Sock* result = findSock( id );
-
-    if( result == NULL )
-    {
-        /* Create and return new sock */
-        result
-        = Sock::create()
-        -> openHandle( aDomain, aType );
-        /* Registrate in list of the sock handles */
-        handles[ id ] = result;
-    }
-
-    return result;
+    return handles.find( id ) != handles.end()
+    ? handles[ aId ]
+    : -1;
 }
 
 
@@ -75,36 +78,17 @@ Sock* SockManager::getSock
 /*
     Close and destroy Sock by id
 */
-SockManager* SockManager::closeSock
-(
-    string  aSockId /* Sock id */
-)
+SockManager* SockManager::closeHandlesByThread()
 {
-    auto id = getId( aSockId );
-    auto result = getSock( id );
-
-    if( result != NULL )
+    auto mask =  getId( "" );
+    for( const auto&[ id, handle ] : handles )
     {
-        handles[ id ] -> destroy();
-        handles.erase( id );
+        if( id.find( mask ) != string::npos )
+        {
+            close( item.handle );
+        }
     }
     return this;
-}
-
-
-
-/*
-    Return sock object by user id for thread
-*/
-Sock* SockManager::findSock
-(
-    string  aId /* Sock id */
-)
-{
-    return
-    handles.find( aId ) != handles.end()
-    ? handles[ aId ]
-    : NULL;
 }
 
 
@@ -114,13 +98,13 @@ Sock* SockManager::findSock
 */
 string SockManager::getId
 (
-    string aSockId
+    string aUserId
 )
 {
     /* Get thread id */
     auto threadId = this_thread::get_id();
     /* Build id */
     stringstream s;
-    s << threadId << "@" << aSockId;
+    s << threadId << "@" << aUserId;
     return s.str();
 }
