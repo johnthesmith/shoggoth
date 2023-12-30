@@ -15,12 +15,20 @@ SockRpc::SockRpc
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    string          aIp,
+    int             aPort
+):
+Sock
+(
+    aSockManager,
+    aDomain,
+    aType,
+    aIp,
+    aPort
 )
 {
     logManager = aLogManager;
-    domain = aDomain;
-    type = aType;
 }
 
 
@@ -33,11 +41,20 @@ SockRpc* SockRpc::create
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
-
+    SocketType      aType,
+    string          aIp,
+    int             aPort
 )
 {
-    return new SockRpc( aLogManager, aSockManager, aDomain, aType );
+    return new SockRpc
+    (
+        aLogManager,
+        aSockManager,
+        aDomain,
+        aType,
+        aIp,
+        aPort
+    );
 }
 
 

@@ -10,17 +10,19 @@ ShoggothRpcServer::ShoggothRpcServer
 (
     Net*            aNet,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    int             aPort
 )
 :RpcServer
 (
     aNet -> getApplication() -> getLogManager(),
     aNet -> getSockManager(),
     aDomain,
-    aType
+    aType,
+    aPort
 )
 {
-    net         = aNet;
+    net = aNet;
     getLog() -> trace( "Shoggoth server created" ) -> lineEnd();
 }
 
@@ -41,13 +43,11 @@ ShoggothRpcServer::~ShoggothRpcServer()
 */
 ShoggothRpcServer* ShoggothRpcServer::create
 (
-    Net*            aNet,
-    SocketDomain    aDomain,
-    SocketType      aType
-
+    Net*    aNet,
+    int     aPort
 )
 {
-    return new ShoggothRpcServer( aNet, aDomain, aType );
+    return new ShoggothRpcServer( aNet, SD_INET, ST_TCP, aPort );
 }
 
 

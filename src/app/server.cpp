@@ -111,8 +111,7 @@ void Server::onResume()
 
     getLog() -> prm( "Listenen port", listenPort );
 
-    srv = ShoggothRpcServer::create( net );
-    srv -> setPort( listenPort );
+    srv = ShoggothRpcServer::create( net, listenPort );
 
     serverThread = new thread
     (

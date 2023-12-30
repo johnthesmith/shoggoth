@@ -61,7 +61,9 @@ class RpcClient : public SockRpc
             LogManager*,
             SockManager*,
             SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            SocketType          = ST_TCP,
+            string              = "127.0.0.1",
+            int                 = 42
         );
 
 
@@ -81,7 +83,10 @@ class RpcClient : public SockRpc
             LogManager*,
             SockManager*,
             SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            SocketType          = ST_TCP,
+            string              = "127.0.0.1",
+            int                 = 42
+
         );
 
 
@@ -140,26 +145,6 @@ class RpcClient : public SockRpc
             Method may be ovverided
         */
         RpcClient* onCallAfter();
-
-
-
-        /*
-            Override set port
-        */
-        RpcClient* setPort
-        (
-            unsigned short int  /* port */
-        );
-
-
-
-        /*
-            Override set ip
-        */
-        RpcClient* setIp
-        (
-            string  /* IP address */
-        );
 
 
 

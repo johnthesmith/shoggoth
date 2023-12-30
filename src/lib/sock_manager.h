@@ -1,7 +1,21 @@
+/*
+    Object for sock handles manager This object can be created at main application and
+    passed to Sock object constructor. Each sock uses this object to storing handles.
+    Main thread and children thread may create many Socks, but all Socks will use
+    single sock handle. This prevents the multiple WAIT_TIMOUT states for a port with
+    large number of requests.
+*/
+
 #pragma once
+
+
+/*
+    Sys libraries
+*/
 
 #include <string>
 #include <map>
+#include <mutex>
 
 
 
@@ -12,6 +26,8 @@ using namespace std;
 class SockManager
 {
     private:
+        /* Main mutex for synchronizing handles */
+        mutex sync;
 
         /* List of handles for threads */
         map
@@ -20,7 +36,6 @@ class SockManager
             int             /* sock handle */
         >
         handles;
-
 
         /*
             Return thread id for current payload

@@ -1096,6 +1096,7 @@ Layer* Layer::readValues()
     {
         char* buffer = NULL;
         size_t size = 0;
+
         io -> getAnswer() -> getData( "data", buffer, size );
         valuesFromBuffer( buffer, size );
         getLog() -> trace( "Read layer values" ) -> prm( "id", this -> getId() );

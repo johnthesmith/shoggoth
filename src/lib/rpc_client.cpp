@@ -1,7 +1,7 @@
 #include <iostream>
 #include "rpc_client.h"
 #include <cstring>
-
+#include "../json/param_list_log.h"
 
 using namespace std;
 
@@ -15,14 +15,18 @@ RpcClient::RpcClient
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    string          aIp,
+    int             aPort
 ):
 SockRpc
 (
     aLogManager,
     aSockManager,
     aDomain,
-    aType
+    aType,
+    aIp,
+    aPort
 )
 {
     request = ParamList::create();
@@ -41,6 +45,7 @@ RpcClient::~RpcClient()
 }
 
 
+
 /*
     Create client
 */
@@ -49,11 +54,21 @@ RpcClient* RpcClient::create
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    string          aIp,
+    int             aPort
 
 )
 {
-    return new RpcClient( aLogManager, aSockManager, aDomain, aType );
+    return new RpcClient
+    (
+        aLogManager,
+        aSockManager,
+        aDomain,
+        aType,
+        aIp,
+        aPort
+    );
 }
 
 
@@ -69,8 +84,15 @@ RpcClient* RpcClient::create
     unsigned int    aPort
 )
 {
-    auto result = new RpcClient( aLogManager, aSockManager );
-    result -> setIp( aIp) -> setPort( aPort );
+    auto result = new RpcClient
+    (
+        aLogManager,
+        aSockManager,
+        SD_INET,
+        ST_TCP,
+        aIp,
+        aPort
+    );
     return result;
 }
 
@@ -133,22 +155,17 @@ RpcClient* RpcClient::call()
 {
     if( isOk() )
     {
-        openHandle();
+        connect();
         if( isOk() )
         {
-            connect();
-            if( isOk() )
+            if( request != NULL )
             {
-                if( request != NULL )
-                {
-                    /* Send buffer to server */
-                    write( request );
-                    /* Read answer from server */
-                    read();
-                }
-            };
-        }
-        closeHandle();
+                /* Send buffer to server */
+                write( request );
+                /* Read answer from server */
+                read();
+            }
+        };
     }
     return this;
 }
@@ -243,35 +260,6 @@ RpcClient* RpcClient::onCallBefore()
 RpcClient* RpcClient::onCallAfter()
 {
 //    getLog() -> trace( "Client RPC on call after" ) -> lineEnd();
-    return this;
-}
-
-
-
-
-/*
-    Override set port
-*/
-RpcClient* RpcClient::setPort
-(
-    unsigned short int a    /* port */
-)
-{
-    SockRpc::setPort( a );
-    return this;
-}
-
-
-
-/*
-    Override set ip
-*/
-RpcClient* RpcClient::setIp
-(
-    string a    /* IP address */
-)
-{
-    SockRpc::setIp( a );
     return this;
 }
 

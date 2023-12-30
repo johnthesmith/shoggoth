@@ -21,14 +21,17 @@ RpcServer::RpcServer
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    int             aPort
 ):
 SockRpc
 (
     aLogManager,
     aSockManager,
     aDomain,
-    aType
+    aType,
+    "127.0.0.1",
+    aPort
 )
 {
 }
@@ -43,7 +46,8 @@ RpcServer* RpcServer::create
     LogManager*     aLogManager,
     SockManager*    aSockManager,
     SocketDomain    aDomain,
-    SocketType      aType
+    SocketType      aType,
+    int             aPort
 
 )
 {
@@ -52,7 +56,8 @@ RpcServer* RpcServer::create
         aLogManager,
         aSockManager,
         aDomain,
-        aType
+        aType,
+        aPort
     );
 }
 
@@ -63,8 +68,7 @@ RpcServer* RpcServer::create
 */
 RpcServer* RpcServer::up()
 {
-    openHandle() -> listen();
-
+    listen();
     if( !isOk() )
     {
         getLog()
@@ -82,7 +86,7 @@ RpcServer* RpcServer::up()
 RpcServer* RpcServer::down()
 {
     getLog() -> trace( "RPC server downing" ) -> lineEnd();
-    closeHandle();
+    disconnect();
     return this;
 }
 

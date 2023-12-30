@@ -75,9 +75,7 @@ class SockRpc : public Sock
     private:
 
         LogManager*     logManager  = NULL;
-        SockManager*    sockManager = NULL;
-        SocketDomain    domain      = SD_INET;
-        SocketType      type        = ST_TCP;
+
 
 
         /*
@@ -93,15 +91,18 @@ class SockRpc : public Sock
     public:
 
 
+
         /*
             Constructor
         */
         SockRpc
         (
             LogManager*,
-            SockManager*,
+            SockManager*        = NULL,
             SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            SocketType          = ST_TCP,
+            string              = "127.0.0.1",
+            int                 = 42
         );
 
 
@@ -114,7 +115,9 @@ class SockRpc : public Sock
             LogManager*,
             SockManager*,
             SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            SocketType          = ST_TCP,
+            string              = "127.0.0.1",
+            int                 = 42
         );
 
 

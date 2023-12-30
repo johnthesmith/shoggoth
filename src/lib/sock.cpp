@@ -5,11 +5,45 @@
 #include <fcntl.h>
 #include <vector>
 #include <cstring>
-#include "sock.h"
 
+#include "sock.h"
 #include "../lib/heap.h"
 #include "../lib/buffer_to_hex.h"
 
+
+
+/*
+    Constructor
+*/
+Sock::Sock
+(
+    SockManager*    aSockManager,
+    SocketDomain    aDomain,
+    SocketType      aType,
+    string          aIp,
+    int             aPort
+)
+{
+    /* Set arguments */
+    domain  = aDomain;
+    type    = aType;
+    ip      = aIp;
+    port    = aPort;
+
+    /* Creaate id */
+    id = ip + ":" + to_string( port );
+
+    /* Set or create handles */
+    if( aSockManager == NULL )
+    {
+        handles = SockManager::create();
+        privateSockManager = true;
+    }
+    else
+    {
+        handles = aSockManager;
+    }
+}
 
 
 
@@ -18,18 +52,54 @@
 */
 Sock::~Sock()
 {
-    closeHandle();
+    if( privateSockManager )
+    {
+        handles -> destroy();
+    }
     deleteBuffer();
 }
 
 
 
 /*
-    Create socket
+    Create socket for server
 */
-Sock* Sock::create()
+Sock* Sock::create
+(
+    SockManager*    aSockManager,
+    int             aPort    /* Port */
+)
 {
-    return new Sock();
+    return new Sock
+    (
+        aSockManager,
+        SD_INET,
+        ST_TCP,
+        "127.0.0.1",
+        aPort
+    );
+}
+
+
+
+/*
+    Create socket for client
+*/
+Sock* Sock::create
+(
+    SockManager*    aSockManager,
+    string          aIp,     /* Ip address */
+    int             aPort    /* Port */
+)
+{
+    return new Sock
+    (
+        aSockManager,
+        SD_INET,
+        ST_TCP,
+        aIp,
+        aPort
+    );
 }
 
 
@@ -46,140 +116,30 @@ void Sock::destroy()
 
 /*
     Open socket handle
+    Or return exists handle
 */
-Sock* Sock::openHandle
-(
-    SocketDomain        aDomain,
-    SocketType          aType
-)
+Sock* Sock::openHandle()
 {
-    if( isOk() && !isOpen() )
-    {
-        domain  = aDomain;
-        handle = socket( aDomain, aType, 0 );
+    handle = -1;
 
-        if( !isOpen() )
+    if( isOk())
+    {
+        handle = handles -> getHandle( id );
+
+        if( handle == -1 )
         {
-            setCode( "SocketCreateError" );
-        }
-    }
-    return this;
-}
-
-
-
-/*
-    Close socket handle if they was opened
-*/
-Sock* Sock::closeHandle()
-{
-    if( isOpen() )
-    {
-        close( handle );
-        handle = -1;
-        connected = false;
-    }
-    return this;
-}
-
-
-
-/*
-    The object has a socket handle
-    Return true when handle contains positive value
-*/
-
-bool Sock::isOpen()
-{
-    return handle >= 0;
-}
-
-
-
-/*
-    Connect to remote host
-*/
-Sock* Sock::connect()
-{
-    if( isOk() )
-    {
-        if( isOpen() )
-        {
-            /* On before */
-            onConnectBefore();
-
-            /* Create address structure */
-            struct sockaddr_in addr;
-            addr.sin_family = domain;
-            addr.sin_port = htons( port );
-            addr.sin_addr.s_addr = Sock::stringToIp( ip );
-
-            /* Connection begin */
-            connected =
-            ::connect( handle, (struct sockaddr *)&addr, sizeof( addr ) ) != -1
-            || errno == EINPROGRESS;
-
-            if( isConnected() )
+            handle = socket( domain, type, 0 );
+            if( handle > -1 )
             {
-                /* Connection waiting. black magic */
-                fd_set writeSet;
-                FD_ZERO( &writeSet );
-                FD_SET( handle, &writeSet );
-
-                /* Connection waiting timeout */
-                timeval timeout{};
-                timeout.tv_sec = 1;
-
-                /* Connection progress waiting */
-                int selectResult = select( handle + 1, NULL, &writeSet, NULL, &timeout);
-
-                /* Check connection waiting results */
-                if( selectResult == -1 )
-                {
-                    setCode( "ConnectionWaitingError" );
-                    connected = false;
-                }
-                else if( selectResult == 0 )
-                {
-                    setCode( "ConnectionTimeout" );
-                    connected = false;
-                }
+                handles -> addHandle( id, handle );
             }
             else
             {
-                setCode( "ConnectError" );
+                setCode( "SocketCreateError" );
             }
-
-            /* Conenction events */
-            if( isConnected() )
-            {
-                onConnectSuccess();
-            }
-            else
-            {
-                onConnectError();
-            }
-
-            /* On after */
-            onConnectAfter();
-        }
-        else
-        {
-            setCode( "SocketIsNotOpen" );
         }
     }
 
-    return this;
-}
-
-
-
-/*
-    Connect to remote host
-*/
-Sock* Sock::disconnect()
-{
-    closeHandle();
     return this;
 }
 
@@ -192,7 +152,9 @@ Sock* Sock::listen()
 {
     if( isOk() )
     {
-        if( isOpen() )
+        openHandle();
+
+        if( isOk() )
         {
             /* Nonblock socket enabled */
             fcntl( handle, F_SETFL, O_NONBLOCK);
@@ -225,15 +187,13 @@ Sock* Sock::listen()
                 {
                     setCode( "ServerListenError" );
                 }
+                else
+                {
+                    connected = true;
+                }
             }
 
-            /* Listen loop */
-            if( isOk() )
-            {
-                connected = true;
-            }
-
-            while( isOpen() && isOk() )
+            while( isOk() && isConnected())
             {
                 /* create FD_SET - list of events */
                 fd_set readset;             /* Define the structure */
@@ -337,6 +297,93 @@ Sock* Sock::listen()
 
 
 /*
+    Connect socket
+*/
+Sock* Sock::connect()
+{
+    if( isOk() )
+    {
+        openHandle();
+
+        if( isOk() )
+        {
+            /* On before */
+            onConnectBefore();
+
+            /* Create address structure */
+            struct sockaddr_in addr;
+            addr.sin_family = domain;
+            addr.sin_port = htons( port );
+            addr.sin_addr.s_addr = Sock::stringToIp( ip );
+
+            /* Connection begin */
+
+            int c = ::connect( handle, ( struct sockaddr *)&addr, sizeof( addr ) );
+            connected = c != -1 || errno == 106 || errno == EINPROGRESS;
+
+            if( isConnected() )
+            {
+                /* Connection waiting. black magic */
+                fd_set writeSet;
+                FD_ZERO( &writeSet );
+                FD_SET( handle, &writeSet );
+
+                /* Connection waiting timeout */
+                timeval timeout{};
+                timeout.tv_sec = 1;
+
+                /* Connection progress waiting */
+                int selectResult = select
+                (
+                    handle + 1,
+                    NULL,
+                    &writeSet,
+                    NULL,
+                    &timeout
+                );
+
+                /* Check connection waiting results */
+                if( selectResult == -1 )
+                {
+                    setCode( "ConnectionWaitingError" );
+                    connected = false;
+                }
+                else if( selectResult == 0 )
+                {
+                    setCode( "ConnectionTimeout" );
+                    connected = false;
+                }
+            }
+            else
+            {
+                setCode( "ConnectError" );
+            }
+
+            /* Conenction events */
+            if( isConnected() )
+            {
+                onConnectSuccess();
+            }
+            else
+            {
+                onConnectError();
+            }
+
+            /* On after */
+            onConnectAfter();
+        }
+        else
+        {
+            setCode( "SocketIsNotOpen" );
+        }
+    }
+
+    return this;
+}
+
+
+
+/*
     Write buffer to socket
 */
 Sock* Sock::write
@@ -427,7 +474,13 @@ Sock* Sock::readInternal
                 while( read )
                 {
                     auto item = buffer -> add( packetSize );
-                    auto bytesRead = recv( aHandle, item -> getPointer(), packetSize, 0 );
+                    auto bytesRead = recv
+                    (
+                        aHandle,
+                        item -> getPointer(),
+                        packetSize,
+                        0
+                    );
                     if( bytesRead > 0 )
                     {
                         item -> setReadSize( bytesRead );
@@ -448,16 +501,6 @@ Sock* Sock::readInternal
         }
     }
     return this;
-}
-
-
-
-/*
-    Return true if socket connected
-*/
-bool Sock::isConnected()
-{
-    return connected;
 }
 
 
@@ -518,53 +561,6 @@ Sock* Sock::deleteBuffer()
 */
 
 
-/*
-    Set ip address
-*/
-Sock* Sock::setIp
-(
-    string a    /* ip address */
-)
-{
-    ip = a;
-    return this;
-}
-
-
-
-/*
-    Return ip address
-*/
-string Sock::getIp()
-{
-    return ip;
-}
-
-
-
-/*
-    Set port
-*/
-Sock* Sock::setPort
-(
-    unsigned short int a    /* port */
-)
-{
-    port = a;
-    return this;
-}
-
-
-
-/*
-    Return port
-*/
-unsigned short int Sock::getPort()
-{
-    return port;
-}
-
-
 
 /*
     Set packet size
@@ -590,12 +586,47 @@ unsigned int Sock::getPacketSize()
 
 
 
+bool Sock::isConnected()
+{
+    return connected;
+}
+
+
+
+/*
+    Set connected false and stop server lisener
+*/
+Sock* Sock::disconnect()
+{
+    connected = false;
+    return this;
+}
+
+
+
+/*
+    Return IP address
+*/
+string Sock::getIp()
+{
+    return ip;
+}
+
+
+
+/*
+    Return port
+*/
+int Sock::getPort()
+{
+    return port;
+}
+
+
 
 /******************************************************************************
     Events
 */
-
-
 
 
 /*
@@ -715,4 +746,7 @@ Sock* Sock::onListenAfter
 {
     return this;
 }
+
+
+
 

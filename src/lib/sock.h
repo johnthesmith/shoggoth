@@ -12,6 +12,7 @@
 
 #include "result.h"
 #include "sock_buffer.h"
+#include "sock_manager.h"
 
 
 /* Predeclaration sock for events definitions */
@@ -48,6 +49,7 @@ struct Сonnections
 };
 
 
+
 /*
     Socket class definition
 */
@@ -57,30 +59,59 @@ class Sock : public Result
 
         vector <Сonnections> connections;                  /* list of handles */
 
-        int                 handle              = -1;       /* handle of socket */
-        SocketDomain        domain              = SD_INET;
+        /*
+            State
+        */
+        bool                privateSockManager  = false;
+        int                 handle              = -1;       /* Handle after openHandle method */
+        SockManager*        handles             = NULL;     /* handles */
         unsigned int        queueSize           = 50;       /* Resuest queue size */
         unsigned int        packetSize          = 512;      /* Data packet size */
         bool                connected           = false;
-
-        char*               resultBuffer        =  NULL;
+        char*               resultBuffer        = NULL;
         unsigned int        resultBufferSize    = 0;
         string              remoteAddress       = "";
+        string              id                  = "";       /* Socket id for handles */
+
+        /*
+            Arguments
+        */
+        SocketDomain        domain              = SD_INET;
+        SocketType          type                = ST_TCP;
         string              ip                  = "127.0.0.1";
-        unsigned short int  port                = 42;
+        int                 port                = 42;
+
+        /*
+            Create socket handle
+        */
+        Sock* openHandle();
 
 
-    /*
-        Read beffer
-    */
-    Sock* readInternal
-    (
-        int,        /* request handle */
-        string = "" /* remote ip address */
-    );
+
+        /*
+            Read beffer
+        */
+        Sock* readInternal
+        (
+            int,        /* request handle */
+            string = "" /* remote ip address */
+        );
 
 
     public:
+
+
+    /*
+        Constructor
+    */
+    Sock
+    (
+        SockManager*    = NULL,
+        SocketDomain    = SD_INET,
+        SocketType      = ST_TCP,
+        string          = "127.0.0.1",
+        int             = 42
+    );
 
 
 
@@ -92,9 +123,26 @@ class Sock : public Result
 
 
     /*
-        Create socket
+        Create socket for server
     */
-    static Sock* create();
+    static Sock* create
+    (
+        SockManager*,   /* Sock manager */
+        int             /* Port */
+    );
+
+
+
+    /*
+        Create socket for client
+    */
+    Sock* create
+    (
+        SockManager*,   /* Sock manager */
+        string,         /* Ip address */
+        int             /* Port */
+    );
+
 
 
 
@@ -106,36 +154,17 @@ class Sock : public Result
 
 
     /*
-        Create socket handle
-    */
-    Sock* openHandle
-    (
-        SocketDomain        = SD_INET,
-        SocketType          = ST_TCP
-    );
-
-
-
-    /*
-        Close socket handle if they was opened
-    */
-    Sock* closeHandle();
-
-
-
-    /*
-        Socket is created
-        Return true when handle contains positive value
-    */
-    bool isOpen();
-
-
-
-    /*
         Socket connected status
         Return true when socket connected
     */
     bool isConnected();
+
+
+
+    /*
+        Set connected false and stop server lisener
+    */
+    Sock* disconnect();
 
 
 
@@ -150,20 +179,6 @@ class Sock : public Result
         Socket connect to server like client
     */
     Sock* connect();
-
-
-
-    /*
-        Disconnect from remote host or listen mode
-    */
-    Sock* disconnect();
-
-
-
-    /*
-        Disconnect
-    */
-    Sock* down();
 
 
 
@@ -218,41 +233,6 @@ class Sock : public Result
 
 
 
-
-    /*
-        Set ip address
-    */
-    Sock* setIp
-    (
-        string /* ip address */
-    );
-
-
-
-    /*
-        Return ip address
-    */
-    string getIp();
-
-
-
-    /*
-        Set port
-    */
-    virtual Sock* setPort
-    (
-        unsigned short int  /* port */
-    );
-
-
-
-    /*
-        Return port
-    */
-    unsigned short int getPort();
-
-
-
     /*
         Set packet size
     */
@@ -278,6 +258,19 @@ class Sock : public Result
     */
     string getRemoteAddress();
 
+
+
+    /*
+        Return IP address
+    */
+    string getIp();
+
+
+
+    /*
+        Return port
+    */
+    int getPort();
 
 
     /******************************************************************************

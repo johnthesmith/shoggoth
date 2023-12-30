@@ -21,7 +21,8 @@ class ShoggothRpcServer : public RpcServer
         (
             Net*,
             SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            SocketType          = ST_TCP,
+            int                 = 11120
         );
 
 
@@ -38,9 +39,8 @@ class ShoggothRpcServer : public RpcServer
         */
         static ShoggothRpcServer* create
         (
-            Net*,
-            SocketDomain        = SD_INET,
-            SocketType          = ST_TCP
+            Net*,   /* Net object */
+            int     /* Port */
         );
 
 
