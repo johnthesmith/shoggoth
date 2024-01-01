@@ -19,7 +19,8 @@
 */
 struct SockRpcHeader
 {
-    char            prefix[ 8 ]     = { 'H', 'R', 'E', 'N', 'O', 'V', 'I', 'N' };    /* Initialize with "hren" */
+    /* Initialize with "hrenovin" */
+    char            prefix[ 8 ]     = { 'H', 'R', 'E', 'N', 'O', 'V', 'I', 'N' };
     size_t          argumentsSize   = 0;
 
 

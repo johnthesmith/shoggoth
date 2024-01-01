@@ -108,6 +108,13 @@ class Application : public Result
 
 
         /*
+            End of thread
+        */
+        virtual Application* onThreadAfter();
+
+
+
+        /*
             Return log object
         */
         Log* getLog();

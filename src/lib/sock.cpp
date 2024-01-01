@@ -31,7 +31,7 @@ Sock::Sock
     port    = aPort;
 
     /* Creaate id */
-    id = ip + ":" + to_string( port );
+    id = getId();
 
     /* Set or create handles */
     if( aSockManager == NULL )
@@ -152,144 +152,154 @@ Sock* Sock::listen()
 {
     if( isOk() )
     {
-        openHandle();
-
-        if( isOk() )
+        /* Search handle */
+        handle = handles -> getHandle( id );
+        if( handle == -1 )
         {
-            /* Nonblock socket enabled */
-            fcntl( handle, F_SETFL, O_NONBLOCK);
-
-            onListenBefore( port );
-
-            struct sockaddr_in addr;
-            addr.sin_family = domain;
-            addr.sin_port = htons( port );
-            addr.sin_addr.s_addr = htonl( INADDR_ANY );
-
-            /* bind socket */
-            auto r = bind
-            (
-                handle,
-                ( struct sockaddr* )&addr,
-                sizeof( addr )
-            );
-            if( r < 0 )
+            /* Create handle */
+            handle = socket( domain, type, 0 );
+            if( handle == -1 )
             {
-                setCode( "ServerCreateError" );
+                setCode( "ErrorOpenHandleForListen" );
+            }
+
+            if( isOk())
+            {
+                /* Nonblock socket enabled */
+                fcntl( handle, F_SETFL, O_NONBLOCK);
+
+                struct sockaddr_in addr;
+                addr.sin_family = domain;
+                addr.sin_port = htons( port );
+                addr.sin_addr.s_addr = htonl( INADDR_ANY );
+
+                /* bind socket */
+                if
+                (
+                    bind
+                    (
+                        handle,
+                        ( struct sockaddr* )&addr,
+                        sizeof( addr )
+                    ) < 0
+                )
+                {
+                    setCode( "ServerCreateError" );
+                }
             }
 
             /* Listen socket */
             if( isOk() )
             {
-                r = ::listen( handle, queueSize );
-
-                if( r < 0 )
+                onListenBefore( port );
+                if( ::listen( handle, queueSize ) < 0 )
                 {
                     setCode( "ServerListenError" );
                 }
                 else
                 {
-                    connected = true;
+                    handles -> addHandle( id, handle );
+                }
+            }
+        }
+
+        while( isOk() && isConnected() )
+        {
+            /* create FD_SET - list of events */
+            fd_set readset;             /* Define the structure */
+            FD_ZERO( &readset );        /* Clear structure */
+            FD_SET( handle, &readset ); /* Add listener handle to structure */
+
+            /* Define max handle */
+            int maxHandle = handle;
+
+            /* Add clients handles to structure */
+            for( auto connection : connections )
+            {
+                FD_SET( connection.handle, &readset );
+                maxHandle = max( maxHandle, connection.handle );
+            }
+
+            /* Define exception timout */
+            timeval timeout;
+            timeout.tv_sec = 2;
+            timeout.tv_usec = 0;
+
+            /* Select events for handles */
+            auto selectResult = select
+            (
+                maxHandle + 1, &readset, NULL, NULL, &timeout
+            );
+
+            /* Check selected results */
+            switch( selectResult )
+            {
+                case-1:
+                    setCode( "ConnectionWaitingError" );
+                break;
+                case 0:
+//                        setCode( "ConnectionTimeout" );
+                break;
+            }
+
+            /* Check servers handle in structure */
+            if( isOk() && FD_ISSET( handle, &readset ))
+            {
+                /* New connection */
+                /* Define address structiure and his size */
+                struct sockaddr remoteAddressStruct;
+                unsigned int remoteSize = sizeof( remoteAddressStruct );
+
+                /* The socket waiting request */
+                int request = accept
+                (
+                    handle,
+                    &remoteAddressStruct,
+                    &remoteSize
+                );
+
+                if( request > 0 )
+                {
+                    /* Make request socket unblocked */
+                    fcntl( request, F_SETFL, O_NONBLOCK);
+                    /* Registrate new client connection */
+                    connections.push_back
+                    (
+                        Сonnections
+                        {
+                            request,
+                            ipToString
+                            (
+                                (( sockaddr_in* ) &remoteAddressStruct )
+                                -> sin_addr.s_addr
+                            )
+                        }
+                    );
                 }
             }
 
-            while( isOk() && isConnected())
+            /* Read clients data */
+            if( isOk() )
             {
-                /* create FD_SET - list of events */
-                fd_set readset;             /* Define the structure */
-                FD_ZERO( &readset );        /* Clear structure */
-                FD_SET( handle, &readset ); /* Add listener handle to structure */
-
-                /* Define max handle */
-                int maxHandle = handle;
-
-                /* Add clients handles to structure */
-                for( auto connection : connections )
+                for( int i = 0; i < connections.size(); i++ )
                 {
-                    FD_SET( connection.handle, &readset );
-                    maxHandle = max( maxHandle, connection.handle );
-                }
-
-                /* Define exception timout */
-                timeval timeout;
-                timeout.tv_sec = 2;
-                timeout.tv_usec = 0;
-
-                /* Select events for handles */
-                auto selectResult = select
-                (
-                    maxHandle + 1, &readset, NULL, NULL, &timeout
-                );
-
-                /* Check selected results */
-                switch( selectResult )
-                {
-                    case-1:
-                        setCode( "ConnectionWaitingError" );
-                    break;
-                    case 0:
-//                        setCode( "ConnectionTimeout" );
-                    break;
-                }
-
-                /* Check servers handle in structure */
-                if( isOk() && FD_ISSET( handle, &readset ))
-                {
-                    /* New connection */
-                    /* Define address structiure and his size */
-                    struct sockaddr remoteAddressStruct;
-                    unsigned int remoteSize = sizeof( remoteAddressStruct );
-
-                    /* The socket waiting request */
-                    int request = accept
-                    (
-                        handle,
-                        &remoteAddressStruct,
-                        &remoteSize
-                    );
-
-                    if( request > 0 )
+                    auto connection = connections[ i ];
+                    if( FD_ISSET( connection.handle, &readset ))
                     {
-                        /* Make request socket unblocked */
-                        fcntl( request, F_SETFL, O_NONBLOCK);
-                        /* Registrate new client connection */
-                        connections.push_back
+                        /* Client data read */
+                        if
                         (
-                            Сonnections
-                            {
-                                request,
-                                ipToString
-                                (
-                                    (( sockaddr_in* ) &remoteAddressStruct )
-                                    -> sin_addr.s_addr
-                                )
-                            }
-                        );
-                    }
-                }
-
-                /* Read clients data */
-                if( isOk() )
-                {
-                    for( int i = 0; i < connections.size(); i++ )
-                    {
-                        auto connection = connections[ i ];
-                        if( FD_ISSET( connection.handle, &readset ))
+                            !readInternal( connection.handle, connection.address )
+                        )
                         {
-                            /* Client data read */
-                            readInternal( connection.handle, connection.address );
                             close( connection.handle );
                             connections.erase( connections.begin() + i );
                         }
                     }
                 }
             }
-            onListenAfter( port );
         }
-        else
-        {
-            setCode( "SocketIsNotOpen" );
-        }
+        onListenAfter( port );
     }
     return this;
 }
@@ -303,78 +313,88 @@ Sock* Sock::connect()
 {
     if( isOk() )
     {
-        openHandle();
-
-        if( isOk() )
+        /* Search handle for current users parameters ip port etc */
+        handle = handles -> getHandle( id );
+        if( handle == -1 )
         {
-            /* On before */
-            onConnectBefore();
-
-            /* Create address structure */
-            struct sockaddr_in addr;
-            addr.sin_family = domain;
-            addr.sin_port = htons( port );
-            addr.sin_addr.s_addr = Sock::stringToIp( ip );
-
-            /* Connection begin */
-
-            int c = ::connect( handle, ( struct sockaddr *)&addr, sizeof( addr ) );
-            connected = c != -1 || errno == 106 || errno == EINPROGRESS;
-
-            if( isConnected() )
+            handle = socket( domain, type, 0 );
+            if( handle > -1 )
             {
-                /* Connection waiting. black magic */
-                fd_set writeSet;
-                FD_ZERO( &writeSet );
-                FD_SET( handle, &writeSet );
+                /* On before */
+                onConnectBefore();
 
-                /* Connection waiting timeout */
-                timeval timeout{};
-                timeout.tv_sec = 1;
+                /* Create address structure */
+                struct sockaddr_in addr;
+                addr.sin_family = domain;
+                addr.sin_port = htons( port );
+                addr.sin_addr.s_addr = Sock::stringToIp( ip );
 
-                /* Connection progress waiting */
-                int selectResult = select
+                /* Connection begin */
+                int c = ::connect
                 (
-                    handle + 1,
-                    NULL,
-                    &writeSet,
-                    NULL,
-                    &timeout
+                    handle,
+                    ( struct sockaddr *)&addr, sizeof( addr )
                 );
 
-                /* Check connection waiting results */
-                if( selectResult == -1 )
+                if
+                (
+                    c != -1 || errno == EINPROGRESS
+                )
                 {
-                    setCode( "ConnectionWaitingError" );
-                    connected = false;
+                    /* Connection waiting. black magic */
+                    fd_set writeSet;
+                    FD_ZERO( &writeSet );
+                    FD_SET( handle, &writeSet );
+
+                    /* Connection waiting timeout */
+                    timeval timeout{};
+                    timeout.tv_sec = 1;
+
+                    /* Connection progress waiting */
+                    int selectResult = select
+                    (
+                        handle + 1,
+                        NULL,
+                        &writeSet,
+                        NULL,
+                        &timeout
+                    );
+
+                    /* Check connection waiting results */
+                    if( selectResult == -1 )
+                    {
+                        setCode( "ConnectionWaitingError" );
+                    }
+                    else if( selectResult == 0 )
+                    {
+                        setCode( "ConnectionTimeout" );
+                    }
                 }
-                else if( selectResult == 0 )
+                else
                 {
-                    setCode( "ConnectionTimeout" );
-                    connected = false;
+                    setCode( "ConnectError" );
                 }
+
+                /* Conenction events */
+                if( isOk() )
+                {
+                    /* Add handle to handles */
+                    handles -> addHandle( id, handle );
+                    onConnectSuccess();
+                }
+
+                /* On after */
+                onConnectAfter();
             }
             else
             {
-                setCode( "ConnectError" );
+                setCode( "SocketCreateError" );
             }
 
-            /* Conenction events */
-            if( isConnected() )
-            {
-                onConnectSuccess();
-            }
-            else
+            if( !isOk() )
             {
                 onConnectError();
             }
-
-            /* On after */
-            onConnectAfter();
-        }
-        else
-        {
-            setCode( "SocketIsNotOpen" );
         }
     }
 
@@ -450,12 +470,14 @@ Sock* Sock::read()
 /*
     Read beffer
 */
-Sock* Sock::readInternal
+bool Sock::readInternal
 (
     int aHandle,    /* request handle */
     string aIp      /* remote ip address */
 )
 {
+    bool result = true;
+
     if( isOk() )
     {
         if( onReadBefore( aIp ))
@@ -474,13 +496,15 @@ Sock* Sock::readInternal
                 while( read )
                 {
                     auto item = buffer -> add( packetSize );
-                    auto bytesRead = recv
+                    int bytesRead = 0;
+                    bytesRead = recv
                     (
                         aHandle,
                         item -> getPointer(),
                         packetSize,
                         0
                     );
+
                     if( bytesRead > 0 )
                     {
                         item -> setReadSize( bytesRead );
@@ -493,14 +517,14 @@ Sock* Sock::readInternal
                 }
 
                 /* Finall call onReadAfter */
-                onReadAfter( buffer, aHandle );
+                result = onReadAfter( buffer, aHandle );
 
                 /* Destroy buffer */
                 buffer -> destroy();
             }
         }
     }
-    return this;
+    return result;
 }
 
 
@@ -586,19 +610,13 @@ unsigned int Sock::getPacketSize()
 
 
 
-bool Sock::isConnected()
-{
-    return connected;
-}
-
-
 
 /*
     Set connected false and stop server lisener
 */
 Sock* Sock::disconnect()
 {
-    connected = false;
+    handles -> closeHandlesByThread( id );
     return this;
 }
 
@@ -622,6 +640,12 @@ int Sock::getPort()
     return port;
 }
 
+
+
+bool Sock::isConnected()
+{
+    return handles -> getHandle( id ) != -1;
+}
 
 
 /******************************************************************************
@@ -709,14 +733,14 @@ bool Sock::onRead
     On after read
     Method may be overrided
 */
-Sock* Sock::onReadAfter
+bool Sock::onReadAfter
 (
     SockBuffer*,    /* buffer */
     int             /* Handle for remote connection */
 )
 {
     /* Empty */
-    return this;
+    return true;
 }
 
 
@@ -750,3 +774,7 @@ Sock* Sock::onListenAfter
 
 
 
+string Sock::getId()
+{
+    return ip + ":" + to_string( port );
+}

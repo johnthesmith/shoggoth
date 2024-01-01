@@ -117,7 +117,7 @@ bool RpcClient::onReadBefore
     On after read
     Method may be overrided
 */
-RpcClient* RpcClient::onReadAfter
+bool RpcClient::onReadAfter
 (
     SockBuffer* aBuffer, /* buffer */
     int
@@ -138,7 +138,7 @@ RpcClient* RpcClient::onReadAfter
     {
         getLog() -> warning( "RPC server sent invalid header for RPC client" );
     }
-    return this;
+    return true;
 }
 
 

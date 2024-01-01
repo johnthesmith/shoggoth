@@ -170,3 +170,15 @@ SockManager* ShoggothApplication::getSockManager()
 {
     return sockManager;
 }
+
+
+
+/*
+    End of thread
+*/
+ShoggothApplication* ShoggothApplication::onThreadAfter()
+{
+    getSockManager() -> closeHandlesByThread( "" );
+    return this;
+}
+

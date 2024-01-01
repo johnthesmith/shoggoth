@@ -67,7 +67,6 @@ class Sock : public Result
         SockManager*        handles             = NULL;     /* handles */
         unsigned int        queueSize           = 50;       /* Resuest queue size */
         unsigned int        packetSize          = 512;      /* Data packet size */
-        bool                connected           = false;
         char*               resultBuffer        = NULL;
         unsigned int        resultBufferSize    = 0;
         string              remoteAddress       = "";
@@ -91,7 +90,7 @@ class Sock : public Result
         /*
             Read beffer
         */
-        Sock* readInternal
+        bool readInternal
         (
             int,        /* request handle */
             string = "" /* remote ip address */
@@ -273,6 +272,13 @@ class Sock : public Result
     int getPort();
 
 
+
+    /*
+        Return id for port and ip
+    */
+    string getId();
+
+
     /******************************************************************************
         Events
     */
@@ -336,7 +342,7 @@ class Sock : public Result
         On after read
         Method may be overrided
     */
-    virtual Sock* onReadAfter
+    virtual bool onReadAfter
     (
         SockBuffer*,    /* Buffers */
         int             /* Handle for remote connection */
@@ -363,4 +369,8 @@ class Sock : public Result
     (
         unsigned short int /* Port */
     );
+
+
+
+    
 };

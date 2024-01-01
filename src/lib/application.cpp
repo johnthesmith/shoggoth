@@ -158,3 +158,15 @@ Log* Application::getLog()
 {
     return getLogManager() -> getLog();
 }
+
+
+
+
+/*
+    End of thread
+*/
+Application* Application::onThreadAfter()
+{
+    return this;
+}
+

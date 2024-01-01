@@ -92,5 +92,13 @@ class ShoggothApplication : public Application
 
 
         SockManager* getSockManager();
+
+
+        /*
+            End of thread
+        */
+        ShoggothApplication* onThreadAfter();
+
+
 };
 

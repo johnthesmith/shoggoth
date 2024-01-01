@@ -91,9 +91,12 @@ int SockManager::getHandle
 /*
     Close and destroy Sock by id
 */
-SockManager* SockManager::closeHandlesByThread()
+SockManager* SockManager::closeHandlesByThread
+(
+    string aId
+)
 {
-    auto mask =  getId( "" );
+    auto mask =  getId( aId );
 
     map
     <

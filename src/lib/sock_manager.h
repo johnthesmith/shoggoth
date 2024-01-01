@@ -98,5 +98,8 @@ class SockManager
         /*
             Close and destroy sock
         */
-        SockManager* closeHandlesByThread();
+        SockManager* closeHandlesByThread
+        (
+            string = ""
+        );
 };

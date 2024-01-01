@@ -110,6 +110,7 @@ Payload* Payload::run
                     application -> createThreadLog( id );
                     /* Run work */
                     onRun();
+                    application -> onThreadAfter();
                     application -> destroyThreadLog();
                 }
             );
@@ -151,6 +152,7 @@ Payload* Payload::loop
                     /* Run loop */
                     internalLoop();
                     /* Destroy and nullate log */
+                    application -> onThreadAfter();
                     application -> destroyThreadLog();
                 }
             );

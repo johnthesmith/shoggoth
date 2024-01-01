@@ -113,12 +113,13 @@ bool RpcServer::onReadBefore
     On after read
     Method may be overrided
 */
-RpcServer* RpcServer::onReadAfter
+bool RpcServer::onReadAfter
 (
     SockBuffer* aBuffer,    /* buffer */
     int aHandle             /* handle of the client socket */
 )
 {
+    auto result = true;
     auto header = SockRpcHeader::create( aBuffer );
     if( header.isValid() )
     {
@@ -154,8 +155,9 @@ RpcServer* RpcServer::onReadAfter
     else
     {
         getLog() -> warning( "Header is not valid" ) -> lineEnd();
+        result = false;
     }
-    return this;
+    return result;
 }
 
 

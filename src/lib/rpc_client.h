@@ -44,7 +44,7 @@ class RpcClient : public SockRpc
             On after read
             Method may not be overrided
         */
-        virtual RpcClient* onReadAfter
+        virtual bool onReadAfter
         (
             SockBuffer*,    /* Buffers */
             int             /* handle of server conenction */
