@@ -10,7 +10,8 @@
 #include <sys/socket.h>
 #include <functional>       /* for lyambda */
 
-#include "result.h"
+#include "../lib/result.h"
+
 #include "sock_buffer.h"
 #include "sock_manager.h"
 

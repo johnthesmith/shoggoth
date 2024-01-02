@@ -14,7 +14,7 @@
 #include "../lib/result.h"
 #include "../json/param_list_file.h"
 #include "../graph/scene.h"
-#include "../lib/rpc_client.h"
+#include "../sock/rpc_client.h"
 
 #include "layer_list.h"
 #include "nerve_list.h"

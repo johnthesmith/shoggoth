@@ -25,6 +25,7 @@ echo "" >> processor.log
 ./shab header "Obj building"
 ./shab build "src/lib/*.cpp"
 ./shab build "src/json/*.cpp"
+./shab build "src/sock/*.cpp"
 ./shab build "src/graph/*.cpp"
 ./shab build "src/shoggoth/*.cpp"
 ./shab build "src/app/*.cpp"

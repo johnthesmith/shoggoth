@@ -1,4 +1,4 @@
-#include "../lib/rpc_server.h"
+#include "../sock/rpc_server.h"
 
 #include "shoggoth_consts.h"
 #include "sync.h"

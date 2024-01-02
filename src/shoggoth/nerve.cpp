@@ -1,7 +1,7 @@
 #include "nerve.h"
 
 #include "../lib/rnd.h"
-#include "../lib/rpc_client.h"
+#include "../sock/rpc_client.h"
 
 #include "net.h"
 #include "layer.h"

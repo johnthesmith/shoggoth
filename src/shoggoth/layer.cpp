@@ -4,7 +4,7 @@
 
 #include "../graph/point3.h"
 #include "../graph/log_points.h"
-#include "../lib/rpc_client.h"
+#include "../sock/rpc_client.h"
 
 #include "func.h"
 #include "io.h"

@@ -325,6 +325,3 @@ Io* Io::fileReadWeights()
 {
     return this;
 }
-
-
-

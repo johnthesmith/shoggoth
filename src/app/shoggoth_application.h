@@ -2,7 +2,7 @@
 
 /* Local libraries */
 #include "../lib/application.h"
-#include "../lib/sock_manager.h"
+#include "../sock/sock_manager.h"
 
 
 using namespace std;

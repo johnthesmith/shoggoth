@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "rpc_server.h"
-#include "buffer_to_hex.h"
+#include "../lib/buffer_to_hex.h"
 #include "../json/param_list_log.h"
 
 
