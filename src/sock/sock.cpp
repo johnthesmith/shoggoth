@@ -421,7 +421,6 @@ Sock* Sock::write
         }
         else
         {
-cout << aSize << " sock1\n";
             if
             (
                 send
@@ -429,13 +428,12 @@ cout << aSize << " sock1\n";
                     aHandle == -1 ? handle : aHandle,
                     aBuffer,
                     aSize,
-                    MSG_NOSIGNAL
+                    MSG_NOSIGNAL    /* Prevent SIGPIPE */
                 ) < 0
             )
             {
                 setCode( "SocketWriteError" );
             }
-cout << "sock2\n";
         }
     }
 
