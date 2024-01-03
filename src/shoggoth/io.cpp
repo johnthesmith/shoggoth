@@ -92,7 +92,7 @@ Io* Io::call
             int     port = config -> getInt( "port" );
 
             /* Server operation */
-            auto rpc = RpcClient::create
+            RpcClient::create
             (
                 getApplication() -> getLogManager(),
                 net -> getSockManager(),
@@ -101,10 +101,9 @@ Io* Io::call
             )
             -> setRequest( request )
             -> setAnswer( answer )
-            -> call( aCommand );
-
-            rpc -> resultTo( this );
-            rpc -> destroy();
+            -> call( aCommand )
+            -> resultTo( this )
+            -> destroy();
         }
 
         /*

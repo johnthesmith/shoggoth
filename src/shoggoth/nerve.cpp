@@ -416,7 +416,6 @@ Nerve* Nerve::readWeights()
     -> getRequest()
     -> setString( "idFrom", parent -> getId())
     -> setString( "idTo", child -> getId());
-
     if( io -> call( CMD_READ_WEIGHTS ) -> isOk() )
     {
         char* buffer = NULL;
@@ -427,7 +426,6 @@ Nerve* Nerve::readWeights()
             readFromBuffer( buffer, size );
         }
     }
-
     io -> destroy();
 
     return this;

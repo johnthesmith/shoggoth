@@ -421,6 +421,7 @@ Sock* Sock::write
         }
         else
         {
+cout << aSize << " sock1\n";
             if
             (
                 send
@@ -428,12 +429,13 @@ Sock* Sock::write
                     aHandle == -1 ? handle : aHandle,
                     aBuffer,
                     aSize,
-                    0
+                    MSG_NOSIGNAL
                 ) < 0
             )
             {
                 setCode( "SocketWriteError" );
             }
+cout << "sock2\n";
         }
     }
 

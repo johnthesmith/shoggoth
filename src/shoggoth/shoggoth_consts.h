@@ -37,14 +37,14 @@ enum Event
 */
 enum Action
 {
-    ACTION_UNKNOWN,
-    READ_VALUES,
-    WRITE_VALUES,
-    READ_ERRORS,
-    WRITE_ERRORS,
-    READ_WEIGHTS,
-    WRITE_WEIGHTS,
-    SYNC_RESET
+    ACTION_UNKNOWN  = 10,
+    READ_VALUES     = 11,
+    WRITE_VALUES    = 12,
+    READ_ERRORS     = 13,
+    WRITE_ERRORS    = 14,
+    READ_WEIGHTS    = 15,
+    WRITE_WEIGHTS   = 16,
+    SYNC_RESET      = 17
 };
 
 

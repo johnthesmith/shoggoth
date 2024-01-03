@@ -1134,7 +1134,6 @@ Net* Net::event
 )
 {
     getLog()
-    -> trace( "Neural net event" )
     -> begin( "Neural net event" )
     -> prm( "name", eventToString( aEvent ))
     -> prm( "ptu", ptu )
