@@ -159,6 +159,24 @@ function compile_file {
 # Compile path
 function build {
     List=`ls $1`
+
+# Loop for recurcive recompile
+#    for File in $List
+#    do
+#        echo ======================== $File $( checkControlSumm $File )
+#        a=`cat $File | grep "#include"`
+#        for Item in ${a[0]}
+#        do
+#            if [ $Item != "#include" ]
+#            then
+#                echo $Item 
+##| awk '/^\</{print $0}'
+#            fi
+#        done
+#    done
+#
+#exit 0
+
     for File in $List
     do
         [ ! -f "$Error" ] && compile_file $File
@@ -227,6 +245,7 @@ if [ ! -d $Shab ]
 then
     mkdir $Shab
 fi
+
 
 
 # Commands execute

@@ -322,6 +322,37 @@ bool ParamList::getBool
 
 
 
+/*
+    Load bool value from param to var
+*/
+ParamList* ParamList::loadBool
+(
+    string aName,   /* Name of parameter */
+    bool& aResult,  /* Place for result */
+    bool aDefault   /* Default value */
+)
+{
+    aResult = getBool( aName, aDefault );
+    return this;
+}
+
+
+
+/*
+    Load bool value from param to var
+*/
+ParamList* ParamList::loadBool
+(
+    Path aName,     /* Name of parameter */
+    bool& aResult,  /* Place for result */
+    bool aDefault   /* Default value */
+)
+{
+    aResult = getBool( aName, aDefault );
+    return this;
+}
+
+
 
 /*
     Get integer value by name

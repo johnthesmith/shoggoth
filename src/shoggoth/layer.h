@@ -125,7 +125,6 @@ class Layer : public Object
         int             backward                = -1;
 
         int             count                   = 0;            /* Count fo neurons */
-        int             cacheCount              = 0;            /* Count fo neurons in cach */
 
         ParamList*      actions                 = NULL;         /* List of actions for layer */
 
@@ -169,9 +168,11 @@ class Layer : public Object
             string = "",    /* id */
             bool = true,    /* valuesExists */
             bool = true,    /* errorsExists */
-            bool = false,   /* screenExists */
-            bool = false,   /* worldExists */
-            bool = false    /* selectedExists */
+            bool = false,   /* valuesCacheExists for processor */
+            bool = false,   /* errorsCacheExists for processor */
+            bool = false,   /* screenExists for ui */
+            bool = false,   /* worldExists for ui */
+            bool = false    /* selectedExists for ui */
         );
 
 
@@ -193,6 +194,8 @@ class Layer : public Object
             string = "",
             bool = true,    /* valuesExists */
             bool = true,    /* errorsExists */
+            bool = false,   /* valuesCacheExists */
+            bool = false,   /* errorsCacheExists */
             bool = false,   /* screenExists */
             bool = false,   /* worldExists */
             bool = false    /* selectedExists */
@@ -227,6 +230,9 @@ class Layer : public Object
 
 
 
+        /**********************************************************************
+            Data plans work
+        */
 
         /*
             Clear values for all neurons
@@ -239,6 +245,20 @@ class Layer : public Object
             Clear errors for all neurons
         */
         Layer* clearErrors();
+
+
+
+        /*
+            Clear values cache for all neurons
+        */
+        Layer* clearValuesCache();
+
+
+
+        /*
+            Clear errors cache for all neurons
+        */
+        Layer* clearErrorsCache();
 
 
 
@@ -927,7 +947,6 @@ class Layer : public Object
             Return the log object
         */
         Log* getLog();
-
 };
 
 

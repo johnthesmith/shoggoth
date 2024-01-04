@@ -804,9 +804,13 @@ Layer* Net::createLayer
     }
     else
     {
-        auto ui = getApplication()
+        auto ui = false;
+        auto proc = false;
+
+        getApplication()
         -> getConfig()
-        -> getBool( Path{ "tasks", taskToString( TASK_UI ), "enabled" });
+        -> loadBool( Path{ "tasks", taskToString( TASK_UI ), "enabled" }, ui )
+        -> loadBool( Path{ "tasks", taskToString( TASK_PROC ), "enabled" }, proc );
 
         /* Create new layer object */
         result = Layer::create
@@ -815,6 +819,8 @@ Layer* Net::createLayer
             a,
             true,
             true,
+            proc,
+            proc,
             ui,
             ui,
             ui

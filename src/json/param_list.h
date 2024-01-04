@@ -207,6 +207,30 @@ struct ParamList : public Heap
 
 
 
+        /*
+            Load bool value from param to var
+        */
+        ParamList* loadBool
+        (
+            string,         /* Name of parameter */
+            bool&,          /* Place for result */
+            bool = false    /* Default value */
+        );
+
+
+
+        /*
+            Load bool value from param to var
+        */
+        ParamList* loadBool
+        (
+            Path,           /* Path of parameters */
+            bool&,          /* Place for result */
+            bool = false    /* Default value */
+        );
+
+
+
         long long int getInt
         (
             int,                /* Name of parameter */

@@ -163,13 +163,10 @@ RpcClient* RpcClient::call()
         {
             if( request != NULL )
             {
-cout << "rpc_clien1\n";
                 /* Send buffer to server */
                 write( request );
-cout << "rpc_clien2\n";
                 /* Read answer from server */
                 read();
-cout << "rpc_clien3\n";
             }
         };
     }

@@ -23,6 +23,8 @@ Layer::Layer
     string aId,
     bool aValuesExists,
     bool aErrorsExists,
+    bool aValuesCacheExists,
+    bool aErrorsCacheExists,
     bool aScreenExists,
     bool aWorldExists,
     bool aSelectedExists
@@ -33,11 +35,13 @@ Layer::Layer
     id = aId == "" ? Rnd::getUuid() : aId;
 
     /* Set data plans flags */
-    valuesExists    = aValuesExists;
-    errorsExists    = aErrorsExists;
-    screenExists    = aScreenExists;
-    worldExists     = aWorldExists;
-    selectedExists  = aSelectedExists;
+    valuesExists        = aValuesExists;
+    errorsExists        = aErrorsExists;
+    valuesCacheExists   = aValuesCacheExists;
+    errorsCacheExists   = aErrorsCacheExists;
+    screenExists        = aScreenExists;
+    worldExists         = aWorldExists;
+    selectedExists      = aSelectedExists;
 
     /* Actions */
     actions         = ParamList::create();
@@ -77,6 +81,8 @@ Layer* Layer::create
     string aId,
     bool aValuesExists,
     bool aErrorsExists,
+    bool aValuesCacheExists,
+    bool aErrorsCacheExists,
     bool aScreenExists,
     bool aWorldExists,
     bool aSelectedExists
@@ -88,6 +94,8 @@ Layer* Layer::create
         aId,
         aValuesExists,
         aErrorsExists,
+        aValuesCacheExists,
+        aErrorsCacheExists,
         aScreenExists,
         aWorldExists,
         aSelectedExists
@@ -116,6 +124,94 @@ int Layer::indexByPos
 {
     return a.x + a.y * size.x + a.z * size.x * size.y;
 }
+
+
+
+/******************************************************************************
+    Data plans work
+*/
+
+
+/*
+    Clear values for all neurons
+*/
+Layer* Layer::clearValues()
+{
+    memset( values, 0, count * sizeof( double ));
+    return this;
+}
+
+
+
+/*
+    Clear errors for all neurons
+*/
+Layer* Layer::clearErrors()
+{
+    memset( errors, 0, count * sizeof( double ));
+    return this;
+}
+
+
+
+/*
+    Clear values cache for all neurons
+*/
+Layer* Layer::clearValuesCache()
+{
+    memset( valuesCache, 0, count * sizeof( double ));
+    return this;
+}
+
+
+
+/*
+    Clear errors for all neurons
+*/
+Layer* Layer::clearErrorsCache()
+{
+    memset( errorsCache, 0, count * sizeof( double ));
+    return this;
+}
+
+
+
+/*
+    Clear screen points for all neurons
+*/
+Layer* Layer::clearScreen()
+{
+    memset( screen, 0, count * sizeof( Point3d ));
+    return this;
+}
+
+
+
+/*
+    Clear world for all neurons
+*/
+Layer* Layer::clearWorld()
+{
+    memset( world, 0, count * sizeof( Point3d ));
+    return this;
+}
+
+
+
+/*
+    Clear selected flag for all neurons
+*/
+Layer* Layer::clearSelected()
+{
+    memset( selected, 0, count * sizeof( bool ));
+    return this;
+}
+
+
+
+/******************************************************************************c
+    Calculations
+*/
 
 
 
@@ -173,63 +269,6 @@ Layer* Layer::neuronPointsCalc
 
     return this;
 }
-
-
-
-/*
-    Clear values for all neurons
-*/
-Layer* Layer::clearValues()
-{
-    memset( values, 0, count * sizeof( double ));
-    return this;
-}
-
-
-
-/*
-    Clear errors for all neurons
-*/
-Layer* Layer::clearErrors()
-{
-    memset( errors, 0, count * sizeof( double ));
-    return this;
-}
-
-
-
-/*
-    Clear screen points for all neurons
-*/
-Layer* Layer::clearScreen()
-{
-    memset( screen, 0, count * sizeof( Point3d ));
-    return this;
-}
-
-
-
-/*
-    Clear world for all neurons
-*/
-Layer* Layer::clearWorld()
-{
-    memset( world, 0, count * sizeof( Point3d ));
-    return this;
-}
-
-
-
-/*
-    Clear selected flag for all neurons
-*/
-Layer* Layer::clearSelected()
-{
-    memset( selected, 0, count * sizeof( bool ));
-    return this;
-}
-
-
 
 
 Layer* Layer::calcValue
@@ -356,6 +395,35 @@ Layer* Layer::setSize
             errors = new double[ newCount ];
             clearErrors();
         }
+
+        /* Resize values plan */
+        if( valuesCacheExists )
+        {
+            /* Delete old plan */
+            if( valuesCache != NULL )
+            {
+                delete [] valuesCache;
+            }
+
+            /*Create new plan */
+            valuesCache = new double[ newCount ];
+            clearValuesCache();
+        }
+
+        /* Resize errors plan */
+        if( errorsCacheExists )
+        {
+            /* Delete old plan */
+            if( errorsCache != NULL )
+            {
+                delete [] errorsCache;
+            }
+
+            /*Create new plan */
+            errorsCache = new double[ newCount ];
+            clearErrorsCache();
+        }
+
 
         /* Resize world plan */
         if( worldExists )
@@ -1936,25 +2004,57 @@ Layer* Layer::noiseValue
 
 
 
-//
-///* Move values and errors data to processor cache */
-//Layer* Layer::dataToCache()
-//{
-//    if( count != cacheCount )
-//    {
-//        if( errorCache != NULL )
-//        {
-//            delete errorsCache valuesCache;
-//        }
-//
-//    }
-//    return this;
-//}
-//
-//
-//
-///* Move values and errors from processor cache to data */
-//Layer* Layer::cacheToData()
-//{
-//    return this;
-//}
+
+/*
+    Move values and errors data to processor cache
+*/
+Layer* Layer::dataToCache()
+{
+    auto size = count * sizeof( double );
+
+    if
+    (
+        values != NULL &&
+        valuesCache != NULL &&
+        errors != NULL &&
+        errorsCache != NULL
+    )
+    {
+        memcpy( valuesCache, values, size);
+        memcpy( errorsCache, errors, size );
+    }
+    else
+    {
+        setCode( "LayerPlansNotReadyForProcessor" );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Move values and errors from processor cache to data
+*/
+Layer* Layer::cacheToData()
+{
+    auto size = count * sizeof( double );
+
+    if
+    (
+        values != NULL &&
+        valuesCache != NULL &&
+        errors != NULL &&
+        errorsCache != NULL
+    )
+    {
+        memcpy( values, valuesCache, size);
+        memcpy( errors, errorsCache, size );
+    }
+    else
+    {
+        setCode( "LayerPlansNotReadyForProcessor" );
+    }
+
+    return this;
+}
