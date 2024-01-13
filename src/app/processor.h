@@ -2,10 +2,12 @@
 
 /* Local libraries */
 #include "../lib/payload.h"
-#include "../shoggoth/net.h"
 #include "../shoggoth/sync.h"
+#include "../shoggoth/limb/limb_processor.h"
 
 #include "shoggoth_application.h"
+
+#include "../shoggoth/limb/net.h"
 
 
 using namespace std;
@@ -16,10 +18,8 @@ class Processor : public Payload
 {
     private:
 
-        Net*                    net                 = NULL;
-        thread*                 server              = NULL;
-
-        long int                lastConfigCheck     = 0;
+        LimbProcessor*          limb            = NULL;
+        long int                lastConfigCheck = 0;
 
     public:
 
@@ -73,4 +73,7 @@ class Processor : public Payload
             Run net calculateion
         */
         virtual void onLoop();
+
+
+        LimbProcessor* getLimb();
 };

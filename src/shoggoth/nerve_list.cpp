@@ -226,44 +226,6 @@ NerveList* NerveList::getChildrenByLayer
 
 
 /*
-    Read from server
-*/
-NerveList* NerveList::readWeights()
-{
-    loop
-    (
-        []
-        ( void* aNerve )
-        {
-            (( Nerve* ) aNerve ) -> readWeights();
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Write to server
-*/
-NerveList*  NerveList::writeWeights()
-{
-    loop
-    (
-        []
-        ( void* aNerve )
-        {
-            (( Nerve* ) aNerve ) -> writeWeights();
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
     Find and return list of the nerves
     by parent and child layers
 */
@@ -296,3 +258,87 @@ NerveList* NerveList::selectByLayers
     return this;
 }
 
+
+
+/*
+    Clear all destroy all layers
+*/
+NerveList* NerveList::clear()
+{
+    int c = getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Nerve* nerve = ( Nerve* ) getByIndex( i );
+        nerve -> destroy();
+    }
+    resize( 0 );
+    return this;
+}
+
+
+
+/*
+    Compare layer structure
+*/
+bool NerveList::compare
+(
+    NerveList* a
+)
+{
+    bool result = getCount() == a -> getCount();
+    if( result )
+    {
+        loop
+        (
+            [ &a, &result ]
+            ( void* p )
+            {
+                result = a -> getByNerve( (Nerve*) p ) != NULL;
+                return !result;
+            }
+        );
+    }
+    return result;
+}
+
+
+
+
+/*
+    Return nerve by nerve
+*/
+Nerve* NerveList::getByNerve
+(
+    Nerve* aNerve
+)
+{
+    Nerve* result = NULL;
+    loop
+    (
+        [ &aNerve, &result ]
+        ( void* p )
+        {
+            auto iNerve = (Nerve*) p;
+            result
+            = aNerve -> getParent() -> getId() == iNerve -> getParent() -> getId()
+            && aNerve -> getChild() -> getId() == iNerve -> getChild() -> getId()
+            && aNerve -> getNerveType() == iNerve -> getNerveType()
+            && aNerve -> getBindType() == iNerve -> getBindType() ? iNerve : NULL;
+            return result != NULL;
+        }
+    );
+    return result;
+}
+
+
+
+/*
+    Copy list of nerves in to this from argument
+*/
+NerveList* NerveList::copyStructureFrom
+(
+    NerveList*  /* Source */
+)
+{
+...    TODO
+}

@@ -14,7 +14,7 @@
 
 
 class Layer;
-class Net;
+class Limb;
 
 class Nerve: public Result
 {
@@ -23,7 +23,7 @@ class Nerve: public Result
         double*     weights         = NULL;         /* Array of weights */
         int         weightsCount    = 0;            /* County of weights */
 
-        Net*        net             = NULL;         /* The net object */
+        Limb*       limb            = NULL;         /* The limb object */
 
         string      id              = "";
         BindType    bindType        = BT_VALUE;
@@ -39,7 +39,7 @@ class Nerve: public Result
         */
         Nerve
         (
-            Net*,       /* Net object*/
+            Limb*,      /* Limb object*/
             string,     /* id */
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
@@ -63,7 +63,7 @@ class Nerve: public Result
         */
         static Nerve* create
         (
-            Net*,       /* Net object*/
+            Limb*,      /* The limb object*/
             string,     /* id */
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
@@ -127,6 +127,14 @@ class Nerve: public Result
             Return count of weights
         */
         int getWeightsCount();
+
+
+
+        /*
+            Return weights pointer
+        */
+        double* getWeights();
+
 
 
         /*
@@ -228,20 +236,6 @@ class Nerve: public Result
             char*&, /* Buffer */
             size_t& /* Size */
         );
-
-
-
-        /*
-            Read the nerve weights array from io
-        */
-        Nerve* readWeights();
-
-
-
-        /*
-            Write weights array to the io
-        */
-        Nerve* writeWeights();
 
 
 

@@ -24,12 +24,30 @@ class Layer;
 
 class LayerList : public Heap
 {
+    private:
+
+        Log* log;   /* Log object */
+
     public:
+
+
+        /*
+            Constructor
+        */
+        LayerList
+        (
+            Log*
+        );
+
+
 
         /*
             Create the Layer list object
         */
-        static LayerList* create();
+        static LayerList* create
+        (
+            Log*
+        );
 
 
 
@@ -37,6 +55,13 @@ class LayerList : public Heap
             Destroy the Layer list object
         */
         void destroy();
+
+
+
+        /*
+            Return log
+        */
+        Log* getLog();
 
 
 
@@ -141,40 +166,49 @@ class LayerList : public Heap
 
 
         /*
-            Read the layers values from io
+            Clear all destroy all layers
         */
-        LayerList* readValues
+        LayerList* clear();
+
+
+
+        /*
+            Compare layer structure
+        */
+        bool compare
         (
-            ParamList* = NULL
+            LayerList*
         );
 
 
 
         /*
-            Write the layers values to the io
+            Copy list of layers
         */
-        LayerList* writeValues
+        LayerList* copyStructureFrom
         (
-            ParamList* = NULL
+            LayerList*  /* Source layer list */
         );
 
 
 
         /*
-            Read the layers errors from io
+            Copy values of equal layers
         */
-        LayerList* readErrors
+        LayerList* copyValuesFrom
         (
-            ParamList* = NULL
+            LayerList*  /* Source */
         );
 
 
 
         /*
-            Write the layers errors to the io
+            Copy errors of equal layers
         */
-        LayerList* writeErrors
+        LayerList* copyErrorsFrom
         (
-            ParamList* = NULL
+            LayerList* /* Source */
         );
+
+
 };

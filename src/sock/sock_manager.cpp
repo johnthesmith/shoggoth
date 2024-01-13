@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cstring>
 #include <thread>
-#include <unistd.h> /* sock close */
+#include <unistd.h>
 
 /*
     Local libraries

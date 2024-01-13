@@ -10,7 +10,6 @@
 #include "io.h"
 #include "layer.h"
 #include "neuron.h"
-#include "net.h"
 
 
 
@@ -19,29 +18,13 @@
 */
 Layer::Layer
 (
-    Net* aNet,
-    string aId,
-    bool aValuesExists,
-    bool aErrorsExists,
-    bool aValuesCacheExists,
-    bool aErrorsCacheExists,
-    bool aScreenExists,
-    bool aWorldExists,
-    bool aSelectedExists
-
+    Log* aLog,
+    string aId
 )
 {
-    net = aNet;
-    id = aId == "" ? Rnd::getUuid() : aId;
+    log = aLog;
 
-    /* Set data plans flags */
-    valuesExists        = aValuesExists;
-    errorsExists        = aErrorsExists;
-    valuesCacheExists   = aValuesCacheExists;
-    errorsCacheExists   = aErrorsCacheExists;
-    screenExists        = aScreenExists;
-    worldExists         = aWorldExists;
-    selectedExists      = aSelectedExists;
+    id = aId == "" ? Rnd::getUuid() : aId;
 
     /* Actions */
     actions         = ParamList::create();
@@ -65,8 +48,8 @@ Layer::~Layer()
 
     /* Destroy the list of neurons */
 
-    getLog() ->
-    trace( "Layer destroy" )
+    getLog()
+    -> trace( "Layer destroy" )
     -> prm( "Name", getNameOrId() );
 }
 
@@ -77,29 +60,11 @@ Layer::~Layer()
 */
 Layer* Layer::create
 (
-    Net* aNet,
-    string aId,
-    bool aValuesExists,
-    bool aErrorsExists,
-    bool aValuesCacheExists,
-    bool aErrorsCacheExists,
-    bool aScreenExists,
-    bool aWorldExists,
-    bool aSelectedExists
+    Log* aLog,
+    string aId
 )
 {
-    return new Layer
-    (
-        aNet,
-        aId,
-        aValuesExists,
-        aErrorsExists,
-        aValuesCacheExists,
-        aErrorsCacheExists,
-        aScreenExists,
-        aWorldExists,
-        aSelectedExists
-    );
+    return new Layer( aLog, aId );
 }
 
 
@@ -149,28 +114,6 @@ Layer* Layer::clearValues()
 Layer* Layer::clearErrors()
 {
     memset( errors, 0, count * sizeof( double ));
-    return this;
-}
-
-
-
-/*
-    Clear values cache for all neurons
-*/
-Layer* Layer::clearValuesCache()
-{
-    memset( valuesCache, 0, count * sizeof( double ));
-    return this;
-}
-
-
-
-/*
-    Clear errors for all neurons
-*/
-Layer* Layer::clearErrorsCache()
-{
-    memset( errorsCache, 0, count * sizeof( double ));
     return this;
 }
 
@@ -271,55 +214,6 @@ Layer* Layer::neuronPointsCalc
 }
 
 
-Layer* Layer::calcValue
-(
-    int aProcessorNumber,
-    int aProcessorCount
-)
-{
-    int b = calcNeuronFrom( aProcessorNumber, aProcessorCount );
-    int e = calcNeuronTo( aProcessorNumber, aProcessorCount );
-
-    for( int i = b; i < e; i ++ )
-    {
-        neuronCalcValue( i );
-    }
-
-    return this;
-}
-
-
-
-/*
-    Calculate neurons error for learning
-*/
-Layer* Layer::learning
-(
-    double  aErrorNormalize,
-    double  aLearningSpeed,
-    double  aWakeupWeight,
-    int     aProcessorNumber,
-    int     aProcessorCount
-)
-{
-    int b = calcNeuronFrom( aProcessorNumber, aProcessorCount );
-    int e = calcNeuronTo( aProcessorNumber, aProcessorCount );
-
-    for( int i = b; i < e; i ++ )
-    {
-        neuronLearning
-        (
-            i,
-            aErrorNormalize,
-            aLearningSpeed,
-            aWakeupWeight
-        );
-    }
-
-    return this;
-}
-
-
 
 /***********************************************************************
     Setters and getters
@@ -330,16 +224,7 @@ Layer* Layer::learning
 */
 Log* Layer::getLog()
 {
-    return net -> getLog();
-}
-
-
-/*
-    Return the Net object
-*/
-Net* Layer::getNet()
-{
-    return net;
+    return log;
 }
 
 
@@ -368,107 +253,9 @@ Layer* Layer::setSize
         count = newCount;
         size = a;
 
-        /* Resize values plan */
-        if( valuesExists )
-        {
-            /* Delete old plan */
-            if( values != NULL )
-            {
-                delete [] values;
-            }
-
-            /*Create new plan */
-            values = new double[ newCount ];
-            clearValues();
-        }
-
-        /* Resize errors plan */
-        if( errorsExists )
-        {
-            /* Delete old plan */
-            if( errors != NULL )
-            {
-                delete [] errors;
-            }
-
-            /*Create new plan */
-            errors = new double[ newCount ];
-            clearErrors();
-        }
-
-        /* Resize values plan */
-        if( valuesCacheExists )
-        {
-            /* Delete old plan */
-            if( valuesCache != NULL )
-            {
-                delete [] valuesCache;
-            }
-
-            /*Create new plan */
-            valuesCache = new double[ newCount ];
-            clearValuesCache();
-        }
-
-        /* Resize errors plan */
-        if( errorsCacheExists )
-        {
-            /* Delete old plan */
-            if( errorsCache != NULL )
-            {
-                delete [] errorsCache;
-            }
-
-            /*Create new plan */
-            errorsCache = new double[ newCount ];
-            clearErrorsCache();
-        }
-
-
-        /* Resize world plan */
-        if( worldExists )
-        {
-            /* Delete old plan */
-            if( world != NULL )
-            {
-                delete [] world;
-            }
-
-            /*Create new plan */
-            world = new Point3d[ newCount ];
-            /* Clear world position */
-            clearWorld();
-            /* Recalculate neuron points */
-            neuronPointsCalc( true );
-        }
-
-        /* Resize screen plan */
-        if( screenExists )
-        {
-            /* Delete old plan */
-            if( screen != NULL )
-            {
-                delete [] screen;
-            }
-
-            /*Create new plan */
-            screen = new Point3d[ newCount ];
-            clearScreen();
-        }
-
-        /* Resize selected plan */
-        if( selectedExists )
-        {
-            /* Delete old plan */
-            if( selected != NULL )
-            {
-                delete [] selected;
-            }
-
-            /*Create new plan */
-            selected = new bool[ newCount ];
-            clearSelected();
-        }
+        /* Create default plans */
+        valuesCreate();
+        errorsCreate();
 
         getLog() -> end();
     }
@@ -511,6 +298,103 @@ Layer* Layer::setSize
 
 
 
+
+Layer* Layer::valuesCreate()
+{
+    /* Delete old plan */
+    if( values != NULL )
+    {
+        delete [] values;
+    }
+
+    /*Create new plan */
+    values = new double[ count ];
+    clearValues();
+
+    return this;
+}
+
+
+
+Layer* Layer::errorsCreate()
+{
+    /* Delete old plan */
+    if( errors != NULL )
+    {
+        delete [] errors;
+    }
+
+    /*Create new plan */
+    errors = new double[ count ];
+    clearErrors();
+
+    return this;
+}
+
+
+
+/*
+    Resize world plan
+*/
+Layer* Layer::worldCreate()
+{
+    /* Delete old plan */
+    if( world != NULL )
+    {
+        delete [] world;
+    }
+
+    /*Create new plan */
+    world = new Point3d[ count ];
+    /* Clear world position */
+    clearWorld();
+    /* Recalculate neuron points */
+    neuronPointsCalc( true );
+
+    return this;
+}
+
+
+
+/*
+    Resize screen plan
+*/
+Layer* Layer::screenCreate()
+{
+    /* Delete old plan */
+    if( screen != NULL )
+    {
+        delete [] screen;
+    }
+
+    /*Create new plan */
+    screen = new Point3d[ count ];
+    clearScreen();
+
+    return this;
+}
+
+
+/*
+    Resize selected plan
+*/
+Layer* Layer::selectedCreate()
+{
+    /* Delete old plan */
+    if( selected != NULL )
+    {
+        delete [] selected;
+    }
+
+    /*Create new plan */
+    selected = new bool[ count ];
+    clearSelected();
+
+    return this;
+}
+
+
+
 /*
     Set draw size for layer
 */
@@ -540,6 +424,13 @@ Layer* Layer::setDrawSize
     }
 
     return this;
+}
+
+
+
+Point3d& Layer::getDrawSize()
+{
+    return drawSize;
 }
 
 
@@ -1093,31 +984,6 @@ Point3d& Layer::getOuterBox()
 
 
 
-/*
-    Write value to io
-*/
-Layer* Layer::writeValues()
-{
-    if( values != NULL )
-    {
-        auto io = Io::create( net );
-        io -> getRequest()
-        -> setString( "idLayer", this -> getId() )
-        -> setData( "data", (char*)values, count * sizeof( double ) );
-
-        io
-        -> call( CMD_WRITE_VALUES )
-        -> destroy();
-
-        getLog() -> trace( "Write layer values" ) -> prm( "id", this -> getId() );
-    }
-
-    return this;
-}
-
-
-
-
 Layer* Layer::valuesFromBuffer
 (
     char* aBuffer,
@@ -1144,90 +1010,6 @@ Layer* Layer::getValuesBuffer
 {
     aBuffer = ( char* )values;
     aSize = count * sizeof( double );
-    return this;
-}
-
-
-
-/*
-    Read value from io
-*/
-Layer* Layer::readValues()
-{
-    auto io = Io::create( net );
-
-    io
-    -> getRequest()
-    -> setString( "idLayer", this -> getId() );
-
-    if( io -> call( CMD_READ_VALUES ) -> isOk() )
-    {
-        char* buffer = NULL;
-        size_t size = 0;
-
-        io -> getAnswer() -> getData( "data", buffer, size );
-        valuesFromBuffer( buffer, size );
-        getLog() -> trace( "Read layer values" ) -> prm( "id", this -> getId() );
-    }
-
-    io -> destroy();
-
-    return this;
-}
-
-
-
-/*
-    Write errors to io
-*/
-Layer* Layer::writeErrors()
-{
-    if( errors != NULL )
-    {
-        getLog() -> begin( "Write layer errors" ) -> prm( "id", this -> getId() );
-        auto io = Io::create( net );
-        io -> getRequest()
-        -> setString( "idLayer", this -> getId() )
-        -> setData( "data", (char*)errors, count * sizeof( double ) );
-
-        io
-        -> call( CMD_WRITE_ERRORS )
-        -> destroy();
-
-        getLog() -> end();
-    }
-
-    return this;
-}
-
-
-
-/*
-    Read value from io
-*/
-Layer* Layer::readErrors()
-{
-    auto io = Io::create( net );
-
-    io
-    -> getRequest()
-    -> setString( "idLayer", this -> getId() );
-
-    if( io -> call( CMD_READ_ERRORS ) -> isOk() )
-    {
-        char* buffer = NULL;
-        size_t size = 0;
-        io -> getAnswer() -> getData( "data", buffer, size );
-
-        if( buffer != NULL && size == count * sizeof( double ) )
-        {
-            memcpy( errors, buffer, size );
-            getLog() -> trace( "Read layer errors" ) -> prm( "id", this -> getId() );
-        }
-    }
-
-    io -> destroy();
-
     return this;
 }
 
@@ -1263,35 +1045,6 @@ Layer* Layer::getErrorsBuffer
 }
 
 
-
-/*
-    Calculate start neuron for processors operations
-*/
-int Layer::calcNeuronFrom
-(
-    int aNumber,
-    int aCount
-)
-{
-    return floor
-    (
-        (double) count * (double) aNumber / (double) aCount
-    );
-}
-
-
-
-/*
-    Caluculate end of neurons for processors operations
-*/
-int Layer::calcNeuronTo
-(
-    int aNumber,
-    int aCount
-)
-{
-    return calcNeuronFrom( aNumber + 1, aCount );
-}
 
 
 /******************************************************************************
@@ -1657,313 +1410,6 @@ Point3d Layer::getNeuronSelected
 
 
 
-
-/*
-    Loop for each parents of this neuron
-*/
-Layer* Layer::parentsLoop
-(
-    int aIndex,
-    parentsLambda aCallback
-)
-{
-    /* Loop by nerves */
-    getNet() -> getNerves() -> loop
-    (
-        [ this, &aCallback, &aIndex ]
-        ( void* aNerve )
-        {
-            auto iNerve = ( Nerve* ) aNerve;
-            if( iNerve -> getChild() == this )
-            {
-                int from = 0;
-                int to = 0;
-                iNerve -> getWeightsRangeByChildIndex
-                (
-                    aIndex, from, to
-                );
-                /* Loop by weights */
-                for( int i = from; i < to;  i++ )
-                {
-                    aCallback
-                    (
-                        iNerve -> getParent(),
-                        iNerve -> getParentByWeightIndex( i ),
-                        iNerve,
-                        iNerve -> getWeight( i ),
-                        i
-                    );
-                }
-            }
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-
-/*
-    Loop for each child of i neuron
-*/
-Layer* Layer::childrenLoop
-(
-    int aIndex,
-    childrenLambda aCallback
-)
-{
-    /* Loop by nerves */
-    getNet() -> getNerves() -> loop
-    (
-        [ this, &aCallback, &aIndex ]
-        ( void* aNerve )
-        {
-            auto iNerve = ( Nerve* ) aNerve;
-            if( iNerve -> getParent() == this )
-            {
-                int from = 0;
-                int to = 0;
-                int step = 0;
-
-                iNerve -> getWeightsRangeByParentIndex
-                (
-                    aIndex, from, to, step
-                );
-
-                /* Loop by weights */
-                for( int i = from; i < to;  i += step )
-                {
-                    aCallback
-                    (
-                        iNerve -> getChild(),
-                        iNerve -> getChildByWeightIndex( i ),
-                        iNerve,
-                        iNerve -> getWeight( i ),
-                        i
-                    );
-                }
-            }
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Calculate neuron
-*/
-Layer* Layer::neuronCalcValue
-(
-    int aIndex
-)
-{
-    double summValue        = 0.0;
-    double summCommand      = 0.0;
-    double summSample       = 0.0;
-    double summErrorValue   = 0.0;
-    int countSample         = 0;
-    int countValue          = 0;
-    int countErrorValue     = 0;
-
-    /* Neuron has a binds and it is not a Receptor */
-    parentsLoop
-    (
-        aIndex,
-        [
-            this,
-            &summValue,
-            &summSample,
-            &summCommand,
-            &countSample,
-            &countValue,
-            &countErrorValue,
-            &summErrorValue
-        ]
-        (
-            Layer* aParentLayer,
-            int aParentIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex /* not use */
-        ) -> bool
-        {
-            auto w = aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
-            /* Calculate summ */
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                    summValue += w;
-                    countValue ++;
-                break;
-                case BT_ERROR_TO_VALUE:
-                    summErrorValue += abs
-                    (
-                        aParentLayer -> getNeuronError( aParentIndex ) * aWeight
-                    );
-                    countErrorValue++;
-                break;
-                case BT_COMMAND:
-                    summCommand += w;
-                break;
-                case BT_SAMPLE:
-                    summSample += w;
-                    countSample ++;
-                break;
-            }
-            return false;
-        }
-    );
-
-    if( countValue > 0 )
-    {
-        setNeuronValue( aIndex, FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
-    }
-
-    if( countErrorValue > 0 )
-    {
-        /* Write avg error from parent to layer */
-        setNeuronValue( aIndex, summErrorValue / countErrorValue );
-    }
-
-    if( countSample > 0 )
-    {
-        setNeuronError
-        (
-            aIndex,
-            FUNC_SIGMOID_LINE_MINUS_PLUS
-            (
-                ( summSample - getNeuronValue( aIndex ) ) *
-                ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
-                1.0
-            )
-        );
-    }
-
-    return this;
-}
-
-
-
-/*
-    Calculate neuron
-*/
-Layer* Layer::neuronLearning
-(
-    int aIndex,
-    double  aErrorNormalize,    /**/
-    double  aLearningSpeed,     /* k for weight changing */
-    double  aWakeupWeight
-)
-{
-    /* Define variables */
-    double summWeight   = 0.0;
-    double summError    = 0.0;
-    int countValue      = 0;
-
-    /* Caclulate error form all children for current neuron */
-    childrenLoop
-    (
-        aIndex,
-        [
-            this,
-            &summWeight,
-            &summError,
-            &countValue,
-            &aIndex
-        ]
-        (
-            Layer* aChild,
-            int aChildIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex    /* Not use */
-        ) -> bool
-        {
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
-                    summWeight += abs( aWeight );
-                break;
-            }
-            return false;
-        }
-    );
-
-    /* Neuron error is calculated */
-    /* If children neurons afected the parent neuron ... */
-    if( summWeight > EPSILON_D )
-    {
-        /*
-            Сумму ошибок всех дочерних нейронов и делим
-            на сумму весов для дочерних нейронов + 1
-            что бы исклюить деление на 0. Считаем что +1 это мелоч
-            aErrorNormalize - сила распространения ошибки.
-        */
-        setNeuronError
-        (
-            aIndex,
-            FUNC_SIGMOID_LINE_MINUS_PLUS
-            (
-                summError / ( 1.0 + summWeight * aErrorNormalize ),
-                1.0
-            )
-        );
-    }
-
-    /* Learning */
-    parentsLoop
-    (
-        aIndex,
-        [
-            this,
-            &aLearningSpeed,
-            &aWakeupWeight,
-            &aIndex
-        ]
-        (
-            Layer*  aParentLayer,
-            int     aParentIndex,
-            Nerve*  aNerve,
-            double  aWeight,
-            int     aWeightIndex
-        ) -> bool
-        {
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                {
-                    /*
-                        Calculate delta
-                    */
-                    double w = abs( aWeight );
-                    /* aWakeupWeight epsilon for zero weight подъем нулевых связей */
-                    double wv = ( w < aWakeupWeight ? aWakeupWeight : w )
-                    * aParentLayer -> getNeuronValue( aParentIndex );
-                    double deltaWeight = getNeuronError( aIndex ) * wv;
-                    aNerve -> setWeight
-                    (
-                        aWeightIndex,
-                        FUNC_SIGMOID_LINE_MINUS_PLUS
-                        (
-                            aWeight + deltaWeight * aLearningSpeed,
-                            1.0
-                        )
-                    );
-                }
-            }
-            return false;
-        }
-    );
-
-    return this;
-}
-
-
-
 /*
     Return event actions
 */
@@ -2006,55 +1452,58 @@ Layer* Layer::noiseValue
 
 
 /*
-    Move values and errors data to processor cache
+    Move values data to this from the argument layer
 */
-Layer* Layer::dataToCache()
+Layer* Layer::copyValuesFrom
+(
+    Layer* aLayer
+)
 {
-    auto size = count * sizeof( double );
-
-    if
-    (
-        values != NULL &&
-        valuesCache != NULL &&
-        errors != NULL &&
-        errorsCache != NULL
-    )
-    {
-        memcpy( valuesCache, values, size);
-        memcpy( errorsCache, errors, size );
-    }
-    else
-    {
-        setCode( "LayerPlansNotReadyForProcessor" );
-    }
+//    auto size = count * sizeof( double );
+//
+//
+//
+//Layer* getValuesBuffer
+//(
+//    char*&,  /* Buffer pointer */
+//    size_t&  /* Size of buffer */
+//);
+//
+//
+//    if
+//    (
+//        values != NULL && aLayer.getValues()
+//        valuesCache != NULL &&
+//        errors != NULL &&
+//        errorsCache != NULL
+//    )
+//    {
+//        memcpy( valuesCache, values, size);
+//        memcpy( errorsCache, errors, size );
+//    }
+//    else
+//    {
+//        setCode( "LayerPlansNotReadyForProcessor" );
+//    }
 
     return this;
 }
 
 
 
+
 /*
-    Move values and errors from processor cache to data
+    Compare this layer and argument layer
 */
-Layer* Layer::cacheToData()
+bool Layer::compare
+(
+    Layer* aLayer
+)
 {
-    auto size = count * sizeof( double );
-
-    if
-    (
-        values != NULL &&
-        valuesCache != NULL &&
-        errors != NULL &&
-        errorsCache != NULL
-    )
-    {
-        memcpy( values, valuesCache, size);
-        memcpy( errors, errorsCache, size );
-    }
-    else
-    {
-        setCode( "LayerPlansNotReadyForProcessor" );
-    }
-
-    return this;
+    return
+    getId() == aLayer -> getId() &&
+    getSize() == aLayer -> getSize() &&
+    getName() == aLayer -> getName() &&
+    getDrawSize() == aLayer -> getDrawSize() &&
+    Object::compare( aLayer );
 }

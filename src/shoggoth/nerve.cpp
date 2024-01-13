@@ -3,7 +3,7 @@
 #include "../lib/rnd.h"
 #include "../sock/rpc_client.h"
 
-#include "net.h"
+#include "limb.h"
 #include "layer.h"
 #include "io.h"
 
@@ -12,7 +12,7 @@
 */
 Nerve::Nerve
 (
-    Net*        aNet,       /* Net object*/
+    Limb*       aLimb,      /* The limb object*/
     string      aId,        /* id */
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
@@ -23,7 +23,7 @@ Nerve::Nerve
 )
 {
     /* Set properties */
-    net         = aNet;
+    limb        = aLimb;
     id          = aId;
     parent      = aParent;
     child       = aChild;
@@ -83,7 +83,7 @@ Nerve::~Nerve()
 */
 Nerve* Nerve::create
 (
-    Net*        aNet,       /* Net object*/
+    Limb*       aLimb,      /* The limb object*/
     string      aId,        /* id */
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
@@ -95,7 +95,7 @@ Nerve* Nerve::create
 {
     return new Nerve
     (
-        aNet,
+        aLimb,
         aId,
         aParent,
         aChild,
@@ -123,7 +123,7 @@ void Nerve::destroy()
 */
 Log* Nerve::getLog()
 {
-    return net -> getLog();
+    return limb -> getLog();
 }
 
 
@@ -283,6 +283,16 @@ double Nerve::getWeight
 
 
 /*
+    Return weights pointer
+*/
+double* Nerve::getWeights()
+{
+    return weights;
+}
+
+
+
+/*
     Set weight by index
 */
 Nerve* Nerve::setWeight
@@ -400,68 +410,6 @@ Nerve* Nerve::writeToBuffer
     {
         setResult( "BufferIsNotEmpty" );
     }
-    return this;
-}
-
-
-
-/*
-    Read nerve weights array from Io
-*/
-Nerve* Nerve::readWeights()
-{
-    auto io = Io::create( net );
-
-    io
-    -> getRequest()
-    -> setString( "idFrom", parent -> getId())
-    -> setString( "idTo", child -> getId());
-    if( io -> call( CMD_READ_WEIGHTS ) -> isOk() )
-    {
-        char* buffer = NULL;
-        size_t size = 0;
-        io -> getAnswer() -> getData( "data", buffer, size );
-        if( buffer != NULL && size > 0 )
-        {
-            readFromBuffer( buffer, size );
-        }
-    }
-    io -> destroy();
-
-    return this;
-}
-
-
-
-/*
-    Write the nerve weight array to io
-*/
-Nerve* Nerve::writeWeights()
-{
-    getLog()
-    -> begin( "Write weights" )
-    -> prm( "parent", parent -> getId())
-    -> prm( "child", child -> getId());
-
-    auto io = Io::create( net );
-
-    io
-    -> getRequest()
-    -> setString( "idFrom", parent -> getId())
-    -> setString( "idTo", child -> getId())
-    -> setData
-    (
-        "data",
-        ( char* )weights,
-        sizeof(double) * weightsCount
-    );
-
-    io
-    -> call( CMD_WRITE_WEIGHTS )
-    -> destroy();
-
-    getLog() -> end();
-
     return this;
 }
 

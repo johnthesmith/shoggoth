@@ -8,14 +8,28 @@
 using namespace std;
 
 
+/*
+    Constructor
+*/
+LayerList::LayerList
+(
+    Log* aLog
+)
+{
+    log = aLog;
+}
+
 
 
 /*
     Create the Layer list object
 */
-LayerList* LayerList::create()
+LayerList* LayerList::create
+(
+    Log* aLog
+)
 {
-    return new LayerList();
+    return new LayerList( aLog );
 }
 
 
@@ -26,6 +40,16 @@ LayerList* LayerList::create()
 void LayerList::destroy()
 {
     delete this;
+}
+
+
+
+/*
+    Return log
+*/
+Log* LayerList::getLog()
+{
+    return log;
 }
 
 
@@ -140,69 +164,79 @@ Layer* LayerList::getById
 
 
 /*
-    Read from server
+    Clear all destroy all layers
 */
-LayerList* LayerList::readValues
-(
-    ParamList* aTasks
-)
+LayerList* LayerList::clear()
 {
-    loop
-    (
-        [ &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( READ_VALUES ))
-                )
-            )
-            {
-                iLayer -> readValues();
-            }
-            return false;
-        }
-    );
+    int c = getCount();
+    for( int i = 0; i < c; i++ )
+    {
+        Layer* layer = ( Layer* ) getByIndex( i );
+        layer -> destroy();
+    }
+    resize( 0 );
     return this;
 }
 
 
 
 /*
-    Write to server
+    Compare layer structure
 */
-LayerList*  LayerList::writeValues
+bool LayerList::compare
 (
-    ParamList* aTasks
+    LayerList* a
 )
 {
-    loop
-    (
-        [ &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-
-            if
-            (
-                aTasks == NULL ||
-                aTasks -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( WRITE_VALUES ))
-                )
-            )
+    bool result = getCount() == a -> getCount();
+    if( result )
+    {
+        loop
+        (
+            [ &a, &result ]
+            ( void* p )
             {
-                iLayer -> writeValues();
+                auto iLayer = (Layer*) p;
+                auto jLayer = a -> getById( iLayer -> getId() );
+                result = iLayer -> compare( jLayer );
+                return !result;
             }
+        );
+    }
+    return result;
+}
+
+
+
+/*
+    Copy list of layers
+*/
+LayerList* LayerList::copyStructureFrom
+(
+    LayerList* aSource
+)
+{
+    clear();
+
+    aSource -> loop
+    (
+        [ this ]
+        ( void* p )
+        {
+            auto iLayer = (Layer*) p;
+            /* Create new layer object and push it to this*/
+            auto nLayer =
+            Layer::create( getLog(), iLayer -> getId() )
+            -> setSize( iLayer -> getSize())
+            -> setName( iLayer -> getName());
+
+             nLayer
+            -> setEye( iLayer -> getEye() )
+            -> setTop( iLayer -> getTop() )
+            -> setTarget( iLayer -> getTarget() );
+
+            push( nLayer );
+
             return false;
         }
     );
@@ -213,72 +247,25 @@ LayerList*  LayerList::writeValues
 
 
 /*
-    Read from server
+    Copy values of equal layers
 */
-LayerList* LayerList::readErrors
+LayerList* LayerList::copyValuesFrom
 (
-    ParamList* aTasks
+    LayerList* aSource
 )
 {
-    loop
-    (
-        [ &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( READ_ERRORS ))
-                )
-            )
-            {
-                iLayer -> readErrors();
-            }
-            return false;
-        }
-    );
     return this;
 }
 
 
 
 /*
-    Write to server
+    Copy errors of equal layers
 */
-LayerList*  LayerList::writeErrors
+LayerList* LayerList::copyErrorsFrom
 (
-    ParamList* aTasks
+    LayerList* aSource
 )
 {
-    loop
-    (
-        [ &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( WRITE_ERRORS ))
-                )
-            )
-            {
-                iLayer -> writeErrors();
-            }
-            return false;
-        }
-    );
     return this;
 }
-

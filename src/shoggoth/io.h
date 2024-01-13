@@ -13,7 +13,7 @@
 #include "../lib/log.h"
 #include "../lib/result.h"
 
-#include "net.h"
+#include "limb/net.h"
 #include "shoggoth_consts.h"
 
 

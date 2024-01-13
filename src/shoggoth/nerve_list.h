@@ -152,19 +152,48 @@ class NerveList :  public Heap
 
 
 
-        NerveList* readWeights();
-
-
-
-        NerveList* writeWeights();
-
-
-
         NerveList* selectByLayers
         (
             Layer*, /* parent layer */
             Layer*, /* child layer */
             NerveList* /* Founded Nerves */
+        );
+
+
+
+        /*
+            Clear all destroy all nerves
+        */
+        NerveList* clear();
+
+
+
+        /*
+            Compare layer structure
+        */
+        bool compare
+        (
+            NerveList*
+        );
+
+
+
+        /*
+            Return nerve by nerve
+        */
+        Nerve* getByNerve
+        (
+            Nerve*
+        );
+
+
+
+        /*
+            Copy list of nerves in to this from argument
+        */
+        NerveList* copyStructureFrom
+        (
+            NerveList*  /* Source */
         );
 
 };

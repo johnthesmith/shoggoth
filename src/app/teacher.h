@@ -4,7 +4,7 @@
 #include "../graph/scene_payload.h"
 #include "../graph/camera.h"
 #include "../shoggoth/layer.h"
-#include "../shoggoth/net.h"
+#include "../shoggoth/limb/net.h"
 #include "../json/json.h"
 
 #include "shoggoth_application.h"
@@ -19,7 +19,6 @@ class Teacher : public Payload
 {
     private:
 
-        Net*        net             = NULL;
         long int    lastBatchUpdate = 0;
 
         /*

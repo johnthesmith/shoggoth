@@ -47,8 +47,8 @@ Processor::Processor
 /* Call parent constructor */
 : Payload( aNet -> getApplication() )
 {
-    net = aNet;
-    net -> getApplication() -> getLog() -> trace( "Create processor" );
+    getLog() -> trace( "Create processor" );
+    limb = LimbProcessor::create( aNet );
 }
 
 
@@ -60,6 +60,7 @@ Processor::Processor
 */
 Processor::~Processor()
 {
+    limb -> destroy();
     getLog() -> trace( "Processor destroyd" );
 }
 
@@ -106,5 +107,16 @@ ShoggothApplication* Processor::getApplication()
 */
 void Processor::onLoop()
 {
-    net -> calc();
+    limb -> calc();
+}
+
+
+
+
+/*
+    Return limb
+*/
+LimbProcessor* Processor::getLimb()
+{
+    return limb;
 }

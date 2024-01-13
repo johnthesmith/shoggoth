@@ -2,7 +2,7 @@
 
 #include "shoggoth_consts.h"
 #include "sync.h"
-#include "net_graph.h"
+#include "limb/net.h" /* TODO remove Net from this module */
 
 
 

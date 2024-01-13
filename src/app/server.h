@@ -2,11 +2,12 @@
 
 /* Local libraries */
 #include "../lib/payload.h"
-#include "../shoggoth/net.h"
 #include "../shoggoth/sync.h"
 
 #include "shoggoth_application.h"
 #include "../shoggoth/shoggoth_rpc_server.h"
+
+#include "../shoggoth/limb/net.h"   /* TODO use limb_server*/
 
 
 using namespace std;

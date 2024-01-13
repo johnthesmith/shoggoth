@@ -1,7 +1,8 @@
 #include <iostream>
-#include <unistd.h>         /* usleep */
+#include <unistd.h>
 
 /* File read */
+
 #include <streambuf>
 #include <sstream>
 #include <fstream>
@@ -33,7 +34,7 @@ Loop::Loop
 )
 : Payload( a ) /* Call parent constructor */
 {
-    net = NetGraph::create( a, a -> getSockManager()  );
+    net = Net::create( a, a -> getSockManager());
 }
 
 
@@ -97,28 +98,6 @@ Loop* Loop::processorControl()
 
     if( taskProc != NULL && taskProc -> getBool( "enabled" ))
     {
-        /* Apply config */
-        net -> setLearningSpeed
-        (
-            taskProc
-            -> getDouble( "learningSpeed", net -> getLearningSpeed() )
-        );
-        net -> setWakeupWeight
-        (
-            taskProc
-            -> getDouble( "wakeupWeight", net -> getWakeupWeight() )
-        );
-        net -> setErrorNormalize
-        (
-            taskProc
-            -> getDouble( "errorNormalize", net -> getErrorNormalize() )
-        );
-        net -> setCalcDebug
-        (
-            taskProc
-            -> getBool( "debug", net -> getCalcDebug() )
-        );
-
         if( processor == NULL )
         {
             /* Create server and processor payloads */
@@ -129,6 +108,34 @@ Loop* Loop::processorControl()
             server -> setId( "server_thread" ) -> loop( true );
             processor -> setId( "processor_thread" ) -> loop( true );
         }
+
+        /* Apply config */
+        processor
+        -> getLimb()
+        -> setLearningSpeed
+        (
+            taskProc -> getDouble
+            (
+                "learningSpeed",
+                processor -> getLimb() -> getLearningSpeed()
+            )
+        )
+        -> setWakeupWeight
+        (
+            taskProc
+            -> getDouble( "wakeupWeight", processor -> getLimb() -> getWakeupWeight() )
+        )
+        -> setErrorNormalize
+        (
+            taskProc
+            -> getDouble( "errorNormalize", processor -> getLimb() -> getErrorNormalize() )
+        )
+        -> setCalcDebug
+        (
+            taskProc
+            -> getBool( "debug", processor -> getLimb() -> getCalcDebug() )
+        );
+
 
         server -> setLoopTimeoutMcs( 1000000 );
         server -> resume();
@@ -169,27 +176,6 @@ Loop* Loop::uiControl()
         if( ui == NULL )
         {
             ui = Ui::create( net );
-            ui
-            -> getScene()
-            -> getFont()
-            -> setFontName
-            (
-                getApplication()
-                -> getConfig()
-                -> getString( Path{ "tasks", taskToString( TASK_UI ), "fontName" } )
-            )
-            -> setGliphSize
-            (
-                getApplication()
-                -> getConfig()
-                -> getInt( Path{ "tasks", taskToString( TASK_UI ), "gliphSize" }, 16 )
-            )
-            -> setCharSet
-            (
-                getApplication()
-                -> getConfig()
-                -> getString( Path{ "tasks", taskToString( TASK_UI ), "charSet" })
-            );
             ui -> setId( "ui_thread" ) -> loop( true );
         }
 
@@ -304,7 +290,10 @@ void Loop::onLoop()
             if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
 
-            /* Config apply */
+            /*
+                TODO - net must reload from IO each time or timeout
+                Config apply
+            */
             net -> readNet();
 
             /* Reinit process */

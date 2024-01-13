@@ -89,19 +89,12 @@ childrenLambda;
 
 
 
-/*
-    Predescription of neuron
-*/
-class Net;
-
-
-
 class Layer : public Object
 {
     private:
 
         /* States */
-        Net*            net                     = NULL;         /* Net object */
+        Log*            log                     = NULL;         /* Log object */
 
         bool            pointsRecalc            = false;        /* Recalculate points for Neurons */
         Point3d         drawSize                = POINT_3D_0;   /* Visual draw size at GL units*/
@@ -132,24 +125,11 @@ class Layer : public Object
             Plans of neurons data
         */
 
-        double*         valuesCache             = NULL;         /* Processors values layer  */
-        double*         errorsCache             = NULL;         /* Processors errors layer */
         double*         values                  = NULL;
         double*         errors                  = NULL;
         Point3d*        screen                  = NULL;
         Point3d*        world                   = NULL;
         bool*           selected                = NULL;
-
-        /*
-            Plans exists flags
-        */
-        bool            valuesExists            = false;
-        bool            errorsExists            = false;
-        bool            valuesCacheExists       = false;
-        bool            errorsCacheExists       = false;
-        bool            screenExists            = false;
-        bool            worldExists             = false;        /* Worls points exists */
-        bool            selectedExists          = false;
 
     public:
 
@@ -164,15 +144,8 @@ class Layer : public Object
         */
         Layer
         (
-            Net*,
-            string = "",    /* id */
-            bool = true,    /* valuesExists */
-            bool = true,    /* errorsExists */
-            bool = false,   /* valuesCacheExists for processor */
-            bool = false,   /* errorsCacheExists for processor */
-            bool = false,   /* screenExists for ui */
-            bool = false,   /* worldExists for ui */
-            bool = false    /* selectedExists for ui */
+            Log*,          /* Log object */
+            string = ""     /* id */
         );
 
 
@@ -190,15 +163,8 @@ class Layer : public Object
         */
         static Layer* create
         (
-            Net*,           /* Net object */
-            string = "",
-            bool = true,    /* valuesExists */
-            bool = true,    /* errorsExists */
-            bool = false,   /* valuesCacheExists */
-            bool = false,   /* errorsCacheExists */
-            bool = false,   /* screenExists */
-            bool = false,   /* worldExists */
-            bool = false    /* selectedExists */
+            Log*,          /* Log object */
+            string = ""
         );
 
 
@@ -283,31 +249,6 @@ class Layer : public Object
 
 
 
-        /*
-            Calc layer forward
-        */
-        Layer* calcValue
-        (
-            int,    /* calcFromNeuron */
-            int     /* calcToNeuron */
-        );
-
-
-
-        /*
-            Learning for layer (backward)
-        */
-        Layer* learning
-        (
-            double, /* errorNormalize */
-            double, /* learningSpeed */
-            double, /* wakeupWeight */
-            int,
-            int
-        );
-
-
-
         /***********************************************************************
             Setters and getters
         */
@@ -366,6 +307,40 @@ class Layer : public Object
 
 
         /*
+            Resize values plan
+        */
+        Layer* valuesCreate();
+
+
+
+        /*
+            Resize errors plan
+        */
+        Layer* errorsCreate();
+
+
+
+        /*
+            Resize world position plan
+        */
+        Layer* worldCreate();
+
+
+        /*
+            Resize screen position plan
+        */
+        Layer* screenCreate();
+
+
+
+        /*
+            Resize selected plan
+        */
+        Layer* selectedCreate();
+
+
+
+        /*
             Set position
         */
         Layer* setPosition
@@ -403,6 +378,10 @@ class Layer : public Object
 
 
 
+        Point3d& getDrawSize();
+
+
+
         Layer* setDrawSize
         (
             ParamList*
@@ -419,13 +398,6 @@ class Layer : public Object
 
 
         bool getErrorChange();
-
-
-
-        /*
-            Return the Net object
-        */
-        Net* getNet();
 
 
 
@@ -547,25 +519,11 @@ class Layer : public Object
 
 
 
-        /*
-            Send values to io
-        */
-        Layer* writeValues();
-
-
-
         Layer* valuesFromBuffer
         (
             char*,
             size_t
         );
-
-
-
-        /*
-            Read values from io
-        */
-        Layer* readValues();
 
 
 
@@ -627,29 +585,6 @@ class Layer : public Object
         Layer* setRoleRead
         (
             bool /* value */
-        );
-
-
-
-
-        /*
-            Calculate start neuron for processors operations
-        */
-        int calcNeuronFrom
-        (
-            int,    /* Number of processor */
-            int     /* Count of processours */
-        );
-
-
-
-        /*
-            Caluculate end of neurons for processors operations
-        */
-        int calcNeuronTo
-        (
-            int,    /* Number of processor */
-            int     /* Count of processours */
         );
 
 
@@ -866,42 +801,6 @@ class Layer : public Object
 
 
 
-        /**********************************************************************
-            Calculations
-        */
-
-        /*
-            Calculate neuron
-        */
-        Layer* neuronCalcValue
-        (
-            int /* Index of neuron */
-        );
-
-
-
-        /*
-            Loop for each parents of this neuron
-        */
-        Layer* parentsLoop
-        (
-            int,    /* Index of neuron for loop by his parents */
-            parentsLambda
-        );
-
-
-
-        /*
-            Loop for each child of i neuron
-        */
-        Layer* childrenLoop
-        (
-            int,
-            childrenLambda
-        );
-
-
-
         /*
             Return event actions
         */
@@ -921,19 +820,6 @@ class Layer : public Object
 
 
 
-        /*
-            Calculate neuron
-        */
-        Layer* neuronLearning
-        (
-            int,    /* Index of neuron */
-            double, /* ErrorNormalize */
-            double, /* LearningSpeed */
-            double  /* WakeupWeight */
-        );
-
-
-
         /* Move values and errors data to processor cache */
         Layer* dataToCache();
 
@@ -947,6 +833,22 @@ class Layer : public Object
             Return the log object
         */
         Log* getLog();
+
+
+
+        bool compare
+        (
+            Layer*
+        );
+
+
+        /*
+            Move values data to this from the argument layer
+        */
+        Layer* copyValuesFrom
+        (
+            Layer* /* Source layer */
+        );
 };
 
 

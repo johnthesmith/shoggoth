@@ -1,6 +1,5 @@
 /*
-    Shoggoth neural net library.
-    Extends the Net class for UI.
+    Shoggoth limb for ui
     Contains methods for drawing net in UI interface.
     2023
 */
@@ -11,15 +10,14 @@
 
 
 
-#include "../graph/scene.h"
-#include "../graph/point3.h"
-#include "../graph/rgba.h"
+#include "../../graph/scene.h"
+#include "../../graph/point3.h"
+#include "../../graph/rgba.h"
 
+#include "../neuron_list.h"
+#include "../limb.h"
 
-
-#include "neuron_list.h"
 #include "net.h"
-
 
 
 enum NeuronDrawMode
@@ -30,7 +28,7 @@ enum NeuronDrawMode
 
 
 
-class NetGraph : public Net
+class LimbUi : public Limb
 {
     private:
 
@@ -64,10 +62,9 @@ class NetGraph : public Net
         /*
             Constructor
         */
-        NetGraph
+        LimbUi
         (
-            Application*,  /* Application object */
-            SockManager*
+            Net*
         );
 
 
@@ -75,28 +72,16 @@ class NetGraph : public Net
         /*
             Destructor
         */
-        ~NetGraph();
+        ~LimbUi();
 
 
 
         /*
             Create
         */
-        static NetGraph* create
+        static LimbUi* create
         (
-            Application*,
-            SockManager*
-        );
-
-
-
-
-        /*
-            Draw learning mode indicator
-        */
-        NetGraph* drawLearningMode
-        (
-            Scene*
+            Net*
         );
 
 
@@ -104,7 +89,7 @@ class NetGraph : public Net
         /*
             Draw neuron chart
         */
-        NetGraph* drawNeuronChart
+        LimbUi* drawNeuronChart
         (
             Scene*,
             NeuronList*
@@ -115,7 +100,7 @@ class NetGraph : public Net
         /*
             draw selected neurons
         */
-        NetGraph* drawSelectedNeurons
+        LimbUi* drawSelectedNeurons
         (
             Scene*
         );
@@ -125,7 +110,7 @@ class NetGraph : public Net
         /*
             Set neuron draw mode
         */
-        NetGraph* setNeuronDrawMode
+        LimbUi* setNeuronDrawMode
         (
             NeuronDrawMode
         );
@@ -142,7 +127,7 @@ class NetGraph : public Net
         /*
             Calculate screen points for layer
         */
-        NetGraph* neuronPointsScreenCalc
+        LimbUi* neuronPointsScreenCalc
         (
             Scene*, /* Scene object */
             Layer*
@@ -153,7 +138,7 @@ class NetGraph : public Net
         /*
             Draw layers
         */
-        NetGraph* drawLayers
+        LimbUi* drawLayers
         (
             Scene*, /* Scene object */
             bool    /* Recalculate the screen position */
@@ -164,7 +149,7 @@ class NetGraph : public Net
         /*
             Draw layer
         */
-        NetGraph* drawLayer
+        LimbUi* drawLayer
         (
             Scene*, /* Scene object */
             Layer*, /* Drawne Layer object*/
@@ -176,7 +161,7 @@ class NetGraph : public Net
         /*
             Draw nerves
         */
-        NetGraph* drawNerves
+        LimbUi* drawNerves
         (
             Scene* /* Scene object */
         );
@@ -186,7 +171,7 @@ class NetGraph : public Net
         /*
             Draw nerve
         */
-        NetGraph* drawNerve
+        LimbUi* drawNerve
         (
             Scene*,
             Nerve*
@@ -197,7 +182,7 @@ class NetGraph : public Net
         /*
             Return neurons by screen rectangle
         */
-        NetGraph* getNeuronsByScreenRect
+        LimbUi* getNeuronsByScreenRect
         (
             NeuronList*,    /* Returned list */
             Point3d&,       /* top left */
@@ -216,7 +201,7 @@ class NetGraph : public Net
         /*
             Select neurons by screen rectangle
         */
-        NetGraph* selectNeuronsByRect
+        LimbUi* selectNeuronsByRect
         (
             Point3d,    /* Top left corner */
             Point3d     /* Bottom right corner */
@@ -244,7 +229,7 @@ class NetGraph : public Net
         );
 
 
-        NetGraph* switchShowBinds();
+        LimbUi* switchShowBinds();
 
 
 
@@ -258,7 +243,7 @@ class NetGraph : public Net
         /*
             Return neuron by screen position
         */
-        NetGraph* getNeuronsByScreenPos
+        LimbUi* getNeuronsByScreenPos
         (
             NeuronList*,
             const Point3d&
@@ -273,14 +258,14 @@ class NetGraph : public Net
         /*
             Set list of selected neurons
         */
-        NetGraph* setSelected
+        LimbUi* setSelected
         (
             Neuron*
         );
 
 
 
-        NetGraph* setSelected
+        LimbUi* setSelected
         (
             Scene*
         );
@@ -290,7 +275,7 @@ class NetGraph : public Net
         /*
             Add new selected neurons
         */
-        NetGraph* addSelectedByCursor
+        LimbUi* addSelectedByCursor
         (
             Scene*  /* Scene object */
         );
@@ -300,7 +285,7 @@ class NetGraph : public Net
         /*
             Remove selected neurons
         */
-        NetGraph* removeSelectedByCursor
+        LimbUi* removeSelectedByCursor
         (
             Scene*  /* Scene object */
         );
@@ -317,7 +302,7 @@ class NetGraph : public Net
         /*
             Set screen radius
         */
-        NetGraph* setCursorRadius
+        LimbUi* setCursorRadius
         (
             double /* Pixel radius */
         );
@@ -331,8 +316,9 @@ class NetGraph : public Net
 
 
 
-        NetGraph* syncToScene
-        (
-            Scene*
-        );
+        /*
+        */
+        LimbUi* switchShowLayer();
 };
+
+

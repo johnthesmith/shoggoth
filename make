@@ -28,6 +28,7 @@ echo "" >> processor.log
 ./shab build "src/sock/*.cpp"
 ./shab build "src/graph/*.cpp"
 ./shab build "src/shoggoth/*.cpp"
+./shab build "src/shoggoth/limb/*.cpp"
 ./shab build "src/app/*.cpp"
 
 ## Make executable file

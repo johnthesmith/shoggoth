@@ -4,7 +4,7 @@
 #include "../graph/scene_payload.h"
 #include "../graph/camera.h"
 #include "../shoggoth/layer.h"
-#include "../shoggoth/net_graph.h"
+#include "../shoggoth/limb/limb_ui.h"
 
 #include "shoggoth_application.h"
 
@@ -19,8 +19,8 @@ class Ui : public ScenePayload
     private:
 
         Camera*     camera              = NULL;   /* Default camera */
+        LimbUi*     limb                = NULL;
 
-        NetGraph*   net                 = NULL;
         Point3d     selectTopLeft       = POINT_3D_0;
         Point3d     selectBottomRight   = POINT_3D_0;
 
@@ -38,7 +38,7 @@ class Ui : public ScenePayload
         */
         Ui
         (
-            NetGraph*
+            Net*
         );
 
 
@@ -55,7 +55,7 @@ class Ui : public ScenePayload
         */
         static Ui* create
         (
-            NetGraph*
+            Net*
         );
 
 

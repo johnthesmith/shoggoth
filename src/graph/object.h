@@ -5,6 +5,27 @@
 
     Class is describe the Object for payload.
     The Object can be applied to the Scene and changed the scenes's matrixes.
+
+    The class has a:
+    - eye - point of view
+    - target - point for Front direction
+    - top - normalized vector for top directio
+
+    Each point and vector can blocked
+
+                      O target         ^
+                     /                /
+                    /                /
+           top o   /                /
+               |  c front          / gase
+               | /                /
+               |/                /
+    left c-----0-----c right    0
+              /|eye
+             / |
+       back c  |
+               c bottom
+
 */
 
 #include <math.h>
@@ -260,5 +281,15 @@ class Object : public Result
         Object& setChanged
         (
             bool
+        );
+
+
+
+        /*
+            Compare this object and argument object
+        */
+        bool compare
+        (
+            Object*
         );
 };

@@ -1,32 +1,30 @@
-#include "net_graph.h"
+#include "limb_ui.h"
 
 /* System */
 #include <functional>
 #include <iostream>
 
 /* Graph libraries */
-#include "../graph/chart.h"
-#include "../graph/log_points.h"
+#include "../../graph/chart.h"
+#include "../../graph/log_points.h"
 
 /* Shoggot libraries */
-#include "func.h"
-#include "neuron.h"
+#include "../func.h"
+#include "../neuron.h"
 
 
 
 /*
     Constructor
 */
-NetGraph::NetGraph
+LimbUi::LimbUi
 (
-    Application* aApplication,
-    SockManager* aSockManager
+    Net* aNet
 )
 /* Call parent constructor */
-: Net
+: Limb
 (
-    aApplication,
-    aSockManager
+    aNet -> getLog()
 )
 {
     selected = NeuronList::create();
@@ -37,7 +35,7 @@ NetGraph::NetGraph
 /*
     Destructor
 */
-NetGraph::~NetGraph()
+LimbUi::~LimbUi()
 {
     selected -> destroy();
 }
@@ -47,13 +45,12 @@ NetGraph::~NetGraph()
 /*
     Create
 */
-NetGraph* NetGraph:: create
+LimbUi* LimbUi:: create
 (
-    Application* aApplication,
-    SockManager* aSockManager
+    Net* aNet
 )
 {
-    return new NetGraph( aApplication, aSockManager );
+    return new LimbUi( aNet );
 }
 
 
@@ -61,13 +58,13 @@ NetGraph* NetGraph:: create
 /*
     Draw layers
 */
-NetGraph* NetGraph::drawLayers
+LimbUi* LimbUi::drawLayers
 (
     Scene* aScene,          /* Scene object */
     bool   aCalcScreenPos   /* Camera changed */
 )
 {
-    getLayers() -> loop
+    getLayerList() -> loop
     (
         [ this, aScene, aCalcScreenPos ]
         (
@@ -87,7 +84,7 @@ NetGraph* NetGraph::drawLayers
 /*
     Draw layer
 */
-NetGraph* NetGraph::drawLayer
+LimbUi* LimbUi::drawLayer
 (
     Scene*  aScene,
     Layer*  aLayer,
@@ -184,13 +181,13 @@ NetGraph* NetGraph::drawLayer
 /*
     Draw nerves
 */
-NetGraph* NetGraph::drawNerves
+LimbUi* LimbUi::drawNerves
 (
     Scene* aScene /* Scene object */
 )
 {
     /* Draw nerves */
-    getNerves() -> loop
+    getNerveList() -> loop
     (
         [ this, &aScene ]
         ( void* iNerve )
@@ -207,7 +204,7 @@ NetGraph* NetGraph::drawNerves
 /*
     Draw layer
 */
-NetGraph* NetGraph::drawNerve
+LimbUi* LimbUi::drawNerve
 (
     Scene*  aScene,
     Nerve*  aNerve
@@ -335,7 +332,7 @@ NetGraph* NetGraph::drawNerve
 
 
 
-NetGraph* NetGraph::neuronPointsScreenCalc
+LimbUi* LimbUi::neuronPointsScreenCalc
 (
     Scene* aScene,  /* Scene object */
     Layer* aLayer
@@ -361,38 +358,10 @@ NetGraph* NetGraph::neuronPointsScreenCalc
 
 
 
-
-/*
-    Draw learning mode indicator
-*/
-NetGraph* NetGraph::drawLearningMode
-(
-    Scene* aScene
-)
-{
-    if( getLearningMode() )
-    {
-        aScene
-        -> setPointSize( 8 )
-        -> color( RGBA_YELLOW )
-        -> setTextBaseLine( BASE_LINE_TOP )
-        -> setTextHorisontalAlign( ALIGN_LEFT )
-        -> setTextRight( POINT_3D_RIGHT )
-        -> setTextTop( POINT_3D_TOP )
-        -> setTextPosition( Point3d( 0, aScene -> getViewport().height, 0 ))
-        -> setTextSize( 20 )
-        -> text( "Learning mode" );
-    }
-
-    return this;
-}
-
-
-
 /*
     Draw neuron chart
 */
-NetGraph* NetGraph::drawNeuronChart
+LimbUi* LimbUi::drawNeuronChart
 (
     Scene* aScene,
     NeuronList* aNeuronList
@@ -438,14 +407,14 @@ NetGraph* NetGraph::drawNeuronChart
 /*
     Return neurons by screen rectangle
 */
-NetGraph* NetGraph::getNeuronsByScreenRect
+LimbUi* LimbUi::getNeuronsByScreenRect
 (
     NeuronList* aNeuronList,    /* Returned list */
     Point3d&    aTopLeft,       /* top left */
     Point3d&    aBottomRight    /* botom right */
 )
 {
-    getLayers() -> loop
+    getLayerList() -> loop
     (
         [ &aNeuronList, &aTopLeft, &aBottomRight ]
         (
@@ -470,7 +439,7 @@ NetGraph* NetGraph::getNeuronsByScreenRect
 /*
     draw selected neurons
 */
-NetGraph* NetGraph::drawSelectedNeurons
+LimbUi* LimbUi::drawSelectedNeurons
 (
     Scene* aScene
 )
@@ -501,7 +470,7 @@ NetGraph* NetGraph::drawSelectedNeurons
 /*
     Select neurons by screen rectangle
 */
-NetGraph* NetGraph::selectNeuronsByRect
+LimbUi* LimbUi::selectNeuronsByRect
 (
     Point3d aTopLeft,       /* Top left corner */
     Point3d aBottomRight    /* Bottom right corner */
@@ -517,7 +486,7 @@ NetGraph* NetGraph::selectNeuronsByRect
 /*
     Set neuron draw mode
 */
-NetGraph* NetGraph::setNeuronDrawMode
+LimbUi* LimbUi::setNeuronDrawMode
 (
     NeuronDrawMode a
 )
@@ -531,7 +500,7 @@ NetGraph* NetGraph::setNeuronDrawMode
 /*
     Get neuron draw mode
 */
-NeuronDrawMode NetGraph::getNeuronDrawMode()
+NeuronDrawMode LimbUi::getNeuronDrawMode()
 {
     return neuronDrawMode;
 }
@@ -541,14 +510,14 @@ NeuronDrawMode NetGraph::getNeuronDrawMode()
 /*
     Return list of selected neurons
 */
-NeuronList* NetGraph::getSelectedNeurons()
+NeuronList* LimbUi::getSelectedNeurons()
 {
     return selected;
 }
 
 
 
-Rgba NetGraph::getErrorColor
+Rgba LimbUi::getErrorColor
 (
     const double a
 )
@@ -561,7 +530,7 @@ Rgba NetGraph::getErrorColor
 
 
 
-Rgba NetGraph::getBindErrorColor
+Rgba LimbUi::getBindErrorColor
 (
     const double a
 )
@@ -575,7 +544,7 @@ Rgba NetGraph::getBindErrorColor
 
 
 
-Rgba NetGraph::getBindValueColor
+Rgba LimbUi::getBindValueColor
 (
     const double a
 )
@@ -588,7 +557,7 @@ Rgba NetGraph::getBindValueColor
 
 
 
-NetGraph* NetGraph::switchShowBinds()
+LimbUi* LimbUi::switchShowBinds()
 {
     switch( showBinds )
     {
@@ -598,10 +567,10 @@ NetGraph* NetGraph::switchShowBinds()
         case BDM_TYPE: showBinds = BDM_HIDDEN; break;
     }
 
-    int c = getLayers() -> getCount();
+    int c = getLayerList() -> getCount();
     for( int i = 0; i < c; i++ )
     {
-        Layer* layer = ( Layer* ) ( getLayers() -> getByIndex( i ));
+        Layer* layer = ( Layer* ) ( getLayerList() -> getByIndex( i ));
         layer -> setShowBinds( showBinds );
     }
     return this;
@@ -609,7 +578,7 @@ NetGraph* NetGraph::switchShowBinds()
 
 
 
-Rgba NetGraph::getArrowColorByType
+Rgba LimbUi::getArrowColorByType
 (
     BindType aType
 )
@@ -638,13 +607,13 @@ Rgba NetGraph::getArrowColorByType
 /*
     Return neuron by screen position
 */
-NetGraph* NetGraph::getNeuronsByScreenPos
+LimbUi* LimbUi::getNeuronsByScreenPos
 (
     NeuronList* aNeuronList,
     const Point3d& aPosition
 )
 {
-    getLayers() -> loop
+    getLayerList() -> loop
     (
         [ this, &aNeuronList, &aPosition ]
         (
@@ -668,14 +637,14 @@ NetGraph* NetGraph::getNeuronsByScreenPos
 /*
     Return first selected neuron
 */
-Neuron* NetGraph::getSelectedFirst()
+Neuron* LimbUi::getSelectedFirst()
 {
     return ( Neuron* ) selected -> getFirst();
 }
 
 
 
-NetGraph* NetGraph::setSelected
+LimbUi* LimbUi::setSelected
 (
     Neuron* a
 )
@@ -689,7 +658,7 @@ NetGraph* NetGraph::setSelected
 /*
     Set selected neurons
 */
-NetGraph* NetGraph::setSelected
+LimbUi* LimbUi::setSelected
 (
     Scene* aScene /* Scene object */
 )
@@ -708,7 +677,7 @@ NetGraph* NetGraph::setSelected
 /*
     Add selected neurons
 */
-NetGraph* NetGraph::addSelectedByCursor
+LimbUi* LimbUi::addSelectedByCursor
 (
     Scene* aScene /* Scene object */
 )
@@ -729,7 +698,7 @@ NetGraph* NetGraph::addSelectedByCursor
 /*
     Remove selected neurons by scene
 */
-NetGraph* NetGraph::removeSelectedByCursor
+LimbUi* LimbUi::removeSelectedByCursor
 (
     Scene* aScene /* Scene object */
 )
@@ -751,7 +720,7 @@ NetGraph* NetGraph::removeSelectedByCursor
 /*
     Return screen radius
 */
-double NetGraph::getCursorRadius()
+double LimbUi::getCursorRadius()
 {
     return cursorRadius;
 }
@@ -761,7 +730,7 @@ double NetGraph::getCursorRadius()
 /*
     Set screen radius
 */
-NetGraph* NetGraph::setCursorRadius
+LimbUi* LimbUi::setCursorRadius
 (
     double a /* Pixel radius */
 )
@@ -775,7 +744,7 @@ NetGraph* NetGraph::setCursorRadius
 /*
     Return average weights for selected neurons
 */
-double NetGraph::avgWeightBySelect()
+double LimbUi::avgWeightBySelect()
 {
     int total = 0;
     double sum = 0;
@@ -804,64 +773,15 @@ double NetGraph::avgWeightBySelect()
 
 
 
-NetGraph* NetGraph::syncToScene
-(
-    Scene*  aScene
-)
+LimbUi* LimbUi::switchShowLayer()
 {
-    auto textPoint = Point3d
-    (
-        aScene -> getViewport().width * 0.5,
-        aScene -> getViewport().height -30,
-        0
-    );
-
-    aScene
-    -> color( Rgba( RGBA_WHITE ))
-    -> setTextTop( POINT_3D_Y)
-    -> setTextRight( POINT_3D_X)
-    -> setTextPosition( textPoint )
-    -> setTextSize( 20 )
-    -> setTextBaseLine( BASE_LINE_TOP )
-    -> setTextHorisontalAlign( ALIGN_LEFT )
-    -> text( "Last" )
-    -> textTab( 100 )
-    -> text( "Layer" )
-    -> textTab( 300 )
-    -> text( "Forward" )
-    -> textTab( 300 )
-    -> text( "Backward" )
-    -> textCR()
-    ;
-
-
-    Layer* currentLayer = NULL;
-
-    if( getCalcStage( CALC_FORWARD ) != CALC_COMPLETE )
-    {
-        currentLayer = getForwardList() -> getByIndex( getCalcLayerIndex());
-    }
-    else
-    {
-        currentLayer = getBackwardList() -> getByIndex( getCalcLayerIndex());
-    }
-
-    int c = getLayers() -> getCount();
+    LayerList* layers = getLayerList();
+    int c = layers -> getCount();
     for( int i = 0; i < c; i++ )
     {
-        auto iLayer = getLayers() -> getByIndex( i );
-
-        aScene
-        -> text( iLayer == currentLayer ? ">" : "-" )
-        -> textTab( 100 )
-        -> text( iLayer -> getNameOrId() )
-        -> textTab( 300 )
-        -> text( calcStageToString( iLayer -> getForwardStage( getThreadCount() )))
-        -> textTab( 300 )
-        -> text( calcStageToString( iLayer -> getBackwardStage( getThreadCount() )))
-        -> textCR()
-        ;
+        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        layer -> switchShowLayer();
     }
-
     return this;
 }
+

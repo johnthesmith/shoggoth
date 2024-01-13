@@ -1,26 +1,5 @@
 /*
     Object
-
-    The class has a:
-    - eye - point of view
-    - target - point for Front direction
-    - top - normalized vector for top directio
-
-    Each point and vector can blocked
-
-                      O target         ^
-                     /                /
-                    /                /
-           top o   /                /
-               |  o front          / gase
-               | /                /
-               |/eye             /
-    left o-----0-----o right    0
-              /|
-             / |
-       back o  |
-               o bottom
-
 */
 
 #include <iostream>
@@ -419,3 +398,20 @@ Object& Object::setChanged
     changed = a;
     return *this;
 }
+
+
+
+/*
+    Compare this object and argument object
+*/
+bool Object::compare
+(
+    Object* aObject
+)
+{
+    return
+    eye == aObject -> getEye() &&
+    top == aObject -> getTop() &&
+    target == aObject -> getTarget();
+}
+

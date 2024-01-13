@@ -15,7 +15,7 @@
 
 /* Local libraries */
 #include "../lib/payload.h"
-#include "../shoggoth/net_graph.h"
+#include "../shoggoth/limb/net.h"
 
 /* Payloads */
 #include "ui.h"
@@ -34,7 +34,7 @@ class Loop : public Payload
     private:
 
         /* Neural net object */
-        NetGraph*   net             = NULL;
+        Net*        net             = NULL;
 
         /* Payloads object  of roles */
         Ui*         ui              = NULL;

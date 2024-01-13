@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <string>
-#include <unistd.h>         /* usleep */
+#include <unistd.h>
 #include <GL/glu.h>
 
 /* Local libraries */

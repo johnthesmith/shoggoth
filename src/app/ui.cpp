@@ -45,14 +45,34 @@ using namespace std;
 */
 Ui::Ui
 (
-    NetGraph* aNet
+    Net* aNet
 )
 : ScenePayload( aNet -> getApplication() ) /* Call parent constructor */
 {
-    net = aNet;
-
+    limb = LimbUi::create( aNet );
     camera = Camera::create();
     setScene( Scene::create( getLog() ));
+
+    getScene()
+    -> getFont()
+    -> setFontName
+    (
+        getApplication()
+        -> getConfig()
+        -> getString( Path{ "tasks", taskToString( TASK_UI ), "fontName" } )
+    )
+    -> setGliphSize
+    (
+        getApplication()
+        -> getConfig()
+        -> getInt( Path{ "tasks", taskToString( TASK_UI ), "gliphSize" }, 16 )
+    )
+    -> setCharSet
+    (
+        getApplication()
+        -> getConfig()
+        -> getString( Path{ "tasks", taskToString( TASK_UI ), "charSet" })
+    );
 
     getLog()
     -> trace( "Config source" )
@@ -69,6 +89,7 @@ Ui::~Ui()
 {
     getScene() -> finit() -> destroy();
     camera -> destroy();
+    limb -> destroy();
 }
 
 
@@ -78,7 +99,7 @@ Ui::~Ui()
 */
 Ui* Ui::create
 (
-    NetGraph* aNet
+    Net* aNet
 )
 {
     return new Ui( aNet );
@@ -169,12 +190,12 @@ void Ui::onDraw
 
     applyScreenToScene( aScene );
 
-    net -> drawSelectedNeurons( aScene );
+    limb -> drawSelectedNeurons( aScene );
 
     applyCameraToScene( camera, aScene );
 
     /* Draw Layers */
-    net
+    limb
     -> drawLayers( aScene, camera -> getChanged() )
     -> drawNerves( aScene );
 
@@ -185,9 +206,6 @@ void Ui::onDraw
         Switch to flat screen
     */
     applyScreenToScene( aScene );
-
-    /* Draw Learning mode */
-    net -> drawLearningMode( aScene );
 
     aScene -> drawAxisIdentity();
 
@@ -200,7 +218,7 @@ void Ui::onDraw
     /*
         Draw neuron chart
     */
-    Neuron* neuron = net -> getSelectedFirst();
+    Neuron* neuron = limb -> getSelectedFirst();
     if( neuron != NULL )
     {
 
@@ -218,14 +236,10 @@ void Ui::onDraw
         )
         -> end();
 
-        net -> drawNeuronChart( aScene, net -> getSelectedNeurons() );
+        limb -> drawNeuronChart( aScene, limb -> getSelectedNeurons() );
     }
 
-    /* Daraw sync */
-    net -> syncToScene( aScene );
-
-
-    net -> drawSelectedNeurons( aScene );
+    limb -> drawSelectedNeurons( aScene );
 
     if( selectTopLeft != selectBottomRight )
     {
@@ -245,7 +259,7 @@ void Ui::onDraw
 
         /* Draw selected neurons */
         NeuronList* list = NeuronList::create();
-        net -> getNeuronsByScreenRect( list, selectTopLeft, selectBottomRight );
+        limb -> getNeuronsByScreenRect( list, selectTopLeft, selectBottomRight );
 
         aScene
         -> color( interfaceColor )
@@ -276,8 +290,8 @@ void Ui::onDraw
             aScene -> getMouseCurrentScreen(),
             Point2d
             (
-                net -> getCursorRadius(),
-                net -> getCursorRadius()
+                limb -> getCursorRadius(),
+                limb -> getCursorRadius()
             )
         )
     )
@@ -328,7 +342,7 @@ void Ui::onKeyDown
     switch( aKey )
     {
         case KEY_T:
-            net -> setCalcTick();
+ //           limb -> setCalcTick();
         break;
         case KEY_ESCAPE:
             aScene . closeWindow();
@@ -347,9 +361,9 @@ void Ui::onKeyDown
 
         case KEY_LEFT_BRACKET:
         {
-            auto index = net -> getLayers() -> getIndexById( selectedLayerId );
-            index = ( index <= 0 ? net -> getLayers() -> getCount() : index ) - 1;
-            auto layer = net -> getLayers() -> getByIndex( index );
+            auto index = limb -> getLayerList() -> getIndexById( selectedLayerId );
+            index = ( index <= 0 ? limb -> getLayerList() -> getCount() : index ) - 1;
+            auto layer = limb -> getLayerList() -> getByIndex( index );
 
             if( layer != NULL )
             {
@@ -364,9 +378,9 @@ void Ui::onKeyDown
 
         case KEY_RIGHT_BRACKET:
         {
-            auto index = net -> getLayers() -> getIndexById( selectedLayerId );
-            index = index >= net -> getLayers() -> getCount() - 1 ? 0 : ( index + 1 );
-            auto layer = net -> getLayers() -> getByIndex( index );
+            auto index = limb -> getLayerList() -> getIndexById( selectedLayerId );
+            index = index >= limb -> getLayerList() -> getCount() - 1 ? 0 : ( index + 1 );
+            auto layer = limb -> getLayerList() -> getByIndex( index );
 
             if( layer != NULL )
             {
@@ -384,7 +398,7 @@ void Ui::onKeyDown
         break;
 
         case KEY_R:
-            net -> getSelectedNeurons() -> loop
+            limb -> getSelectedNeurons() -> loop
             (
                 []( Neuron* neuron )
                 {
@@ -394,19 +408,16 @@ void Ui::onKeyDown
             );
         break;
         case KEY_V:
-            net -> setNeuronDrawMode( NDM_VALUE );
+            limb -> setNeuronDrawMode( NDM_VALUE );
         break;
         case KEY_E:
-            net -> setNeuronDrawMode( NDM_ERROR );
+            limb -> setNeuronDrawMode( NDM_ERROR );
         break;
         case KEY_B:
-            net -> switchShowBinds();
+            limb -> switchShowBinds();
         break;
         case KEY_C:
-            net -> switchShowLayer();
-        break;
-        case KEY_L:
-            net -> switchLearningMode();
+            limb -> switchShowLayer();
         break;
         case KEY_LEFT_CONTROL:
             camera -> setEyeLock( true );
@@ -434,12 +445,12 @@ void Ui::onMouseMove
     {
         if( aScene.isKey( KEY_LEFT_CONTROL ))
         {
-            net -> addSelectedByCursor( &aScene );
+            limb -> addSelectedByCursor( &aScene );
         }
 
         if( aScene.isKey( KEY_LEFT_ALT ))
         {
-            net -> removeSelectedByCursor( &aScene );
+            limb -> removeSelectedByCursor( &aScene );
         }
     }
 }
@@ -476,7 +487,7 @@ void Ui::onLeftDragEnd
 {
 //    if( aScene.isKey( KEY_LEFT_SHIFT ))
 //    {
-//        net -> selectNeuronsByRect( selectTopLeft, selectBottomRight );
+//        limb -> selectNeuronsByRect( selectTopLeft, selectBottomRight );
 //        selectTopLeft = POINT_3D_0;
 //        selectBottomRight = POINT_3D_0;
 //    }
@@ -528,105 +539,105 @@ void Ui::onMouseWheel
 {
     auto operation = false;
 
-    if( aScene.isKey( KEY_W ))
-    {
-        int total = 0;
-        double sum = 0;
+//    if( aScene.isKey( KEY_W ))
+//    {
+//        int total = 0;
+//        double sum = 0;
+//
+//        limb -> nerveWeightLoop
+//        (
+//            limb -> getSelectedNeurons(),
+//            [
+//                &total, &sum
+//            ]
+//            (
+//                int aWeightIndex,
+//                Neuron* aNeuronFrom,
+//                Neuron* aNeuronTo,
+//                Nerve* aNerve
+//            )
+//            {
+//                total ++;
+//                sum += aNerve -> getWeight( aWeightIndex );
+//                return false;
+//            }
+//        );
+//
+//        if( total != 0 )
+//        {
+//            auto avgWeight = (double)sum / total;
+//
+//            limb -> nerveWeightLoop
+//            (
+//                limb -> getSelectedNeurons(),
+//                [
+//                    &avgWeight, &aDelta
+//                ]
+//                (
+//                    int aWeightIndex,
+//                    Neuron* aNeuronFrom,
+//                    Neuron* aNeuronTo,
+//                    Nerve* aNerve
+//                )
+//                {
+//                    aNerve -> setWeight( aWeightIndex, avgWeight + aDelta.y * 0.1 );
+//                    return false;
+//                }
+//            );
+//        }
+//
+//        operation = true;
+//    }
 
-        net -> nerveWeightLoop
-        (
-            net -> getSelectedNeurons(),
-            [
-                &total, &sum
-            ]
-            (
-                int aWeightIndex,
-                Neuron* aNeuronFrom,
-                Neuron* aNeuronTo,
-                Nerve* aNerve
-            )
-            {
-                total ++;
-                sum += aNerve -> getWeight( aWeightIndex );
-                return false;
-            }
-        );
 
-        if( total != 0 )
-        {
-            auto avgWeight = (double)sum / total;
-
-            net -> nerveWeightLoop
-            (
-                net -> getSelectedNeurons(),
-                [
-                    &avgWeight, &aDelta
-                ]
-                (
-                    int aWeightIndex,
-                    Neuron* aNeuronFrom,
-                    Neuron* aNeuronTo,
-                    Nerve* aNerve
-                )
-                {
-                    aNerve -> setWeight( aWeightIndex, avgWeight + aDelta.y * 0.1 );
-                    return false;
-                }
-            );
-        }
-
-        operation = true;
-    }
-
-
-    if( aScene.isKey( KEY_P ))
-    {
-        net -> getSelectedNeurons() -> loop
-        (
-            []
-            ( Neuron* aNeuron )
-            {
-                aNeuron -> getLayer() -> childrenLoop
-                (
-                    aNeuron -> getIndex(),
-                    [
-                        &aNeuron
-                    ]
-                    (
-                        Layer* aParentLayer,
-                        int aParentIndex,
-                        Nerve* aNerve,
-                        double aWeight,
-                        int aIndexWeight
-                    )
-                    {
-                        aParentLayer -> setNeuronValue( aParentIndex, aNeuron -> getValue() );
-                        aNerve -> setWeight( aIndexWeight, 1 );
-                        return false;
-                    }
-                );
-                return false;
-            }
-        );
-        operation = true;
-    }
-
+//    if( aScene.isKey( KEY_P ))
+//    {
+//        limb -> getSelectedNeurons() -> loop
+//        (
+//            []
+//            ( Neuron* aNeuron )
+//            {
+//                aNeuron -> getLayer() -> childrenLoop
+//                (
+//                    aNeuron -> getIndex(),
+//                    [
+//                        &aNeuron
+//                    ]
+//                    (
+//                        Layer* aParentLayer,
+//                        int aParentIndex,
+//                        Nerve* aNerve,
+//                        double aWeight,
+//                        int aIndexWeight
+//                    )
+//                    {
+//                        aParentLayer -> setNeuronValue( aParentIndex, aNeuron -> getValue() );
+//                        aNerve -> setWeight( aIndexWeight, 1 );
+//                        return false;
+//                    }
+//                );
+//                return false;
+//            }
+//        );
+//        operation = true;
+//    }
+//
 
     if( aScene.isKey( KEY_S ))
     {
-        net -> setCursorRadius
+        limb -> setCursorRadius
         (
-            net -> getCursorRadius() * ( aDelta.y > 0.0 ? 1.1 : 0.9 )
+            limb -> getCursorRadius() * ( aDelta.y > 0.0 ? 1.1 : 0.9 )
         );
         operation = true;
     }
 
     if( aScene.isKey( KEY_V ))
     {
-        if( net -> getSelectedNeurons() -> getCount() > 0 )
+        if( limb -> getSelectedNeurons() -> getCount() > 0 )
         {
-            auto avgValue = net -> getSelectedNeurons() -> calcAvgValue();
-            net -> getSelectedNeurons() -> loop
+            auto avgValue = limb -> getSelectedNeurons() -> calcAvgValue();
+            limb -> getSelectedNeurons() -> loop
             (
                 [ &aScene, &aDelta, &avgValue ]
                 ( Neuron* aNeuron )
@@ -646,10 +657,10 @@ void Ui::onMouseWheel
 
     if( aScene.isKey( KEY_E ))
     {
-        if( net -> getSelectedNeurons() -> getCount() > 0 )
+        if( limb -> getSelectedNeurons() -> getCount() > 0 )
         {
-            auto avgError = net -> getSelectedNeurons() -> calcAvgError();
-            net -> getSelectedNeurons() -> loop
+            auto avgError = limb -> getSelectedNeurons() -> calcAvgError();
+            limb -> getSelectedNeurons() -> loop
             (
                 [ &aScene, &aDelta, &avgError ]
                 ( Neuron* aNeuron )
@@ -729,14 +740,14 @@ void Ui::onLeftDblClick
 {
     if
     (
-        net
+        limb
         -> setSelected( &aScene )
         -> getSelectedFirst() != NULL
     )
     {
         camera -> moveTarget
         (
-            net
+            limb
             -> getSelectedFirst()
             -> getWorld()
         );
