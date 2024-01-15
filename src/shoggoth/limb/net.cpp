@@ -7,6 +7,7 @@
 #include "../../../../../lib/json/param_list_log.h"
 
 
+
 /*
     Constructor
 */
@@ -514,7 +515,8 @@ Net* Net::readNet()
                         if( used != NULL && used -> isIntersect( tasks ))
                         {
                             auto layerId = iParam -> getName();
-                            auto layer = createLayer( layerId );
+                            auto layer = createLayer( layerId )
+                            -> setStoragePath( storagePath );
                             loadLayerFromConfig( layerId, configLayers );
                         }
                         return false;
@@ -650,84 +652,6 @@ Layer* Net::getLayerById
 }
 
 
-
-/*
-    Create new layer
-*/
-Layer* Net::createLayer
-(
-    string a /* Id of layer */
-)
-{
-    Layer* result = NULL;
-
-    auto layers = getLayerList();
-    int layerIndex = layers -> getIndexById( a );
-
-    if( layerIndex > -1 )
-    {
-        /* Return exists layer object */
-        result = layers -> getByIndex( layerIndex );
-    }
-    else
-    {
-        auto ui = false;
-        auto proc = false;
-
-        getApplication()
-        -> getConfig()
-        -> loadBool( Path{ "tasks", taskToString( TASK_UI ), "enabled" }, ui )
-        -> loadBool( Path{ "tasks", taskToString( TASK_PROC ), "enabled" }, proc );
-
-        /* Create new layer object */
-        result = Layer::create
-        (
-            this,
-            a,
-            true,
-            true,
-            proc,
-            proc,
-            ui,
-            ui,
-            ui
-        );
-        layers -> push( result );
-        result -> setStoragePath( getStoragePath() );
-    }
-
-    return result;
-}
-
-
-
-/*
-    Delete layer by Id
-*/
-Net* Net::deleteLayer
-(
-    string a /* Id of layer */
-)
-{
-    auto layers = getLayerList();
-    auto nerves = getNerveList();
-    int layerIndex = layers -> getIndexById( a );
-    if( layerIndex > -1 )
-    {
-        /* Define layer for remove */
-        Layer* layer = layers -> getByIndex( layerIndex );
-
-        /* Destroy nerves for layer */
-        nerves -> removeByLayer( layer );
-
-        /* Remove layer from layer list */
-        layers -> remove( layerIndex );
-
-        /* Destroy layer */
-        layer -> destroy();
-    }
-    return this;
-}
 
 
 

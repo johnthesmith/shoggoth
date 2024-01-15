@@ -4,7 +4,7 @@
 #include "teacher.h"
 #include "../../../../lib/core/math.h"
 #include "../../../../lib/core/rnd.h"
-#include "../json/param_list_log.h"
+#include "../../../../lib/json/param_list_log.h"
 #include "../../../../lib/core/utils.h"
 #include "teacher_consts.h"
 

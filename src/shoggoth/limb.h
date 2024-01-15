@@ -95,6 +95,25 @@ class Limb : public Result
 
 
         /*
+            Create new layer
+        */
+        Layer* createLayer
+        (
+            string /* Id of layer */
+        );
+
+
+
+        /*
+            Delete layer by Id
+        */
+        Limb* deleteLayer
+        (
+            string  /* Id of layer */
+        );
+
+
+        /*
             Create new nerve
         */
         Nerve* createNerve

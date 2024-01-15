@@ -2,7 +2,6 @@
 #include "neuron.h"
 
 
-
 /*
     Constructor
 */
@@ -63,6 +62,66 @@ Log* Limb::getLog()
     return log;
 }
 
+
+
+
+/*
+    Create new layer
+*/
+Layer* Limb::createLayer
+(
+    string aId /* Id of layer */
+)
+{
+    Layer* result = NULL;
+
+    auto layers = getLayerList();
+    int layerIndex = layers -> getIndexById( aId );
+
+    if( layerIndex > -1 )
+    {
+        /* Return exists layer object */
+        result = layers -> getByIndex( layerIndex );
+    }
+    else
+    {
+        /* Create new layer object */
+        result = Layer::create( getLog(), aId );
+        layers -> push( result );
+    }
+
+    return result;
+}
+
+
+
+/*
+    Delete layer by Id
+*/
+Limb* Limb::deleteLayer
+(
+    string a /* Id of layer */
+)
+{
+    auto layers = getLayerList();
+    auto nerves = getNerveList();
+    int layerIndex = layers -> getIndexById( a );
+    if( layerIndex > -1 )
+    {
+        /* Define layer for remove */
+        Layer* layer = layers -> getByIndex( layerIndex );
+
+        /* Destroy nerves for layer */
+        nerves -> removeByLayer( layer );
+
+        /* Remove layer from layer list */
+        layers -> remove( layerIndex );
+
+        /* Destroy layer */
+        layer -> destroy();
+    }
+    return this;
+}
 
 
 

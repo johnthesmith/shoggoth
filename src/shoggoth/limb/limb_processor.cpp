@@ -1,5 +1,9 @@
 #include "limb_processor.h"
+
+#include "../func.h"
 #include "../neuron.h"
+
+#include "../../../../../lib/core/math.h"
 
 
 
@@ -12,8 +16,8 @@ LimbProcessor::LimbProcessor
 )
 :Limb( aNet -> getLog() )
 {
-    forwardList     = LayerList::create();
-    backwardList    = LayerList::create();
+    forwardList     = LayerList::create( aNet -> getLog() );
+    backwardList    = LayerList::create( aNet -> getLog() );
 }
 
 
@@ -188,7 +192,7 @@ bool LimbProcessor::preparedParents
 )
 {
     bool result = true;
-    auto parents = LayerList::create();
+    auto parents = LayerList::create( getLog() );
     getNerveList() -> getParentsByLayer( aLayer, parents );
     parents -> loop
     (
@@ -216,7 +220,7 @@ bool LimbProcessor::preparedChildren
 )
 {
     bool result = true;
-    auto children = LayerList::create();
+    auto children = LayerList::create( getLog() );
     getNerveList() -> getChildrenByLayer( aLayer, children );
 
     children -> loop
@@ -277,7 +281,7 @@ LimbProcessor* LimbProcessor::calc()
                 /* Layer calculation */
                 layer -> calcStartForward();
                 /* --- thread begin --- */
-                layer -> calcValue( idThread, threadCount );
+                layerCalcValue( layer, idThread );
                 /* Set local sync for local works */
                 layer -> calcCompleteForward();
                  /* --- thread end --- */
@@ -322,16 +326,7 @@ LimbProcessor* LimbProcessor::calc()
                 layer -> calcStartBackward();
                 /* --- thread begin --- */
                 /* Calculate errors */
-
-                layer -> learning
-                (
-                    errorNormalize,
-                    learningSpeed,
-                    wakeupWeight,
-                    idThread,
-                    threadCount
-                );
-
+                layerLearning( layer, idThread );
                 /* Set local sync for local works */
                 layer -> calcCompleteBackward();
                 /* --- thread end --- */
@@ -634,7 +629,7 @@ int LimbProcessor::getCalcLayerIndex()
 /*
     Calculate neuron of layer
 */
-LimbProsessor* LimbProsessor::neuronCalcValue
+LimbProcessor* LimbProcessor::neuronCalcValue
 (
     Layer* aLayer,
     int aIndex
@@ -651,6 +646,7 @@ LimbProsessor* LimbProsessor::neuronCalcValue
     /* Neuron has a binds and it is not a Receptor */
     parentsLoop
     (
+        aLayer,
         aIndex,
         [
             this,
@@ -699,23 +695,31 @@ LimbProsessor* LimbProsessor::neuronCalcValue
 
     if( countValue > 0 )
     {
-        setNeuronValue( aIndex, FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 ));
+        aLayer -> setNeuronValue
+        (
+            aIndex,
+            FUNC_SIGMOID_LINE_ZERO_PLUS( summValue, 1.0 )
+        );
     }
 
     if( countErrorValue > 0 )
     {
         /* Write avg error from parent to layer */
-        setNeuronValue( aIndex, summErrorValue / countErrorValue );
+        aLayer -> setNeuronValue
+        (
+            aIndex,
+            summErrorValue / countErrorValue
+        );
     }
 
     if( countSample > 0 )
     {
-        setNeuronError
+        aLayer -> setNeuronError
         (
             aIndex,
             FUNC_SIGMOID_LINE_MINUS_PLUS
             (
-                ( summSample - getNeuronValue( aIndex ) ) *
+                ( summSample - aLayer -> getNeuronValue( aIndex )) *
                 ( summCommand > EPSILON_D ? 1.0 : 0.0 ),
                 1.0
             )
@@ -732,13 +736,10 @@ LimbProsessor* LimbProsessor::neuronCalcValue
 /*
     Calculate neuron
 */
-Layer* Layer::neuronLearning
+LimbProcessor* LimbProcessor::neuronLearning
 (
-    Layer*  aLayer,             /* Layer for calculation */
-    int     aIndex,             /* Neuron index of layer */
-    double  aErrorNormalize,    /**/
-    double  aLearningSpeed,     /* k for weight changing */
-    double  aWakeupWeight
+    Layer*  aLayer, /* Layer for calculation */
+    int     aIndex  /* Neuron index of layer */
 )
 {
     /* Define variables */
@@ -749,6 +750,7 @@ Layer* Layer::neuronLearning
     /* Caclulate error form all children for current neuron */
     childrenLoop
     (
+        aLayer,
         aIndex,
         [
             this,
@@ -786,12 +788,12 @@ Layer* Layer::neuronLearning
             что бы исклюить деление на 0. Считаем что +1 это мелоч
             aErrorNormalize - сила распространения ошибки.
         */
-        setNeuronError
+        aLayer -> setNeuronError
         (
             aIndex,
             FUNC_SIGMOID_LINE_MINUS_PLUS
             (
-                summError / ( 1.0 + summWeight * aErrorNormalize ),
+                summError / ( 1.0 + summWeight * errorNormalize ),
                 1.0
             )
         );
@@ -800,11 +802,11 @@ Layer* Layer::neuronLearning
     /* Learning */
     parentsLoop
     (
+        aLayer,
         aIndex,
         [
             this,
-            &aLearningSpeed,
-            &aWakeupWeight,
+            &aLayer,
             &aIndex
         ]
         (
@@ -824,15 +826,15 @@ Layer* Layer::neuronLearning
                     */
                     double w = abs( aWeight );
                     /* aWakeupWeight epsilon for zero weight подъем нулевых связей */
-                    double wv = ( w < aWakeupWeight ? aWakeupWeight : w )
+                    double wv = ( w < wakeupWeight ? wakeupWeight : w )
                     * aParentLayer -> getNeuronValue( aParentIndex );
-                    double deltaWeight = getNeuronError( aIndex ) * wv;
+                    double deltaWeight = aLayer -> getNeuronError( aIndex ) * wv;
                     aNerve -> setWeight
                     (
                         aWeightIndex,
                         FUNC_SIGMOID_LINE_MINUS_PLUS
                         (
-                            aWeight + deltaWeight * aLearningSpeed,
+                            aWeight + deltaWeight * learningSpeed,
                             1.0
                         )
                     );
@@ -846,18 +848,17 @@ Layer* Layer::neuronLearning
 }
 
 
-
-
-
+/*
+    Calculate neurons in the layer
+*/
 LimbProcessor* LimbProcessor::layerCalcValue
 (
-    Layer*  aLayer,             /* Layer for calculation */
-    int aProcessorNumber,
-    int aProcessorCount
+    Layer*  aLayer, /* Layer for calculation */
+    int     aThread /* Current thread number */
 )
 {
-    int b = calcNeuronFrom( aProcessorNumber, aProcessorCount );
-    int e = calcNeuronTo( aProcessorNumber, aProcessorCount );
+    int b = calcNeuronFrom( aLayer, aThread );
+    int e = calcNeuronTo( aLayer, aThread );
 
     for( int i = b; i < e; i ++ )
     {
@@ -872,28 +873,18 @@ LimbProcessor* LimbProcessor::layerCalcValue
 /*
     Calculate neurons error for learning
 */
-Layer* Layer::learningLayer
+LimbProcessor* LimbProcessor::layerLearning
 (
-    Layer*  aLayer,             /* Layer for calculation */
-    double  aErrorNormalize,
-    double  aLearningSpeed,
-    double  aWakeupWeight,
-    int     aProcessorNumber,
-    int     aProcessorCount
+    Layer*  aLayer, /* Layer for calculation */
+    int     aThread /* Current thread */
 )
 {
-    int b = calcNeuronFrom( aProcessorNumber, aProcessorCount );
-    int e = calcNeuronTo( aProcessorNumber, aProcessorCount );
+    int b = calcNeuronFrom( aLayer, aThread );
+    int e = calcNeuronTo( aLayer, aThread );
 
     for( int i = b; i < e; i ++ )
     {
-        neuronLearning
-        (
-            i,
-            aErrorNormalize,
-            aLearningSpeed,
-            aWakeupWeight
-        );
+        neuronLearning( aLayer, i );
     }
 
     return this;
@@ -913,7 +904,7 @@ int LimbProcessor::calcNeuronFrom
 {
     return floor
     (
-        (double) aLayer -> getCount() * (double) aNumber / (double) threadCount
+        (double) aLayer -> getNeuronsCount() * (double) aNumber / (double) threadCount
     );
 }
 

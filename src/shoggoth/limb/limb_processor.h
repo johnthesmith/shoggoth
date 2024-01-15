@@ -241,6 +241,7 @@ class LimbProcessor : public Limb
         bool getCalcDebug();
 
 
+
         int getCalcLayerIndex();
 
 
@@ -262,9 +263,47 @@ class LimbProcessor : public Limb
         LimbProcessor* neuronLearning
         (
             Layer*, /* Layer for calculation */
-            int,    /* Neuron index of layer */
-            double, /* */
-            double, /* k for weight changing */
-            double  /* */
+            int     /* Neuron index of layer */
+        );
+
+
+
+        /*
+            Calculate neurons in the layer
+        */
+        LimbProcessor* layerCalcValue
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Current thread number */
+        );
+
+
+
+        LimbProcessor* layerLearning
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Current thread number */
+        );
+
+
+
+        /*
+            Calculate start neuron for processors operations
+        */
+        int calcNeuronFrom
+        (
+            Layer*,
+            int
+        );
+
+
+
+        /*
+            Caluculate end of neurons for processors operations
+        */
+        int calcNeuronTo
+        (
+            Layer*,
+            int
         );
 };

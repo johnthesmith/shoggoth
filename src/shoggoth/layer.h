@@ -849,6 +849,24 @@ class Layer : public Object
         (
             Layer* /* Source layer */
         );
+
+
+
+        /*
+            Move errors data to this from the argument layer
+        */
+        Layer* copyErrorsFrom
+        (
+            Layer* /* Source layer */
+        );
+
+
+
+        /*
+            Return size of values buffer
+        */
+        size_t getValuesBufferSize();
+
 };
 
 

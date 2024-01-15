@@ -239,25 +239,6 @@ class Net: public Limb
         */
 
 
-        /*
-            Create new layer
-        */
-        Layer* createLayer
-        (
-            string /* Name of layer */
-        );
-
-
-
-        /*
-            Delete layer by Id
-        */
-        Net* deleteLayer
-        (
-            string  /* Id of layer */
-        );
-
-
 
         /*
             Load layer structure from param list

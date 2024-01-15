@@ -102,7 +102,7 @@ int Layer::indexByPos
 */
 Layer* Layer::clearValues()
 {
-    memset( values, 0, count * sizeof( double ));
+    memset( values, 0, getValuesBufferSize() );
     return this;
 }
 
@@ -113,7 +113,7 @@ Layer* Layer::clearValues()
 */
 Layer* Layer::clearErrors()
 {
-    memset( errors, 0, count * sizeof( double ));
+    memset( errors, 0, getValuesBufferSize() );
     return this;
 }
 
@@ -990,7 +990,7 @@ Layer* Layer::valuesFromBuffer
     size_t  aSize
 )
 {
-    if( aBuffer != NULL && aSize == count * sizeof( double ) )
+    if( aBuffer != NULL && aSize == getValuesBufferSize() )
     {
         memcpy( values, aBuffer, aSize );
     }
@@ -1009,7 +1009,7 @@ Layer* Layer::getValuesBuffer
 )
 {
     aBuffer = ( char* )values;
-    aSize = count * sizeof( double );
+    aSize = getValuesBufferSize();
     return this;
 }
 
@@ -1021,7 +1021,7 @@ Layer* Layer::errorsFromBuffer
     size_t aSize
 )
 {
-    if( aBuffer != NULL && aSize == count * sizeof( double ) )
+    if( aBuffer != NULL && aSize == getValuesBufferSize() )
     {
         memcpy( errors, aBuffer, aSize );
     }
@@ -1040,7 +1040,7 @@ Layer* Layer::getErrorsBuffer
 )
 {
     aBuffer = ( char* )errors;
-    aSize = count * sizeof( double );
+    aSize = getValuesBufferSize();
     return this;
 }
 
@@ -1459,32 +1459,60 @@ Layer* Layer::copyValuesFrom
     Layer* aLayer
 )
 {
-//    auto size = count * sizeof( double );
-//
-//
-//
-//Layer* getValuesBuffer
-//(
-//    char*&,  /* Buffer pointer */
-//    size_t&  /* Size of buffer */
-//);
-//
-//
-//    if
-//    (
-//        values != NULL && aLayer.getValues()
-//        valuesCache != NULL &&
-//        errors != NULL &&
-//        errorsCache != NULL
-//    )
-//    {
-//        memcpy( valuesCache, values, size);
-//        memcpy( errorsCache, errors, size );
-//    }
-//    else
-//    {
-//        setCode( "LayerPlansNotReadyForProcessor" );
-//    }
+    auto size = getValuesBufferSize();
+
+    char* fromBuffer;
+    size_t fromSize;
+
+    aLayer -> getValuesBuffer( fromBuffer, fromSize );
+
+    if
+    (
+        values != NULL &&
+        fromBuffer != NULL &&
+        size == fromSize
+    )
+    {
+        memcpy( values, fromBuffer, size );
+    }
+    else
+    {
+        setCode( "LayersValuePlanNotEquals" );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Move values data to this from the argument layer
+*/
+Layer* Layer::copyErrorsFrom
+(
+    Layer* aLayer
+)
+{
+    auto size = getValuesBufferSize();
+
+    char* fromBuffer;
+    size_t fromSize;
+
+    aLayer -> getErrorsBuffer( fromBuffer, fromSize );
+
+    if
+    (
+        errors != NULL &&
+        fromBuffer != NULL &&
+        size == fromSize
+    )
+    {
+        memcpy( errors, fromBuffer, size );
+    }
+    else
+    {
+        setCode( "LayersValuePlanNotEquals" );
+    }
 
     return this;
 }
@@ -1506,4 +1534,15 @@ bool Layer::compare
     getName() == aLayer -> getName() &&
     getDrawSize() == aLayer -> getDrawSize() &&
     Object::compare( aLayer );
+}
+
+
+
+
+/*
+    Return size of values buffer
+*/
+size_t Layer::getValuesBufferSize()
+{
+    return sizeof( double ) * count;
 }
