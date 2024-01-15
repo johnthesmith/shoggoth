@@ -5,8 +5,8 @@
 #include <iostream>
 
 /* Graph libraries */
-#include "../../graph/chart.h"
-#include "../../graph/log_points.h"
+#include "../../../../../lib/graph/chart.h"
+#include "../../../../../lib/graph/log_points.h"
 
 /* Shoggot libraries */
 #include "../func.h"

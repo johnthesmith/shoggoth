@@ -2,10 +2,10 @@
 #include <iostream>
 
 /* Libraryes */
-#include "../lib/utils.h"
-#include "../lib/log.h"
-#include "../json/param_list.h"
-#include "../lib/buffer_to_hex.h"
+#include "../../../../lib/core/utils.h"
+#include "../../../../lib/core/log.h"
+#include "../../../../lib/json/param_list.h"
+#include "../../../../lib/core/buffer_to_hex.h"
 
 
 /* Application libraryes */

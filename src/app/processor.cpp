@@ -12,18 +12,17 @@
 
 
 /* Local libraries */
-#include "../graph/log_points.h"
-#include "../graph/draw_mode.h"
+#include "../../../../lib/graph/log_points.h"
+#include "../../../../lib/graph/draw_mode.h"
+#include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/hid.h"
+#include "../../../../lib/core/moment.h"
+#include "../../../../lib/core/utils.h"
+#include "../../../../lib/json/json.h"
 
 #include "../shoggoth/neuron.h"
 #include "../shoggoth/func.h"
 #include "../shoggoth/shoggoth_consts.h"
-
-#include "../lib/rnd.h"
-#include "../lib/hid.h"
-#include "../lib/moment.h"
-#include "../lib/utils.h"
-#include "../json/json.h"
 
 #include "../math.h"
 

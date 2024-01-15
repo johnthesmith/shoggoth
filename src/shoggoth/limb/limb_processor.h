@@ -248,7 +248,7 @@ class LimbProcessor : public Limb
         /*
             Calculate neuron of layer
         */
-        LimbProsessor* neuronCalcValue
+        LimbProcessor* neuronCalcValue
         (
             Layer*, /* Layer for calculation */
             int     /* Neuron index of layer */

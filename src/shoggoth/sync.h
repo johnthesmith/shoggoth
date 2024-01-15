@@ -34,9 +34,9 @@
 
 
 
-#include "../lib/result.h"
-#include "../lib/log.h"
-#include "../json/param_list.h"
+#include "../../../../lib/core/result.h"
+#include "../../../../lib/core/log.h"
+#include "../../../../lib/json/param_list.h"
 
 
 

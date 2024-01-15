@@ -156,11 +156,11 @@ Limb* Limb::copyTo
             -> getNerveList()
             -> copyStructureFrom( this -> getNerveList());
 
-            nervesIsEqua = true;
+            nervesIsEqual = true;
         }
     }
 
-    if( layersIsEqual && nervesIsEqua )
+    if( layersIsEqual && nervesIsEqual )
     {
         aLimb
         -> getLayerList()

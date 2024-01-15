@@ -9,9 +9,9 @@
 
 
 
-#include "../lib/application.h"
-#include "../lib/log.h"
-#include "../lib/result.h"
+#include "../../../../lib/core/application.h"
+#include "../../../../lib/core/log.h"
+#include "../../../../lib/core/result.h"
 
 #include "limb/net.h"
 #include "shoggoth_consts.h"

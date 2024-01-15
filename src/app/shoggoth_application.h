@@ -1,8 +1,8 @@
 #pragma once
 
 /* Local libraries */
-#include "../lib/application.h"
-#include "../sock/sock_manager.h"
+#include "../../../../lib/core/application.h"
+#include "../../../../lib/sock/sock_manager.h"
 
 
 using namespace std;

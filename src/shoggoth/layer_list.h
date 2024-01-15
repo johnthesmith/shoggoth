@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "../lib/heap.h"
+#include "../../../../lib/core/heap.h"
 
 #include "layer.h"
 #include "shoggoth_consts.h"

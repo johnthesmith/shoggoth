@@ -1,6 +1,6 @@
 #include "io.h"
-#include "../json/param_list_log.h"
-#include "../sock/rpc_client.h"
+#include "../../../../lib/json/param_list_log.h"
+#include "../../../../lib/sock/rpc_client.h"
 
 
 using namespace std;

@@ -12,9 +12,9 @@
 #include <sys/stat.h>
 
 /* Local libraries */
-#include "../graph/log_points.h"
-#include "../lib/moment.h"
-#include "../lib/utils.h"
+#include "../../../../lib/graph/log_points.h"
+#include "../../../../lib/core/moment.h"
+#include "../../../../lib/core/utils.h"
 
 /* User libraries */
 #include "loop.h"

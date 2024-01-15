@@ -13,16 +13,16 @@
 
 #include <string>
 
-#include "../lib/utils.h"
-#include "../lib/hid.h"
+#include "../../../../lib/core/utils.h"
+#include "../../../../lib/core/hid.h"
 
-#include "../graph/point3.h"
-#include "../graph/point3i.h"
-#include "../graph/points3d.h"
-#include "../graph/object.h"
-#include "../graph/bitmap.h"
+#include "../../../../lib/graph/point3.h"
+#include "../../../../lib/graph/point3i.h"
+#include "../../../../lib/graph/points3d.h"
+#include "../../../../lib/graph/object.h"
+#include "../../../../lib/graph/bitmap.h"
 
-#include "../json/param_list.h"
+#include "../../../../lib/json/param_list.h"
 
 #include "nerve_list.h"
 #include "neuron_list.h"

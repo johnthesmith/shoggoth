@@ -340,5 +340,6 @@ NerveList* NerveList::copyStructureFrom
     NerveList*  /* Source */
 )
 {
-...    TODO
+//...    TODO
+    return this;
 }

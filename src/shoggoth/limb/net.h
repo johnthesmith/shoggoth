@@ -9,9 +9,8 @@
 
 #include <string>
 
-#include "../../lib/application.h"
-#include "../../sock/sock_manager.h"
-#include "../../json/param_list_file.h"
+#include "../../../../../lib/core/application.h"
+#include "../../../../../lib/sock/sock_manager.h"
 
 #include "../limb.h"
 

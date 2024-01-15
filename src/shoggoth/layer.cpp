@@ -1,10 +1,10 @@
-#include "../lib/rnd.h"
-#include "../lib/math.h"
-#include "../lib/moment.h"
+#include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/math.h"
+#include "../../../../lib/core/moment.h"
 
-#include "../graph/point3.h"
-#include "../graph/log_points.h"
-#include "../sock/rpc_client.h"
+#include "../../../../lib/graph/point3.h"
+#include "../../../../lib/graph/log_points.h"
+#include "../../../../lib/sock/rpc_client.h"
 
 #include "func.h"
 #include "io.h"

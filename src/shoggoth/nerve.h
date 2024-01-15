@@ -5,8 +5,8 @@
 
 # pragma once
 
-#include "../lib/result.h"
-#include "../lib/log.h"
+#include "../../../../lib/core/result.h"
+#include "../../../../lib/core/log.h"
 
 
 

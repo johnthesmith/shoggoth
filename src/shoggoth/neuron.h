@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../graph/point3.h"
+#include "../../../../lib/graph/point3.h"
 
 
 using namespace std;

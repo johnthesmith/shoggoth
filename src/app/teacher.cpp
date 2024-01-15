@@ -2,10 +2,10 @@
 
 /* User libraries */
 #include "teacher.h"
-#include "../lib/math.h"
-#include "../lib/rnd.h"
+#include "../../../../lib/core/math.h"
+#include "../../../../lib/core/rnd.h"
 #include "../json/param_list_log.h"
-#include "../lib/utils.h"
+#include "../../../../lib/core/utils.h"
 #include "teacher_consts.h"
 
 using namespace std;

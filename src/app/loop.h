@@ -14,7 +14,7 @@
 
 
 /* Local libraries */
-#include "../lib/payload.h"
+#include "../../../../lib/core/payload.h"
 #include "../shoggoth/limb/net.h"
 
 /* Payloads */

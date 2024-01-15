@@ -1,6 +1,6 @@
 #include "cmath"
 
-#include "../lib/rnd.h"
+#include "../../../../lib/core/rnd.h"
 
 #include "func.h"
 

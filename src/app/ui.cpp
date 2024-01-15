@@ -11,22 +11,21 @@
 
 
 /* Local libraries */
-#include "../graph/scene_payload.h"
-#include "../graph/scene.h"
-#include "../graph/rgba.h"
-#include "../graph/log_points.h"
-#include "../graph/draw_mode.h"
-#include "../graph/chart.h"
-#include "../graph/rect2d.h"
+#include "../../../../lib/graph/scene_payload.h"
+#include "../../../../lib/graph/scene.h"
+#include "../../../../lib/graph/rgba.h"
+#include "../../../../lib/graph/log_points.h"
+#include "../../../../lib/graph/draw_mode.h"
+#include "../../../../lib/graph/chart.h"
+#include "../../../../lib/graph/rect2d.h"
+#include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/hid.h"
+#include "../../../../lib/core/moment.h"
+#include "../../../../lib/core/utils.h"
+#include "../../../../lib/json/json.h"
 
 #include "../shoggoth/neuron.h"
 #include "../shoggoth/func.h"
-
-#include "../lib/rnd.h"
-#include "../lib/hid.h"
-#include "../lib/moment.h"
-#include "../lib/utils.h"
-#include "../json/json.h"
 
 #include "../math.h"
 

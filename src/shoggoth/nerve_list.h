@@ -1,6 +1,6 @@
 # pragma once
 
-#include "../lib/log.h"
+#include "../../../../lib/core/log.h"
 
 #include "layer.h"
 #include "nerve.h"

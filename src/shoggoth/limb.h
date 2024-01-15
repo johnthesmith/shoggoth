@@ -13,7 +13,7 @@
 #include <functional> /* for function */
 #include <mutex>    /* For net sinchronization */
 
-#include "../lib/log.h"
+#include "../../../../lib/core/log.h"
 #include "neuron.h"
 #include "nerve_list.h"
 #include "layer_list.h"

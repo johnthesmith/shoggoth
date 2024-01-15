@@ -1,7 +1,7 @@
 #pragma once
 
 /* Local libraries */
-#include "../lib/payload.h"
+#include "../../../../lib/core/payload.h"
 #include "../shoggoth/sync.h"
 #include "../shoggoth/limb/limb_processor.h"
 

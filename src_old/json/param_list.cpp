@@ -3,7 +3,6 @@
 #include <cstring>
 #include <sstream>
 
-#include "../lib/math.h"
 #include "../lib/rnd.h"
 #include "../lib/buffer_to_hex.h"
 

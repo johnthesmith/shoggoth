@@ -1,11 +1,12 @@
 #pragma once
 
 /* Local libraries */
-#include "../graph/scene_payload.h"
-#include "../graph/camera.h"
+#include "../../../../lib/graph/scene_payload.h"
+#include "../../../../lib/graph/camera.h"
+#include "../../../../lib/json/json.h"
+
 #include "../shoggoth/layer.h"
 #include "../shoggoth/limb/net.h"
-#include "../json/json.h"
 
 #include "shoggoth_application.h"
 

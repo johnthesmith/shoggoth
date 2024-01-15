@@ -10,9 +10,9 @@
 
 
 
-#include "../../graph/scene.h"
-#include "../../graph/point3.h"
-#include "../../graph/rgba.h"
+#include "../../../../../lib/graph/scene.h"
+#include "../../../../../lib/graph/point3.h"
+#include "../../../../../lib/graph/rgba.h"
 
 #include "../neuron_list.h"
 #include "../limb.h"
