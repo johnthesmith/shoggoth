@@ -543,7 +543,6 @@ Net* Net::readNet()
                                 auto bindType       = Nerve::bindTypeFromString( jsonNerve -> getString( "bindType" ));
                                 auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
                                 auto nerveDelete    = jsonNerve -> getBool( "delete" );
-                                auto idNerve        = jsonNerve -> getString( "id", idFrom + "_" + idTo + "_" + jsonNerve -> getString( "bindType" ));
 
                                 /* Find the layers */
                                 auto from = layers -> getById( idFrom );
@@ -551,7 +550,12 @@ Net* Net::readNet()
 
                                 if( from != NULL && to != NULL )
                                 {
-                                    auto nerve = nerves -> getById( idNerve );
+                                    auto nerve = nerves -> find
+                                    (
+                                        idFrom,
+                                        idTo,
+                                        bindType
+                                    );
                                     if
                                     (
                                         nerve != NULL &&
@@ -564,7 +568,7 @@ Net* Net::readNet()
                                         )
                                     )
                                     {
-                                        deleteNerve( idNerve );
+                                        deleteNerve( nerve );
                                         nerve = NULL;
                                     }
 
@@ -572,11 +576,14 @@ Net* Net::readNet()
                                     {
                                         createNerve
                                         (
-                                            idNerve,
                                             from,
                                             to,
                                             nerveType,
-                                            bindType,
+                                            bindType
+                                        )
+                                        -> allocate()
+                                        -> fill
+                                        (
                                             jsonNerve -> getDouble( "minWeight", 1.0 ),
                                             jsonNerve -> getDouble( "maxWeight", 1.0 )
                                         );
@@ -586,7 +593,9 @@ Net* Net::readNet()
                                 {
                                     getLog()
                                     -> info( "Layers not found for nerve" )
-                                    -> prm( "id", idNerve );
+                                    -> prm( "idFrom", idFrom )
+                                    -> prm( "idTo", idTo )
+                                    ;
                                 }
                             }
                             return false;

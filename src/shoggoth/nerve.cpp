@@ -7,24 +7,22 @@
 #include "layer.h"
 #include "io.h"
 
+
+
 /*
     Constructor
 */
 Nerve::Nerve
 (
-    Limb*       aLimb,      /* The limb object*/
-    string      aId,        /* id */
+    Log*        aLog,       /* The log object */
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
     NerveType   aNerveType, /* Type of nerve */
-    BindType    aBindType,  /* Bind of nerve */
-    double      aMinWeight, /* MinWeight */
-    double      aMaxWeight  /* MaxWeight */
+    BindType    aBindType   /* Bind of nerve */
 )
 {
     /* Set properties */
-    limb        = aLimb;
-    id          = aId;
+    log         = aLog;
     parent      = aParent;
     child       = aChild;
     nerveType   = aNerveType;
@@ -36,29 +34,6 @@ Nerve::Nerve
     -> prm( "from", parent -> getNameOrId() )
     -> prm( "to", child -> getNameOrId() )
     -> lineEnd();
-
-    int cFrom   = parent -> getNeuronsCount();
-    int cTo     = child -> getNeuronsCount();
-
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-        {
-            weightsCount = cFrom * cTo;
-        }
-        break;
-        case ONE_TO_ONE:
-            weightsCount = max( cFrom, cTo );
-        break;
-    }
-
-    /* Create bind list */
-    weights = new double[ weightsCount ];
-
-    for( int i = 0; i < weightsCount; i++ )
-    {
-        weights[ i ] = Rnd::get( aMinWeight, aMaxWeight );
-    }
 
     getLog()
     -> trace( "" )
@@ -73,38 +48,53 @@ Nerve::Nerve
 */
 Nerve::~Nerve()
 {
-    delete [] weights;
+    purge();
 }
 
 
 
 /*
-    Create
+    Create new nerve with details arguments
 */
 Nerve* Nerve::create
 (
-    Limb*       aLimb,      /* The limb object*/
-    string      aId,        /* id */
+    Log*        aLog,       /* The log object*/
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
     NerveType   aNerveType, /* Type of nerve */
-    BindType    aBindType,  /* Bind of nerve */
-    double      aMinWeight, /* MinWeight */
-    double      aMaxWeight  /* MaxWeight */
+    BindType    aBindType   /* Bind of nerve */
 )
 {
     return new Nerve
     (
-        aLimb,
-        aId,
+        aLog,
         aParent,
         aChild,
         aNerveType,
-        aBindType,
-        aMinWeight,
-        aMaxWeight
+        aBindType
     );
 }
+
+
+/*
+    Create new nerve from source nerve
+*/
+Nerve* Nerve::create
+(
+    Log*    aLog,
+    Nerve*  aSource
+)
+{
+    return Nerve::create
+    (
+        aLog,
+        aSource -> getParent(),
+        aSource -> getChild(),
+        aSource -> getNerveType(),
+        aSource -> getBindType()
+    );
+}
+
 
 
 
@@ -123,7 +113,74 @@ void Nerve::destroy()
 */
 Log* Nerve::getLog()
 {
-    return limb -> getLog();
+    return log;
+}
+
+
+
+/*
+    Allocate memomry buffer for weights
+*/
+Nerve* Nerve::allocate()
+{
+    purge();
+
+    int cFrom   = parent -> getNeuronsCount();
+    int cTo     = child -> getNeuronsCount();
+
+    /* Calculate new buffer size */
+    switch( nerveType )
+    {
+        case ALL_TO_ALL:
+        {
+            weightsCount = cFrom * cTo;
+        }
+        break;
+        case ONE_TO_ONE:
+            weightsCount = max( cFrom, cTo );
+        break;
+    }
+
+    /* Create buffer */
+    weights = new double[ weightsCount ];
+
+    return this;
+}
+
+
+
+/*
+    purge memomry buffer for weights
+*/
+Nerve* Nerve::purge()
+{
+    /* Purge previous weights buffer if exists */
+    if( weights != NULL )
+    {
+        delete [] weights;
+    }
+    return this;
+}
+
+
+
+/*
+    Fill weights
+*/
+Nerve* Nerve::fill
+(
+    double aMinWeight,  /* MinWeight */
+    double  aMaxWeight  /* MaxWeight */
+)
+{
+    if( weights != NULL )
+    {
+        for( int i = 0; i < weightsCount; i++ )
+        {
+            weights[ i ] = Rnd::get( aMinWeight, aMaxWeight );
+        }
+    }
+    return this;
 }
 
 
@@ -144,16 +201,6 @@ BindType Nerve::getBindType()
 NerveType Nerve::getNerveType()
 {
     return nerveType;
-}
-
-
-
-/*
-    Return id
-*/
-string Nerve::getId()
-{
-    return id;
 }
 
 

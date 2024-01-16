@@ -23,7 +23,7 @@ class Nerve: public Result
         double*     weights         = NULL;         /* Array of weights */
         int         weightsCount    = 0;            /* County of weights */
 
-        Limb*       limb            = NULL;         /* The limb object */
+        Log*        log             = NULL;         /* The log object */
 
         string      id              = "";
         BindType    bindType        = BT_VALUE;
@@ -39,14 +39,11 @@ class Nerve: public Result
         */
         Nerve
         (
-            Limb*,      /* Limb object*/
-            string,     /* id */
+            Log*,       /* Log object*/
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
             NerveType,  /* Type of nerve */
-            BindType,   /* Bind of nerve */
-            double,     /* MinWeight */
-            double      /* MaxWeight */
+            BindType    /* Bind of nerve */
         );
 
 
@@ -63,14 +60,22 @@ class Nerve: public Result
         */
         static Nerve* create
         (
-            Limb*,      /* The limb object*/
-            string,     /* id */
-            Layer*,     /* Parent layer */
-            Layer*,     /* Child layer */
-            NerveType,  /* Type of nerve */
-            BindType,   /* Bind of nerve */
-            double,     /* MinWeight */
-            double      /* MaxWeight */
+            Log*,           /* The limb object*/
+            Layer*,         /* Parent layer */
+            Layer*,         /* Child layer */
+            NerveType,      /* Type of nerve */
+            BindType        /* Bind of nerve */
+        );
+
+
+
+        /*
+            Create new nerve from source nerve
+        */
+        static Nerve* create
+        (
+            Log*    aLog,
+            Nerve*  aSource
         );
 
 
@@ -88,6 +93,31 @@ class Nerve: public Result
         Log* getLog();
 
 
+
+        /*
+            Allocate memomry buffer for weights
+        */
+        Nerve* allocate();
+
+
+
+        /*
+            Purge memomry buffer for weights
+        */
+        Nerve* purge();
+
+
+
+        /*
+            Fill weights
+        */
+        Nerve* fill
+        (
+            double,     /* MinWeight */
+            double      /* MaxWeight */
+        );
+
+
         /*
             Return BindType
         */
@@ -99,13 +129,6 @@ class Nerve: public Result
             Return NerveType
         */
         NerveType getNerveType();
-
-
-
-        /*
-            Return id
-        */
-        string getId();
 
 
 

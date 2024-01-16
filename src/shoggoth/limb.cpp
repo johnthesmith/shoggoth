@@ -15,7 +15,7 @@ Limb::Limb
 
     /* Create layers and nerves structures */
     layers = LayerList::create( log );
-    nerves = NerveList::create();
+    nerves = NerveList::create( log );
 }
 
 
@@ -130,25 +130,19 @@ Limb* Limb::deleteLayer
 */
 Nerve* Limb::createNerve
 (
-    string      aId,            /* Nerve id */
     Layer*      aLayerFrom,     /* Layer source */
     Layer*      aLayerTo,       /* Layer destination */
     NerveType   aNerveType,
-    BindType    aBindType,
-    double      aMinWeight,
-    double      aMaxWeight
+    BindType    aBindType
 )
 {
     Nerve* result = Nerve::create
     (
-        this,
-        aId,
+        getLog(),
         aLayerFrom,
         aLayerTo,
         aNerveType,
-        aBindType,
-        aMinWeight,
-        aMaxWeight
+        aBindType
     );
     nerves -> push( result );
     return result;
@@ -161,18 +155,16 @@ Nerve* Limb::createNerve
 */
 Limb* Limb::deleteNerve
 (
-    string a /* Id of layer */
+    Nerve* aNerve /* Nerve opbject */
 )
 {
-    Nerve* nerve = nerves -> getById( a );
-
-    if( nerve != NULL )
+    if( aNerve != NULL )
     {
         /* Remove nerve from net list */
-        nerves -> remove( nerve );
+        nerves -> remove( aNerve );
 
         /* Destroy the nerve */
-        nerve -> destroy();
+        aNerve -> destroy();
     }
     return this;
 }
@@ -284,7 +276,7 @@ bool Limb::nerveWeightLoop
                     auto fromLayer = fromNeuron -> getLayer();
                     auto toLayer = toNeuron -> getLayer();
 
-                    auto foundedNerves = NerveList::create();
+                    auto foundedNerves = NerveList::create( getLog() );
                     nerves -> selectByLayers
                     (
                         fromLayer,

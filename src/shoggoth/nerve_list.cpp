@@ -1,13 +1,28 @@
 #include "nerve_list.h"
 
 
+/*
+    Constructor
+*/
+NerveList::NerveList
+(
+    Log* aLog
+)
+{
+    log = aLog;
+}
+
+
 
 /*
     Create new nerve list
 */
-NerveList* NerveList::create()
+NerveList* NerveList::create
+(
+    Log* aLog
+)
 {
-    auto result = new NerveList();
+    auto result = new NerveList( aLog );
     return result;
 }
 
@@ -19,6 +34,16 @@ NerveList* NerveList::create()
 void NerveList::destroy()
 {
     delete this;
+}
+
+
+
+/*
+    Return log object
+*/
+Log* NerveList::getLog()
+{
+    return log;
 }
 
 
@@ -96,38 +121,60 @@ NerveList* NerveList::resize
 
 
 
+///* TODO remove it
+//    Return Nerve index by id
+//*/
+//int NerveList::getIndexById
+//(
+//    string  a
+//)
+//{
+//    int result = -1;
+//    int c = getCount();
+//    for( int i = 0; i < c && result == -1; i++ )
+//    {
+//        if( getByIndex( i ) -> getId() == a )
+//        {
+//            result = i;
+//        }
+//    }
+//    return result;
+//}
+
+
+
 /*
-    Return Nerve index by id
+    Return Nerve by argumets or NULL
 */
-int NerveList::getIndexById
+Nerve* NerveList::find
 (
-    string  a
+    string      aParentId,      /* Parent layer */
+    string      aChildId,       /* Child layer */
+    BindType    aBindType       /* Type of bind between nerves */
 )
 {
-    int result = -1;
-    int c = getCount();
-    for( int i = 0; i < c && result == -1; i++ )
-    {
-        if( getByIndex( i ) -> getId() == a )
+    Nerve* result = NULL;
+
+    loop
+    (
+        [ &result, &aParentId, &aChildId, &aBindType ]
+        ( void* p )
         {
-            result = i;
+            auto iNerve = (Nerve*) p;
+            if
+            (
+                aParentId == iNerve -> getParent() -> getId() &&
+                aChildId == iNerve -> getChild() -> getId() &&
+                aBindType == iNerve -> getBindType()
+            )
+            {
+                result = iNerve;
+            }
+            return result != NULL;
         }
-    }
+    );
+
     return result;
-}
-
-
-
-/*
-    Return Nerve by id
-*/
-Nerve* NerveList::getById
-(
-    string  a
-)
-{
-    auto index = getIndexById( a );
-    return index > -1 ? getByIndex( index ) : NULL;
 }
 
 
@@ -140,7 +187,7 @@ NerveList* NerveList::removeByLayer
     Layer* aLayer
 )
 {
-    auto removed = NerveList::create();
+    auto removed = NerveList::create( getLog() );
 
     Heap::remove
     (
@@ -239,9 +286,7 @@ NerveList* NerveList::selectByLayers
     loop
     (
         [ &aFoundedNerves, &aParent, &aChild ]
-        (
-            void* aItem
-        )
+        ( void* aItem )
         {
             auto nerve = ( Nerve* ) aItem;
             if
@@ -337,9 +382,19 @@ Nerve* NerveList::getByNerve
 */
 NerveList* NerveList::copyStructureFrom
 (
-    NerveList*  /* Source */
+    NerveList* aSource /* Source */
 )
 {
-//...    TODO
+    clear();
+    aSource -> loop
+    (
+        [ this ]
+        ( void* p )
+        {
+            /* Create new nerve object and push it to this */
+            push( Nerve::create( getLog(), (Nerve*) p ));
+            return false;
+        }
+    );
     return this;
 }

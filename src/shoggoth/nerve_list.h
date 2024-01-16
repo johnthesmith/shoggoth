@@ -17,16 +17,26 @@ class NerveList :  public Heap
 {
     private:
 
-        string id = "";
+        Log*    log = NULL;
+        string  id  = "";
 
     public:
+
+
+        NerveList
+        (
+            Log*
+        );
 
 
 
         /*
             Create new nerve list
         */
-        static NerveList* create();
+        static NerveList* create
+        (
+            Log*
+        );
 
 
 
@@ -34,6 +44,13 @@ class NerveList :  public Heap
             Self destroy nerve list
         */
         void destroy();
+
+
+
+        /*
+            Return log object
+        */
+        Log* getLog();
 
 
 
@@ -106,22 +123,25 @@ class NerveList :  public Heap
 
 
 
+
+// TODO remove it
+//        /*
+//            Return Nerve by id
+//        */
+//        Nerve* getById
+//        (
+//            string
+//        );
+
+
         /*
-            Return Nerve by id
+            Return Nerve by argumets or NILL
         */
-        Nerve* getById
+        Nerve* find
         (
-            string
-        );
-
-
-
-        /*
-            Return Nerve index by id
-        */
-        int getIndexById
-        (
-            string
+            string,  /* Parent layer */
+            string,  /* Child layer */
+            BindType /* Type of bind between nerves */
         );
 
 

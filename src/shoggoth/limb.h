@@ -118,13 +118,10 @@ class Limb : public Result
         */
         Nerve* createNerve
         (
-            string,         /* Nerve id */
             Layer*,         /* Layer source */
             Layer*,         /* Layer destination */
             NerveType,
-            BindType,
-            double,
-            double
+            BindType
         );
 
 
@@ -134,7 +131,7 @@ class Limb : public Result
         */
         Limb* deleteNerve
         (
-            string          /* Id of layer */
+            Nerve* /* Nerve opbject */
         );
 
 
