@@ -45,5 +45,3 @@ $shab execute "g++ -O3 -o shoggoth OBJECT_PATH/*.o -lGL -lGLU -lX11 -lXrandr -lp
 #$shab execute "./shoggoth --config=test/processor.json --log=processor.log --htopdebug"
 #$shab execute "./shoggoth --config=test/ui.json --log=ui.log --htopdebug"
 #$shab execute "./shoggoth --config=test/teacher.json --log=teacher.log"
-
-
