@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include "layer_list.h"
+#include "limb.h"
 
 
 
@@ -13,10 +14,10 @@ using namespace std;
 */
 LayerList::LayerList
 (
-    Log* aLog
+    Limb* aLimb
 )
 {
-    log = aLog;
+    limb = aLimb;
 }
 
 
@@ -26,10 +27,10 @@ LayerList::LayerList
 */
 LayerList* LayerList::create
 (
-    Log* aLog
+    Limb* aLimb
 )
 {
-    return new LayerList( aLog );
+    return new LayerList( aLimb );
 }
 
 
@@ -49,7 +50,7 @@ void LayerList::destroy()
 */
 Log* LayerList::getLog()
 {
-    return log;
+    return limb -> getLog();
 }
 
 
@@ -180,6 +181,7 @@ LayerList* LayerList::clear()
 
 
 
+
 /*
     Compare layer structure
 */
@@ -209,44 +211,6 @@ bool LayerList::compare
 
 
 /*
-    Copy list of layers
-*/
-LayerList* LayerList::copyStructureFrom
-(
-    LayerList* aSource
-)
-{
-    clear();
-
-    aSource -> loop
-    (
-        [ this ]
-        ( void* p )
-        {
-            auto iLayer = (Layer*) p;
-            /* Create new layer object and push it to this*/
-            auto nLayer =
-            Layer::create( getLog(), iLayer -> getId() )
-            -> setSize( iLayer -> getSize())
-            -> setName( iLayer -> getName());
-
-             nLayer
-            -> setEye( iLayer -> getEye() )
-            -> setTop( iLayer -> getTop() )
-            -> setTarget( iLayer -> getTarget() );
-
-            push( nLayer );
-
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-
-/*
     Copy values of equal layers
 */
 LayerList* LayerList::copyValuesFrom
@@ -254,6 +218,20 @@ LayerList* LayerList::copyValuesFrom
     LayerList* aSource
 )
 {
+    aSource -> loop
+    (
+        [ this, &aSource ]
+        ( void* p )
+        {
+            auto fromLayer = (Layer*) p;
+            auto toLayer = getById( fromLayer -> getId() );
+            if( toLayer != NULL )
+            {
+                toLayer -> copyValuesFrom( fromLayer );
+            }
+            return false;
+        }
+    );
     return this;
 }
 
@@ -267,5 +245,19 @@ LayerList* LayerList::copyErrorsFrom
     LayerList* aSource
 )
 {
+    aSource -> loop
+    (
+        [ this, &aSource ]
+        ( void* p )
+        {
+            auto fromLayer = (Layer*) p;
+            auto toLayer = getById( fromLayer -> getId() );
+            if( toLayer != NULL )
+            {
+                toLayer -> copyErrorsFrom( fromLayer );
+            }
+            return false;
+        }
+    );
     return this;
 }

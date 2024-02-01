@@ -20,7 +20,6 @@ class Server : public Payload
 
         /* SHoggoth */
         Net*                    net                 = NULL;
-        //        thread*                 server              = NULL;
         thread*                 serverThread        = NULL;
         ShoggothRpcServer*      srv                 = NULL;
         long int                lastConfigCheck     = 0;
@@ -75,9 +74,6 @@ class Server : public Payload
 
         virtual void onLoop();
 
-        /*
-            Run net calculateion
-        */
         virtual void onResume();
 
         virtual void onPause();

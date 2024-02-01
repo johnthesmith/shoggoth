@@ -10,7 +10,9 @@
 
 /* Shoggot libraries */
 #include "../func.h"
-#include "../neuron.h"
+#include "neuron_list_ui.h"
+#include "neuron_ui.h"
+#include "layer_ui.h"
 
 
 
@@ -27,7 +29,8 @@ LimbUi::LimbUi
     aNet -> getLog()
 )
 {
-    selected = NeuronList::create();
+    net = aNet;
+    selected = NeuronListUi::create();
 }
 
 
@@ -71,7 +74,7 @@ LimbUi* LimbUi::drawLayers
             void* iLayer
         ) -> bool
         {
-            drawLayer( aScene, ( Layer* ) iLayer, aCalcScreenPos );
+            drawLayer( aScene, ( LayerUi* ) iLayer, aCalcScreenPos );
             return false;
         }
     );
@@ -86,9 +89,9 @@ LimbUi* LimbUi::drawLayers
 */
 LimbUi* LimbUi::drawLayer
 (
-    Scene*  aScene,
-    Layer*  aLayer,
-    bool    aCalcScreenPos
+    Scene*      aScene,
+    LayerUi*    aLayer,
+    bool        aCalcScreenPos
 )
 {
     /* Recalculate neurons position */
@@ -101,7 +104,7 @@ LimbUi* LimbUi::drawLayer
     }
 
     /* Get neurons conut */
-    int neuronsCount = aLayer -> getNeuronsCount();
+    int neuronsCount = aLayer -> getCount();
 
     /* Draw nurons point */
     aScene
@@ -135,7 +138,7 @@ LimbUi* LimbUi::drawLayer
         -> setPointSize( 4 )
         -> begin( POINT )
         -> color( Rgba( RGBA_WHITE ))
-        -> vertex( aLayer -> getEye() )
+        -> vertex( aLayer -> getObject() -> getEye() )
         -> end();
 
         /*  Draw layer box */
@@ -144,16 +147,17 @@ LimbUi* LimbUi::drawLayer
         -> polygonMode( POLYGON_LINE )
         .color( interfaceColorDark )
         -> begin( QUAD )
-        -> sendQube( aLayer -> getEye(), aLayer -> getOuterBox() )
+        -> sendQube( aLayer -> getObject() -> getEye(), aLayer -> getOuterBox() )
         .end()
         -> polygonMode( POLYGON_FILL )
         . begin( QUAD )
-        -> sendQube( aLayer -> getEye(), aLayer -> getOuterBox() )
+        -> sendQube( aLayer -> getObject() -> getEye(), aLayer -> getOuterBox() )
         .end();
 
         /* Draw layer name */
 
-        auto textPoint = aLayer -> getEye() + POINT_3D_BOTTOM * aLayer -> getOuterBox().y;
+        auto textPoint = aLayer -> getObject() -> getEye()
+        + POINT_3D_BOTTOM * aLayer -> getOuterBox().y;
 
         aScene
         -> color( Rgba( RGBA_WHITE ))
@@ -167,10 +171,10 @@ LimbUi* LimbUi::drawLayer
         -> setTextSize( 0.05 )
         -> textCR()
         -> color( Rgba( RGBA_RED ))
-        -> text( "Error:" + to_string( aLayer -> getError()) )
+        -> text( "Error:" + to_string( aLayer -> calcSumError()) )
         -> textCR()
         -> color( Rgba( RGBA_ORANGE ))
-        -> text( "Value:" + to_string( aLayer -> getValue()) )
+        -> text( "Value:" + to_string( aLayer -> calcSumValue()) )
         ;
     }
 
@@ -298,11 +302,11 @@ LimbUi* LimbUi::drawNerve
                 -> color( color )
                 -> vertex
                 (
-                    aNerve -> getParent() -> getNeuronWorld( iParent )
+                    ((LayerUi*) ( aNerve -> getParent() )) -> getNeuronWorld( iParent )
                 )
                 -> vertex
                 (
-                    aNerve -> getChild() -> getNeuronWorld( iChild )
+                    ((LayerUi*) (aNerve -> getChild() )) -> getNeuronWorld( iChild )
                 );
             }
             aScene -> end();
@@ -315,8 +319,8 @@ LimbUi* LimbUi::drawNerve
 
     aScene -> arrow
     (
-        (( Nerve* ) aNerve ) -> getParent() -> getEye(),
-        (( Nerve* ) aNerve ) -> getChild() -> getEye(),
+        (( LayerUi* ) ( aNerve -> getParent() )) -> getObject() -> getEye(),
+        (( LayerUi* ) ( aNerve -> getChild() )) -> getObject() -> getEye(),
         aScene -> getBack(),
         0.05,
         0.05,
@@ -335,14 +339,14 @@ LimbUi* LimbUi::drawNerve
 LimbUi* LimbUi::neuronPointsScreenCalc
 (
     Scene* aScene,  /* Scene object */
-    Layer* aLayer
+    LayerUi* aLayer
 )
 {
     getLog()
     -> begin( "Calculate neurons screen position" )
     -> prm( "Layer", aLayer -> getNameOrId() );
 
-    auto c = aLayer -> getNeuronsCount();
+    auto c = aLayer -> getCount();
 
     for( int i = 0; i < c; i ++ )
     {
@@ -364,7 +368,7 @@ LimbUi* LimbUi::neuronPointsScreenCalc
 LimbUi* LimbUi::drawNeuronChart
 (
     Scene* aScene,
-    NeuronList* aNeuronList
+    NeuronListUi* aNeuronList
 )
 {
     Chart2d::create()
@@ -409,7 +413,7 @@ LimbUi* LimbUi::drawNeuronChart
 */
 LimbUi* LimbUi::getNeuronsByScreenRect
 (
-    NeuronList* aNeuronList,    /* Returned list */
+    NeuronListUi* aNeuronList,    /* Returned list */
     Point3d&    aTopLeft,       /* top left */
     Point3d&    aBottomRight    /* botom right */
 )
@@ -421,7 +425,7 @@ LimbUi* LimbUi::getNeuronsByScreenRect
             void* iLayer
         ) -> bool
         {
-            (( Layer* ) iLayer ) -> getNeuronsByScreenRect
+            (( LayerUi* ) iLayer ) -> getNeuronsByScreenRect
             (
                 aNeuronList,
                 aTopLeft,
@@ -450,7 +454,7 @@ LimbUi* LimbUi::drawSelectedNeurons
     -> begin( POINT );
     selected -> loop
     (
-        [ &aScene ]( Neuron* iNeuron ) -> bool
+        [ &aScene ]( NeuronUi* iNeuron ) -> bool
         {
             auto s = iNeuron -> getScreen();
             if( s.z < 1 )
@@ -510,7 +514,7 @@ NeuronDrawMode LimbUi::getNeuronDrawMode()
 /*
     Return list of selected neurons
 */
-NeuronList* LimbUi::getSelectedNeurons()
+NeuronListUi* LimbUi::getSelectedNeurons()
 {
     return selected;
 }
@@ -570,7 +574,7 @@ LimbUi* LimbUi::switchShowBinds()
     int c = getLayerList() -> getCount();
     for( int i = 0; i < c; i++ )
     {
-        Layer* layer = ( Layer* ) ( getLayerList() -> getByIndex( i ));
+        auto layer = ( LayerUi* ) ( getLayerList() -> getByIndex( i ));
         layer -> setShowBinds( showBinds );
     }
     return this;
@@ -609,7 +613,7 @@ Rgba LimbUi::getArrowColorByType
 */
 LimbUi* LimbUi::getNeuronsByScreenPos
 (
-    NeuronList* aNeuronList,
+    NeuronListUi* aNeuronList,
     const Point3d& aPosition
 )
 {
@@ -620,7 +624,7 @@ LimbUi* LimbUi::getNeuronsByScreenPos
             void* iLayer
         ) -> bool
         {
-            (( Layer* ) iLayer ) -> getNeuronsByScreenPos
+            (( LayerUi* ) iLayer ) -> getNeuronsByScreenPos
             (
                 aNeuronList,
                 aPosition,
@@ -637,16 +641,16 @@ LimbUi* LimbUi::getNeuronsByScreenPos
 /*
     Return first selected neuron
 */
-Neuron* LimbUi::getSelectedFirst()
+NeuronUi* LimbUi::getSelectedFirst()
 {
-    return ( Neuron* ) selected -> getFirst();
+    return ( NeuronUi* ) selected -> getFirst();
 }
 
 
 
 LimbUi* LimbUi::setSelected
 (
-    Neuron* a
+    NeuronUi* a
 )
 {
     selected -> resize( 0 ) -> push( a );
@@ -682,7 +686,7 @@ LimbUi* LimbUi::addSelectedByCursor
     Scene* aScene /* Scene object */
 )
 {
-    auto current = NeuronList::create();
+    auto current = NeuronListUi::create();
     getNeuronsByScreenPos
     (
         current,
@@ -703,7 +707,7 @@ LimbUi* LimbUi::removeSelectedByCursor
     Scene* aScene /* Scene object */
 )
 {
-    auto current = NeuronList::create();
+    auto current = NeuronListUi::create();
     getNeuronsByScreenPos
     (
         current,
@@ -757,8 +761,8 @@ double LimbUi::avgWeightBySelect()
         ]
         (
             int aWeightIndex,
-            Neuron* aNeuronFrom,
-            Neuron* aNeuronTo,
+            NeuronUi* aNeuronFrom,
+            NeuronUi* aNeuronTo,
             Nerve* aNerve
         )
         {
@@ -773,15 +777,137 @@ double LimbUi::avgWeightBySelect()
 
 
 
+bool LimbUi::nerveWeightLoop
+(
+    NeuronListUi* a,
+    IndexWeightLambda aCallback
+)
+{
+    auto nerves = getNerveList();
+    a -> loop
+    (
+        [ this, &a, &aCallback, &nerves ]
+        (
+            NeuronUi* fromNeuron
+        )
+        {
+            a -> loop
+            (
+                [ this, &fromNeuron, &aCallback, &nerves ]
+                (
+                    NeuronUi* toNeuron
+                )
+                {
+                    auto fromLayer = fromNeuron -> getLayer();
+                    auto toLayer = toNeuron -> getLayer();
+
+                    auto foundedNerves = NerveList::create( getLog() );
+                    nerves -> selectByLayers
+                    (
+                        fromLayer,
+                        toLayer,
+                        foundedNerves
+                    );
+
+                    foundedNerves -> loop
+                    (
+                        [
+                            &fromNeuron,
+                            &toNeuron,
+                            &aCallback
+                        ]
+                        (
+                            void* aItem
+                        )
+                        {
+                            auto nerve = (Nerve*)aItem;
+                            auto indexFrom = fromNeuron -> getIndex();
+                            auto indexTo = toNeuron -> getIndex();
+                            auto weightIndex = nerve -> getIndexByNeuronsIndex
+                            (
+                                indexFrom,  /* in parent layer */
+                                indexTo     /* in child layer */
+                            );
+                            if( weightIndex >= 0 )
+                            {
+                                aCallback
+                                (
+                                    weightIndex,
+                                    fromNeuron,
+                                    toNeuron,
+                                    nerve
+                                );
+                            }
+                            return false;
+                        }
+                    );
+
+                    foundedNerves -> destroy();
+                    return false;
+                }
+            );
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
 LimbUi* LimbUi::switchShowLayer()
 {
     LayerList* layers = getLayerList();
     int c = layers -> getCount();
     for( int i = 0; i < c; i++ )
     {
-        Layer* layer = ( Layer* ) layers -> getByIndex( i );
+        auto layer = ( LayerUi* ) layers -> getByIndex( i );
         layer -> switchShowLayer();
     }
     return this;
 }
 
+
+
+/*
+    Create new layer for this limb and copy parameters from source layer.
+    This method is an overridden method of the Limb class.
+*/
+Layer* LimbUi::copyLayerFrom
+(
+    Layer* aFromLayer
+)
+{
+    auto config = net -> getConfig();
+
+    auto result = LayerUi::create( this, aFromLayer -> getId() );
+
+    auto configLayer = config -> getObject( Path { "layers", aFromLayer -> getId() } );
+    if( configLayer != NULL )
+    {
+        result -> setSize( configLayer );
+        result -> setDrawSize( configLayer );
+
+        result
+        -> setPosition( configLayer )
+
+        -> getObject()
+        -> setTop( POINT_3D_Y )
+        -> setTarget( POINT_3D_X );
+    }
+    else
+    {
+        getLog() -> error( "NetAndConfigNotConsistent" ) -> lineEnd();
+    }
+
+    return ( Layer* )result;
+}
+
+
+
+/*
+    Return net object
+*/
+Net* LimbUi::getNet()
+{
+    return net;
+}

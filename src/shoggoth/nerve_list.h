@@ -123,17 +123,6 @@ class NerveList :  public Heap
 
 
 
-
-// TODO remove it
-//        /*
-//            Return Nerve by id
-//        */
-//        Nerve* getById
-//        (
-//            string
-//        );
-
-
         /*
             Return Nerve by argumets or NILL
         */

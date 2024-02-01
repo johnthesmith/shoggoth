@@ -252,8 +252,6 @@ Loop* Loop::teacherControl()
 */
 void Loop::onLoop()
 {
-    net -> event( LOOP_BEGIN );
-
     /* Set ok */
     getApplication() -> checkConfigUpdate();
     if
@@ -321,10 +319,7 @@ void Loop::onLoop()
         }
 
         getLog() -> end();
-
-        net -> event( LOOP_END );
     }
-
 
 
 //            aTreminated = scene -> windowClosed();

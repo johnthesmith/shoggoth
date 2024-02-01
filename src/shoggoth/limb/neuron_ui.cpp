@@ -1,5 +1,5 @@
-#include "neuron.h"
-#include "layer.h"
+#include "neuron_ui.h"
+#include "layer_ui.h"
 
 
 
@@ -10,9 +10,9 @@ using namespace std;
 /*
     Constructor
 */
-Neuron::Neuron
+NeuronUi::NeuronUi
 (
-    Layer* aLayer,
+    LayerUi* aLayer,
     int aIndex
 )
 {
@@ -26,13 +26,13 @@ Neuron::Neuron
 /*
     Create the Layer list object
 */
-Neuron* Neuron::create
+NeuronUi* NeuronUi::create
 (
-    Layer* aLayer,
+    LayerUi* aLayer,
     int aIndex
 )
 {
-    return new Neuron( aLayer, aIndex );
+    return new NeuronUi( aLayer, aIndex );
 }
 
 
@@ -40,7 +40,7 @@ Neuron* Neuron::create
 /*
     Destroy the Layer list object
 */
-void Neuron::destroy()
+void NeuronUi::destroy()
 {
     delete this;
 }
@@ -50,7 +50,7 @@ void Neuron::destroy()
 /*
     Return index
 */
-int Neuron::getIndex()
+int NeuronUi::getIndex()
 {
     return index;
 }
@@ -60,7 +60,7 @@ int Neuron::getIndex()
 /*
     Return Layer
 */
-Layer* Neuron::getLayer()
+LayerUi* NeuronUi::getLayer()
 {
     return layer;
 }
@@ -70,7 +70,7 @@ Layer* Neuron::getLayer()
 /*
     Return neuron screen position
 */
-Point3d Neuron::getScreen()
+Point3d NeuronUi::getScreen()
 {
     return layer -> getNeuronScreen( index );
 }
@@ -81,7 +81,7 @@ Point3d Neuron::getScreen()
 /*
     Return neuron world position
 */
-Point3d Neuron::getWorld()
+Point3d NeuronUi::getWorld()
 {
     return layer -> getNeuronWorld( index );
 }
@@ -92,7 +92,7 @@ Point3d Neuron::getWorld()
 /*
     Set neuron value
 */
-Neuron* Neuron::setValue
+NeuronUi* NeuronUi::setValue
 (
     double aValue
 )
@@ -106,7 +106,7 @@ Neuron* Neuron::setValue
 /*
     Return neuron value
 */
-double Neuron::getValue()
+double NeuronUi::getValue()
 {
     return layer -> getNeuronValue( index );
 }
@@ -116,7 +116,7 @@ double Neuron::getValue()
 /*
     Set neuron error
 */
-Neuron* Neuron::setError
+NeuronUi* NeuronUi::setError
 (
     double aValue
 )
@@ -130,7 +130,7 @@ Neuron* Neuron::setError
 /*
     Return neuron error
 */
-double Neuron::getError()
+double NeuronUi::getError()
 {
     return layer -> getNeuronError( index );
 }
@@ -140,7 +140,7 @@ double Neuron::getError()
 /*
     Set neuron world position
 */
-Neuron* Neuron::setWorld
+NeuronUi* NeuronUi::setWorld
 (
     Point3d& aValue
 )
@@ -154,7 +154,7 @@ Neuron* Neuron::setWorld
 /*
     Set neuron screen position
 */
-Neuron* Neuron::setScreen
+NeuronUi* NeuronUi::setScreen
 (
     Point3d& aValue
 )

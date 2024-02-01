@@ -3,7 +3,8 @@
 #include <string>
 #include <functional>   /* for lyambda */
 
-#include "../../../../lib/core/heap.h"
+#include "../../../../../lib/core/heap.h"
+#include "../layer.h"
 
 
 
@@ -11,27 +12,26 @@ using namespace std;
 
 
 
-class Neuron;
-class Layer;
+class NeuronUi;
 
 
 
-class NeuronList : public Heap
+class NeuronListUi : public Heap
 {
     public:
         /*
             Create and return list of neurons
         */
-        static NeuronList* create();
+        static NeuronListUi* create();
 
 
 
         /*
             Add neurons from argument list to this list
         */
-        NeuronList* add
+        NeuronListUi* add
         (
-            NeuronList*
+            NeuronListUi*
         );
 
 
@@ -41,7 +41,7 @@ class NeuronList : public Heap
         */
         int indexBy
         (
-            Neuron*
+            NeuronUi*
         );
 
 
@@ -60,7 +60,7 @@ class NeuronList : public Heap
         /*
             Return neuron by index
         */
-        Neuron* getByIndex
+        NeuronUi* getByIndex
         (
             int
         );
@@ -70,10 +70,10 @@ class NeuronList : public Heap
         /*
             Return neuron by index
         */
-        NeuronList* setByIndex
+        NeuronListUi* setByIndex
         (
             int,
-            Neuron*
+            NeuronUi*
         );
 
 
@@ -82,7 +82,7 @@ class NeuronList : public Heap
             Resize
             Warning!!! this method can not call directly.
         */
-        NeuronList* resize
+        NeuronListUi* resize
         (
             int
         );
@@ -92,9 +92,9 @@ class NeuronList : public Heap
         /*
             Loop with lyambda
         */
-        NeuronList* loop
+        NeuronListUi* loop
         (
-            function <bool ( Neuron* )>,
+            function <bool ( NeuronUi* )>,
             int = 0,
             int = 0
         );
@@ -115,15 +115,15 @@ class NeuronList : public Heap
 
 
 
-        NeuronList* merge
+        NeuronListUi* merge
         (
-            NeuronList*
+            NeuronListUi*
         );
 
 
 
-        NeuronList* remove
+        NeuronListUi* remove
         (
-            NeuronList*
+            NeuronListUi*
         );
 };

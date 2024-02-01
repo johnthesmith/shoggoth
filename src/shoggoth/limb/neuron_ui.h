@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "../../../../lib/graph/point3.h"
+#include "../../../../../lib/graph/point3.h"
+#include "../layer.h"
 
 
 using namespace std;
@@ -15,27 +16,26 @@ using namespace std;
     Predeclaration
 */
 
-class
-Layer;
+class LayerUi;
 
 
 
 
-class Neuron
+class NeuronUi
 {
     private:
 
-        Layer*  layer = NULL;   /* Neuron layer object */
-        int     index = -1;     /* Neurons index in layer */
+        LayerUi*    layer = NULL;   /* Neuron layer object */
+        int         index = -1;     /* Neurons index in layer */
 
     public:
 
         /*
             Constructor
         */
-        Neuron
+        NeuronUi
         (
-            Layer*,
+            LayerUi*,
             int
         );
 
@@ -44,9 +44,9 @@ class Neuron
         /*
             Create the Layer list object
         */
-        static Neuron* create
+        static NeuronUi* create
         (
-            Layer*,
+            LayerUi*,
             int
         );
 
@@ -69,14 +69,14 @@ class Neuron
         /*
             Return Layer
         */
-        Layer* getLayer();
+        LayerUi* getLayer();
 
 
 
         /*
             Set neuron screen position
         */
-        Neuron* setValue
+        NeuronUi* setValue
         (
             double
         );
@@ -93,7 +93,7 @@ class Neuron
         /*
             Set neuron error
         */
-        Neuron* setError
+        NeuronUi* setError
         (
             double
         );
@@ -126,7 +126,7 @@ class Neuron
         /*
             Set neuron world position
         */
-        Neuron* setWorld
+        NeuronUi* setWorld
         (
             Point3d&
         );
@@ -137,7 +137,7 @@ class Neuron
         /*
             Set neuron screen position
         */
-        Neuron* setScreen
+        NeuronUi* setScreen
         (
             Point3d&
         );

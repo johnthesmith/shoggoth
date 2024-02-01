@@ -14,9 +14,12 @@
 class LimbProcessor : public Limb
 {
     private:
-
-        LayerList*      forwardList     = NULL;     /* Layer list with forward calculation sequence */
-        LayerList*      backwardList    = NULL;     /* Layer list with backward calculation sequence */
+        /* Net object */
+        Net*            net             = NULL;
+        /* Layer list with forward calculation sequence */
+        LayerList*      forwardList     = NULL;
+        /* Layer list with backward calculation sequence */
+        LayerList*      backwardList    = NULL;
 
         /* Calculation state */
         CalcDirection   calcDirection   = CALC_FORWARD; /* Calculation direction */

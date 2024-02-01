@@ -14,17 +14,30 @@
 #include "../../../../../lib/graph/point3.h"
 #include "../../../../../lib/graph/rgba.h"
 
-#include "../neuron_list.h"
 #include "../limb.h"
-
 #include "net.h"
+#include "layer_ui_const.h"
 
 
-enum NeuronDrawMode
-{
-    NDM_VALUE,  /* Show values for neuron */
-    NDM_ERROR   /* Show errors for neuron */
-};
+class NeuronUi;
+class LayerUi;
+class NeuronListUi;
+
+
+/*
+    Lambda function for nerve weights loop
+*/
+typedef function
+<
+    bool
+    (
+        int,        /* Index of weight in a nerve */
+        NeuronUi*,    /* Neuron in tne parent layer */
+        NeuronUi*,    /* Neuron in the child layer*/
+        Nerve*      /* Nerve object */
+    )
+>
+IndexWeightLambda;
 
 
 
@@ -32,7 +45,8 @@ class LimbUi : public Limb
 {
     private:
 
-        NeuronList*     selected            = NULL;         /* List of selected neurons */
+        Net*            net                 = NULL;
+        NeuronListUi*   selected            = NULL;         /* List of selected neurons */
 
         NeuronDrawMode  neuronDrawMode      = NDM_VALUE;    /* Draw mode for neurons */
         BindDrawMode    showBinds           = BDM_HIDDEN;
@@ -92,7 +106,7 @@ class LimbUi : public Limb
         LimbUi* drawNeuronChart
         (
             Scene*,
-            NeuronList*
+            NeuronListUi*
         );
 
 
@@ -130,7 +144,7 @@ class LimbUi : public Limb
         LimbUi* neuronPointsScreenCalc
         (
             Scene*, /* Scene object */
-            Layer*
+            LayerUi*
         );
 
 
@@ -140,8 +154,8 @@ class LimbUi : public Limb
         */
         LimbUi* drawLayers
         (
-            Scene*, /* Scene object */
-            bool    /* Recalculate the screen position */
+            Scene*,     /* Scene object */
+            bool        /* Recalculate the screen position */
         );
 
 
@@ -151,9 +165,9 @@ class LimbUi : public Limb
         */
         LimbUi* drawLayer
         (
-            Scene*, /* Scene object */
-            Layer*, /* Drawne Layer object*/
-            bool    /* Recalculate the screen position */
+            Scene*,     /* Scene object */
+            LayerUi*,   /* Drawne Layer object*/
+            bool        /* Recalculate the screen position */
         );
 
 
@@ -184,7 +198,7 @@ class LimbUi : public Limb
         */
         LimbUi* getNeuronsByScreenRect
         (
-            NeuronList*,    /* Returned list */
+            NeuronListUi*,  /* Returned list */
             Point3d&,       /* top left */
             Point3d&        /* botom right */
         );
@@ -194,7 +208,7 @@ class LimbUi : public Limb
         /*
             Return list of selected neurons
         */
-        NeuronList* getSelectedNeurons();
+        NeuronListUi* getSelectedNeurons();
 
 
 
@@ -245,13 +259,13 @@ class LimbUi : public Limb
         */
         LimbUi* getNeuronsByScreenPos
         (
-            NeuronList*,
+            NeuronListUi*,
             const Point3d&
         );
 
 
 
-        Neuron* getSelectedFirst();
+        NeuronUi* getSelectedFirst();
 
 
 
@@ -260,7 +274,7 @@ class LimbUi : public Limb
         */
         LimbUi* setSelected
         (
-            Neuron*
+            NeuronUi*
         );
 
 
@@ -316,9 +330,33 @@ class LimbUi : public Limb
 
 
 
+        bool nerveWeightLoop
+        (
+            NeuronListUi*,
+            IndexWeightLambda
+        );
+
+
+
         /*
         */
         LimbUi* switchShowLayer();
+
+
+
+        /*
+            Create new layer for this limb and copy parameters from source layer.
+            This method is an overridden method of the Limb class.
+        */
+        Layer* copyLayerFrom
+        (
+            Layer* aFromLayer
+        );
+
+
+
+        /*
+            Return net object
+        */
+        Net* getNet();
 };
-
-

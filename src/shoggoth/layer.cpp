@@ -1,15 +1,10 @@
-#include "../../../../lib/core/rnd.h"
-#include "../../../../lib/core/math.h"
-#include "../../../../lib/core/moment.h"
-
-#include "../../../../lib/graph/point3.h"
-#include "../../../../lib/graph/log_points.h"
-#include "../../../../lib/sock/rpc_client.h"
-
 #include "func.h"
 #include "io.h"
 #include "layer.h"
-#include "neuron.h"
+#include "limb.h"
+
+#include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/math.h"
 
 
 
@@ -18,11 +13,11 @@
 */
 Layer::Layer
 (
-    Log* aLog,
+    Limb* aLimb,
     string aId
 )
 {
-    log = aLog;
+    limb = aLimb;
 
     id = aId == "" ? Rnd::getUuid() : aId;
 
@@ -44,7 +39,7 @@ Layer::~Layer()
     actions -> destroy();
 
     /* Destroy neurons */
-    setSize();
+    setCount( 0 );
 
     /* Destroy the list of neurons */
 
@@ -60,11 +55,11 @@ Layer::~Layer()
 */
 Layer* Layer::create
 (
-    Log* aLog,
+    Limb* aLimb,
     string aId
 )
 {
-    return new Layer( aLog, aId );
+    return new Layer( aLimb, aId );
 }
 
 
@@ -79,17 +74,6 @@ void Layer::destroy()
 
 
 
-/*
-    Return linear index of neuron by position
-*/
-int Layer::indexByPos
-(
-    const Point3i& a
-)
-{
-    return a.x + a.y * size.x + a.z * size.x * size.y;
-}
-
 
 
 /******************************************************************************
@@ -102,7 +86,9 @@ int Layer::indexByPos
 */
 Layer* Layer::clearValues()
 {
+    getLimb() -> lock();
     memset( values, 0, getValuesBufferSize() );
+    getLimb() -> unlock();
     return this;
 }
 
@@ -113,103 +99,81 @@ Layer* Layer::clearValues()
 */
 Layer* Layer::clearErrors()
 {
+    getLimb() -> lock();
     memset( errors, 0, getValuesBufferSize() );
+    getLimb() -> unlock();
     return this;
 }
 
 
 
 /*
-    Clear screen points for all neurons
+    Set values from buffer
 */
-Layer* Layer::clearScreen()
-{
-    memset( screen, 0, count * sizeof( Point3d ));
-    return this;
-}
-
-
-
-/*
-    Clear world for all neurons
-*/
-Layer* Layer::clearWorld()
-{
-    memset( world, 0, count * sizeof( Point3d ));
-    return this;
-}
-
-
-
-/*
-    Clear selected flag for all neurons
-*/
-Layer* Layer::clearSelected()
-{
-    memset( selected, 0, count * sizeof( bool ));
-    return this;
-}
-
-
-
-/******************************************************************************c
-    Calculations
-*/
-
-
-
-/*
-    Calculate neuron position at world
-*/
-Layer* Layer::neuronPointsCalc
+Layer* Layer::setValuesFromBuffer
 (
-    bool aStrict
+    char* aBuffer,
+    size_t  aSize
 )
 {
-    if( aStrict || !pointsRecalc )
+    getLimb() -> lock();
+    if( aBuffer != NULL && aSize == getValuesBufferSize() )
     {
-        /* Calculate box */
-        auto box = Point3d
-        (
-            drawSize.x == 0 ? ( size.x - 1 ) * neuronDrawBox : drawSize.x,
-            drawSize.y == 0 ? ( size.y - 1 ) * neuronDrawBox : drawSize.y,
-            drawSize.z == 0 ? ( size.z - 1 ) * neuronDrawBox : drawSize.z
-        );
-
-        /* Draw layer box */
-        outerBox = Point3d().set( box ).scale( 0.5 ).add( borderSize );
-        getLog() -> begin( "Calculate neurons world position" )-> prm( "Layer", getNameOrId() );
-
-        /* Claculate step in world for neurons */
-        auto step = box / ( size - POINT_3I_I );
-        /* Calculate ege in the world and start point in the world */
-        Point3d ege = box * -0.5 + getEye();
-        Point3d p = ege;
-
-        int i = 0;
-
-        for( int z = 0; z < size.z; z++ )
-        {
-            for( int y = 0; y < size.y; y++ )
-            {
-                for( int x = 0; x < size.x; x++ )
-                {
-                    setNeuronWorld( i, p );
-                    p.x += step.x;
-                    i++;
-                }
-                p.y += step.y;
-                p.x = ege.x;
-            }
-            p.z += step.z;
-            p.y = ege.y;
-        }
-
-        getLog() -> end();
-
-        setPointsRecalc( true );
+        memcpy( values, aBuffer, aSize );
     }
+    getLimb() -> unlock();
+    return this;
+}
 
+
+
+/*
+    Return buffer and size of buffer of values
+*/
+Layer* Layer::getValuesBuffer
+(
+    char* &aBuffer, /* Buffer pointer */
+    size_t &aSize   /* Size of buffer */
+)
+{
+    aBuffer = ( char* )values;
+    aSize = getValuesBufferSize();
+    return this;
+}
+
+
+
+/*
+    Return errors buffer
+*/
+Layer* Layer::errorsFromBuffer
+(
+    char* aBuffer,
+    size_t aSize
+)
+{
+    getLimb() -> lock();
+    if( aBuffer != NULL && aSize == getValuesBufferSize() )
+    {
+        memcpy( errors, aBuffer, aSize );
+    }
+    getLimb() -> unlock();
+    return this;
+}
+
+
+
+/*
+    Return buffer and size of buffer of errors
+*/
+Layer* Layer::getErrorsBuffer
+(
+    char* &aBuffer, /* Buffer pointer */
+    size_t &aSize   /* Size of buffer */
+)
+{
+    aBuffer = ( char* )errors;
+    aSize = getValuesBufferSize();
     return this;
 }
 
@@ -219,39 +183,46 @@ Layer* Layer::neuronPointsCalc
     Setters and getters
 */
 
+
+
+Limb* Layer::getLimb()
+{
+    return limb;
+}
+
+
 /*
     Return the log object
 */
 Log* Layer::getLog()
 {
-    return log;
+    return limb -> getLog();
 }
 
 
 
 /*
-    Set dimations size
+    Set count of neurons
+    Thes method reallocate memory fot plans
 */
-Layer* Layer::setSize
+Layer* Layer::setCount
 (
-    const Point3i& a
+    const int aCount
 )
 {
-    auto newCount = a.x * a.y * a.z;
-
-    if( newCount != count )
+    getLimb() -> lock();
+    if( aCount != count )
     {
         /* The size was changed */
         getLog()
         -> begin( "Layer resize" )
         -> prm( "id", getNameOrId() )
         -> prm( "from", count )
-        -> prm( "to", newCount )
+        -> prm( "to", aCount )
         -> lineEnd();
 
         /* Change count and size */
-        count = newCount;
-        size = a;
+        count = aCount;
 
         /* Create default plans */
         valuesCreate();
@@ -259,48 +230,26 @@ Layer* Layer::setSize
 
         getLog() -> end();
     }
+    getLimb() -> unlock();
 
     return this;
 }
-
 
 
 
 /*
-    Set dimations size
+    Return neurons count in layer
 */
-Layer* Layer::setSize
-(
-    ParamList* a
-)
+int Layer::getCount()
 {
-    auto jsonSize = a -> getObject( "size" );
-    if( jsonSize != NULL )
-    {
-        setSize
-        (
-            Point3i
-            (
-                jsonSize -> getInt( 0 ),
-                jsonSize -> getInt( 1 ),
-                jsonSize -> getInt( 2 )
-            )
-        );
-
-        /* Set neurons recalculation task if draw size was changed */
-        if(  getChanged() )
-        {
-            setPointsRecalc( false );
-        }
-    }
-    return this;
+    return count;
 }
-
 
 
 
 Layer* Layer::valuesCreate()
 {
+    getLimb() -> lock();
     /* Delete old plan */
     if( values != NULL )
     {
@@ -309,6 +258,8 @@ Layer* Layer::valuesCreate()
 
     /*Create new plan */
     values = new double[ count ];
+    getLimb() -> unlock();
+
     clearValues();
 
     return this;
@@ -318,6 +269,7 @@ Layer* Layer::valuesCreate()
 
 Layer* Layer::errorsCreate()
 {
+    getLimb() -> lock();
     /* Delete old plan */
     if( errors != NULL )
     {
@@ -326,145 +278,12 @@ Layer* Layer::errorsCreate()
 
     /*Create new plan */
     errors = new double[ count ];
+    getLimb() -> unlock();
+
     clearErrors();
 
     return this;
 }
-
-
-
-/*
-    Resize world plan
-*/
-Layer* Layer::worldCreate()
-{
-    /* Delete old plan */
-    if( world != NULL )
-    {
-        delete [] world;
-    }
-
-    /*Create new plan */
-    world = new Point3d[ count ];
-    /* Clear world position */
-    clearWorld();
-    /* Recalculate neuron points */
-    neuronPointsCalc( true );
-
-    return this;
-}
-
-
-
-/*
-    Resize screen plan
-*/
-Layer* Layer::screenCreate()
-{
-    /* Delete old plan */
-    if( screen != NULL )
-    {
-        delete [] screen;
-    }
-
-    /*Create new plan */
-    screen = new Point3d[ count ];
-    clearScreen();
-
-    return this;
-}
-
-
-/*
-    Resize selected plan
-*/
-Layer* Layer::selectedCreate()
-{
-    /* Delete old plan */
-    if( selected != NULL )
-    {
-        delete [] selected;
-    }
-
-    /*Create new plan */
-    selected = new bool[ count ];
-    clearSelected();
-
-    return this;
-}
-
-
-
-/*
-    Set draw size for layer
-*/
-Layer* Layer::setDrawSize
-(
-    ParamList* a
-)
-{
-    auto jsonPosition = a -> getObject( "drawSize" );
-    if( jsonPosition != NULL )
-    {
-        setDrawSize
-        (
-            Point3d
-            (
-                jsonPosition -> getDouble( 0 ),
-                jsonPosition -> getDouble( 1 ),
-                jsonPosition -> getDouble( 2 )
-            )
-        );
-
-        /* Set neurons recalculation task if draw size was changed */
-        if(  getChanged() )
-        {
-            setPointsRecalc( false );
-        }
-    }
-
-    return this;
-}
-
-
-
-Point3d& Layer::getDrawSize()
-{
-    return drawSize;
-}
-
-
-
-/*
-    Set dimations size
-*/
-Layer* Layer::setPosition
-(
-    ParamList* a
-)
-{
-    auto jsonPosition = a -> getObject( "position" );
-    if( jsonPosition != NULL )
-    {
-        setEye
-        (
-            Point3d
-            (
-                jsonPosition -> getDouble( 0 ),
-                jsonPosition -> getDouble( 1 ),
-                jsonPosition -> getDouble( 2 )
-            )
-        );
-
-        /* Set neurons recalculation task if position was changed */
-        if(  getChanged() )
-        {
-            setPointsRecalc( false );
-        }
-    }
-    return this;
-}
-
 
 
 
@@ -521,65 +340,6 @@ string Layer::getNameOrId()
 
 
 
-Layer* Layer::setNeuronDrawBox
-(
-    const double a
-)
-{
-    neuronDrawBox = a;
-    return this;
-}
-
-
-
-Layer* Layer::setNeuronDrawSize
-(
-    const double a
-)
-{
-    neuronDrawSize = a;
-    return this;
-}
-
-
-
-Layer* Layer::setBorderSize
-(
-    const Point3d& a
-)
-{
-    borderSize = a;
-    return this;
-}
-
-
-
-Layer* Layer::setDrawSize
-(
-    const Point3d& a
-)
-{
-    if( drawSize != a )
-    {
-        drawSize = a;
-        setChanged( true );
-    }
-    return this;
-}
-
-
-
-Layer* Layer::setPointsRecalc
-(
-    bool a
-)
-{
-    pointsRecalc = a;
-    return this;
-}
-
-
-
 /*
     Return true if neurons error changed in calcError method
 */
@@ -591,162 +351,9 @@ bool Layer::getErrorChange()
 
 
 /*
-    Return list of neurons in screen rect
-*/
-Layer* Layer::getNeuronsByScreenRect
-(
-    NeuronList* aList,
-    Point3d& aTopLeft,      /* Top left point */
-    Point3d& aBottomRight   /* Bottom right point */
-)
-{
-    auto list = new int[ count ];
-    int iBuffer = 0;
-
-    /* Coolect indexes to list */
-    for( int i = 0; i < count; i++ )
-    {
-        if
-        (
-            getNeuronScreen( i ).testRectXY( aTopLeft, aBottomRight )
-        )
-        {
-            list[ iBuffer ] = i;
-            iBuffer++;
-        }
-    }
-
-    int c = aList -> getCount();
-    /* Resize the rusult buffer */
-    aList -> resize( c + iBuffer );
-
-    for( int i = 0; i < iBuffer; i++ )
-    {
-        aList -> setByIndex( c + i, Neuron::create( this, list[ i ]));
-    }
-
-    delete [] list;
-
-    return this;
-}
-
-
-
-/*
-    Return list of neurons around  the screen position
-*/
-Layer* Layer::getNeuronsByScreenPos
-(
-    NeuronList*     aList,
-    const Point3d&  aPosition,
-    const int       aScreenRadius
-)
-{
-    auto list = new int[ count ];
-    int iBuffer = 0;
-
-    /* Coolect indexes to list */
-    for( int i = 0; i < count; i++ )
-    {
-        auto s = getNeuronScreen( i );
-        if
-        (
-            s.z < 1.0 &&
-            s.distXY( aPosition ) < aScreenRadius
-        )
-        {
-            list[ iBuffer ] = i;
-            iBuffer++;
-        }
-    }
-
-    int c = aList -> getCount();
-
-    /* Resize the rusult buffer */
-    aList -> resize( c + iBuffer );
-    for( int i = 0; i < iBuffer; i++ )
-    {
-        aList -> setByIndex
-        (
-            c + i,
-            Neuron::create( this, list[ i ])
-        );
-    }
-
-    delete [] list;
-
-    return this;
-}
-
-
-
-Layer* Layer::switchShowBinds()
-{
-    switch( showBinds )
-    {
-        case BDM_HIDDEN : setShowBinds( BDM_WEIGHT ); break;
-        case BDM_WEIGHT : setShowBinds( BDM_TYPE ); break;
-        case BDM_TYPE   : setShowBinds( BDM_HIDDEN ); break;
-    }
-    return this;
-}
-
-
-
-
-
-
-Layer* Layer::switchShowLayer()
-{
-    showLayer = !showLayer;
-    return this;
-}
-
-
-
-Point3i Layer::getSize()
-{
-    return size;
-}
-
-
-
-int Layer::getNeuronsCount()
-{
-    return count;
-}
-
-
-
-BindDrawMode Layer::getShowBinds()
-{
-    return showBinds;
-}
-
-
-
-Layer* Layer::setShowBinds
-(
-    BindDrawMode a
-)
-{
-    showBinds = a;
-    return this;
-}
-
-
-
-bool Layer::getShowLayer()
-{
-    return showLayer;
-}
-
-
-
-/*
     Return sum of error
 */
-double Layer::getError()
+double Layer::calcSumError()
 {
     double result = 0.0;
 
@@ -763,140 +370,18 @@ double Layer::getError()
 /*
     Return sum of value
 */
-double Layer::getValue()
+double Layer::calcSumValue()
 {
     double result = 0.0;
 
+    getLimb() -> lock();
     for( int i = 0; i < count; i ++ )
     {
         result += values[ i ];
     }
+    getLimb() -> unlock();
 
     return result;
-}
-
-
-
-/*
-    Set bitmap to neurons
-*/
-Layer* Layer::bitmapToValue
-(
-    Bitmap* a
-)
-{
-    auto w = a -> getWidth();
-    auto h = a -> getHeight();
-
-//    if( w > 0 && h > 0 && size.x > 0 && size.y > 0 )
-//    {
-//        double kx = (double) size.x / (double) w;
-//        double ky = (double) size.y / (double) h;
-//
-//        double scale = min( kx, ky );
-//
-//        a -> scale( ( int ) ( w * scale ), (int) ( h * scale ) );
-//    }
-//    w = a -> getWidth();
-//    h = a -> getHeight();
-
-//    /* Shift */
-//    int sx = ( size.x - w ) / 2;
-//    int sy = ( size.y - h ) / 2;
-
-    Rgba rgba;
-
-    for( int z = 0; z < size.z; z++ )
-    {
-        for( int y = 0; y < size.y; y++ )
-        {
-            for( int x = 0; x < size.x; x++ )
-            {
-                a -> getRgba
-                (
-                    ( double ) x / ( double ) size.x * w,
-                    (1-(( double ) y / ( double ) size.y )) * h - 1,
-                    rgba
-                );
-
-                setNeuronValue
-                (
-                    indexByPos( Point3i( x, y, z )),
-                    rgba.getGray()
-                );
-            }
-        }
-    }
-
-
-    return this;
-}
-
-
-
-/*
-    Load bitmap from source file name and set it
-*/
-Layer* Layer::imageToValue
-(
-    string aFileName
-)
-{
-    if( isOk() )
-    {
-        auto fileExt = getFileExt( aFileName );
-        if( fileExt == "png" )
-        {
-            /* Load from bitmap */
-            auto bitmap = Bitmap::create() -> load( aFileName );
-            if( bitmap -> isOk() )
-            {
-                getLog()
-                -> trace( "Image loaded" )
-                -> prm( "Layer", getNameOrId() )
-                -> prm( "File", aFileName )
-                -> prm( "width", bitmap -> getWidth() )
-                -> prm( "height", bitmap -> getHeight() )
-                -> lineEnd();
-                bitmapToValue( bitmap );
-            }
-            else
-            {
-                getLog()
-                -> warning( "File read error" )
-                -> prm( "code", bitmap -> getCode() )
-                -> prm( "message", bitmap -> getMessage() );
-            }
-            bitmap -> destroy();
-        }
-        else
-        {
-            getLog()
-            -> warning( "Unknown image format" )
-            -> prm( "extention", fileExt );
-        }
-    }
-    else
-    {
-        getLog()
-        -> warning( "Write unable image to the value because layer has the error" )
-        -> prm( "code", getCode() );
-    }
-    return this;
-}
-
-
-
-Layer* Layer::applyUuid
-(
-    Hid a
-)
-{
-    for( int i = 0; i < count; i++ )
-    {
-        setNeuronValue( i, a.getBit( i ) ? 1.0 : 0.0 );
-    }
-    return this;
 }
 
 
@@ -940,110 +425,6 @@ string Layer::getStorageValueName()
 {
     return storagePath == "" ? "" : ( getLayerPath() + "/value.bin" );
 }
-
-
-
-/*
-    Return the source filename
-*/
-//string Layer::getSourceFilename()
-//{
-//    string result
-//    = sourcePath == ""
-//    ? getLayerPath() + "/source/"
-//    : sourcePath;
-//
-//    vector <string> exts = { "uuid", "jpg", "json" };
-//
-//    auto list = getFileList( result );
-//
-//    for( int i; i < list.size(); i++ )
-//    {
-//        auto ext = getFileExt( list[ i ] );
-//
-//        if( find( exts.begin(), exts.end(), ext ) != exts.end() )
-//        {
-//            result = result + list[ i ];
-//            break;
-//        }
-//    }
-//    return result;
-//}
-
-
-
-
-
-/*
-    Return outer box size
-*/
-Point3d& Layer::getOuterBox()
-{
-    return outerBox;
-}
-
-
-
-Layer* Layer::valuesFromBuffer
-(
-    char* aBuffer,
-    size_t  aSize
-)
-{
-    if( aBuffer != NULL && aSize == getValuesBufferSize() )
-    {
-        memcpy( values, aBuffer, aSize );
-    }
-    return this;
-}
-
-
-
-/*
-    Return buffer and size of buffer of values
-*/
-Layer* Layer::getValuesBuffer
-(
-    char* &aBuffer, /* Buffer pointer */
-    size_t &aSize   /* Size of buffer */
-)
-{
-    aBuffer = ( char* )values;
-    aSize = getValuesBufferSize();
-    return this;
-}
-
-
-
-Layer* Layer::errorsFromBuffer
-(
-    char* aBuffer,
-    size_t aSize
-)
-{
-    if( aBuffer != NULL && aSize == getValuesBufferSize() )
-    {
-        memcpy( errors, aBuffer, aSize );
-    }
-    return this;
-}
-
-
-
-/*
-    Return buffer and size of buffer of errors
-*/
-Layer* Layer::getErrorsBuffer
-(
-    char* &aBuffer, /* Buffer pointer */
-    size_t &aSize   /* Size of buffer */
-)
-{
-    aBuffer = ( char* )errors;
-    aSize = getValuesBufferSize();
-    return this;
-}
-
 
 
 
@@ -1165,7 +546,6 @@ double Layer::getNeuronValue
 )
 {
     double result = 0.0;
-
     if( values != NULL )
     {
         if( aIndex >= 0 && aIndex < count )
@@ -1233,184 +613,6 @@ double Layer::getNeuronError
 
 
 /*
-    Set neuron world position
-*/
-Layer* Layer::setNeuronWorld
-(
-    int aIndex,           /* Index of neuron */
-    Point3d& aValue       /* Value */
-)
-{
-    if( world != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            world[ aIndex ] = aValue;
-        }
-        else
-        {
-            setResult( "IndexWorldOutOfRangeForSet" );
-        }
-    }
-    else
-    {
-        setResult( "NeuronWorldArrayNotDefinedForSet" );
-    }
-    return this;
-}
-
-
-
-/*
-    Return neuron world position or default value
-*/
-Point3d Layer::getNeuronWorld
-(
-    int aIndex  /* Index of neuron */
-)
-{
-    auto result = POINT_3D_0;
-
-    if( world != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            result = world[ aIndex ];
-        }
-        else
-        {
-            setResult( "IndexWorldPointsOutOfRangeForGet" );
-        }
-    }
-    else
-    {
-        setResult( "WorldPointsNotDefinedforForGet" );
-    }
-    return result;
-}
-
-
-
-/*
-    Set neuron screen position
-*/
-Layer* Layer::setNeuronScreen
-(
-    int aIndex,          /* Index of neuron */
-    Point3d& aValue      /* Value */
-)
-{
-    if( screen != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            screen[ aIndex ] = aValue;
-        }
-        else
-        {
-            setResult( "IndexWorldPointsOutOfRangeForSet" );
-        }
-    }
-    else
-    {
-        setResult( "WorldPointsNotDefinedforForSet" );
-    }
-    return this;
-}
-
-
-
-/*
-    Return neuron screen position or default value
-*/
-Point3d Layer::getNeuronScreen
-(
-    int aIndex  /* Index of neuron */
-)
-{
-    auto result = POINT_3D_0;
-
-    if( screen != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            result = screen[ aIndex ];
-        }
-        else
-        {
-            setResult( "IndexScreenPointsOutOfRangeForGet" );
-        }
-    }
-    else
-    {
-        setResult( "ScreenPointsNotDefinedforForGet" );
-    }
-    return result;
-}
-
-
-
-
-/*
-    Set neuron selected
-*/
-Layer* Layer::setNeuronSelected
-(
-    int aIndex,     /* Index of neuron */
-    bool aValue     /* Value */
-)
-{
-    if( selected != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            selected[ aIndex ] = aValue;
-        }
-        else
-        {
-            setResult( "IndexScreenPointsOutOfRangeForSet" );
-        }
-    }
-    else
-    {
-        setResult( "ScreenPointsNotDefinedForSet" );
-    }
-    return this;
-}
-
-
-
-/*
-    Return neuron selected or default value
-*/
-Point3d Layer::getNeuronSelected
-(
-    int aIndex     /* Index of neuron */
-)
-{
-    auto result = false;
-
-    if( selected != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            result = selected[ aIndex ];
-        }
-        else
-        {
-            setResult( "IndexSelectedOutOfRangeForGet" );
-        }
-    }
-    else
-    {
-        setResult( "SelectedNotDefinedForGet" );
-    }
-    return result;
-}
-
-
-
-/*
     Return event actions
 */
 ParamList* Layer::getActions()
@@ -1425,32 +627,6 @@ ParamList* Layer::getActions()
 */
 
 
-
-/*
-    Noise fill values of layer neurons
-*/
-Layer* Layer::noiseValue
-(
-    int     aSeed,
-    double  aMin,
-    double  aMax
-)
-{
-    Rnd::storeSeed( aSeed );
-
-    for( int i = 0; i < count; i ++ )
-    {
-        setNeuronValue( i, Rnd::get( aMin, aMax ) );
-    }
-
-    Rnd::restoreSeed();
-
-    return this;
-}
-
-
-
-
 /*
     Move values data to this from the argument layer
 */
@@ -1459,13 +635,15 @@ Layer* Layer::copyValuesFrom
     Layer* aLayer
 )
 {
-    auto size = getValuesBufferSize();
+    aLayer -> getLimb() -> lock();
 
     char* fromBuffer;
     size_t fromSize;
-
     aLayer -> getValuesBuffer( fromBuffer, fromSize );
 
+    getLimb() -> lock();
+
+    auto size = getValuesBufferSize();
     if
     (
         values != NULL &&
@@ -1480,6 +658,9 @@ Layer* Layer::copyValuesFrom
         setCode( "LayersValuePlanNotEquals" );
     }
 
+    getLimb() -> unlock();
+    aLayer -> getLimb() -> unlock();
+
     return this;
 }
 
@@ -1493,13 +674,13 @@ Layer* Layer::copyErrorsFrom
     Layer* aLayer
 )
 {
-    auto size = getValuesBufferSize();
-
+    aLayer -> getLimb() -> lock();
     char* fromBuffer;
     size_t fromSize;
-
     aLayer -> getErrorsBuffer( fromBuffer, fromSize );
 
+    getLimb() -> lock();
+    auto size = getValuesBufferSize();
     if
     (
         errors != NULL &&
@@ -1511,8 +692,11 @@ Layer* Layer::copyErrorsFrom
     }
     else
     {
-        setCode( "LayersValuePlanNotEquals" );
+        setCode( "LayersErrorPlanNotEquals" );
     }
+
+    getLimb() -> unlock();
+    aLayer -> getLimb() -> unlock();
 
     return this;
 }
@@ -1530,10 +714,8 @@ bool Layer::compare
 {
     return
     getId() == aLayer -> getId() &&
-    getSize() == aLayer -> getSize() &&
-    getName() == aLayer -> getName() &&
-    getDrawSize() == aLayer -> getDrawSize() &&
-    Object::compare( aLayer );
+    getCount() == aLayer -> getCount() &&
+    getName() == aLayer -> getName();
 }
 
 

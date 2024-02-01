@@ -5,6 +5,14 @@
 #pragma once
 
 
+#include <vector>
+
+
+
+using namespace std;
+
+
+
 /*
     Type of nerves
 */
@@ -42,10 +50,15 @@ enum Action
     WRITE_VALUES    = 12,
     READ_ERRORS     = 13,
     WRITE_ERRORS    = 14,
-    READ_WEIGHTS    = 15,
-    WRITE_WEIGHTS   = 16,
     SYNC_RESET      = 17
 };
+
+
+
+/*
+    List of actions
+*/
+typedef vector <Action> Actions;
 
 
 
@@ -100,8 +113,8 @@ enum Command
     CMD_READ_VALUES,    /* Server return the layer values data */
     CMD_WRITE_ERRORS,   /* Server receive layer errors */
     CMD_READ_ERRORS,    /* Server return the layer errors data */
-    CMD_WRITE_WEIGHTS,  /* Server receive the nerve weights data */
-    CMD_READ_WEIGHTS    /* Server return the nerve weights data */
+    CMD_WRITE_WEIGHTS,  /* Server receive  */
+    CMD_READ_WEIGHTS    /* Server return the layer  */
 };
 
 

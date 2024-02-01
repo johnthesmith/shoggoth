@@ -1,5 +1,4 @@
 #include "limb.h"
-#include "neuron.h"
 
 
 /*
@@ -14,7 +13,7 @@ Limb::Limb
     log = aLog;
 
     /* Create layers and nerves structures */
-    layers = LayerList::create( log );
+    layers = LayerList::create( this );
     nerves = NerveList::create( log );
 }
 
@@ -75,6 +74,8 @@ Layer* Limb::createLayer
 {
     Layer* result = NULL;
 
+    lock();
+
     auto layers = getLayerList();
     int layerIndex = layers -> getIndexById( aId );
 
@@ -86,9 +87,11 @@ Layer* Limb::createLayer
     else
     {
         /* Create new layer object */
-        result = Layer::create( getLog(), aId );
+        result = Layer::create( this, aId );
         layers -> push( result );
     }
+
+    unlock();
 
     return result;
 }
@@ -183,46 +186,50 @@ Limb* Limb::copyTo
     bool aStrictSync
 )
 {
-    aLimb -> lock();
-    lock();
-
-    auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
-    auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
-
-    if( aStrictSync )
+    if( aLimb != this )
     {
-        if( !layersIsEqual )
+        aLimb -> lock();
+        lock();
+
+        auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
+        auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
+
+        if( aStrictSync )
         {
-            /* Copy structure of layers */
+            if( !layersIsEqual )
+            {
+                /* Copy structure of layers */
+                aLimb -> copyStructureFrom( this -> getLayerList() );
+                layersIsEqual = true;
+            }
+            if( !nervesIsEqual )
+            {
+                /* Copy structure of nerves */
+                aLimb
+                -> getNerveList()
+                -> copyStructureFrom( this -> getNerveList());
+
+                nervesIsEqual = true;
+            }
+        }
+
+        if( layersIsEqual && nervesIsEqual )
+        {
             aLimb
             -> getLayerList()
-            -> copyStructureFrom( this -> getLayerList() );
-
-            layersIsEqual = true;
+            -> copyValuesFrom( this -> getLayerList() )
+            -> copyErrorsFrom( this -> getLayerList() )
+            ;
         }
-        if( !nervesIsEqual )
-        {
-            /* Copy structure of nerves */
-            aLimb
-            -> getNerveList()
-            -> copyStructureFrom( this -> getNerveList());
 
-            nervesIsEqual = true;
-        }
+        /* Data sinchronization */
+        unlock();
+        aLimb -> unlock();
     }
-
-    if( layersIsEqual && nervesIsEqual )
+    else
     {
-        aLimb
-        -> getLayerList()
-        -> copyValuesFrom( this -> getLayerList() )
-        -> copyErrorsFrom( this -> getLayerList() )
-        ;
+        getLog() -> warning( "UnableLimbItselfCopyTo" );
     }
-
-    /* Data sinchronization */
-    unlock();
-    aLimb -> unlock();
     return this;
 }
 
@@ -250,83 +257,6 @@ NerveList* Limb::getNerveList()
 {
     return nerves;
 }
-
-
-
-bool Limb::nerveWeightLoop
-(
-    NeuronList* a,
-    IndexWeightLambda aCallback
-)
-{
-    a -> loop
-    (
-        [ this, &a, &aCallback ]
-        (
-            Neuron* fromNeuron
-        )
-        {
-            a -> loop
-            (
-                [ this, &fromNeuron, &aCallback ]
-                (
-                    Neuron* toNeuron
-                )
-                {
-                    auto fromLayer = fromNeuron -> getLayer();
-                    auto toLayer = toNeuron -> getLayer();
-
-                    auto foundedNerves = NerveList::create( getLog() );
-                    nerves -> selectByLayers
-                    (
-                        fromLayer,
-                        toLayer,
-                        foundedNerves
-                    );
-
-                    foundedNerves -> loop
-                    (
-                        [
-                            &fromNeuron,
-                            &toNeuron,
-                            &aCallback
-                        ]
-                        (
-                            void* aItem
-                        )
-                        {
-                            auto nerve = (Nerve*)aItem;
-                            auto indexFrom = fromNeuron -> getIndex();
-                            auto indexTo = toNeuron -> getIndex();
-                            auto weightIndex = nerve -> getIndexByNeuronsIndex
-                            (
-                                indexFrom,  /* in parent layer */
-                                indexTo     /* in child layer */
-                            );
-                            if( weightIndex >= 0 )
-                            {
-                                aCallback
-                                (
-                                    weightIndex,
-                                    fromNeuron,
-                                    toNeuron,
-                                    nerve
-                                );
-                            }
-                            return false;
-                        }
-                    );
-
-                    foundedNerves -> destroy();
-                    return false;
-                }
-            );
-            return false;
-        }
-    );
-    return this;
-}
-
 
 
 
@@ -449,4 +379,80 @@ Limb* Limb::childrenLoop
         }
     );
     return this;
+}
+
+
+
+/**********************************************************************
+    Current age of the limbs config
+*/
+
+/*
+    Increamet age of limb
+*/
+Limb* Limb::incAge()
+{
+    age++;
+    return this;
+}
+
+
+unsigned int Limb::getAge()
+{
+    return age;
+}
+
+
+
+Limb* Limb::ageFrom
+(
+    Limb* aSource
+)
+{
+    age = aSource -> getAge();
+    return this;
+}
+
+
+
+/*
+    Copy list of layers
+*/
+Limb* Limb::copyStructureFrom
+(
+    LayerList* aSource
+)
+{
+    layers -> clear();
+
+    aSource -> loop
+    (
+        [ this ]
+        ( void* p )
+        {
+            /* Create new layer object and push it to this*/
+            auto iLayer = (Layer*) p;
+            auto nLayer = copyLayerFrom( iLayer );
+            nLayer -> setName( iLayer -> getName());
+            layers -> push( nLayer );
+            return false;
+        }
+    );
+    return this;
+}
+
+
+
+/*
+    Create new layer for this limb and copy parameters from source layer.
+    This method have to overriden at children Limbs.
+*/
+Layer* Limb::copyLayerFrom
+(
+    Layer* aLayerFrom
+)
+{
+    return
+    Layer::create( this, aLayerFrom -> getId() )
+    -> setCount( aLayerFrom -> getCount() );
 }

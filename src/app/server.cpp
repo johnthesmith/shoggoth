@@ -94,7 +94,7 @@ void Server::onLoop()
 
 
 /*
-    Run net calculateion
+    Server resume action
 */
 void Server::onResume()
 {
@@ -135,6 +135,9 @@ void Server::onResume()
 
 
 
+/*
+    Server pause action
+*/
 void Server::onPause()
 {
     getLog() -> begin( "Server stop" );

@@ -11,6 +11,8 @@
 
 
 /* Local libraries */
+#include "../math.h"
+
 #include "../../../../lib/graph/scene_payload.h"
 #include "../../../../lib/graph/scene.h"
 #include "../../../../lib/graph/rgba.h"
@@ -24,10 +26,10 @@
 #include "../../../../lib/core/utils.h"
 #include "../../../../lib/json/json.h"
 
-#include "../shoggoth/neuron.h"
+#include "../shoggoth/limb/layer_ui.h"
+#include "../shoggoth/limb/neuron_ui.h"
+#include "../shoggoth/limb/neuron_list_ui.h"
 #include "../shoggoth/func.h"
-
-#include "../math.h"
 
 /* User libraries */
 #include "ui.h"
@@ -174,6 +176,15 @@ void Ui::onCalc
     Scene* aScene   /* Scene object */
 )
 {
+    /* Prepare Limb */
+    limb -> getNet()
+    -> syncToLimb( limb )
+    -> swapValuesAndErrors
+    (
+        Actions{ READ_VALUES }, /* Action */
+        TASK_UI,                /* Role */
+        limb                    /* Participant object */
+    );
 }
 
 
@@ -185,18 +196,22 @@ void Ui::onDraw
     Scene* aScene   /* Scene object */
 )
 {
+    /* Switch scene to the flat view */
     aScene -> clearColor();
-
     applyScreenToScene( aScene );
 
     limb -> drawSelectedNeurons( aScene );
 
+
+    /* Switch scene to 3d view */
     applyCameraToScene( camera, aScene );
+
 
     /* Draw Layers */
     limb
     -> drawLayers( aScene, camera -> getChanged() )
-    -> drawNerves( aScene );
+//    -> drawNerves( aScene )
+    ;
 
     /* Reset camera changed */
     camera -> setChanged( false );
@@ -217,7 +232,7 @@ void Ui::onDraw
     /*
         Draw neuron chart
     */
-    Neuron* neuron = limb -> getSelectedFirst();
+    auto neuron = limb -> getSelectedFirst();
     if( neuron != NULL )
     {
 
@@ -257,7 +272,7 @@ void Ui::onDraw
         ;
 
         /* Draw selected neurons */
-        NeuronList* list = NeuronList::create();
+        auto list = NeuronListUi::create();
         limb -> getNeuronsByScreenRect( list, selectTopLeft, selectBottomRight );
 
         aScene
@@ -266,7 +281,8 @@ void Ui::onDraw
         -> begin( POINT );
         list -> loop
         (
-            [ &aScene ]( Neuron* neuron ) -> bool
+            [ &aScene ]
+            ( NeuronUi* neuron ) -> bool
             {
                 aScene -> vertex( neuron -> getScreen() );
                 return false;
@@ -362,14 +378,14 @@ void Ui::onKeyDown
         {
             auto index = limb -> getLayerList() -> getIndexById( selectedLayerId );
             index = ( index <= 0 ? limb -> getLayerList() -> getCount() : index ) - 1;
-            auto layer = limb -> getLayerList() -> getByIndex( index );
+            auto layer = ( LayerUi* ) (limb -> getLayerList() -> getByIndex( index ));
 
             if( layer != NULL )
             {
                 camera
                 -> setTop( POINT_3D_Y )
-                -> setEye( layer -> getEye() + POINT_3D_I * 2 )
-                -> setTarget( layer -> getEye() );
+                -> setEye( layer -> getObject() -> getEye() + POINT_3D_I * 2 )
+                -> setTarget( layer -> getObject() -> getEye() );
                 selectedLayerId = layer -> getId();
             }
         }
@@ -379,14 +395,14 @@ void Ui::onKeyDown
         {
             auto index = limb -> getLayerList() -> getIndexById( selectedLayerId );
             index = index >= limb -> getLayerList() -> getCount() - 1 ? 0 : ( index + 1 );
-            auto layer = limb -> getLayerList() -> getByIndex( index );
+            auto layer = (LayerUi*) ( limb -> getLayerList() -> getByIndex( index ));
 
             if( layer != NULL )
             {
                 camera
                 -> setTop( POINT_3D_Y )
-                -> setEye( layer -> getEye() + POINT_3D_I * 2 )
-                -> setTarget( layer -> getEye() );
+                -> setEye( layer -> getObject() -> getEye() + POINT_3D_I * 2 )
+                -> setTarget( layer -> getObject() -> getEye() );
                 selectedLayerId = layer -> getId();
             }
         }
@@ -399,7 +415,8 @@ void Ui::onKeyDown
         case KEY_R:
             limb -> getSelectedNeurons() -> loop
             (
-                []( Neuron* neuron )
+                []
+                ( NeuronUi* neuron )
                 {
                     neuron -> setValue( Rnd::get( 0.0, 1.0 ) );
                     return false;
@@ -639,7 +656,7 @@ void Ui::onMouseWheel
             limb -> getSelectedNeurons() -> loop
             (
                 [ &aScene, &aDelta, &avgValue ]
-                ( Neuron* aNeuron )
+                ( NeuronUi* aNeuron )
                 {
                     /* Neuron value Control*/
                     aNeuron -> setValue
@@ -662,7 +679,7 @@ void Ui::onMouseWheel
             limb -> getSelectedNeurons() -> loop
             (
                 [ &aScene, &aDelta, &avgError ]
-                ( Neuron* aNeuron )
+                ( NeuronUi* aNeuron )
                 {
                     /* Neuron value Control*/
                     aNeuron -> setError

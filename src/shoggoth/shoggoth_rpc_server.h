@@ -2,7 +2,7 @@
 
 #include "shoggoth_consts.h"
 #include "sync.h"
-#include "limb/net.h" /* TODO remove Net from this module */
+#include "limb/net.h"
 
 
 
@@ -10,7 +10,7 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-        Net*               net         = NULL; /* Net object */
+        Net*    net = NULL; /* Net limb with main layers */
 
     public:
 

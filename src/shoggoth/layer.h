@@ -1,11 +1,8 @@
-/*
+    /*
     Layer
 
-    This is a container for neurons with 3D adressing.
     Contains the NeuronList object.
-
     The layer creates new neurons or removes them when resized.
-    Layer has reflection at 3D world like Object and it can be moved, rotated etc.
 */
 
 
@@ -13,19 +10,14 @@
 
 #include <string>
 
+#include "../../../../lib/core/result.h"
 #include "../../../../lib/core/utils.h"
+#include "../../../../lib/graph/bitmap.h"       /* TODO remove it to teachr */
 #include "../../../../lib/core/hid.h"
-
-#include "../../../../lib/graph/point3.h"
-#include "../../../../lib/graph/point3i.h"
-#include "../../../../lib/graph/points3d.h"
-#include "../../../../lib/graph/object.h"
-#include "../../../../lib/graph/bitmap.h"
-
 #include "../../../../lib/json/param_list.h"
+#include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
 #include "nerve_list.h"
-#include "neuron_list.h"
 #include "shoggoth_consts.h"
 
 
@@ -33,91 +25,41 @@ using namespace std;
 
 
 
-enum BindDrawMode
-{
-    BDM_HIDDEN,
-    BDM_WEIGHT,
-    BDM_SIGNAL,
-    BDM_TYPE
-};
-
-
 /*
     Predeclaration
 */
-class Layer;
+
+class Limb;
 class Nerve;
 
 
 
-
-/*
-    Lambda function for return parents neurons of child
-*/
-typedef
-function
-<
-    bool
-    (
-        Layer*, /* Layer with parent neurons */
-        int,    /* Neuron index*/
-        Nerve*, /* Nerve */
-        double, /* Weight of bind */
-        int     /* return weight index */
-    )
->
-parentsLambda;
-
-
-
-/*
-    Lambda function for return children neurons for parent
-*/
-typedef
-function
-<
-    bool
-    (
-        Layer*, /* return layer with children neurons */
-        int,    /* return child neuron index*/
-        Nerve*, /* return nerve */
-        double, /* return weight of bind */
-        int     /* return weight index */
-    )
->
-childrenLambda;
-
-
-
-class Layer : public Object
+class Layer : public Result
 {
     private:
 
-        /* States */
-        Log*            log                     = NULL;         /* Log object */
+        /*
+            States
+        */
+        /* Limb object */
+        Limb*           limb                    = NULL;
+        /* Count fo neurons */
+        int             count                   = 0;
+        /* Dimention size */
+        Point3i         size                    = POINT_3I_0;
 
-        bool            pointsRecalc            = false;        /* Recalculate points for Neurons */
-        Point3d         drawSize                = POINT_3D_0;   /* Visual draw size at GL units*/
 
         bool            errorChange             = false;        /* True - method errorChange return true for any neuron, else false */
         bool            incomeChanged           = false;        /* True if preceptron chenged. Set in neuron->setValue*/
-        Point3d         outerBox                = POINT_3D_0;   /* Outer box size recalculate in neuronPointsCalc */
 
         /* Settings */
-        Point3i         size                    = POINT_3I_0;   /* Dimention size */
         string          id                      = "";           /* Id of layer */
         string          name                    = "";           /* Name of layer */
-
-        bool            showNeurons             = true;         /* Show neurons */
-        BindDrawMode    showBinds               = BDM_HIDDEN;   /* Bind draw mode */
-        bool            showLayer               = true;         /* SHow layer cover */
 
         string          storagePath             = "";
 
         int             forward                 = -1;
         int             backward                = -1;
-
-        int             count                   = 0;            /* Count fo neurons */
 
         ParamList*      actions                 = NULL;         /* List of actions for layer */
 
@@ -127,24 +69,15 @@ class Layer : public Object
 
         double*         values                  = NULL;
         double*         errors                  = NULL;
-        Point3d*        screen                  = NULL;
-        Point3d*        world                   = NULL;
-        bool*           selected                = NULL;
 
     public:
-
-        double          neuronDrawBox           = 0.1;          /* Neuron size in 3d space */
-        double          neuronDrawSize          = 6.0;          /* Neuron size in scerrn pixels */
-        Point3d         borderSize              = POINT_3D_I * 0.1;
-
-
 
         /*
             Constructor
         */
         Layer
         (
-            Log*,          /* Log object */
+            Limb*,          /* Limb object */
             string = ""     /* id */
         );
 
@@ -163,7 +96,7 @@ class Layer : public Object
         */
         static Layer* create
         (
-            Log*,          /* Log object */
+            Limb*,          /* Limb object */
             string = ""
         );
 
@@ -177,22 +110,20 @@ class Layer : public Object
 
 
         /*
-            Return index by point 3i at layer
+            Set neurons count and reallocate plans
         */
-        int indexByPos
+        virtual Layer* setCount
         (
-            const Point3i&
+            const int = 0 /* New count */
         );
 
 
 
+        /*
+            Return count of neurons in layer
+        */
+        int getCount();
 
-        Layer* noiseFor
-        (
-            Layer&,
-            double,  /* Minimum noise */
-            double   /* Maximum noise */
-        );
 
 
 
@@ -214,44 +145,13 @@ class Layer : public Object
 
 
 
-        /*
-            Clear values cache for all neurons
-        */
-        Layer* clearValuesCache();
-
-
-
-        /*
-            Clear errors cache for all neurons
-        */
-        Layer* clearErrorsCache();
-
-
-
-        /*
-            Clear screen points  for all neurons
-        */
-        Layer* clearScreen();
-
-
-
-        /*
-            Clear world points for all neurons
-        */
-        Layer* clearWorld();
-
-
-
-        /*
-            Clear world points for all neurons
-        */
-        Layer* clearSelected();
-
-
-
         /***********************************************************************
             Setters and getters
         */
+
+
+        Limb* getLimb();
+
 
 
         string getName();
@@ -287,26 +187,6 @@ class Layer : public Object
 
 
         /*
-            Set dimentions size
-        */
-        Layer* setSize
-        (
-            const Point3i& = POINT_3I_0
-        );
-
-
-
-        /*
-            Set dimentions size
-        */
-        Layer* setSize
-        (
-            ParamList*
-        );
-
-
-
-        /*
             Resize values plan
         */
         Layer* valuesCreate();
@@ -320,148 +200,22 @@ class Layer : public Object
 
 
 
-        /*
-            Resize world position plan
-        */
-        Layer* worldCreate();
-
-
-        /*
-            Resize screen position plan
-        */
-        Layer* screenCreate();
-
-
-
-        /*
-            Resize selected plan
-        */
-        Layer* selectedCreate();
-
-
-
-        /*
-            Set position
-        */
-        Layer* setPosition
-        (
-            ParamList*
-        );
-
-
-
-        Layer* setNeuronDrawBox
-        (
-            const double
-        );
-
-
-
-        Layer* setNeuronDrawSize
-        (
-            const double
-        );
-
-
-
-        Layer* setBorderSize
-        (
-            const Point3d&
-        );
-
-
-
-        Layer* setDrawSize
-        (
-            const Point3d&
-        );
-
-
-
-        Point3d& getDrawSize();
-
-
-
-        Layer* setDrawSize
-        (
-            ParamList*
-        );
-
-
-
-        Layer* setPointsRecalc
-        (
-            bool a
-        );
-
-
-
-
         bool getErrorChange();
 
 
 
         /*
-            Set loop parity for error and value
+            Calculate sum of neurons error
         */
-        Layer* setLoopParity
-        (
-            bool
-        );
+        double calcSumError();
 
 
 
         /*
-            Return list of neurons indexes in screen rect
+            Calculate sum of neurons value
         */
-        Layer* getNeuronsByScreenRect
-        (
-            NeuronList*,
-            Point3d&,       /* Top left point */
-            Point3d&        /* Bottom right point */
-        );
+        double calcSumValue();
 
-
-
-        /*
-            Return list of neurons around the screen poistion
-        */
-        Layer* getNeuronsByScreenPos
-        (
-            NeuronList*,        /* List of neurons */
-            const Point3d&,     /* Top left point */
-            const int           /* Screen radius */
-        );
-
-
-
-
-        Point3i getSize();
-
-
-
-        /*
-            Return count of neurons in layer
-        */
-        int getNeuronsCount();
-
-
-
-        BindDrawMode getShowBinds();
-
-
-
-        Layer* setShowBinds
-        (
-            BindDrawMode a
-        );
-
-
-        bool getShowLayer();
-
-
-        double getError();
-        double getValue();
 
 
         /*
@@ -513,13 +267,9 @@ class Layer : public Object
 
 
         /*
-            Return outer box size
+            Set buffer and size of values
         */
-        Point3d& getOuterBox();
-
-
-
-        Layer* valuesFromBuffer
+        Layer* setValuesFromBuffer
         (
             char*,
             size_t
@@ -528,7 +278,7 @@ class Layer : public Object
 
 
         /*
-            Return buffer and size of buffer of values
+            Return buffer and size of values
         */
         Layer* getValuesBuffer
         (
@@ -681,123 +431,6 @@ class Layer : public Object
 
 
 
-        /*
-            Set neuron world position
-        */
-        Layer* setNeuronWorld
-        (
-            int,            /* Index of neuron */
-            Point3d&        /* Value */
-        );
-
-
-
-        /*
-            Return neuron world position or default value
-        */
-        Point3d getNeuronWorld
-        (
-            int             /* Index of neuron */
-        );
-
-
-
-        /*
-            Set neuron screen position
-        */
-        Layer* setNeuronScreen
-        (
-            int,            /* Index of neuron */
-            Point3d&        /* Value */
-        );
-
-
-
-        /*
-            Return neuron screen position or default value
-        */
-        Point3d getNeuronScreen
-        (
-            int             /* Index of neuron */
-        );
-
-
-
-        /*
-            Set neuron selected
-        */
-        Layer* setNeuronSelected
-        (
-            int,            /* Index of neuron */
-            bool            /* Value */
-        );
-
-
-
-        /*
-            Return neuron selected or default value
-        */
-        Point3d getNeuronSelected
-        (
-            int             /* Index of neuron */
-        );
-
-
-
-        /**********************************************************************
-            UI
-        */
-
-        Layer* switchShowBinds();
-        Layer* switchShowLayer();
-
-
-        /*
-            Recalculate world position
-        */
-        Layer* neuronPointsCalc
-        (
-            bool
-        );
-
-
-
-
-        /**********************************************************************
-            Load valus
-        */
-
-
-
-        /*
-            Set bitmap to neurons
-        */
-        Layer* bitmapToValue
-        (
-            Bitmap*
-        );
-
-
-
-        /*
-            Load bitmap from source file name and set it
-        */
-        Layer* imageToValue
-        (
-            string  /* File name */
-        );
-
-
-
-
-        Layer* applyUuid
-        (
-            Hid
-        );
-
-
-
-        Layer* applyImage();
 
 
 
@@ -809,37 +442,17 @@ class Layer : public Object
 
 
         /*
-            Noise fill values of layer neurons
-        */
-        Layer* noiseValue
-        (
-            int,        /* Random seed */
-            double,     /* Min value */
-            double      /* Max value */
-        );
-
-
-
-        /* Move values and errors data to processor cache */
-        Layer* dataToCache();
-
-
-
-        /* Move values and errors from processor cache to data */
-        Layer* cacheToData();
-
-
-        /*
             Return the log object
         */
         Log* getLog();
 
 
 
-        bool compare
+        virtual bool compare
         (
             Layer*
         );
+
 
 
         /*
@@ -866,7 +479,4 @@ class Layer : public Object
             Return size of values buffer
         */
         size_t getValuesBufferSize();
-
 };
-
-

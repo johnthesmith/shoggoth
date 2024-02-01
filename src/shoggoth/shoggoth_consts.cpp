@@ -17,8 +17,6 @@ std::string actionToString
         case WRITE_VALUES   : return "WRITE_VALUES";
         case READ_ERRORS    : return "READ_ERRORS";
         case WRITE_ERRORS   : return "WRITE_ERRORS";
-        case READ_WEIGHTS   : return "READ_WEIGHTS";
-        case WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
         case SYNC_RESET     : return "SYNC_RESET";
     }
     return "ACTION_UNKNOWN";
@@ -38,8 +36,6 @@ Action stringToAction
     if( a == "WRITE_VALUES" )  return WRITE_VALUES;
     if( a == "READ_ERRORS" )   return READ_ERRORS;
     if( a == "WRITE_ERRORS" )  return WRITE_ERRORS;
-    if( a == "READ_WEIGHTS" )  return READ_WEIGHTS;
-    if( a == "WRITE_WEIGHTS" ) return WRITE_WEIGHTS;
     if( a == "SYNC_RESET" )    return SYNC_RESET;
     return ACTION_UNKNOWN;
 }

@@ -14,42 +14,63 @@
 #include <mutex>    /* For net sinchronization */
 
 #include "../../../../lib/core/log.h"
-#include "neuron.h"
-#include "nerve_list.h"
 #include "layer_list.h"
 
 
 
 /*
-    Lambda function for nerve weights loop
+    Lambda function for return parents neurons of child
 */
-typedef function
+typedef
+function
 <
     bool
     (
-        int,        /* Index of weight in a nerve */
-        Neuron*,    /* Neuron in tne parent layer */
-        Neuron*,    /* Neuron in the child layer*/
-        Nerve*      /* Nerve object */
+        Layer*, /* Layer with parent neurons */
+        int,    /* Neuron index*/
+        Nerve*, /* Nerve */
+        double, /* Weight of bind */
+        int     /* return weight index */
     )
 >
-IndexWeightLambda;
+parentsLambda;
+
+
+
+/*
+    Lambda function for return children neurons for parent
+*/
+typedef
+function
+<
+    bool
+    (
+        Layer*, /* return layer with children neurons */
+        int,    /* return child neuron index*/
+        Nerve*, /* return nerve */
+        double, /* return weight of bind */
+        int     /* return weight index */
+    )
+>
+childrenLambda;
+
 
 
 
 class Limb : public Result
 {
     private:
-        Log*        log         = NULL;
+        Log*            log         = NULL;
 
-        LayerList*  layers      = NULL;
-        NerveList*  nerves      = NULL;     /* List of nerves*/
+        LayerList*      layers      = NULL;
+        NerveList*      nerves      = NULL;     /* List of nerves*/
 
         /*
             Synchronization states
         */
         /* Net synchronization mutex */
-        mutex       sync;
+        recursive_mutex sync;
+        unsigned int    age         = 0;
 
     public:
 
@@ -147,8 +168,8 @@ class Limb : public Result
         */
         Limb* copyTo
         (
-            Limb*,          /* Destination */
-            bool = false    /* Need structure synchronize if structuires not equals */
+            Limb*,  /* Destination */
+            bool    /* Need structure synchronize if structuires not equals */
         );
 
 
@@ -170,14 +191,6 @@ class Limb : public Result
             Return list of nerves
         */
         NerveList* getNerveList();
-
-
-
-        bool nerveWeightLoop
-        (
-            NeuronList*,
-            IndexWeightLambda
-        );
 
 
 
@@ -221,6 +234,46 @@ class Limb : public Result
             Layer*          aLayer,     /* Layer */
             int             aIndex,     /* Neuron index */
             childrenLambda  aCallback   /* Callback method */
+        );
+
+
+        /**********************************************************************
+            Current age of the limbs config
+        */
+
+        /*
+            Increamet age of limb
+        */
+        Limb* incAge();
+
+
+        unsigned int getAge();
+
+
+        Limb* ageFrom
+        (
+            Limb*
+        );
+
+
+
+        /*
+            Copy list of layers
+        */
+        Limb* copyStructureFrom
+        (
+            LayerList*
+        );
+
+
+
+        /*
+            Create new layer for this limb and copy parameters from source layer.
+            This method have to overriden at children Limbs.
+        */
+        virtual Layer* copyLayerFrom
+        (
+            Layer* /* Source layer */
         );
 };
 

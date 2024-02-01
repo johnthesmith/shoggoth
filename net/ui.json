@@ -23,13 +23,18 @@
         },
         "_TASK_PROC":
         {
-            "enabled"           :false,
+            "enabled"           :true,
             "debug"             :false,
+            "loopSleepMcs"      :100,
             "learningMode"      :false,
             "learningSpeed"     :0.002,
             "wakeupWeight"      :0.0001,
             "errorNormalize"    :0.11,
-            "processorCount"    :1
+            "processorCount"    :1,
+            "listen":
+            {
+                "port"          :11120
+            }
         }
     }
 }

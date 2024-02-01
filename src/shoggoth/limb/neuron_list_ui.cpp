@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
 
-#include "neuron_list.h"
-#include "neuron.h"
+#include "neuron_list_ui.h"
+#include "neuron_ui.h"
 
 
 
@@ -13,9 +13,9 @@ using namespace std;
 /*
     Create and return list of neurons
 */
-NeuronList* NeuronList::create()
+NeuronListUi* NeuronListUi::create()
 {
-    return new NeuronList();
+    return new NeuronListUi();
 }
 
 
@@ -24,9 +24,9 @@ NeuronList* NeuronList::create()
 /*
     Add neurons from argument list to this list
 */
-NeuronList* NeuronList::add
+NeuronListUi* NeuronListUi::add
 (
-    NeuronList* a
+    NeuronListUi* a
 )
 {
     Heap::add(( Heap* ) a );
@@ -40,9 +40,9 @@ NeuronList* NeuronList::add
 /*
     Return index by neuron
 */
-int NeuronList::indexBy
+int NeuronListUi::indexBy
 (
-    Neuron* a
+    NeuronUi* a
 )
 {
     return Heap::indexBy(( void* ) a );
@@ -53,7 +53,7 @@ int NeuronList::indexBy
 /*
     Return index by layer and index at him
 */
-int NeuronList::indexBy
+int NeuronListUi::indexBy
 (
     Layer* aLayer, /* Layer object */
     int    aIndex /* Index in the layer */
@@ -69,7 +69,7 @@ int NeuronList::indexBy
         auto neuron = getByIndex( i );
         if
         (
-            neuron -> getLayer() == aLayer &&
+            ( Layer* ) ( neuron -> getLayer()) == aLayer &&
             neuron -> getIndex() == aIndex
         )
         {
@@ -87,12 +87,12 @@ int NeuronList::indexBy
 /*
     Return index by neuron
 */
-Neuron* NeuronList::getByIndex
+NeuronUi* NeuronListUi::getByIndex
 (
     int a
 )
 {
-    return ( Neuron* )Heap::getByIndex( a );
+    return ( NeuronUi* )Heap::getByIndex( a );
 }
 
 
@@ -101,10 +101,10 @@ Neuron* NeuronList::getByIndex
 /*
     Set value by index
 */
-NeuronList* NeuronList::setByIndex
+NeuronListUi* NeuronListUi::setByIndex
 (
     int aIndex,
-    Neuron* aNeuron
+    NeuronUi* aNeuron
 )
 {
     Heap::setByIndex(aIndex, ( void* ) aNeuron );
@@ -116,7 +116,7 @@ NeuronList* NeuronList::setByIndex
 /*
     Resize
 */
-NeuronList* NeuronList::resize
+NeuronListUi* NeuronListUi::resize
 (
     int a
 )
@@ -130,9 +130,9 @@ NeuronList* NeuronList::resize
 /*
     Loop with lyambda
 */
-NeuronList* NeuronList::loop
+NeuronListUi* NeuronListUi::loop
 (
-    function <bool ( Neuron* )> callback,
+    function <bool ( NeuronUi* )> callback,
     int aFrom,
     int aTo
 )
@@ -143,7 +143,7 @@ NeuronList* NeuronList::loop
 
     for( int i = aFrom; i < c && !stop; i++ )
     {
-        stop = callback(( Neuron* ) items[ i ] );
+        stop = callback(( NeuronUi* ) items[ i ] );
     }
     return this;
 }
@@ -153,13 +153,13 @@ NeuronList* NeuronList::loop
 /*
     Calculate average value
 */
-double NeuronList::calcAvgValue()
+double NeuronListUi::calcAvgValue()
 {
     double sum = 0;
     loop
     (
         [ &sum ]
-        ( Neuron* aNeuron )
+        ( NeuronUi* aNeuron )
         {
             sum += aNeuron -> getValue();
             return false;
@@ -173,13 +173,13 @@ double NeuronList::calcAvgValue()
 /*
     Calculate average error
 */
-double NeuronList::calcAvgError()
+double NeuronListUi::calcAvgError()
 {
     double sum = 0;
     loop
     (
         [ &sum ]
-        ( Neuron* aNeuron )
+        ( NeuronUi* aNeuron )
         {
             sum += aNeuron -> getError();
             return false;
@@ -195,9 +195,9 @@ double NeuronList::calcAvgError()
     Each elemento of Argument heap will add to This heap
     if it not exists in This
 */
-NeuronList* NeuronList::merge
+NeuronListUi* NeuronListUi::merge
 (
-    NeuronList* a
+    NeuronListUi* a
 )
 {
     Heap::merge
@@ -206,10 +206,10 @@ NeuronList* NeuronList::merge
         [ this ]
         ( void* aItem )
         {
-            auto item = ( Neuron* ) aItem;
+            auto item = ( NeuronUi* ) aItem;
             return indexBy
             (
-                item -> getLayer(),
+                ( Layer* ) ( item -> getLayer()),
                 item -> getIndex()
             ) < 0;
         }
@@ -222,9 +222,9 @@ NeuronList* NeuronList::merge
 /*
     From this remove all Neurons in Argument
 */
-NeuronList* NeuronList::remove
+NeuronListUi* NeuronListUi::remove
 (
-    NeuronList* a
+    NeuronListUi* a
 )
 {
     Heap::remove
@@ -232,10 +232,10 @@ NeuronList* NeuronList::remove
         [ this, &a ]
         ( void* aItem )
         {
-            auto item = ( Neuron* ) aItem;
+            auto item = ( NeuronUi* ) aItem;
             return a -> indexBy
             (
-                item -> getLayer(),
+                ( Layer* ) ( item -> getLayer()),
                 item -> getIndex()
             ) >= 0;
         }

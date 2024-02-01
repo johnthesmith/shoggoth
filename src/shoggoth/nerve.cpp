@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "nerve.h"
 
 #include "../../../../lib/core/rnd.h"
@@ -30,15 +32,10 @@ Nerve::Nerve
 
     /* Connect */
     getLog()
-    -> begin( "Layer connecting" )
+    -> trace( "Layer connecting" )
     -> prm( "from", parent -> getNameOrId() )
     -> prm( "to", child -> getNameOrId() )
     -> lineEnd();
-
-    getLog()
-    -> trace( "" )
-    -> prm( "Binds count", weightsCount )
-    -> end();
 }
 
 
@@ -125,8 +122,8 @@ Nerve* Nerve::allocate()
 {
     purge();
 
-    int cFrom   = parent -> getNeuronsCount();
-    int cTo     = child -> getNeuronsCount();
+    int cFrom   = parent -> getCount();
+    int cTo     = child -> getCount();
 
     /* Calculate new buffer size */
     switch( nerveType )
@@ -143,6 +140,10 @@ Nerve* Nerve::allocate()
 
     /* Create buffer */
     weights = new double[ weightsCount ];
+
+    getLog()
+    -> trace( "Memory allocated" )
+    -> prm( "Binds count", weightsCount );
 
     return this;
 }
@@ -275,11 +276,11 @@ int Nerve::getParentByWeightIndex
     switch( nerveType )
     {
         case ALL_TO_ALL:
-            iParent = aIndex % parent -> getNeuronsCount();
+            iParent = aIndex % parent -> getCount();
         break;
         case ONE_TO_ONE:
-            double cp = parent -> getNeuronsCount();
-            double cc = child -> getNeuronsCount();
+            double cp = parent -> getCount();
+            double cc = child -> getCount();
             double m = max( cp, cc );
             iParent = ( int ) ( cp  / m * aIndex );
         break;
@@ -303,11 +304,11 @@ int Nerve::getChildByWeightIndex
     switch( nerveType )
     {
         case ALL_TO_ALL:
-            iChild = aIndex / parent -> getNeuronsCount();
+            iChild = aIndex / parent -> getCount();
         break;
         case ONE_TO_ONE:
-            double cp = parent -> getNeuronsCount();
-            double cc = child -> getNeuronsCount();
+            double cp = parent -> getCount();
+            double cc = child -> getCount();
             double m = max( cp, cc );
             iChild = ( int ) ( cc / m * aIndex );
         break;
@@ -367,12 +368,12 @@ Nerve* Nerve::getWeightsRangeByChildIndex
     switch( nerveType )
     {
         case ALL_TO_ALL:
-            aFrom = aIndex * parent-> getNeuronsCount();
-            aTo = aFrom + parent-> getNeuronsCount();
+            aFrom = aIndex * parent-> getCount();
+            aTo = aFrom + parent-> getCount();
         break;
         case ONE_TO_ONE:
-            double cp = parent -> getNeuronsCount();
-            double cc = child -> getNeuronsCount();
+            double cp = parent -> getCount();
+            double cc = child -> getCount();
             double m = max( cp, cc );
             aFrom = (int) ceil( aIndex * m / cc );
             aTo = (int) ceil(( aIndex + 1 ) * m / cc );
@@ -398,12 +399,12 @@ Nerve* Nerve::getWeightsRangeByParentIndex
     {
         case ALL_TO_ALL:
             aFrom = aIndex;
-            aTo = weightsCount - parent-> getNeuronsCount() + aIndex + 1;
-            aStep = parent -> getNeuronsCount();
+            aTo = weightsCount - parent-> getCount() + aIndex + 1;
+            aStep = parent -> getCount();
         break;
         case ONE_TO_ONE:
-            double cp = parent -> getNeuronsCount();
-            double cc = child -> getNeuronsCount();
+            double cp = parent -> getCount();
+            double cc = child -> getCount();
             double m = max( cp, cc );
             aFrom = (int) ceil( aIndex * m / cp );
             aTo = (int) ceil(( aIndex + 1 ) * m / cp );

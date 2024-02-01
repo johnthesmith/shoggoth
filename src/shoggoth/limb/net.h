@@ -3,6 +3,19 @@
     Its works like synchronizer between other limbs
 */
 
+
+
+
+/*
+TODO
+-> setDrawSize( aParams )
+-> getObject()
+-> setPosition( aParams )
+*/
+
+
+
+
 #pragma once
 
 
@@ -24,6 +37,7 @@ class Net: public Limb
 
         Application*    application     = NULL;     /* The application object */
         SockManager*    sockManager     = NULL;     /* Socket manager object */
+        ParamList*      config          = NULL;     /* Last net config after IO */
 
         /* Events */
         string          ptu             = "***";    /* Roles of the Net in PTU */
@@ -252,16 +266,6 @@ class Net: public Limb
 
 
 
-        /*
-            Load layer from net.layers section
-        */
-        Layer* loadLayerFromConfig
-        (
-            string,
-            ParamList*
-        );
-
-
 
         /*
             Remove layers absent in the list
@@ -281,16 +285,6 @@ class Net: public Limb
 
 
         /*
-            Main event handler
-        */
-        Net* event
-        (
-            Event
-        );
-
-
-
-        /*
             Create roles strung of the process in ptu format
             P - process uses as processor
             T - process uses as teacher
@@ -298,9 +292,6 @@ class Net: public Limb
         */
         Net* buildPtuAndTasks();
 
-
-
-// TODO for remove        bool isNextLoop();
 
 
         Net* setCalcDebug
@@ -315,6 +306,36 @@ class Net: public Limb
         int getCalcLayerIndex();
 
 
+
+        /*
+            Return socket manager object
+        */
         SockManager* getSockManager();
+
+
+
+        /*
+            Return config of the net
+        */
+        ParamList* getConfig();
+
+
+
+        /*
+            Swap layers between net and other participants for actions
+        */
+        Net* swapValuesAndErrors
+        (
+            Actions, /* Action list for participant */
+            Task,    /* Task (role) of participant */
+            Limb*    /* Participant */
+        );
+
+
+
+        Net* syncToLimb
+        (
+            Limb* targetLimb
+        );
 };
 

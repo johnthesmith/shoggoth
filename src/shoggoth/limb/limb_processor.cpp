@@ -1,7 +1,16 @@
+// TODO необходимо найти место методу
+// После изменения состояния сети
+/* Build layers calculation sequence list */
+
+
+
+
+
+#include <cmath>
+
 #include "limb_processor.h"
 
 #include "../func.h"
-#include "../neuron.h"
 
 #include "../../../../../lib/core/math.h"
 
@@ -16,8 +25,9 @@ LimbProcessor::LimbProcessor
 )
 :Limb( aNet -> getLog() )
 {
-    forwardList     = LayerList::create( aNet -> getLog() );
-    backwardList    = LayerList::create( aNet -> getLog() );
+    net             = aNet;
+    forwardList     = LayerList::create( this );
+    backwardList    = LayerList::create( this );
 }
 
 
@@ -110,6 +120,7 @@ CalcStage LimbProcessor::getCalcStage
 )
 {
     CalcStage result = CALC_UNKNOWN;
+
     getLayerList() -> loop
     (
         [ this,  &result, &aDirection ]
@@ -192,7 +203,7 @@ bool LimbProcessor::preparedParents
 )
 {
     bool result = true;
-    auto parents = LayerList::create( getLog() );
+    auto parents = LayerList::create( this );
     getNerveList() -> getParentsByLayer( aLayer, parents );
     parents -> loop
     (
@@ -220,7 +231,7 @@ bool LimbProcessor::preparedChildren
 )
 {
     bool result = true;
-    auto children = LayerList::create( getLog() );
+    auto children = LayerList::create( this );
     getNerveList() -> getChildrenByLayer( aLayer, children );
 
     children -> loop
@@ -246,10 +257,19 @@ LimbProcessor* LimbProcessor::calc()
 {
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
+        /* Check structure with net */
+        net -> syncToLimb( this );
+        /* Upload start values from Net */
+        net -> swapValuesAndErrors
+        (
+            Actions{ READ_VALUES }, /* Actions */
+            TASK_PROC,   /* Role */
+            this         /* Participant object */
+        );
         /* Reset calc stages for all layers */
         calcReset();
-        /* Event */
-        // event( THINKING_BEGIN );
+        /* Fill forward and backward list */
+        precalc();
     }
 
     Layer* layer = NULL;
@@ -337,9 +357,16 @@ LimbProcessor* LimbProcessor::calc()
                 calcLayerIndex++;
             }
 
+            /* Finish calculating */
             if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
             {
-                // event( LEARNING_END );
+                /* Load values and errors to net */
+                net -> swapValuesAndErrors
+                (
+                    { WRITE_VALUES, WRITE_ERRORS }, /* Action */
+                    TASK_PROC,   /* Role */
+                    this         /* Participant object */
+                );
             }
         }
 
@@ -712,6 +739,7 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         );
     }
 
+
     if( countSample > 0 )
     {
         aLayer -> setNeuronError
@@ -904,7 +932,7 @@ int LimbProcessor::calcNeuronFrom
 {
     return floor
     (
-        (double) aLayer -> getNeuronsCount() * (double) aNumber / (double) threadCount
+        (double) aLayer -> getCount() * (double) aNumber / (double) threadCount
     );
 }
 
@@ -921,16 +949,6 @@ int LimbProcessor::calcNeuronTo
 {
     return calcNeuronFrom( aLayer, aNumber + 1 );
 }
-
-
-
-
-// TODO необходимо найти место методу
-// После изменения состояния сети
-/* Build layers calculation sequence list */
-// precalc();
-
-
 
 
 

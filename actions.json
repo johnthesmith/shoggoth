@@ -10,7 +10,7 @@
     },
     "**U":
     {
-        "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ]
+        "LOOP_BEGIN"    :[ "READ_VALUES", "READ_ERRORS" ]
     },
     "P*U":
     {
@@ -22,7 +22,7 @@
     },
     "*TU":
     {
-        "TEACHER_BEGIN" :[ "READ_VALUES", "READ_ERRORS", "READ_WEIGHTS" ],
+        "TEACHER_BEGIN" :[ "READ_VALUES", "READ_ERRORS" ],
         "TEACHER_END"   :[ "WRITE_VALUES" ]
     },
     "PTU":

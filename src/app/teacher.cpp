@@ -23,6 +23,8 @@ Teacher::Teacher
 : Payload( aNet -> getApplication() )
 {
     getLog() -> trace( "Create teacher" );
+
+    limb = LimbTeacher::create( aNet );
     batches = ParamList::create();
 }
 
@@ -33,6 +35,7 @@ Teacher::Teacher
 */
 Teacher::~Teacher()
 {
+    limb -> destroy();
     batches -> destroy();
     getLog() -> trace( "Teacher destroyd" );
 }
@@ -121,6 +124,9 @@ ParamList* Teacher::getBatches()
 
 
 
+
+
+
 /*
     Fill layer with values
 */
@@ -129,23 +135,28 @@ Teacher* Teacher::cmdValueToLayer
     ParamList* a
 )
 {
-//    auto layerId = a -> getString( "layer" );
-//    auto layer = localNet -> getLayers() -> getById( layerId );
-//    if( layer != NULL )
-//    {
-//        layer -> noiseValue
-//        (
-//            a -> getInt( "seed", 0 ),
-//            a -> getDouble( "min", 0.0 ),
-//            a -> getDouble( "max", 1.0 )
-//        );
-//    }
-//    else
-//    {
-//        getLog()
-//        -> warning( "Layer not found" )
-//        -> prm( "id", layerId );
-//    }
+    limb -> lock();
+
+    auto layerId = a -> getString( "layer" );
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        layer -> noiseValue
+        (
+            a -> getInt( "seed", 0 ),
+            a -> getDouble( "min", 0.0 ),
+            a -> getDouble( "max", 1.0 )
+        );
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
+    }
+
+    limb -> unlock();
+
     return this;
 }
 
@@ -159,26 +170,29 @@ Teacher* Teacher::cmdImageToLayer
     ParamList* a
 )
 {
-//    auto layerId = a -> getString( "layer" );
-//    auto layer = localNet -> getLayers() -> getById( layerId );
-//    if( layer != NULL )
-//    {
-//        auto files = a -> getObject( "files" );
-//        if( files != NULL )
-//        {
-//            auto file = files -> getRnd() -> getString();
-//            if( file != "" )
-//            {
-//                layer -> imageToValue( file );
-//            }
-//        }
-//    }
-//    else
-//    {
-//        getLog()
-//        -> warning( "Layer not found" )
-//        -> prm( "id", layerId );
-//    }
+    auto layerId = a -> getString( "layer" );
+
+    limb -> lock();
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        auto files = a -> getObject( "files" );
+        if( files != NULL )
+        {
+            auto file = files -> getRnd() -> getString();
+            if( file != "" )
+            {
+                layer -> imageToValue( file );
+            }
+        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
+    }
+    limb -> unlock();
     return this;
 }
 
@@ -192,28 +206,31 @@ Teacher* Teacher::cmdFolderToLayer
     ParamList* a
 )
 {
-//    auto layerId = a -> getString( "layer" );
-//    auto layer = localNet -> getLayers() -> getById( layerId );
-//    if( layer != NULL )
-//    {
-//        auto folder = a -> getString( "folder", "" );
-//        if( folder != "" )
-//        {
-//            auto files = ParamList::create() -> filesFromPath( folder );
-//            auto file = files -> getRnd();
-//            if( file != NULL )
-//            {
-//                layer -> imageToValue( folder +  "/" + file -> getString() );
-//            }
-//            files -> destroy();
-//        }
-//    }
-//    else
-//    {
-//        getLog()
-//        -> warning( "Layer not found" )
-//        -> prm( "id", layerId );
-//    }
+    auto layerId = a -> getString( "layer" );
+
+    limb -> lock();
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        auto folder = a -> getString( "folder", "" );
+        if( folder != "" )
+        {
+            auto files = ParamList::create() -> filesFromPath( folder );
+            auto file = files -> getRnd();
+            if( file != NULL )
+            {
+                layer -> imageToValue( folder +  "/" + file -> getString() );
+            }
+            files -> destroy();
+        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Layer not found" )
+        -> prm( "id", layerId );
+    }
+    limb -> unlock();
     return this;
 }
 
@@ -230,89 +247,109 @@ Teacher* Teacher::cmdFolderToLayer
 */
 void Teacher::onLoop()
 {
-//    getLog() -> begin( "Check error level" );
-//
-//    localNet -> event( TEACHER_BEGIN );
-//
-//    /* Retrive error layer by id */
-//    auto errorLayer = localNet -> getLayers() -> getById( idErrorLayer );
-//
-//    if( errorLayer != NULL )
-//    {
-//        auto error = errorLayer -> getValue();
-//
-//        getLog()
-//        -> trace( "Compare" )
-//        -> prm( "error", error )
-//        -> prm( "error limit", errorLimit )
-//        ;
-//
-//        /* Check error limit */
-//        if( error <= errorLimit )
-//        {
-//            /* Check new batch */
-//            getLog() -> begin( "New batch" );
-//
-//            auto item = batches -> getRnd();
-//            if( item != NULL && item -> isObject() )
-//            {
-//                /* Batch precessing */
-//                auto batch = item -> getObject();
-//                batch -> loop
-//                (
-//                    [ this ]
-//                    ( Param* aParam )
-//                    {
-//                        auto obj = aParam -> getObject();
-//                        if( obj != NULL )
-//                        {
-//                            auto command = obj -> getString( "cmd" );
-//                            getLog()
-//                            -> begin( "Command" )
-//                            -> prm( "cmd", command );
-//                            ParamListLog::dump( getLog(), obj, "Arguments" );
-//                            switch( stringToTeacherTask( command ))
-//                            {
-//                                case TEACHER_CMD_VALUE_TO_LAYER:
-//                                    cmdValueToLayer( obj );
-//                                break;
-//                                case TEACHER_CMD_IMAGE_TO_LAYER:
-//                                    cmdImageToLayer( obj );
-//                                break;
-//                                case TEACHER_CMD_FOLDER_TO_LAYER:
-//                                    cmdFolderToLayer( obj );
-//                                break;
-//                                case TEACHER_CMD_GUID_TO_LAYER:
-//                                break;
-//                                case TEACHER_CMD_HID_TO_LAYER:
-//                                break;
-//                                default:
-//                                    getLog() -> warning( "Unknown command" );
-//                                break;
-//                            }
-//                            getLog() -> end();
-//                        }
-//                        return false;
-//                    }
-//                );
-//                localNet -> event( TEACHER_END );
-//            }
-//            else
-//            {
-//                getLog() -> warning( "Batch is not a object" );
-//            }
-//            getLog() -> end();
-//        }
-//        else
-//        {
-//            getLog() -> trace( "Hight error rate" );
-//        }
-//    }
-//    else
-//    {
-//        getLog()
-//        -> warning( "Error layer not found" )
-//        -> prm( "id", idErrorLayer );
-//    }
-//    getLog() -> end();
+    getLog() -> begin( "Check error level" );
+
+    /* Prepare Limb */
+    limb -> getNet()
+    -> syncToLimb( limb )
+    -> swapValuesAndErrors
+    (
+        Actions{ READ_VALUES }, /* Action */
+        TASK_TEACHER,           /* Role */
+        limb                    /* Destination participant object */
+    );
+
+    limb -> lock();
+
+    /* Retrive error layer by id */
+    auto errorLayer = limb -> getLayerById( idErrorLayer );
+
+    if( errorLayer != NULL )
+    {
+        auto error = errorLayer -> calcSumValue();
+
+        getLog()
+        -> trace( "Compare" )
+        -> prm( "error", error )
+        -> prm( "error limit", errorLimit )
+        ;
+
+        /* Check error limit */
+        if( error <= errorLimit )
+        {
+            /* Check new batch */
+            getLog() -> begin( "New batch" );
+
+            auto item = batches -> getRnd();
+            if( item != NULL && item -> isObject() )
+            {
+                /* Batch precessing */
+                auto batch = item -> getObject();
+                batch -> loop
+                (
+                    [ this ]
+                    ( Param* aParam )
+                    {
+                        auto obj = aParam -> getObject();
+                        if( obj != NULL )
+                        {
+                            auto command = obj -> getString( "cmd" );
+                            getLog()
+                            -> begin( "Command" )
+                            -> prm( "cmd", command );
+                            ParamListLog::dump( getLog(), obj, "Arguments" );
+                            switch( stringToTeacherTask( command ))
+                            {
+                                case TEACHER_CMD_VALUE_TO_LAYER:
+                                    cmdValueToLayer( obj );
+                                break;
+                                case TEACHER_CMD_IMAGE_TO_LAYER:
+                                    cmdImageToLayer( obj );
+                                break;
+                                case TEACHER_CMD_FOLDER_TO_LAYER:
+                                    cmdFolderToLayer( obj );
+                                break;
+                                case TEACHER_CMD_GUID_TO_LAYER:
+                                break;
+                                case TEACHER_CMD_HID_TO_LAYER:
+                                break;
+                                default:
+                                    getLog() -> warning( "Unknown command" );
+                                break;
+                            }
+                            getLog() -> end();
+                        }
+                        return false;
+                    }
+                );
+
+                /* Load values and errors to net */
+                limb -> getNet() -> swapValuesAndErrors
+                (
+                    { WRITE_VALUES, WRITE_ERRORS }, /* Action */
+                    TASK_TEACHER,   /* Role */
+                    limb /* Participant object */
+                );
+            }
+            else
+            {
+                getLog() -> warning( "Batch is not a object" );
+            }
+            getLog() -> end();
+        }
+        else
+        {
+            getLog() -> trace( "Hight error rate" );
+        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Error layer not found" )
+        -> prm( "id", idErrorLayer );
+    }
+
+    limb -> unlock();
+
+    getLog() -> end();
 }

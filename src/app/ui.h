@@ -1,7 +1,7 @@
 #pragma once
 
 /* Local libraries */
-#include "../../../../lib/graph/scene_payload.h"
+ #include "../../../../lib/graph/scene_payload.h"
 #include "../../../../lib/graph/camera.h"
 #include "../shoggoth/layer.h"
 #include "../shoggoth/limb/limb_ui.h"

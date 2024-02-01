@@ -218,7 +218,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeValues
 
             if( validate( buffer != NULL, "DataIsEmpty", aResults ))
             {
-                layer -> valuesFromBuffer( buffer, size );
+                layer -> setValuesFromBuffer( buffer, size );
                 /* Return positive answer */
                 setAnswerResult( aResults, "ok" );
             }

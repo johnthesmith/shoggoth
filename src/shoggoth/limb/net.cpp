@@ -2,7 +2,6 @@
 
 #include "../io.h"
 #include "../shoggoth_consts.h"
-#include "../neuron.h"
 #include "../../../../../lib/json/param_list_file.h"
 #include "../../../../../lib/json/param_list_log.h"
 
@@ -25,6 +24,7 @@ Net::Net
     /* Read actions */
     actions = ParamListFile::create() -> fromJsonFile( "actions.json" );
     tasks = ParamList::create();
+    config = ParamList::create();
 }
 
 
@@ -35,6 +35,9 @@ Net::Net
 */
 Net::~Net()
 {
+    /* Config object clear and destroy */
+    config -> destroy();
+
     /* Clear layers lists */
     tasks -> destroy();
 
@@ -189,7 +192,7 @@ Net* Net::readValues
         size_t size = 0;
 
         io -> getAnswer() -> getData( "data", buffer, size );
-        aLayer -> valuesFromBuffer( buffer, size );
+        aLayer -> setValuesFromBuffer( buffer, size );
 
         getLog()
         -> trace( "Read layer values" )
@@ -482,129 +485,134 @@ Net* Net::readNet()
     getLog() -> begin( "Read net" );
 
     /* Read net */
-    ParamList* json = NULL;
     auto io = Io::create( this );
-    if( io -> call( CMD_READ_NET ) -> isOk() )
+    if
+    (
+        io -> call( CMD_READ_NET ) -> isOk() &&
+        io -> getAnswer() != NULL
+    )
     {
-        json = io -> getAnswer();
-        /* Apply net */
-        if( json != NULL )
+        config -> copyFrom( io -> getAnswer() );
+
+        buildPtuAndTasks();
+
+        auto configLayers = config -> getObject( "layers" );
+
+        if( configLayers != NULL )
         {
-            buildPtuAndTasks();
+            /* Remove layers absents in the use list */
+            purgeLayers( configLayers );
 
-            auto configLayers = json -> getObject( "layers" );
-
-            if( configLayers != NULL )
-            {
-                /* Remove layers absents in the use list */
-                purgeLayers( configLayers );
-
-                /* Create layers */
-                configLayers -> loop
+            /* Create layers */
+            configLayers -> loop
+            (
+                [ this, &configLayers ]
                 (
-                    [ this, &configLayers ]
-                    (
-                        Param* iParam
-                    )
-                    {
-                        /* Create layer if its in used list */
-                        auto used = iParam
-                        -> getObject()
-                        -> getObject( "used" );
+                    Param* iParam
+                )
+                {
+                    /* Create layer if its in used list */
+                    auto used = iParam
+                    -> getObject()
+                    -> getObject( "used" );
 
-                        if( used != NULL && used -> isIntersect( tasks ))
+                    if( used != NULL && used -> isIntersect( tasks ))
+                    {
+                        auto layerId = iParam -> getName();
+                        auto layer = createLayer( layerId );
+                        loadLayer( layer, iParam -> getObject() );
+                        layer -> setStoragePath( storagePath );
+                    }
+                    return false;
+                }
+            );
+
+            /* Nerves */
+            auto jsonNerves = config -> getObject( "nerves" );
+            if( jsonNerves != NULL )
+            {
+                auto layers = getLayerList();
+                auto nerves = getNerveList();
+                jsonNerves -> loop
+                (
+                    [ this, &layers, &nerves ]
+                    ( Param* aItem )
+                    {
+                        /* Check the json layer */
+                        if( aItem -> getType() == KT_OBJECT )
                         {
-                            auto layerId = iParam -> getName();
-                            auto layer = createLayer( layerId )
-                            -> setStoragePath( storagePath );
-                            loadLayerFromConfig( layerId, configLayers );
+                            auto jsonNerve      = aItem -> getObject();
+                            auto idFrom         = jsonNerve -> getString( "idFrom" );
+                            auto idTo           = jsonNerve -> getString( "idTo" );
+                            auto bindType       = Nerve::bindTypeFromString( jsonNerve -> getString( "bindType" ));
+                            auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
+                            auto nerveDelete    = jsonNerve -> getBool( "delete" );
+
+                            /* Find the layers */
+                            auto from = layers -> getById( idFrom );
+                            auto to = layers -> getById( idTo );
+
+                            if( from != NULL && to != NULL )
+                            {
+                                auto nerve = nerves -> find
+                                (
+                                    idFrom,
+                                    idTo,
+                                    bindType
+                                );
+                                if
+                                (
+                                    nerve != NULL &&
+                                    (
+                                        nerve -> getParent() != from ||
+                                        nerve -> getChild() != to ||
+                                        nerve -> getBindType() != bindType ||
+                                        nerve -> getNerveType() != nerveType ||
+                                        nerveDelete
+                                    )
+                                )
+                                {
+                                    deleteNerve( nerve );
+                                    nerve = NULL;
+                                }
+
+                                if( nerve == NULL && !nerveDelete )
+                                {
+                                    createNerve
+                                    (
+                                        from,
+                                        to,
+                                        nerveType,
+                                        bindType
+                                    )
+                                    -> allocate()
+                                    -> fill
+                                    (
+                                        jsonNerve -> getDouble( "minWeight", 1.0 ),
+                                        jsonNerve -> getDouble( "maxWeight", 1.0 )
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                getLog()
+                                -> info( "Layers not found for nerve" )
+                                -> prm( "idFrom", idFrom )
+                                -> prm( "idTo", idTo )
+                                ;
+                            }
                         }
                         return false;
                     }
                 );
-
-                /* Nerves */
-                auto jsonNerves = json -> getObject( "nerves" );
-                if( jsonNerves != NULL )
-                {
-                    auto layers = getLayerList();
-                    auto nerves = getNerveList();
-                    jsonNerves -> loop
-                    (
-                        [ this, &layers, &nerves ]
-                        ( Param* aItem )
-                        {
-                            /* Check the json layer */
-                            if( aItem -> getType() == KT_OBJECT )
-                            {
-                                auto jsonNerve      = aItem -> getObject();
-                                auto idFrom         = jsonNerve -> getString( "idFrom" );
-                                auto idTo           = jsonNerve -> getString( "idTo" );
-                                auto bindType       = Nerve::bindTypeFromString( jsonNerve -> getString( "bindType" ));
-                                auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
-                                auto nerveDelete    = jsonNerve -> getBool( "delete" );
-
-                                /* Find the layers */
-                                auto from = layers -> getById( idFrom );
-                                auto to = layers -> getById( idTo );
-
-                                if( from != NULL && to != NULL )
-                                {
-                                    auto nerve = nerves -> find
-                                    (
-                                        idFrom,
-                                        idTo,
-                                        bindType
-                                    );
-                                    if
-                                    (
-                                        nerve != NULL &&
-                                        (
-                                            nerve -> getParent() != from ||
-                                            nerve -> getChild() != to ||
-                                            nerve -> getBindType() != bindType ||
-                                            nerve -> getNerveType() != nerveType ||
-                                            nerveDelete
-                                        )
-                                    )
-                                    {
-                                        deleteNerve( nerve );
-                                        nerve = NULL;
-                                    }
-
-                                    if( nerve == NULL && !nerveDelete )
-                                    {
-                                        createNerve
-                                        (
-                                            from,
-                                            to,
-                                            nerveType,
-                                            bindType
-                                        )
-                                        -> allocate()
-                                        -> fill
-                                        (
-                                            jsonNerve -> getDouble( "minWeight", 1.0 ),
-                                            jsonNerve -> getDouble( "maxWeight", 1.0 )
-                                        );
-                                    }
-                                }
-                                else
-                                {
-                                    getLog()
-                                    -> info( "Layers not found for nerve" )
-                                    -> prm( "idFrom", idFrom )
-                                    -> prm( "idTo", idTo )
-                                    ;
-                                }
-                            }
-                            return false;
-                        }
-                    );
-                }
             }
-            event( READ_NET );
         }
+
+        /*
+            Next age for net
+            Other limbs can reload values and errors
+        */
+        incAge();
     }
     io -> destroy();
 
@@ -689,72 +697,31 @@ Net* Net::loadLayer
         else
         {
             /* Set event actions */
+
             aLayer
             -> getActions()
             -> copyFrom( aParams -> getObject( "actions" ) );
+
             /* Set Size from params */
             auto paramsSize = aParams -> getObject( "size" );
             if( paramsSize != NULL )
             {
-                auto newSize = Point3i
-                (
-                    paramsSize -> getInt( 0 ),
-                    paramsSize -> getInt( 1 ),
-                    paramsSize -> getInt( 2 )
-                );
+                auto newCount =
+                paramsSize -> getInt( 0 ) *
+                paramsSize -> getInt( 1 ) *
+                paramsSize -> getInt( 2 );
 
-                if( newSize != aLayer -> getSize() )
+                /* Remove nerves for size changed layer */
+                if( newCount != aLayer -> getCount() )
                 {
                     getNerveList() -> removeByLayer( aLayer );
                 }
-
                 /* Update layer */
-                aLayer
-                -> setSize( aParams )
-                -> setPosition( aParams )
-                -> setDrawSize( aParams )
-                ;
+                aLayer -> setCount( newCount );
             }
         }
-
     }
     return this;
-}
-
-
-
-/*
-    Load layer from net.layers section
-*/
-Layer* Net::loadLayerFromConfig
-(
-    string aLayerId,    /* ID of the layer */
-    ParamList* aParams  /* Param list with layer's parameters */
-)
-{
-    Layer* result = NULL;
-    if( aParams != NULL )
-    {
-        if( this -> isOk() )
-        {
-            auto params = aParams -> getObject( aLayerId );
-            if( params )
-            {
-                result = createLayer( aLayerId );
-                loadLayer( result, params );
-            }
-            else
-            {
-                getLog() -> warning( "Layer not found" ) -> prm( "id", aLayerId  );
-                setCode( "LayerIdNotFound" );
-            }
-        }
-    }
-    else
-    {
-        setCode( "ParamsIsEmptyForLayer" );
-    }
-    return result;
 }
 
 
@@ -767,6 +734,7 @@ Net* Net::purgeLayers
     ParamList* aLayers  /* List from config */
 )
 {
+    lock();
     /* Build pure list */
     vector <string> purgeList = {};
     getLayerList() -> loop
@@ -790,6 +758,8 @@ Net* Net::purgeLayers
     {
         deleteLayer( purgeList[ i ] );
     }
+
+    unlock();
     return this;
 }
 
@@ -849,87 +819,6 @@ Net* Net::buildPtuAndTasks()
 
 
 /*
-    Main event handler
-*/
-Net* Net::event
-(
-    Event aEvent
-)
-{
-    getLog()
-    -> begin( "Neural net event" )
-    -> prm( "name", eventToString( aEvent ))
-    -> prm( "ptu", ptu )
-    -> lineEnd()
-    ;
-
-    if( actions -> isOk() )
-    {
-        auto actionsList = actions -> getObject
-        (
-            Path{ ptu, eventToString( aEvent ) }
-        );
-        if( actionsList != NULL )
-        {
-            auto layers = getLayerList();
-            auto nerves = getNerveList();
-            actionsList -> loop
-            (
-                [ this, &layers, &nerves ]
-                ( Param* aParam)
-                {
-                    switch( stringToAction( aParam -> getString()))
-                    {
-                        case READ_VALUES    :readValuesList( tasks ); break;
-                        case WRITE_VALUES   :writeValuesList( tasks ); break;
-                        case READ_ERRORS    :readErrorsList( tasks ); break;
-                        case WRITE_ERRORS   :writeErrorsList( tasks ); break;
-                        case READ_WEIGHTS   :readWeightsList(); break;
-                        case WRITE_WEIGHTS  :writeWeightsList(); break;
-//                        case SYNC_RESET     :calcReset(); break;
-                    }
-                    return false;
-                }
-            );
-        }
-    }
-    else
-    {
-        getLog()
-        -> warning( "Actions Is Empty with error" )
-        -> prm( "code",  actions -> getCode());
-    }
-
-    getLog()
-    -> end()
-    -> lineEnd()
-    ;
-
-    return this;
-}
-
-
-
-
-/*
-TODO for remove
-bool Net::isNextLoop()
-{
-    auto result = false;
-    auto currentMoment = now();
-
-    if( lastLoopMoment + loopTimeoutMcs < currentMoment )
-    {
-        result = true;
-        lastLoopMoment = currentMoment;
-    }
-    return result;
-}
-*/
-
-
-
-/*
     Return socket manager object
 */
 
@@ -937,4 +826,103 @@ SockManager* Net::getSockManager()
 {
     return sockManager;
 }
+
+
+
+
+/*
+    Return config of the net
+*/
+ParamList* Net::getConfig()
+{
+    return config;
+}
+
+
+
+/*
+    Swap layers between net and other participants for actions
+*/
+Net* Net::swapValuesAndErrors
+(
+    Actions aActions,   /* Action for participant */
+    Task    aTask,      /* Task (role) of participant */
+    Limb*   aLimb       /* Participant */
+)
+{
+    auto configLayers = config -> getObject( "layers" );
+    if( configLayers != NULL )
+    {
+        /* Loop for layers configuration */
+        configLayers -> loop
+        (
+            [ this, &aLimb, &aActions, &aTask ]
+            (
+                Param* iParam
+            )
+            {
+                /* For each of action */
+                for( auto iAction : aActions )
+                {
+                    /* Find action */
+                    auto action = iParam -> getObject()
+                    -> getObject( Path{ "actions", actionToString( iAction ) });
+                    /* If action exists in a layer... */
+                    if
+                    (
+                        action != NULL &&
+                        action -> contains( taskToString( aTask ))
+                    )
+                    {
+                        /* ... finds layer by id in net and participant ... */
+                        auto id = iParam -> getName();
+                        auto netLayer = getLayerList() -> getById( id );
+                        auto participantLayer = aLimb -> getLayerList() -> getById( id );
+                        /* ... if both layers fonded ... */
+                        if( netLayer != NULL && participantLayer != NULL )
+                        {
+                            /* ... then swap values and errors */
+                            switch( iAction )
+                            {
+                                case READ_VALUES:
+                                    participantLayer -> copyValuesFrom( netLayer );
+                                break;
+                                case WRITE_VALUES:
+                                    netLayer -> copyValuesFrom( participantLayer );
+                                break;
+                                case READ_ERRORS:
+                                    participantLayer -> copyErrorsFrom( netLayer );
+                                break;
+                                case WRITE_ERRORS:
+                                    netLayer -> copyErrorsFrom( participantLayer );
+                                break;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        );
+    }
+    return this;
+}
+
+
+
+
+Net* Net::syncToLimb
+(
+    Limb* targetLimb
+)
+{
+    if( targetLimb -> getAge() != getAge() )
+    {
+        copyTo( targetLimb, true );
+        targetLimb -> ageFrom( this );
+    }
+    return this;
+}
+
+
+
 

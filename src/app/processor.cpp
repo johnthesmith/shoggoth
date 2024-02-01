@@ -20,7 +20,6 @@
 #include "../../../../lib/core/utils.h"
 #include "../../../../lib/json/json.h"
 
-#include "../shoggoth/neuron.h"
 #include "../shoggoth/func.h"
 #include "../shoggoth/shoggoth_consts.h"
 

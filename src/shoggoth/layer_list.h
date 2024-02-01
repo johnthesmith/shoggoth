@@ -19,6 +19,7 @@ using namespace std;
 
 
 class Layer;
+class Limb;
 
 
 
@@ -26,7 +27,7 @@ class LayerList : public Heap
 {
     private:
 
-        Log* log;   /* Log object */
+        Limb* limb;   /* Limb object */
 
     public:
 
@@ -36,7 +37,7 @@ class LayerList : public Heap
         */
         LayerList
         (
-            Log*
+            Limb*
         );
 
 
@@ -46,7 +47,7 @@ class LayerList : public Heap
         */
         static LayerList* create
         (
-            Log*
+            Limb*
         );
 
 
@@ -183,16 +184,6 @@ class LayerList : public Heap
 
 
         /*
-            Copy list of layers
-        */
-        LayerList* copyStructureFrom
-        (
-            LayerList*  /* Source layer list */
-        );
-
-
-
-        /*
             Copy values of equal layers
         */
         LayerList* copyValuesFrom
@@ -209,6 +200,4 @@ class LayerList : public Heap
         (
             LayerList* /* Source */
         );
-
-
 };
