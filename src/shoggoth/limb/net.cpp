@@ -15,7 +15,7 @@ Net::Net
     Application* aApplication,  /* Application object */
     SockManager* aSockManager   /* Socket manager object */
 )
-:Limb( aApplication -> getLog() )
+:Limb( aApplication -> getLogManager() )
 {
     application = aApplication;
     sockManager = aSockManager;
@@ -889,12 +889,14 @@ Net* Net::swapValuesAndErrors
                                 break;
                                 case WRITE_VALUES:
                                     netLayer -> copyValuesFrom( participantLayer );
+                                    addChangedValues( netLayer );
                                 break;
                                 case READ_ERRORS:
                                     participantLayer -> copyErrorsFrom( netLayer );
                                 break;
                                 case WRITE_ERRORS:
                                     netLayer -> copyErrorsFrom( participantLayer );
+                                    addChangedErrors( netLayer );
                                 break;
                             }
                         }
@@ -925,4 +927,93 @@ Net* Net::syncToLimb
 
 
 
+/*
+    Synchronaize with server
+    For the modified layer, write to the server
+    else read from the server.
+*/
+Net* Net::syncToServer()
+{
+    auto tasksSection = getApplication()
+    -> getConfig()
+    -> getObject( "tasks" );
 
+    if( tasksSection -> getObject( taskToString( TASK_PROC )) == NULL )
+    {
+        getLog() -> begin( "Synchronize layers with server" );
+
+        lock();
+        getLayerList() -> loop
+        (
+            [ this ]
+            ( void* aLayer )
+            {
+                auto layer = ( Layer* ) aLayer;
+                /* Vslurd */
+                if
+                (
+                    find
+                    (
+                        changedValues.begin(),
+                        changedValues.end(),
+                        layer -> getId()
+                    ) != changedValues.end()
+                )
+                {
+                    writeValues( layer );
+                }
+                else
+                {
+                    readValues( layer );
+                }
+
+                /* Errors */
+                if
+                (
+                    find
+                    (
+                        changedErrors.begin(),
+                        changedErrors.end(),
+                        layer -> getId()
+                    ) != changedErrors.end()
+                )
+                {
+                    writeErrors( layer );
+                }
+                else
+                {
+                    readErrors( layer );
+                }
+                return false;
+            }
+        );
+        changedValues.clear();
+        changedErrors.clear();
+        unlock();
+
+        getLog() -> end();
+    }
+    return this;
+}
+
+
+
+Net* Net::addChangedValues
+(
+    Layer* aLayer
+)
+{
+    changedValues.push_back( aLayer -> getId() );
+    return this;
+}
+
+
+
+Net* Net::addChangedErrors
+(
+    Layer* aLayer
+)
+{
+    changedErrors.push_back( aLayer -> getId() );
+    return this;
+}

@@ -26,7 +26,7 @@ LimbUi::LimbUi
 /* Call parent constructor */
 : Limb
 (
-    aNet -> getLog()
+    aNet -> getLogManager()
 )
 {
     net = aNet;
@@ -801,7 +801,7 @@ bool LimbUi::nerveWeightLoop
                     auto fromLayer = fromNeuron -> getLayer();
                     auto toLayer = toNeuron -> getLayer();
 
-                    auto foundedNerves = NerveList::create( getLog() );
+                    auto foundedNerves = NerveList::create( getLogManager() );
                     nerves -> selectByLayers
                     (
                         fromLayer,

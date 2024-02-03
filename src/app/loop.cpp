@@ -321,6 +321,7 @@ void Loop::onLoop()
         getLog() -> end();
     }
 
+    net -> syncToServer();
 
 //            aTreminated = scene -> windowClosed();
 }

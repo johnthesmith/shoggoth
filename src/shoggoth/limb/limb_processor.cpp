@@ -23,7 +23,7 @@ LimbProcessor::LimbProcessor
 (
     Net* aNet /* Net limb object*/
 )
-:Limb( aNet -> getLog() )
+:Limb( aNet -> getLogManager() )
 {
     net             = aNet;
     forwardList     = LayerList::create( this );

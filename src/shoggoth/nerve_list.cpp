@@ -6,10 +6,10 @@
 */
 NerveList::NerveList
 (
-    Log* aLog
+    LogManager* aLogManager
 )
 {
-    log = aLog;
+    logManager = aLogManager;
 }
 
 
@@ -19,10 +19,10 @@ NerveList::NerveList
 */
 NerveList* NerveList::create
 (
-    Log* aLog
+    LogManager* aLogManager
 )
 {
-    auto result = new NerveList( aLog );
+    auto result = new NerveList( aLogManager );
     return result;
 }
 
@@ -43,7 +43,7 @@ void NerveList::destroy()
 */
 Log* NerveList::getLog()
 {
-    return log;
+    return logManager -> getLog();
 }
 
 
@@ -164,7 +164,7 @@ NerveList* NerveList::removeByLayer
     Layer* aLayer
 )
 {
-    auto removed = NerveList::create( getLog() );
+    auto removed = NerveList::create( logManager );
 
     Heap::remove
     (

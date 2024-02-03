@@ -13,7 +13,7 @@
 #include <functional> /* for function */
 #include <mutex>    /* For net sinchronization */
 
-#include "../../../../lib/core/log.h"
+#include "../../../../lib/core/log_manager.h"
 #include "layer_list.h"
 
 
@@ -60,7 +60,7 @@ childrenLambda;
 class Limb : public Result
 {
     private:
-        Log*            log         = NULL;
+        LogManager*     logManager  = NULL;
 
         LayerList*      layers      = NULL;
         NerveList*      nerves      = NULL;     /* List of nerves*/
@@ -79,7 +79,7 @@ class Limb : public Result
         */
         Limb
         (
-            Log* /* Log object*/
+            LogManager* /* Log object*/
         );
 
 
@@ -96,7 +96,7 @@ class Limb : public Result
         */
         static Limb* create
         (
-            Log* /* The log object*/
+            LogManager* /* The log object*/
         );
 
 
@@ -112,6 +112,13 @@ class Limb : public Result
             Return log object
         */
         Log* getLog();
+
+
+
+        /*
+            Return log manager object
+        */
+        LogManager* getLogManager();
 
 
 

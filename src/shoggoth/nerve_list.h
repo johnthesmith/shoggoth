@@ -1,6 +1,6 @@
 # pragma once
 
-#include "../../../../lib/core/log.h"
+#include "../../../../lib/core/log_manager.h"
 
 #include "layer.h"
 #include "nerve.h"
@@ -17,15 +17,15 @@ class NerveList :  public Heap
 {
     private:
 
-        Log*    log = NULL;
-        string  id  = "";
+        LogManager* logManager = NULL;
+        string      id  = "";
 
     public:
 
 
         NerveList
         (
-            Log*
+            LogManager*
         );
 
 
@@ -35,7 +35,7 @@ class NerveList :  public Heap
         */
         static NerveList* create
         (
-            Log*
+            LogManager*
         );
 
 

@@ -39,6 +39,10 @@ class Net: public Limb
         SockManager*    sockManager     = NULL;     /* Socket manager object */
         ParamList*      config          = NULL;     /* Last net config after IO */
 
+        /* Lists of layers id after update by swap operations */
+        vector<string>  changedValues;
+        vector<string>  changedErrors;
+
         /* Events */
         string          ptu             = "***";    /* Roles of the Net in PTU */
         ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( ptu, event ) */
@@ -337,5 +341,36 @@ class Net: public Limb
         (
             Limb* targetLimb
         );
+
+
+
+
+        /*
+            Synchronaize with server
+            For the modified layer, write to the server
+            else read from the server.
+        */
+        Net* syncToServer();
+
+
+
+        /*
+            Add layer to changed values list
+        */
+        Net* addChangedValues
+        (
+            Layer*
+        );
+
+
+
+        /*
+            Add layer to changed values list
+        */
+        Net* addChangedErrors
+        (
+            Layer*
+        );
 };
+
 

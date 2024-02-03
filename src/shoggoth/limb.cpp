@@ -6,15 +6,15 @@
 */
 Limb::Limb
 (
-    Log* aLog
+    LogManager* aLogManager
 )
 {
     /* Set properties */
-    log = aLog;
+    logManager = aLogManager;
 
     /* Create layers and nerves structures */
     layers = LayerList::create( this );
-    nerves = NerveList::create( log );
+    nerves = NerveList::create( logManager );
 }
 
 
@@ -35,10 +35,10 @@ Limb::~Limb()
 */
 Limb* Limb::create
 (
-    Log* aLog       /* Log object*/
+    LogManager* aLogManager       /* Log object*/
 )
 {
-    return new Limb( aLog );
+    return new Limb( aLogManager );
 }
 
 
@@ -58,9 +58,18 @@ void Limb::destroy()
 */
 Log* Limb::getLog()
 {
-    return log;
+    return logManager -> getLog();
 }
 
+
+
+/*
+    Return log object
+*/
+LogManager* Limb::getLogManager()
+{
+    return logManager;
+}
 
 
 
