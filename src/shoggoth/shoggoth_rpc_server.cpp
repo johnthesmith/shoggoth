@@ -74,8 +74,9 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 
     getLog()
     -> trace( "Called method" )
-    -> prm( "Name", commandToString( ( Command ) method )) -> lineEnd()
-    -> prm( "Code", method );
+    -> prm( "Name", commandToString( ( Command ) method ))
+    -> prm( "Code", method )
+    -> lineEnd();
 
     switch( method )
     {

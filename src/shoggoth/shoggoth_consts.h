@@ -109,8 +109,8 @@ enum Command
 {
     CMD_UNKNWON,        /* Unknown command */
     CMD_READ_NET,       /* Server return full Net configuration */
-    CMD_WRITE_VALUES,   /* Server receive layer values */
-    CMD_READ_VALUES,    /* Server return the layer values data */
+    CMD_WRITE_LAYERS,   /* Server send layers with errors and values plan */
+    CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
     CMD_WRITE_ERRORS,   /* Server receive layer errors */
     CMD_READ_ERRORS,    /* Server return the layer errors data */
     CMD_WRITE_WEIGHTS,  /* Server receive  */

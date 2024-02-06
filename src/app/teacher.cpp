@@ -323,7 +323,7 @@ void Teacher::onLoop()
                     }
                 );
 
-                /* Load values and errors to net */
+                /* Upload values and errors to net */
                 limb -> getNet() -> swapValuesAndErrors
                 (
                     { WRITE_VALUES, WRITE_ERRORS }, /* Action */

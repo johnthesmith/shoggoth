@@ -6,15 +6,6 @@
 
 
 
-/*
-TODO
--> setDrawSize( aParams )
--> getObject()
--> setPosition( aParams )
-*/
-
-
-
 
 #pragma once
 
@@ -114,21 +105,23 @@ class Net: public Limb
 
 
         /*
-            Write value to io
+            Write layers to io
         */
-        Net* writeValues
+        Net* writeLayers
         (
-            Layer*
+            LayerList* aValues,
+            LayerList* aErrors
         );
 
 
 
         /*
-            Read values from io
+            Read layers from io
         */
-        Net* readValues
+        Net* readLayers
         (
-            Layer*
+            LayerList* aValues,
+            LayerList* aErrors
         );
 
 

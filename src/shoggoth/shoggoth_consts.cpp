@@ -94,8 +94,8 @@ std::string commandToString
     switch( a )
     {
         case CMD_READ_NET       : return "READ_NET";
-        case CMD_WRITE_VALUES   : return "WRITE_VALUES";
-        case CMD_READ_VALUES    : return "READ_VALUES";
+        case CMD_WRITE_LAYERS   : return "WRITE_LAYERS";
+        case CMD_READ_LAYERS    : return "READ_LAYERS";
         case CMD_WRITE_ERRORS   : return "WRITE_ERRORS";
         case CMD_READ_ERRORS    : return "READ_ERRORS";
         case CMD_WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
