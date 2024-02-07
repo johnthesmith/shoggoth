@@ -78,10 +78,8 @@ Io* Io::call
             switch( aCommand )
             {
                 case CMD_READ_NET       : fileReadNet(); break;
-                case CMD_READ_VALUES    : fileReadValues(); break;
-                case CMD_WRITE_VALUES   : fileWriteValues(); break;
-                case CMD_READ_ERRORS    : fileReadErrors(); break;
-                case CMD_WRITE_ERRORS   : fileWriteErrors(); break;
+                case CMD_WRITE_LAYERS   : // fileWriteValues(); break;
+                case CMD_READ_LAYERS    : // fileReadErrors(); break;
                 case CMD_READ_WEIGHTS   : fileReadWeights(); break;
                 case CMD_WRITE_WEIGHTS  : fileWriteWeights(); break;
                 default                 : setCode( "UnknownCommand" ); break;

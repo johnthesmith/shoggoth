@@ -96,8 +96,6 @@ std::string commandToString
         case CMD_READ_NET       : return "READ_NET";
         case CMD_WRITE_LAYERS   : return "WRITE_LAYERS";
         case CMD_READ_LAYERS    : return "READ_LAYERS";
-        case CMD_WRITE_ERRORS   : return "WRITE_ERRORS";
-        case CMD_READ_ERRORS    : return "READ_ERRORS";
         case CMD_WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
         case CMD_READ_WEIGHTS   : return "READ_WEIGHTS";
     }

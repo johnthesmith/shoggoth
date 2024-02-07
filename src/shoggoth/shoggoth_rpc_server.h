@@ -111,7 +111,7 @@ class ShoggothRpcServer : public RpcServer
         /*
             Remote host send layers errors data
         */
-        ShoggothRpcServer* writeValues
+        ShoggothRpcServer* writeLayers
         (
             ParamList*, /* Arguments */
             ParamList*  /* Results */
@@ -122,33 +122,12 @@ class ShoggothRpcServer : public RpcServer
         /*
             Remote host request layers errors layer
         */
-        ShoggothRpcServer* readValues
+        ShoggothRpcServer* readLayers
         (
             ParamList*, /* Arguments */
             ParamList*  /* Results */
         );
 
-
-
-        /*
-            Remote host send layers errors data
-        */
-        ShoggothRpcServer* writeErrors
-        (
-            ParamList*, /* Arguments */
-            ParamList*  /* Results */
-        );
-
-
-
-        /*
-            Remote host request layers errors layer
-        */
-        ShoggothRpcServer* readErrors
-        (
-            ParamList*, /* Arguments */
-            ParamList*  /* Results */
-        );
 
 
 

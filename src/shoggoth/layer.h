@@ -479,4 +479,18 @@ class Layer : public Result
             Return size of values buffer
         */
         size_t getValuesBufferSize();
+
+
+
+        /*
+            Return true if layer contains one of tasks
+        */
+        bool checkTasks
+        (
+            ParamList*,     /* Checking tasks */
+            Action aAction  /* Checking action */
+        );
+
+
+
 };

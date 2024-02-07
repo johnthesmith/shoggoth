@@ -147,72 +147,75 @@ Net* Net::writeLayers
     LayerList* aErrors
 )
 {
-    auto io = Io::create( this );
-    auto request = io -> getRequest();
+    if( aValues -> getCount() > 0 || aErrors -> getCount() > 0 )
+    {
+        getLog() -> begin( "Write layers" );
 
-    getLog() -> begin( "Write layers" );
+        auto io = Io::create( this );
+        auto request = io -> getRequest();
 
-    /* Build values */
-    aValues -> loop
-    (
-        [ &request ]
-        ( void* aLayer)
-        {
-            auto layer = (Layer*) aLayer;
-
-            char* buffer = NULL;    /* Buffer pointer */
-            size_t size = 0;        /* Size of buffer */
-
-            layer -> getValuesBuffer( buffer, size );
-
-            if( buffer != NULL )
+        /* Build values */
+        aValues -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
             {
-                request
-                -> setPath( Path{ "layers", "values" })
-                -> setData
-                (
-                    layer -> getId(),
-                    (char*) buffer,
-                    size
-                );
+                auto layer = (Layer*) aLayer;
+
+                char* buffer = NULL;    /* Buffer pointer */
+                size_t size = 0;        /* Size of buffer */
+
+                layer -> getValuesBuffer( buffer, size );
+
+                if( buffer != NULL )
+                {
+                    request
+                    -> setPath( Path{ "layers", "values" })
+                    -> setData
+                    (
+                        layer -> getId(),
+                        (char*) buffer,
+                        size
+                    );
+                }
+                return false;
             }
-            return false;
-        }
-    );
+        );
 
-    /* Build errors */
-    aValues -> loop
-    (
-        [ &request ]
-        ( void* aLayer)
-        {
-            auto layer = (Layer*) aLayer;
-
-            char* buffer = NULL;    /* Buffer pointer */
-            size_t size = 0;        /* Size of buffer */
-
-            layer -> getErrorsBuffer( buffer, size );
-
-            if( buffer != NULL )
+        /* Build errors */
+        aValues -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
             {
-                request
-                -> setPath( Path{ "layers", "errors" })
-                -> setData
-                (
-                    layer -> getId(),
-                    (char*) buffer,
-                    size
-                );
+                auto layer = (Layer*) aLayer;
+
+                char* buffer = NULL;    /* Buffer pointer */
+                size_t size = 0;        /* Size of buffer */
+
+                layer -> getErrorsBuffer( buffer, size );
+
+                if( buffer != NULL )
+                {
+                    request
+                    -> setPath( Path{ "layers", "errors" })
+                    -> setData
+                    (
+                        layer -> getId(),
+                        (char*) buffer,
+                        size
+                    );
+                }
+                return false;
             }
-            return false;
-        }
-    );
+        );
 
-    io
-    -> call( CMD_WRITE_LAYERS )
-    -> destroy();
+        io
+        -> call( CMD_WRITE_LAYERS )
+        -> destroy();
 
-    getLog() -> end();
+        getLog() -> end();
+    }
 
     return this;
 }
@@ -228,323 +231,107 @@ Net* Net::readLayers
     LayerList* aErrors
 )
 {
-    auto io = Io::create( this );
-    auto request = io -> getRequest();
-
-    getLog() -> begin( "Read layers" );
-
-    /* Build values */
-    aValues -> loop
-    (
-        [ &request ]
-        ( void* aLayer)
-        {
-            auto layer = (Layer*) aLayer;
-
-            request
-            -> setPath( Path{ "layers", "values" })
-            -> pushString( layer -> getId());
-
-            return false;
-        }
-    );
-
-    /* Build errors */
-    aValues -> loop
-    (
-        [ &request ]
-        ( void* aLayer)
-        {
-            auto layer = (Layer*) aLayer;
-
-            request
-            -> setPath( Path{ "layers", "errors" })
-            -> pushString( layer -> getId());
-
-            return false;
-        }
-    );
-
-    /* Call server and apply the answer */
-    if( io -> call( CMD_READ_LAYERS ) -> isOk() )
+    if( aValues -> getCount() > 0 || aErrors -> getCount() > 0 )
     {
-        /* Loop for values */
-        aValues -> loop
-        (
-            [ &io ]
-            ( void* aLayer)
-            {
-                auto layer = (Layer*) aLayer;
-
-                char* buffer = NULL;
-                size_t size = 0;
-
-                io -> getAnswer()
-                -> getData
-                (
-                    Path{ "layers", "values", layer -> getId() },
-                    buffer,
-                    size
-                );
-
-                if( buffer != NULL )
-                {
-                    layer -> setValuesFromBuffer( buffer, size );
-                }
-                return false;
-            }
-        );
-
-        /* Loop for errors */
-        aValues -> loop
-        (
-            [ &io ]
-            ( void* aLayer)
-            {
-                auto layer = (Layer*) aLayer;
-
-                char* buffer = NULL;
-                size_t size = 0;
-
-                io -> getAnswer()
-                -> getData
-                (
-                    Path{ "layers", "errors", layer -> getId() },
-                    buffer,
-                    size
-                );
-
-                if( buffer != NULL )
-                {
-                    layer -> errorsFromBuffer( buffer, size );
-                }
-                return false;
-            }
-        );
-    }
-
-
-
-    io -> destroy();
-
-    getLog() -> end();
-
-    return this;
-}
-
-
-
-/*
-    Write errors to io
-*/
-Net* Net::writeErrors
-(
-    Layer* aLayer
-)
-{
-    char* buffer = NULL;    /* Buffer pointer */
-    size_t size = 0;        /* Size of buffer */
-
-    aLayer -> getErrorsBuffer( buffer, size );
-
-    if( buffer != NULL )
-    {
-        getLog()
-        -> begin( "Write layer errors" )
-        -> prm( "id", aLayer -> getId() );
+        getLog() -> begin( "Read layers" );
 
         auto io = Io::create( this );
+        auto request = io -> getRequest();
 
-        io -> getRequest()
-        -> setString( "idLayer", aLayer -> getId() )
-        -> setData( "data", buffer, size );
+        /* Build values */
+        aValues -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
+            {
+                auto layer = (Layer*) aLayer;
 
-        io
-        -> call( CMD_WRITE_ERRORS )
-        -> destroy();
+                request
+                -> setPath( Path{ "layers", "values" })
+                -> pushString( layer -> getId());
+
+                return false;
+            }
+        );
+
+        /* Build errors */
+        aValues -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
+            {
+                auto layer = (Layer*) aLayer;
+
+                request
+                -> setPath( Path{ "layers", "errors" })
+                -> pushString( layer -> getId());
+
+                return false;
+            }
+        );
+
+        /* Call server and apply the answer */
+        if( io -> call( CMD_READ_LAYERS ) -> isOk() )
+        {
+            /* Loop for values */
+            aValues -> loop
+            (
+                [ &io ]
+                ( void* aLayer)
+                {
+                    auto layer = (Layer*) aLayer;
+
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer()
+                    -> getData
+                    (
+                        Path{ "layers", "values", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer -> setValuesFromBuffer( buffer, size );
+                    }
+                    return false;
+                }
+            );
+
+            /* Loop for errors */
+            aValues -> loop
+            (
+                [ &io ]
+                ( void* aLayer)
+                {
+                    auto layer = (Layer*) aLayer;
+
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer()
+                    -> getData
+                    (
+                        Path{ "layers", "errors", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer -> errorsFromBuffer( buffer, size );
+                    }
+                    return false;
+                }
+            );
+        }
+
+        io -> destroy();
 
         getLog() -> end();
     }
-
-    return this;
-}
-
-
-
-/*
-    Read value from io
-*/
-Net* Net::readErrors
-(
-    Layer* aLayer
-)
-{
-    getLog()
-    -> trace( "Read layer errors" )
-    -> prm( "id", aLayer -> getId() );
-
-    auto io = Io::create( this );
-
-    io
-    -> getRequest()
-    -> setString( "idLayer", aLayer -> getId() );
-
-    if( io -> call( CMD_READ_ERRORS ) -> isOk() )
-    {
-        char* buffer = NULL;
-        size_t size = 0;
-
-        io -> getAnswer() -> getData( "data", buffer, size );
-
-        aLayer -> errorsFromBuffer( buffer, size );
-    }
-
-    io -> destroy();
-
-    return this;
-}
-
-
-
-/*
-    Read from server
-*/
-Net* Net::readValuesList
-(
-    ParamList* aTasks
-)
-{
-    getLayerList() -> loop
-    (
-        [ this, &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( READ_VALUES ))
-                )
-            )
-            {
-                readValues( iLayer );
-            }
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Write to server
-*/
-Net* Net::writeValuesList
-(
-    ParamList* aTasks
-)
-{
-    getLayerList() -> loop
-    (
-        [ this, &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-
-            if
-            (
-                aTasks == NULL ||
-                aTasks -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( WRITE_VALUES ))
-                )
-            )
-            {
-                writeValues( iLayer );
-            }
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Read from server
-*/
-Net* Net::readErrorsList
-(
-    ParamList* aTasks
-)
-{
-    getLayerList() -> loop
-    (
-        [ this, &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( READ_ERRORS ))
-                )
-            )
-            {
-                readErrors( iLayer );
-            }
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Write to server
-*/
-Net* Net::writeErrorsList
-(
-    ParamList* aTasks
-)
-{
-    getLayerList() -> loop
-    (
-        [ this, &aTasks ]
-        ( void* aLayer )
-        {
-            auto iLayer = ( Layer* ) aLayer;
-            if
-            (
-                aTasks == NULL ||
-                aTasks
-                -> isIntersect
-                (
-                    iLayer
-                    -> getActions()
-                    -> getObject( actionToString( WRITE_ERRORS ))
-                )
-            )
-            {
-                writeErrors( iLayer );
-            }
-            return false;
-        }
-    );
     return this;
 }
 
@@ -1060,24 +847,40 @@ Net* Net::syncToLimb
     For the modified layer, write to the server
     else read from the server.
 */
-Net* Net::syncToServer()
+Net* Net::syncWithServer()
 {
     auto tasksSection = getApplication()
     -> getConfig()
     -> getObject( "tasks" );
 
+    /* The application does not have to be a processor */
     if( tasksSection -> getObject( taskToString( TASK_PROC )) == NULL )
     {
         getLog() -> begin( "Synchronize layers with server" );
 
+        /* Create lists of layers */
+        auto readValues = LayerList::create( this );
+        auto readErrors = LayerList::create( this );
+        auto writeValues = LayerList::create( this );
+        auto writeErrors = LayerList::create( this );
+
         lock();
+
+        /* */
         getLayerList() -> loop
         (
-            [ this ]
+            [
+                this,
+                &readValues,
+                &readErrors,
+                &writeValues,
+                &writeErrors
+            ]
             ( void* aLayer )
             {
                 auto layer = ( Layer* ) aLayer;
-                /* Vslurd */
+
+                /* Values was changed and must be write to server */
                 if
                 (
                     find
@@ -1088,14 +891,22 @@ Net* Net::syncToServer()
                     ) != changedValues.end()
                 )
                 {
-                    writeValues( layer );
+                    /* Check application rules for write values of the  layer */
+                    if( layer -> checkTasks( tasks, WRITE_VALUES ))
+                    {
+                        writeValues -> push( layer );
+                    }
                 }
                 else
                 {
-                    readValues( layer );
+                    /* Check application rules for write values of the layer */
+                    if( layer -> checkTasks( tasks, READ_VALUES ))
+                    {
+                        readValues -> push( layer );
+                    }
                 }
 
-                /* Errors */
+                /* Errors was changed and must be write to server */
                 if
                 (
                     find
@@ -1106,18 +917,38 @@ Net* Net::syncToServer()
                     ) != changedErrors.end()
                 )
                 {
-                    writeErrors( layer );
+                    /* Check application rules for write erros of the layer */
+                    if( layer -> checkTasks( tasks, WRITE_ERRORS ))
+                    {
+                        writeErrors -> push( layer );
+                    }
                 }
                 else
                 {
-                    readErrors( layer );
+                    /* Check application rules for read errors of the layer */
+                    if( layer -> checkTasks( tasks, READ_ERRORS ))
+                    {
+                        readErrors -> push( layer );
+                    }
                 }
                 return false;
             }
         );
         changedValues.clear();
         changedErrors.clear();
+
+        /* Exchange with server */
+        writeLayers( writeValues, writeErrors );
+        readLayers( readValues, readErrors );
+
+        /* Unlock Net */
         unlock();
+
+        /* Destroy lists */
+        readValues -> destroy();
+        readErrors -> destroy();
+        writeValues -> destroy();
+        writeErrors -> destroy();
 
         getLog() -> end();
     }

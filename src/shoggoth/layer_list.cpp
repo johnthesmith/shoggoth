@@ -71,6 +71,20 @@ LayerList* LayerList::add
 
 
 /*
+    Add Layer from argument in to this list
+*/
+LayerList* LayerList::push
+(
+    Layer* a
+)
+{
+    Heap::push((void*) a );
+    return this;
+}
+
+
+
+/*
     Return index by Layer
 */
 int LayerList::indexBy

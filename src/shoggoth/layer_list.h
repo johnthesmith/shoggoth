@@ -80,7 +80,7 @@ class LayerList : public Heap
         /*
             Add one layer
         */
-        LayerList* add
+        LayerList* push
         (
             Layer*
         );

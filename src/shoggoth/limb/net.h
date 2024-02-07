@@ -126,66 +126,6 @@ class Net: public Limb
 
 
 
-        /*
-            Write errors to io
-        */
-        Net* writeErrors
-        (
-            Layer* aLayer
-        );
-
-
-
-        /*
-            Read value from io
-        */
-        Net* readErrors
-        (
-            Layer* aLayer
-        );
-
-
-
-        /*
-            Read the layers values from io
-        */
-        Net* readValuesList
-        (
-            ParamList* = NULL
-        );
-
-
-
-        /*
-            Write the layers values to the io
-        */
-        Net* writeValuesList
-        (
-            ParamList* = NULL
-        );
-
-
-
-        /*
-            Read the layers errors from io
-        */
-        Net* readErrorsList
-        (
-            ParamList* = NULL
-        );
-
-
-
-        /*
-            Write the layers errors to the io
-        */
-        Net* writeErrorsList
-        (
-            ParamList* = NULL
-        );
-
-
-
 
         Net* readWeightsList();
 
@@ -343,7 +283,7 @@ class Net: public Limb
             For the modified layer, write to the server
             else read from the server.
         */
-        Net* syncToServer();
+        Net* syncWithServer();
 
 
 

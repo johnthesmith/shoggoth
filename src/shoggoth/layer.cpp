@@ -727,3 +727,20 @@ size_t Layer::getValuesBufferSize()
 {
     return sizeof( double ) * count;
 }
+
+
+
+/*
+    Return true if layer contains one of tasks
+*/
+bool Layer::checkTasks
+(
+    ParamList* aTasks,
+    Action aAction
+)
+{
+    return
+    getActions() ->
+    getObject( actionToString( aAction )) ->
+    isIntersect( aTasks );
+}

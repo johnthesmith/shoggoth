@@ -289,7 +289,7 @@ void Loop::onLoop()
             if( ui != NULL )        ui -> waitPause();
 
             /*
-                TODO - net must reload from IO each time or timeout
+                TODO - the net must be reload from IO each time or timeout
                 Config apply
             */
             net -> readNet();
@@ -321,7 +321,7 @@ void Loop::onLoop()
         getLog() -> end();
     }
 
-    net -> syncToServer();
+    net -> syncWithServer();
 
 //            aTreminated = scene -> windowClosed();
 }
