@@ -170,7 +170,7 @@ Net* Net::writeLayers
                 if( buffer != NULL )
                 {
                     request
-                    -> setPath( Path{ "layers", "values" })
+                    -> setPath( Path{ "values" })
                     -> setData
                     (
                         layer -> getId(),
@@ -183,7 +183,7 @@ Net* Net::writeLayers
         );
 
         /* Build errors */
-        aValues -> loop
+        aErrors -> loop
         (
             [ &request ]
             ( void* aLayer)
@@ -198,7 +198,7 @@ Net* Net::writeLayers
                 if( buffer != NULL )
                 {
                     request
-                    -> setPath( Path{ "layers", "errors" })
+                    -> setPath( Path{ "errors" })
                     -> setData
                     (
                         layer -> getId(),
@@ -247,15 +247,14 @@ Net* Net::readLayers
                 auto layer = (Layer*) aLayer;
 
                 request
-                -> setPath( Path{ "layers", "values" })
+                -> setPath( Path{ "values" })
                 -> pushString( layer -> getId());
 
                 return false;
             }
         );
-
         /* Build errors */
-        aValues -> loop
+        aErrors -> loop
         (
             [ &request ]
             ( void* aLayer)
@@ -263,7 +262,7 @@ Net* Net::readLayers
                 auto layer = (Layer*) aLayer;
 
                 request
-                -> setPath( Path{ "layers", "errors" })
+                -> setPath( Path{ "errors" })
                 -> pushString( layer -> getId());
 
                 return false;
@@ -287,7 +286,7 @@ Net* Net::readLayers
                     io -> getAnswer()
                     -> getData
                     (
-                        Path{ "layers", "values", layer -> getId() },
+                        Path{ "values", layer -> getId() },
                         buffer,
                         size
                     );
@@ -301,7 +300,7 @@ Net* Net::readLayers
             );
 
             /* Loop for errors */
-            aValues -> loop
+            aErrors -> loop
             (
                 [ &io ]
                 ( void* aLayer)

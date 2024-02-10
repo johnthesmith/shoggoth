@@ -74,12 +74,24 @@ class ShoggothRpcServer : public RpcServer
 
         /*
             Set code for answer
+            And result details key
         */
-        ShoggothRpcServer* setAnswerResult
+        ParamList* setAnswerResult
         (
             ParamList*, /* Answer param list */
             string      /* Answer code */
         );
+
+
+
+        /*
+            Return true if answer is ok
+        */
+        bool isAnswerOk
+        (
+            ParamList*
+        );
+
 
 
         /**********************************************************************

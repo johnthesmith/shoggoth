@@ -282,5 +282,12 @@ class Limb : public Result
         (
             Layer* /* Source layer */
         );
+
+
+
+        /*
+            Dump limb information to log
+        */
+        Limb* dump();
 };
 

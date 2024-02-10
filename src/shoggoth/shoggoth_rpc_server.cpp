@@ -1,5 +1,6 @@
 #include "shoggoth_rpc_server.h"
 #include "io.h"
+#include "../../../../lib/json/param_list_log.h"
 
 
 
@@ -116,16 +117,31 @@ bool ShoggothRpcServer::validate
     Set code for answer
 */
 
-ShoggothRpcServer* ShoggothRpcServer::setAnswerResult
+ParamList* ShoggothRpcServer::setAnswerResult
 (
     ParamList* aAnswer,
     string aCode
 )
 {
-    aAnswer
+    /* Set code */
+    return aAnswer
     -> setPath( Path { "result" })
-    -> setString(  "code", aCode );
-    return this;
+    -> setString( "code", aCode )
+    /* Return details key */
+    -> setPath( Path{ "details" });
+}
+
+
+
+/*
+    Return true if answer is ok
+*/
+bool ShoggothRpcServer::isAnswerOk
+(
+    ParamList* aAnswer
+)
+{
+    return aAnswer -> getString( Path{ "result", "code" }) == RESULT_OK;
 }
 
 
@@ -168,7 +184,7 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
         if( json != NULL )
         {
             json -> copyTo( aResults );
-            setAnswerResult( aResults, "ok" );
+            setAnswerResult( aResults, RESULT_OK );
         }
         else
         {
@@ -197,34 +213,98 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
     ParamList* aResults
 )
 {
-//    /* Read id layer */
-//    auto idLayer = aArguments -> getString( "idLayer" );
-//    if
-//    (
-//        /* Arguments validation */
-//        validate( idLayer != "", "IdLayerIsEmpty", aResults )
-//    )
-//    {
-//        auto layer = net -> getLayerById( idLayer );
-//        if( layer == NULL )
-//        {
-//            setAnswerResult( aResults, "LayerUnknown" );
-//        }
-//        else
-//        {
-//            /* Get layer data */
-//            char* buffer = NULL;
-//            size_t size = 0;
-//            aArguments -> getData( "data", buffer, size );
-//
-//            if( validate( buffer != NULL, "DataIsEmpty", aResults ))
-//            {
-//                layer -> setValuesFromBuffer( buffer, size );
-//                /* Return positive answer */
-//                setAnswerResult( aResults, "ok" );
-//            }
-//        }
-//    }
+    /* Return positive answer */
+    setAnswerResult( aResults, RESULT_OK );
+
+    auto values = aArguments -> getObject( "values" );
+    if( values != NULL )
+    {
+        values -> loop
+        (
+            [ this, &aResults ]
+            ( Param* iParam )
+            {
+                /* Read id layer */
+                auto idLayer = iParam -> getName();
+                if
+                (
+                    /* Arguments validation */
+                    validate( idLayer != "", "IdLayerIsEmpty", aResults )
+                )
+                {
+                    auto layer = net -> getLayerById( idLayer );
+                    if( layer == NULL )
+                    {
+                        setAnswerResult( aResults, "LayerUnknown" )
+                        -> setString( "idLayer", idLayer );
+                    }
+                    else
+                    {
+                        /* Get layer data */
+                        char* buffer = iParam -> getValue();
+                        size_t size = iParam -> getSize();
+
+                        if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+                        {
+                            layer -> setValuesFromBuffer( buffer, size );
+                        }
+                    }
+                }
+                else
+                {
+                    setAnswerResult( aResults, "LayerIdIsEmpty" );
+                }
+                return !isAnswerOk( aResults );
+            }
+        );
+    }
+
+    if( isAnswerOk( aResults ))
+    {
+        auto errors = aArguments -> getObject( "errors" );
+        if( errors != NULL )
+        {
+            errors -> loop
+            (
+                [ this, &aResults ]
+                ( Param* iParam )
+                {
+                    /* Read id layer */
+                    auto idLayer = iParam -> getName();
+                    if
+                    (
+                        /* Arguments validation */
+                        validate( idLayer != "", "IdLayerIsEmpty", aResults )
+                    )
+                    {
+                        auto layer = net -> getLayerById( idLayer );
+                        if( layer == NULL )
+                        {
+                            setAnswerResult( aResults, "LayerUnknown" )
+                            -> setString( "idLayer", idLayer );
+                        }
+                        else
+                        {
+                            /* Get layer data */
+                            char* buffer = iParam -> getValue();
+                            size_t size = iParam -> getSize();
+
+                            if( validate( buffer != NULL, "DataIsEmpty", aResults ))
+                            {
+                                layer -> errorsFromBuffer( buffer, size );
+                            }
+                        }
+                    }
+                    else
+                    {
+                        setAnswerResult( aResults, "LayerIdIsEmpty" );
+                    }
+                    return !isAnswerOk( aResults );
+                }
+            );
+        }
+    }
+
     return this;
 }
 
@@ -239,40 +319,117 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
     ParamList* aResults
 )
 {
-//    /* Read id layer */
-//    auto idLayer = aArguments -> getString( "idLayer" );
-//    if
-//    (
-//        /* Arguments validation */
-//        validate( idLayer != "", "IdLayerIsEmpty", aResults )
-//    )
-//    {
-//        auto layer = net -> getLayerById( idLayer );
-//        if( layer == NULL )
-//        {
-//            setAnswerResult( aResults, "LayerUnknown" );
-//        }
-//        else
-//        {
-//            char* buffer = NULL;
-//            size_t size = 0;
-//
-//            /* Get pointer of buffer array */
-//            layer -> getValuesBuffer( buffer, size );
-//
-//            if( buffer != NULL )
-//            {
-//                aResults -> setData( "data", buffer, size );
-//                /* Return positive answer */
-//                setAnswerResult( aResults, "ok" );
-//            }
-//            else
-//            {
-//                setAnswerResult( aResults, "LayerDataNotFound" );
-//            }
-//        }
-//    }
-//
+    /* Return positive answer */
+    setAnswerResult( aResults, RESULT_OK );
+
+    auto values = aArguments -> getObject( "values" );
+    if( values != NULL )
+    {
+        values -> loop
+        (
+            [ this, &aResults ]
+            ( Param* iParam )
+            {
+                /* Read id layer */
+                auto idLayer = iParam -> getString();
+                if
+                (
+                    /* Arguments validation */
+                    validate( idLayer != "", "IdLayerIsEmpty", aResults )
+                )
+                {
+                    auto layer = net -> getLayerById( idLayer );
+                    if( layer == NULL )
+                    {
+                        setAnswerResult( aResults, "LayerUnknown" )
+                        -> setString( "idLayer", idLayer );
+                    }
+                    else
+                    {
+                        char* buffer = NULL;
+                        size_t size = 0;
+
+                        /* Get pointer of buffer array */
+                        layer -> getValuesBuffer( buffer, size );
+
+                        if( buffer != NULL )
+                        {
+                            aResults
+                            -> setPath( Path{ "values" })
+                            -> setData
+                            (
+                                layer -> getId(),
+                                (char*) buffer,
+                                size
+                            );
+                        }
+                    }
+                }
+                else
+                {
+                    setAnswerResult( aResults, "LayerIdIsEmpty" );
+                }
+                return !isAnswerOk( aResults );
+            }
+        );
+    }
+
+
+    if( isAnswerOk( aResults ))
+    {
+        auto errors = aArguments -> getObject( "errors" );
+        if( errors != NULL )
+        {
+            errors -> loop
+            (
+                [ this, &aResults ]
+                ( Param* iParam )
+                {
+                    /* Read id layer */
+                    auto idLayer = iParam -> getString();
+                    if
+                    (
+                        /* Arguments validation */
+                        validate( idLayer != "", "IdLayerIsEmpty", aResults )
+                    )
+                    {
+                        auto layer = net -> getLayerById( idLayer );
+                        if( layer == NULL )
+                        {
+                            setAnswerResult( aResults, "LayerUnknown" )
+                            -> setString( "idLayer", idLayer );
+                        }
+                        else
+                        {
+                            char* buffer = NULL;
+                            size_t size = 0;
+
+                            /* Get pointer of buffer array */
+                            layer -> getErrorsBuffer( buffer, size );
+
+                            if( buffer != NULL )
+                            {
+                                aResults
+                                -> setPath( Path{ "errors" })
+                                -> setData
+                                (
+                                    layer -> getId(),
+                                    (char*) buffer,
+                                    size
+                                );
+                            }
+                        }
+                    }
+                    else
+                    {
+                        setAnswerResult( aResults, "LayerIdIsEmpty" );
+                    }
+                    return !isAnswerOk( aResults );
+                }
+            );
+        }
+    }
+
     return this;
 }
 
@@ -344,7 +501,7 @@ ShoggothRpcServer* ShoggothRpcServer::readWeights
 //    if( buffer != NULL )
 //    {
 //        aResults -> setData( "data", buffer, size );
-//        setAnswerResult( aResults, "ok" );
+//        setAnswerResult( aResults, RESULT_OK );
 //    }
 //    else
 //    {
