@@ -6,7 +6,7 @@
 # pragma once
 
 #include "../../../../lib/core/result.h"
-#include "../../../../lib/core/log.h"
+#include "../../../../lib/core/log_manager.h"
 
 
 
@@ -23,7 +23,7 @@ class Nerve: public Result
         double*     weights         = NULL;         /* Array of weights */
         int         weightsCount    = 0;            /* County of weights */
 
-        Log*        log             = NULL;         /* The log object */
+        LogManager* logManager      = NULL;         /* The log manger object */
 
         string      id              = "";
         BindType    bindType        = BT_VALUE;
@@ -39,7 +39,7 @@ class Nerve: public Result
         */
         Nerve
         (
-            Log*,       /* Log object*/
+            LogManager*,/* Log manager object*/
             Layer*,     /* Parent layer */
             Layer*,     /* Child layer */
             NerveType,  /* Type of nerve */
@@ -60,7 +60,7 @@ class Nerve: public Result
         */
         static Nerve* create
         (
-            Log*,           /* The limb object*/
+            LogManager*,    /* The log manager object*/
             Layer*,         /* Parent layer */
             Layer*,         /* Child layer */
             NerveType,      /* Type of nerve */
@@ -74,7 +74,7 @@ class Nerve: public Result
         */
         static Nerve* create
         (
-            Log*    aLog,
+            LogManager* aLogManager,
             Nerve*  aSource
         );
 

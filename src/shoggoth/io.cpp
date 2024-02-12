@@ -70,7 +70,6 @@ Io* Io::call
         auto config = getApplication()
         -> getConfig()
         -> selectObject( Path { "io" });
-
         /* Read configuration */
         if( config -> getString( "source", "LOCAL" ) == "LOCAL" )
         {
@@ -89,7 +88,6 @@ Io* Io::call
         {
             string  host = config -> getString( "host" );
             int     port = config -> getInt( "port" );
-
             /* Server operation */
             RpcClient::create
             (

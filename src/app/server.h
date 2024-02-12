@@ -2,7 +2,6 @@
 
 /* Local libraries */
 #include "../../../../lib/core/payload.h"
-#include "../shoggoth/sync.h"
 
 #include "shoggoth_application.h"
 #include "../shoggoth/shoggoth_rpc_server.h"

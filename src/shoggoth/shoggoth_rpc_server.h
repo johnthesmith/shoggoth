@@ -1,7 +1,6 @@
 #include "../../../../lib/sock/rpc_server.h"
 
 #include "shoggoth_consts.h"
-#include "sync.h"
 #include "limb/net.h"
 
 

@@ -1,6 +1,7 @@
 #include "nerve_list.h"
 
 
+
 /*
     Constructor
 */
@@ -369,7 +370,7 @@ NerveList* NerveList::copyStructureFrom
         ( void* p )
         {
             /* Create new nerve object and push it to this */
-            push( Nerve::create( getLog(), (Nerve*) p ));
+            push( Nerve::create( logManager, (Nerve*) p ));
             return false;
         }
     );

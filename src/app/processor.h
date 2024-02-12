@@ -2,7 +2,6 @@
 
 /* Local libraries */
 #include "../../../../lib/core/payload.h"
-#include "../shoggoth/sync.h"
 #include "../shoggoth/limb/limb_processor.h"
 
 #include "shoggoth_application.h"

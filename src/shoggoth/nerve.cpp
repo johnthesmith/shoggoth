@@ -16,15 +16,15 @@
 */
 Nerve::Nerve
 (
-    Log*        aLog,       /* The log object */
-    Layer*      aParent,    /* Parent layer */
-    Layer*      aChild,     /* Child layer */
-    NerveType   aNerveType, /* Type of nerve */
-    BindType    aBindType   /* Bind of nerve */
+    LogManager* aLogManager,    /* The log object */
+    Layer*      aParent,        /* Parent layer */
+    Layer*      aChild,         /* Child layer */
+    NerveType   aNerveType,     /* Type of nerve */
+    BindType    aBindType       /* Bind of nerve */
 )
 {
     /* Set properties */
-    log         = aLog;
+    logManager  = aLogManager;
     parent      = aParent;
     child       = aChild;
     nerveType   = aNerveType;
@@ -55,7 +55,7 @@ Nerve::~Nerve()
 */
 Nerve* Nerve::create
 (
-    Log*        aLog,       /* The log object*/
+    LogManager* aLogManager,/* The log manager object*/
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
     NerveType   aNerveType, /* Type of nerve */
@@ -64,7 +64,7 @@ Nerve* Nerve::create
 {
     return new Nerve
     (
-        aLog,
+        aLogManager,
         aParent,
         aChild,
         aNerveType,
@@ -78,13 +78,13 @@ Nerve* Nerve::create
 */
 Nerve* Nerve::create
 (
-    Log*    aLog,
+    LogManager*    aLogManager,
     Nerve*  aSource
 )
 {
     return Nerve::create
     (
-        aLog,
+        aLogManager,
         aSource -> getParent(),
         aSource -> getChild(),
         aSource -> getNerveType(),
@@ -110,7 +110,7 @@ void Nerve::destroy()
 */
 Log* Nerve::getLog()
 {
-    return log;
+    return logManager -> getLog();
 }
 
 

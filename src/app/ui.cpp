@@ -52,7 +52,8 @@ Ui::Ui
 {
     limb = LimbUi::create( aNet );
     camera = Camera::create();
-    setScene( Scene::create( getLog() ));
+
+    setScene( Scene::create( aNet -> getApplication() -> getLogManager() ));
 
     getScene()
     -> getFont()

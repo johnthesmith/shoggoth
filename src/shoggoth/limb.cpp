@@ -1,6 +1,7 @@
 #include "limb.h"
 
 
+
 /*
     Constructor
 */
@@ -150,7 +151,7 @@ Nerve* Limb::createNerve
 {
     Nerve* result = Nerve::create
     (
-        getLog(),
+        logManager,
         aLayerFrom,
         aLayerTo,
         aNerveType,

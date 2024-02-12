@@ -877,6 +877,7 @@ Net* Net::syncWithServer()
             ]
             ( void* aLayer )
             {
+
                 auto layer = ( Layer* ) aLayer;
 
                 /* Values was changed and must be write to server */
