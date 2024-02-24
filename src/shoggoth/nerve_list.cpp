@@ -360,19 +360,92 @@ Nerve* NerveList::getByNerve
 */
 NerveList* NerveList::copyStructureFrom
 (
-    NerveList* aSource /* Source */
+    NerveList* aSource, /* Source */
+    LayerList* aLayers /* List of layer for nerve*/
 )
 {
     clear();
     aSource -> loop
     (
-        [ this ]
+        [ this, &aLayers ]
         ( void* p )
         {
-            /* Create new nerve object and push it to this */
-            push( Nerve::create( logManager, (Nerve*) p ));
+            auto source = (Nerve*) p;
+            auto parent = aLayers -> getById( source -> getParent() -> getId());
+            auto child = aLayers -> getById( source -> getChild() -> getId());
+
+            if( parent != NULL && child != NULL )
+            {
+                /* Create new nerve object and push it to this */
+                push
+                (
+                    Nerve::create
+                    (
+                        logManager,
+                        parent,
+                        child,
+                        source -> getNerveType(),
+                        source -> getBindType()
+                    )
+                    -> setMinWeight( source -> getMinWeight())
+                    -> setMaxWeight( source -> getMaxWeight())
+                );
+            }
             return false;
         }
     );
     return this;
 }
+
+
+
+
+/*
+    Dump information to log
+*/
+NerveList* NerveList::dump
+(
+    string aComment
+)
+{
+    getLog() -> begin( "Nerve list dump" ) -> prm( "coment", aComment );
+    loop
+    (
+        [ this ]
+        ( void* p )
+        {
+            auto iNerve = (Nerve*) p;
+            getLog()
+            -> trace()
+            -> prm( "parent", iNerve -> getParent() -> getId() )
+            -> prm( "address", (void*) ( iNerve -> getParent()) )
+            -> prm( "child", iNerve -> getChild() -> getId() )
+            -> prm( "address", (void*) ( iNerve -> getChild()) );
+            return false;
+        }
+    );
+    getLog() -> end();
+    return this;
+}
+
+
+
+/*
+    Allocate nerves weights
+*/
+NerveList* NerveList::weightsAllocate
+(
+    function <void ( Nerve* )> aOnAllocate
+)
+{
+    loop
+    (
+        [ &aOnAllocate ]( void* p )
+        {
+            (( Nerve*) p ) -> allocate( aOnAllocate );
+            return false;
+        }
+    );
+    return this;
+}
+

@@ -200,4 +200,15 @@ class LayerList : public Heap
         (
             LayerList* /* Source */
         );
+
+
+
+        /*
+            Dump nerveList information to log
+        */
+        LayerList* dump
+        (
+            string = ""
+        );
+
 };

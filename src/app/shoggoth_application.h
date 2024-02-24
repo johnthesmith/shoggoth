@@ -54,6 +54,13 @@ class ShoggothApplication : public Application
 
 
         /*
+            Destroy
+        */
+        void destroy();
+
+
+
+        /*
             Run application
         */
         ShoggothApplication* run();
@@ -101,4 +108,3 @@ class ShoggothApplication : public Application
 
 
 };
-

@@ -238,6 +238,9 @@ LimbUi* LimbUi::drawNerve
 
                 switch( showBinds )
                 {
+                    case BDM_HIDDEN:
+                        /* The binds is invisible */
+                    break;
                     case BDM_TYPE:
                         switch( aNerve -> getBindType() )
                         {
@@ -777,7 +780,7 @@ double LimbUi::avgWeightBySelect()
 
 
 
-bool LimbUi::nerveWeightLoop
+LimbUi* LimbUi::nerveWeightLoop
 (
     NeuronListUi* a,
     IndexWeightLambda aCallback

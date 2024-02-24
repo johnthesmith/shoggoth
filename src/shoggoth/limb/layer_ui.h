@@ -333,7 +333,6 @@ class LayerUi : public LayerDim
             UI
         */
 
-        LayerUi* switchShowBinds();
         LayerUi* switchShowLayer();
 
 

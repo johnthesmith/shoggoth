@@ -202,7 +202,28 @@ class NerveList :  public Heap
         */
         NerveList* copyStructureFrom
         (
-            NerveList*  /* Source */
+            NerveList*,  /* Source */
+            LayerList*
+        );
+
+
+
+        /*
+            Dump information to log
+        */
+        NerveList* dump
+        (
+            string aComment
+        );
+
+
+
+        /*
+            Allocate nerves weights
+        */
+        NerveList* weightsAllocate
+        (
+            function <void ( Nerve* )> /* On allocate callback */
         );
 
 };

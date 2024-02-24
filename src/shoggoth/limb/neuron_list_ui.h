@@ -121,9 +121,32 @@ class NeuronListUi : public Heap
         );
 
 
+        /*
+            Say compilier about
+            virtual Heap* merge
+            (
+                Heap*,
+                function <bool ( void* )>
+            );
+        */
+        using Heap::merge;
+
+
 
         NeuronListUi* remove
         (
             NeuronListUi*
         );
+
+
+
+        /*
+            Say compilier about
+            Heap* remove
+            (
+                function <bool ( void* )>,
+                Heap* = NULL
+            );
+        */
+        using Heap::remove;
 };

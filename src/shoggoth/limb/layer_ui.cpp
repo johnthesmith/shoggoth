@@ -58,7 +58,7 @@ LayerUi* LayerUi::create
 LayerUi* LayerUi::clearScreen()
 {
     getLimb() -> lock();
-    memset( screen, 0, getCount() * sizeof( Point3d ));
+    memset( (void*) screen, 0, getCount() * sizeof( Point3d ));
     getLimb() -> unlock();
     return this;
 }
@@ -71,7 +71,7 @@ LayerUi* LayerUi::clearScreen()
 LayerUi* LayerUi::clearWorld()
 {
     getLimb() -> lock();
-    memset( world, 0, getCount() * sizeof( Point3d ));
+    memset( (void*) world, 0, getCount() * sizeof( Point3d ));
     getLimb() -> unlock();
     return this;
 }
@@ -84,7 +84,7 @@ LayerUi* LayerUi::clearWorld()
 LayerUi* LayerUi::clearSelected()
 {
     getLimb() -> lock();
-    memset( selected, 0, getCount() * sizeof( bool ));
+    memset( (void*) selected, 0, getCount() * sizeof( bool ));
     getLimb() -> unlock();
     return this;
 }
@@ -494,19 +494,6 @@ LayerUi* LayerUi::getNeuronsByScreenPos
 
     delete [] list;
 
-    return this;
-}
-
-
-
-LayerUi* LayerUi::switchShowBinds()
-{
-    switch( showBinds )
-    {
-        case BDM_HIDDEN : setShowBinds( BDM_WEIGHT ); break;
-        case BDM_WEIGHT : setShowBinds( BDM_TYPE ); break;
-        case BDM_TYPE   : setShowBinds( BDM_HIDDEN ); break;
-    }
     return this;
 }
 

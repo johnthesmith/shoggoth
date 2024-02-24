@@ -188,8 +188,6 @@ Limb* Limb::deleteNerve
     Limb synchronization
 */
 
-
-
 Limb* Limb::copyTo
 (
     Limb* aLimb,
@@ -217,8 +215,7 @@ Limb* Limb::copyTo
                 /* Copy structure of nerves */
                 aLimb
                 -> getNerveList()
-                -> copyStructureFrom( this -> getNerveList());
-
+                -> copyStructureFrom( this -> getNerveList(), aLimb -> getLayerList() );
                 nervesIsEqual = true;
             }
         }
@@ -465,27 +462,4 @@ Layer* Limb::copyLayerFrom
     return
     Layer::create( this, aLayerFrom -> getId() )
     -> setCount( aLayerFrom -> getCount() );
-}
-
-
-
-/*
-    Dump limb information to log
-*/
-Limb* Limb::dump()
-{
-    getLog() -> begin( "Limb layers dump" );
-    /* Loop by nerves */
-    getLayerList() -> loop
-    (
-        [ this ]
-        ( void* p )
-        {
-            auto iLayer = (Layer*) p;
-            getLog() -> trace( iLayer -> getId() );
-            return false;
-        }
-    );
-    getLog() -> end();
-    return this;
 }

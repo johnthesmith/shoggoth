@@ -330,7 +330,7 @@ class LimbUi : public Limb
 
 
 
-        bool nerveWeightLoop
+        LimbUi* nerveWeightLoop
         (
             NeuronListUi*,
             IndexWeightLambda

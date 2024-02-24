@@ -16,9 +16,18 @@ int main
     char** argv
 )
 {
+//    /* Read actions */
+//    auto a = ParamListFile::create();
+////    a -> setPath( Path{"a","b", "c", "d", "e", "f" } )-> setString( "c", "b")
+//    a -> fromJsonFile( "actions1.json" )
+//    ;
+//
+//    a -> dump();
+//    a -> destroy();
+
     ShoggothApplication::create( argc, argv )
     -> run()
-    -> destroy();
-
+    -> destroy()
+    ;
     return 0;
 }

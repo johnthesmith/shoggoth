@@ -182,9 +182,9 @@ void Ui::onCalc
     -> syncToLimb( limb )
     -> swapValuesAndErrors
     (
-        Actions{ READ_VALUES }, /* Action */
-        TASK_UI,                /* Role */
-        limb                    /* Participant object */
+        Actions{ READ_VALUES, READ_ERRORS },    /* Action */
+        TASK_UI,                                /* Role */
+        limb                                    /* Participant object */
     );
 }
 

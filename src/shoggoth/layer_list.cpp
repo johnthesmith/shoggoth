@@ -275,3 +275,32 @@ LayerList* LayerList::copyErrorsFrom
     );
     return this;
 }
+
+
+
+
+/*
+    Dump limb information to log
+*/
+LayerList* LayerList::dump
+(
+    string aComment
+)
+{
+    getLog() -> begin( "Layer list dump" ) -> prm( "coment", aComment );
+    loop
+    (
+        [ this ]
+        ( void* p )
+        {
+            auto iLayer = (Layer*) p;
+            getLog()
+            -> trace()
+            -> prm( "id", iLayer -> getId() )
+            -> prm( "address", (void*) iLayer );
+            return false;
+        }
+    );
+    getLog() -> end();
+    return this;
+}

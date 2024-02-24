@@ -73,27 +73,6 @@ Nerve* Nerve::create
 }
 
 
-/*
-    Create new nerve from source nerve
-*/
-Nerve* Nerve::create
-(
-    LogManager*    aLogManager,
-    Nerve*  aSource
-)
-{
-    return Nerve::create
-    (
-        aLogManager,
-        aSource -> getParent(),
-        aSource -> getChild(),
-        aSource -> getNerveType(),
-        aSource -> getBindType()
-    );
-}
-
-
-
 
 /*
     Destroy
@@ -118,9 +97,12 @@ Log* Nerve::getLog()
 /*
     Allocate memomry buffer for weights
 */
-Nerve* Nerve::allocate()
+Nerve* Nerve::allocate
+(
+    function <void ( Nerve* )> aOnAllocate
+)
 {
-    purge();
+    auto newCount = 0;
 
     int cFrom   = parent -> getCount();
     int cTo     = child -> getCount();
@@ -130,20 +112,33 @@ Nerve* Nerve::allocate()
     {
         case ALL_TO_ALL:
         {
-            weightsCount = cFrom * cTo;
+            newCount = cFrom * cTo;
         }
         break;
         case ONE_TO_ONE:
-            weightsCount = max( cFrom, cTo );
+            newCount = max( cFrom, cTo );
         break;
     }
 
-    /* Create buffer */
-    weights = new double[ weightsCount ];
+    if( weightsCount != newCount )
+    {
+        /*
+            Count has been changed,
+            and the weights array must be reallocated
+        */
+        purge();
 
-    getLog()
-    -> trace( "Memory allocated" )
-    -> prm( "Binds count", weightsCount );
+        weightsCount = newCount;
+
+        /* Create buffer */
+        weights = new double[ weightsCount ];
+
+        aOnAllocate( this );
+
+        getLog()
+        -> trace( "Memory allocated" )
+        -> prm( "Binds count", weightsCount );
+    }
 
     return this;
 }
@@ -171,9 +166,15 @@ Nerve* Nerve::purge()
 Nerve* Nerve::fill
 (
     double aMinWeight,  /* MinWeight */
-    double  aMaxWeight  /* MaxWeight */
+    double aMaxWeight  /* MaxWeight */
 )
 {
+    if( aMinWeight > aMaxWeight )
+    {
+        aMinWeight = minWeight;
+        aMaxWeight = maxWeight;
+    }
+
     if( weights != NULL )
     {
         for( int i = 0; i < weightsCount; i++ )
@@ -502,3 +503,52 @@ int Nerve::getIndexByNeuronsIndex
     }
     return result;
 }
+
+
+
+/*
+    Return minimal weight
+*/
+double Nerve::getMinWeight()
+{
+    return minWeight;
+}
+
+
+
+/*
+    Set minimal weight
+*/
+Nerve* Nerve::setMinWeight
+(
+    double aValue
+)
+{
+    minWeight = aValue;
+    return this;
+}
+
+
+
+/*
+    Return maximal weight
+*/
+double Nerve::getMaxWeight()
+{
+    return maxWeight;
+}
+
+
+
+/*
+    Set maximal weight
+*/
+Nerve* Nerve::setMaxWeight
+(
+    double aValue
+)
+{
+    maxWeight = aValue;
+    return this;
+}
+

@@ -1,12 +1,13 @@
 /* System libraries */
 #include <iostream>
 
+
+
 /* Libraryes */
 #include "../../../../lib/core/utils.h"
 #include "../../../../lib/core/log.h"
 #include "../../../../lib/json/param_list.h"
 #include "../../../../lib/core/buffer_to_hex.h"
-
 
 /* Application libraryes */
 #include "shoggoth_application.h"
@@ -41,7 +42,6 @@ ShoggothApplication::~ShoggothApplication()
 
 
 
-
 /*
     Creator
 */
@@ -53,6 +53,17 @@ ShoggothApplication* ShoggothApplication::create
 {
     return new ShoggothApplication( aCount, aList );
 }
+
+
+
+/*
+    Destroy
+*/
+void ShoggothApplication::destroy()
+{
+    delete this;
+}
+
 
 
 
@@ -112,7 +123,10 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
-    Loop::create ( this ) -> resume() -> loop() -> destroy();
+    Loop::create ( this )
+    -> resume()
+    -> loop()
+    -> destroy();
 
     getLog() -> end( "Application stop" );
 

@@ -44,10 +44,10 @@ Loop::Loop
 */
 Loop::~Loop()
 {
-    if( teacher != NULL)    teacher -> destroy();
-    if( processor != NULL)  processor -> destroy();
-    if( server != NULL)     server -> destroy();
-    if( ui != NULL)         ui -> destroy();
+//    if( teacher != NULL)    teacher -> destroy();
+//    if( processor != NULL)  processor -> destroy();
+//    if( server != NULL)     server -> destroy();
+//    if( ui != NULL)         ui -> destroy();
     net -> destroy();
 }
 

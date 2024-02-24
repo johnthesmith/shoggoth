@@ -22,7 +22,10 @@ Net::Net
     application -> getLog() -> trace( "Create net" );
 
     /* Read actions */
-    actions = ParamListFile::create() -> fromJsonFile( "actions.json" );
+    actions = ParamListFile::create()
+    -> fromJsonFile( "actions.json" )
+    ;
+
     tasks = ParamList::create();
     config = ParamList::create();
 }
@@ -35,6 +38,8 @@ Net::Net
 */
 Net::~Net()
 {
+    actions -> destroy();
+
     /* Config object clear and destroy */
     config -> destroy();
 
@@ -235,10 +240,11 @@ Net* Net::readLayers
     {
         getLog() -> begin( "Read layers" );
 
+        /* Create IO object and define request */
         auto io = Io::create( this );
         auto request = io -> getRequest();
 
-        /* Build values */
+        /* Build request values */
         aValues -> loop
         (
             [ &request ]
@@ -253,7 +259,8 @@ Net* Net::readLayers
                 return false;
             }
         );
-        /* Build errors */
+
+        /* Build request errors */
         aErrors -> loop
         (
             [ &request ]
@@ -310,10 +317,11 @@ Net* Net::readLayers
                     char* buffer = NULL;
                     size_t size = 0;
 
+
                     io -> getAnswer()
                     -> getData
                     (
-                        Path{ "layers", "errors", layer -> getId() },
+                        Path{ "errors", layer -> getId() },
                         buffer,
                         size
                     );
@@ -325,6 +333,10 @@ Net* Net::readLayers
                     return false;
                 }
             );
+        }
+        else
+        {
+            /* Call error */
         }
 
         io -> destroy();
@@ -499,12 +511,15 @@ Net* Net::readNet()
                                         nerveType,
                                         bindType
                                     )
-                                    -> allocate()
-                                    -> fill
+                                    -> setMinWeight
                                     (
-                                        jsonNerve -> getDouble( "minWeight", 1.0 ),
-                                        jsonNerve -> getDouble( "maxWeight", 1.0 )
-                                    );
+                                        jsonNerve -> getDouble( "minWeight" , 0 )
+                                    )
+                                    -> setMaxWeight
+                                    (
+                                        jsonNerve -> getDouble( "maxWeight", 0 )
+                                    )
+                                    ;
                                 }
                             }
                             else
@@ -668,7 +683,7 @@ Net* Net::purgeLayers
 
     /* Delete layers */
     auto c = purgeList.size();
-    for( int i = 0; i<c; i++ )
+    for( long unsigned int i = 0; i<c; i++ )
     {
         deleteLayer( purgeList[ i ] );
     }
@@ -798,6 +813,7 @@ Net* Net::swapValuesAndErrors
                             /* ... then swap values and errors */
                             switch( iAction )
                             {
+                                default: break;
                                 case READ_VALUES:
                                     participantLayer -> copyValuesFrom( netLayer );
                                 break;

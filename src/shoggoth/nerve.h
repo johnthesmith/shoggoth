@@ -5,10 +5,11 @@
 
 # pragma once
 
+#include <functional>   /* for allocate lyambda */
+
+
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/core/log_manager.h"
-
-
 
 #include "shoggoth_consts.h"
 
@@ -20,10 +21,18 @@ class Nerve: public Result
 {
     private:
 
-        double*     weights         = NULL;         /* Array of weights */
-        int         weightsCount    = 0;            /* County of weights */
+        /* Array of weights */
+        double*     weights         = NULL;
+        /* County of weights */
+        int         weightsCount    = 0;
 
-        LogManager* logManager      = NULL;         /* The log manger object */
+        /* Minimum weight for fill method */
+        double      minWeight       = 0;
+        /* Maximum weight for fill method */
+        double      maxWeight       = 0;
+
+        /* The log manger object */
+        LogManager* logManager      = NULL;
 
         string      id              = "";
         BindType    bindType        = BT_VALUE;
@@ -70,17 +79,6 @@ class Nerve: public Result
 
 
         /*
-            Create new nerve from source nerve
-        */
-        static Nerve* create
-        (
-            LogManager* aLogManager,
-            Nerve*  aSource
-        );
-
-
-
-        /*
             Destroy
         */
         void destroy();
@@ -97,7 +95,11 @@ class Nerve: public Result
         /*
             Allocate memomry buffer for weights
         */
-        Nerve* allocate();
+        Nerve* allocate
+        (
+            /* On Allocate callback */
+            function <void ( Nerve* )>
+        );
 
 
 
@@ -113,8 +115,8 @@ class Nerve: public Result
         */
         Nerve* fill
         (
-            double,     /* MinWeight */
-            double      /* MaxWeight */
+            double = 1.0,     /* MinWeight */
+            double = -1.0      /* MaxWeight */
         );
 
 
@@ -269,6 +271,39 @@ class Nerve: public Result
         (
             int,    /* index From */
             int     /* index To */
+        );
+
+
+        /*
+            Return minimal weight
+        */
+        double getMinWeight();
+
+
+
+        /*
+            Set minimal weight
+        */
+        Nerve* setMinWeight
+        (
+            double aValue
+        );
+
+
+
+        /*
+            Return maximal weight
+        */
+        double getMaxWeight();
+
+
+
+        /*
+            Set maximal weight
+        */
+        Nerve* setMaxWeight
+        (
+            double aValue
         );
 
 };

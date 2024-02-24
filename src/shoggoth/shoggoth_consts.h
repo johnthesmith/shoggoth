@@ -111,8 +111,6 @@ enum Command
     CMD_READ_NET,       /* Server return full Net configuration */
     CMD_WRITE_LAYERS,   /* Server send layers with errors and values plan */
     CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
-    CMD_WRITE_ERRORS,   /* Server receive layer errors */
-    CMD_READ_ERRORS,    /* Server return the layer errors data */
     CMD_WRITE_WEIGHTS,  /* Server receive  */
     CMD_READ_WEIGHTS    /* Server return the layer  */
 };

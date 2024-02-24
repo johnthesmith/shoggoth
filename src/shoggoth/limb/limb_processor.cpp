@@ -137,10 +137,14 @@ CalcStage LimbProcessor::getCalcStage
 
             if
             (
-                aDirection != CALC_BACKWARD &&
-                result != layer -> getForwardStage( threadCount ) ||
-                aDirection != CALC_FORWARD &&
-                result != layer -> getBackwardStage( threadCount )
+                (
+                    aDirection != CALC_BACKWARD &&
+                    result != layer -> getForwardStage( threadCount )
+                ) ||
+                (
+                    aDirection != CALC_FORWARD &&
+                    result != layer -> getBackwardStage( threadCount )
+                )
             )
             {
                 result = CALC_START;
@@ -259,6 +263,14 @@ LimbProcessor* LimbProcessor::calc()
     {
         /* Check structure with net */
         net -> syncToLimb( this );
+        getNerveList() -> weightsAllocate
+        (
+            []( Nerve* nerve )
+            {
+                nerve -> fill();
+            }
+        );
+
         /* Upload start values from Net */
         net -> swapValuesAndErrors
         (
@@ -266,6 +278,7 @@ LimbProcessor* LimbProcessor::calc()
             TASK_PROC,   /* Role */
             this         /* Participant object */
         );
+
         /* Reset calc stages for all layers */
         calcReset();
         /* Fill forward and backward list */
@@ -300,8 +313,10 @@ LimbProcessor* LimbProcessor::calc()
                 int idThread = 0;
                 /* Layer calculation */
                 layer -> calcStartForward();
+
                 /* --- thread begin --- */
                 layerCalcValue( layer, idThread );
+
                 /* Set local sync for local works */
                 layer -> calcCompleteForward();
                  /* --- thread end --- */
@@ -739,7 +754,6 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         );
     }
 
-
     if( countSample > 0 )
     {
         aLayer -> setNeuronError
@@ -801,6 +815,7 @@ LimbProcessor* LimbProcessor::neuronLearning
                     summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
                     summWeight += abs( aWeight );
                 break;
+                default: break;
             }
             return false;
         }
@@ -847,6 +862,7 @@ LimbProcessor* LimbProcessor::neuronLearning
         {
             switch( aNerve -> getBindType())
             {
+                default:break;
                 case BT_VALUE:
                 {
                     /*
@@ -887,12 +903,10 @@ LimbProcessor* LimbProcessor::layerCalcValue
 {
     int b = calcNeuronFrom( aLayer, aThread );
     int e = calcNeuronTo( aLayer, aThread );
-
     for( int i = b; i < e; i ++ )
     {
         neuronCalcValue( aLayer, i );
     }
-
     return this;
 }
 
