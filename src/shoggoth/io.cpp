@@ -111,7 +111,8 @@ Io* Io::call
             getLog()
             -> warning( "Shoggot IO error" )
             -> prm( "command", commandToString( aCommand ))
-            -> prm( "code", getCode() );
+            -> prm( "code", getCode() )
+            -> lineEnd();
 
             ParamListLog::dump( getLog(), request );
         }

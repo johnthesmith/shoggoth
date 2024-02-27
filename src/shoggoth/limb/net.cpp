@@ -869,7 +869,11 @@ Net* Net::syncWithServer()
     -> getObject( "tasks" );
 
     /* The application does not have to be a processor */
-    if( tasksSection -> getObject( taskToString( TASK_PROC )) == NULL )
+    if
+    (
+        tasksSection != NULL &&
+        tasksSection -> getObject( taskToString( TASK_PROC )) == NULL
+    )
     {
         getLog() -> begin( "Synchronize layers with server" );
 
@@ -968,6 +972,7 @@ Net* Net::syncWithServer()
 
         getLog() -> end();
     }
+
     return this;
 }
 

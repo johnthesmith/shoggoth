@@ -285,6 +285,9 @@ void Teacher::onLoop()
             {
                 /* Batch precessing */
                 auto batch = item -> getObject();
+
+                ParamListLog::dump( getLog(), batch, "batch" );
+
                 batch -> loop
                 (
                     [ this ]
@@ -297,7 +300,9 @@ void Teacher::onLoop()
                             getLog()
                             -> begin( "Command" )
                             -> prm( "cmd", command );
+
                             ParamListLog::dump( getLog(), obj, "Arguments" );
+
                             switch( stringToTeacherTask( command ))
                             {
                                 case TEACHER_CMD_VALUE_TO_LAYER:

@@ -44,10 +44,11 @@ Loop::Loop
 */
 Loop::~Loop()
 {
-//    if( teacher != NULL)    teacher -> destroy();
-//    if( processor != NULL)  processor -> destroy();
-//    if( server != NULL)     server -> destroy();
-//    if( ui != NULL)         ui -> destroy();
+    if( teacher != NULL)    teacher -> destroy();
+    if( processor != NULL)  processor -> destroy();
+    if( server != NULL)     server -> destroy();
+    if( ui != NULL)         ui -> destroy();
+
     net -> destroy();
 }
 
@@ -252,8 +253,8 @@ Loop* Loop::teacherControl()
 */
 void Loop::onLoop()
 {
-    /* Set ok */
     getApplication() -> checkConfigUpdate();
+
     if
     (
         getApplication() -> getConfigUpdated() ||
@@ -323,5 +324,9 @@ void Loop::onLoop()
 
     net -> syncWithServer();
 
-//            aTreminated = scene -> windowClosed();
+    if( getApplication() -> getCli() -> getString( "config" ) == "" )
+    {
+        getLog() -> error( "Need the --config cli argument." );
+        terminate();
+    }
 }

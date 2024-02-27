@@ -24,7 +24,6 @@
                 ],
 
                 [
-                    { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min": 0.0, "max":0.0 },
                     {
                         "cmd":"IMAGE_TO_LAYER",
                         "layer" : "retina",
@@ -40,19 +39,16 @@
                 ],
 
                 [
-                    { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 },
                     { "cmd":"IMAGE_TO_LAYER", "layer": "retina", "files":[ "./patterns/tree00001.png" ]},
                     { "cmd":"IMAGE_TO_LAYER", "layer": "sample", "files": ["./patterns/tree00001.png" ]}
                 ],
 
                 [
-                    { "cmd":"VALUE_TO_LAYER",   "layer": "sample", "min": 0.0, "max":0.0 },
                     { "cmd":"FOLDER_TO_LAYER",  "layer": "retina", "folder" : "./patterns/digit1" },
                     { "cmd":"IMAGE_TO_LAYER",   "layer": "sample", "files": ["./patterns/digit1/digit1-00001.png" ]}
                 ],
 
                 [
-                    { "cmd":"VALUE_TO_LAYER",   "layer": "sample", "min": 0.0, "max":0.0 },
                     { "cmd":"FOLDER_TO_LAYER",  "layer": "retina", "folder": "./patterns/digit2" },
                     { "cmd":"IMAGE_TO_LAYER",   "layer": "sample", "files": ["./patterns/digit2/digit2-00001.png" ]}
                 ]
