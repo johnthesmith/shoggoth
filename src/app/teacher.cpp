@@ -4,7 +4,6 @@
 #include "teacher.h"
 #include "../../../../lib/core/math.h"
 #include "../../../../lib/core/rnd.h"
-#include "../../../../lib/json/param_list_log.h"
 #include "../../../../lib/core/utils.h"
 #include "teacher_consts.h"
 
@@ -150,9 +149,9 @@ Teacher* Teacher::cmdValueToLayer
     }
     else
     {
-        getLog()
-        -> warning( "Layer not found" )
-        -> prm( "id", layerId );
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
     }
 
     limb -> unlock();
@@ -184,13 +183,21 @@ Teacher* Teacher::cmdImageToLayer
             {
                 layer -> imageToValue( file );
             }
+            else
+            {
+                setResult( "file_name_is_empty" );
+            }
+        }
+        else
+        {
+            setResult( "files_section_not_found" );
         }
     }
     else
     {
-        getLog()
-        -> warning( "Layer not found" )
-        -> prm( "id", layerId );
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
     }
     limb -> unlock();
     return this;
@@ -226,9 +233,9 @@ Teacher* Teacher::cmdFolderToLayer
     }
     else
     {
-        getLog()
-        -> warning( "Layer not found" )
-        -> prm( "id", layerId );
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
     }
     limb -> unlock();
     return this;
@@ -285,9 +292,6 @@ void Teacher::onLoop()
             {
                 /* Batch precessing */
                 auto batch = item -> getObject();
-
-                ParamListLog::dump( getLog(), batch, "batch" );
-
                 batch -> loop
                 (
                     [ this ]
@@ -299,9 +303,8 @@ void Teacher::onLoop()
                             auto command = obj -> getString( "cmd" );
                             getLog()
                             -> begin( "Command" )
-                            -> prm( "cmd", command );
-
-                            ParamListLog::dump( getLog(), obj, "Arguments" );
+                            -> prm( "cmd", command )
+                            -> dump( obj, "Arguments" );
 
                             switch( stringToTeacherTask( command ))
                             {
@@ -319,7 +322,9 @@ void Teacher::onLoop()
                                 case TEACHER_CMD_HID_TO_LAYER:
                                 break;
                                 default:
-                                    getLog() -> warning( "Unknown command" );
+                                    setResult( "Unknown command" )
+                                    -> getDetails()
+                                    -> setString( "command", command );
                                 break;
                             }
                             getLog() -> end();
@@ -328,13 +333,24 @@ void Teacher::onLoop()
                     }
                 );
 
-                /* Upload values and errors to net */
-                limb -> getNet() -> swapValuesAndErrors
-                (
-                    { WRITE_VALUES, WRITE_ERRORS }, /* Action */
-                    TASK_TEACHER,   /* Role */
-                    limb /* Participant object */
-                );
+                if( isOk() )
+                {
+                    /* Upload values and errors to net */
+                    limb -> getNet() -> swapValuesAndErrors
+                    (
+                        { WRITE_VALUES, WRITE_ERRORS }, /* Action */
+                        TASK_TEACHER,   /* Role */
+                        limb /* Participant object */
+                    );
+                }
+                else
+                {
+                    getLog()
+                    -> warning( getCode() )
+                    -> prm( "message", getMessage() )
+                    -> dump( getDetails() );
+                    setOk();
+                }
             }
             else
             {

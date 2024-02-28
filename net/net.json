@@ -1,3 +1,4 @@
+
 {
     "layers":
     {
@@ -130,7 +131,7 @@
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
+                "WRITE_VALUES"  :[ "TASK_PROC", "TASK_TEACHER" ],
                 "READ_ERRORS"   :[ "TASK_UI" ],
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }

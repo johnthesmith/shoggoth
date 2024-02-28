@@ -1,5 +1,4 @@
 #include "io.h"
-#include "../../../../lib/json/param_list_log.h"
 #include "../../../../lib/sock/rpc_client.h"
 
 
@@ -112,9 +111,8 @@ Io* Io::call
             -> warning( "Shoggot IO error" )
             -> prm( "command", commandToString( aCommand ))
             -> prm( "code", getCode() )
+            -> dump( request )
             -> lineEnd();
-
-            ParamListLog::dump( getLog(), request );
         }
     }
 
