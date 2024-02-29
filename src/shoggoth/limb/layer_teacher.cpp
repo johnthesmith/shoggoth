@@ -141,7 +141,8 @@ LayerTeacher* LayerTeacher::bitmapToValue
 */
 LayerTeacher* LayerTeacher::imageToValue
 (
-    string aFileName
+    string aFileName,
+    Result* result
 )
 {
     if( isOk() )
@@ -164,25 +165,21 @@ LayerTeacher* LayerTeacher::imageToValue
             }
             else
             {
-                getLog()
-                -> warning( "File read error" )
-                -> prm( "code", bitmap -> getCode() )
-                -> prm( "message", bitmap -> getMessage() );
+                result -> resultFrom( bitmap );
             }
             bitmap -> destroy();
         }
         else
         {
-            getLog()
-            -> warning( "Unknown image format" )
-            -> prm( "extention", fileExt );
+            result
+            -> setResult( "unknown_image_format" )
+            -> getDetails()
+            -> setString( "extention", fileExt );
         }
     }
     else
     {
-        getLog()
-        -> warning( "Write unable image to the value because layer has the error" )
-        -> prm( "code", getCode() );
+        result -> resultFrom( this );
     }
     return this;
 }

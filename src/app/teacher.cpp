@@ -181,7 +181,7 @@ Teacher* Teacher::cmdImageToLayer
             auto file = files -> getRnd() -> getString();
             if( file != "" )
             {
-                layer -> imageToValue( file );
+                layer -> imageToValue( file, this );
             }
             else
             {
@@ -226,9 +226,17 @@ Teacher* Teacher::cmdFolderToLayer
             auto file = files -> getRnd();
             if( file != NULL )
             {
-                layer -> imageToValue( folder +  "/" + file -> getString() );
+                layer -> imageToValue( folder +  "/" + file -> getString(), this );
+            }
+            else
+            {
+                setResult( "file_not_found" );
             }
             files -> destroy();
+        }
+        else
+        {
+            setResult( "folder_is_empty" );
         }
     }
     else

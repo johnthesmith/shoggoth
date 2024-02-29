@@ -25,21 +25,6 @@ enum NerveType
 
 
 /*
-    List of events for neral net
-*/
-enum Event
-{
-    EVENT_UNKNOWN,
-    LOOP_BEGIN,         /* Event for each main loop begin */
-    LOOP_END,           /* Event for each main loop end */
-    READ_NET,           /**/
-    TEACHER_BEGIN,      /* Begin of teacher loop */
-    TEACHER_END         /* End o teeacher loop */
-};
-
-
-
-/*
     List of actions like resolving
     actions = f( event, active modules )
 */
@@ -143,16 +128,6 @@ std::string actionToString
 Action stringToAction
 (
     std::string
-);
-
-
-
-/*
-    Return event string by Event
-*/
-std::string eventToString
-(
-    Event /* Event enum */
 );
 
 

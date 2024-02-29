@@ -20,11 +20,6 @@ Net::Net
     sockManager = aSockManager;
     application -> getLog() -> trace( "Create net" );
 
-    /* Read actions */
-    actions = ParamListFile::create()
-    -> fromJsonFile( "actions.json" )
-    ;
-
     tasks = ParamList::create();
     config = ParamList::create();
 }
@@ -37,8 +32,6 @@ Net::Net
 */
 Net::~Net()
 {
-    actions -> destroy();
-
     /* Config object clear and destroy */
     config -> destroy();
 

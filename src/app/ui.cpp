@@ -178,9 +178,15 @@ void Ui::onCalc
 )
 {
     /* Prepare Limb */
-    limb -> getNet()
-    -> syncToLimb( limb )
-    -> swapValuesAndErrors
+    limb -> getNet() -> syncToLimb( limb );
+    limb -> getNerveList() -> weightsAllocate
+    (
+        []( Nerve* nerve )
+        {
+            nerve -> fill( 1.0, 1.0 );
+        }
+    );
+    limb -> getNet() -> swapValuesAndErrors
     (
         Actions{ READ_VALUES, READ_ERRORS },    /* Action */
         TASK_UI,                                /* Role */
@@ -211,7 +217,7 @@ void Ui::onDraw
     /* Draw Layers */
     limb
     -> drawLayers( aScene, camera -> getChanged() )
-//    -> drawNerves( aScene )
+    -> drawNerves( aScene )
     ;
 
     /* Reset camera changed */

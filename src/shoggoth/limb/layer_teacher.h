@@ -84,7 +84,8 @@ class LayerTeacher : public LayerDim
         */
         LayerTeacher* imageToValue
         (
-            string  /* File name */
+            string,  /* File name */
+            Result*
         );
 
 

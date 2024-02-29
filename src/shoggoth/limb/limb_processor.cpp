@@ -263,6 +263,7 @@ LimbProcessor* LimbProcessor::calc()
     {
         /* Check structure with net */
         net -> syncToLimb( this );
+
         getNerveList() -> weightsAllocate
         (
             []( Nerve* nerve )
@@ -386,7 +387,7 @@ LimbProcessor* LimbProcessor::calc()
         }
 
         /* Dump sync to log */
-        syncToLog( layer );
+        /* syncToLog( layer ); */
     }
 
     return this;

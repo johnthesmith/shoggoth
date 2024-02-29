@@ -36,7 +36,6 @@ class Net: public Limb
 
         /* Events */
         string          ptu             = "***";    /* Roles of the Net in PTU */
-        ParamListFile*  actions         = NULL;     /* Structure for resolve [actions] = f( ptu, event ) */
         ParamList*      tasks           = NULL;     /* List of participants tasks */
 
         /* Synchronization states */

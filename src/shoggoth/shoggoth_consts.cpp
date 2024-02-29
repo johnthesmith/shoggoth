@@ -26,47 +26,6 @@ std::string actionToString
 
 
 /*
-    Return Action const by string value
-*/
-Action stringToAction
-(
-    std::string a
-)
-{
-    if( a == "READ_VALUES" )   return READ_VALUES;
-    if( a == "WRITE_VALUES" )  return WRITE_VALUES;
-    if( a == "READ_ERRORS" )   return READ_ERRORS;
-    if( a == "WRITE_ERRORS" )  return WRITE_ERRORS;
-    if( a == "SYNC_RESET" )    return SYNC_RESET;
-    return ACTION_UNKNOWN;
-}
-
-
-
-
-/*
-    Return event string by Event
-*/
-std::string eventToString
-(
-    Event a /* Event enum */
-)
-{
-    switch( a )
-    {
-        default:
-        case EVENT_UNKNOWN  : return "EVENT_UNKNOWN";
-        case LOOP_BEGIN     : return "LOOP_BEGIN";
-        case LOOP_END       : return "LOOP_END";
-        case READ_NET       : return "READ_NET";
-        case TEACHER_BEGIN  : return "TEACHER_BEGIN";
-        case TEACHER_END    : return "TEACHER_END";
-    }
-}
-
-
-
-/*
     Return task of participant string by task enum
 */
 std::string taskToString
