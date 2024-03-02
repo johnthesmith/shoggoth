@@ -59,7 +59,7 @@ Processor::Processor
 Processor::~Processor()
 {
     limb -> destroy();
-    getLog() -> trace( "Processor destroyd" );
+    getLog() -> trace( "Processor destroed" );
 }
 
 

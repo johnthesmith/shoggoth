@@ -81,9 +81,25 @@ LimbProcessor* LimbProcessor::syncToLog
 
     auto layers = getLayerList();
     int c = layers -> getCount();
+
+//    getMon()
+//    -> setString( Path{ "current" }, aLayer -> getId()  )
+
     for( int i=0; i<c; i++ )
     {
         auto layer = layers -> getByIndex( i );
+
+//        getMon()
+//        -> setString
+//        (
+//            Path{ "layer", "forward", layer -> getId() },
+//            calcStageToString( layer -> getForwardStage( threadCount )
+//        )
+//        -> setString
+//        (
+//            Path{ "layer", "backward", layer -> getId() },
+//            calcStageToString( layer -> getBackwardStage( threadCount )
+//        );
 
         getLog()
         -> trace()

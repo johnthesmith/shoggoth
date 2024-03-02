@@ -867,7 +867,9 @@ Net* Net::syncWithServer()
         tasksSection -> getObject( taskToString( TASK_PROC )) == NULL
     )
     {
-        getLog() -> begin( "Synchronize layers with server" );
+        getLog()
+        -> trapOn()
+        -> begin( "Synchronize layers with server" );
 
         /* Create lists of layers */
         auto readValues = LayerList::create( this );
@@ -962,7 +964,9 @@ Net* Net::syncWithServer()
         writeValues -> destroy();
         writeErrors -> destroy();
 
-        getLog() -> end();
+        getLog()
+        -> end()
+        -> trapOff();
     }
 
     return this;
