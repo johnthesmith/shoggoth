@@ -48,21 +48,6 @@
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
-        "cortex_3":
-        {
-            "used"              :[ "TASK_PROC", "TASK_UI" ],
-            "name"              :"Cortex 3",
-            "size"              :[ 20, 20, 1 ],
-            "position"          :[ 0.0, 0.0, 2.0 ],
-            "drawSize"          :[ 0.1, 0.1. 0.1 ],
-            "actions":
-            {
-                "READ_VALUES"   :[ "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
-            }
-        },
         "result":
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
@@ -146,15 +131,6 @@
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"cortex_2",
-            "idTo"              :"cortex_3",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
-        },
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"cortex_3",
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",

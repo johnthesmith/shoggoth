@@ -1,0 +1,10 @@
+[90mstring [97mstart [95m2024-03-04 21:03:17.527102[39m
+[90mint [97mcount [95m381[39m
+[90mobject [97mlast
+    [90mstring [97mmoment [95m2024-03-04 21:09:38.219696[39m
+    [90mdouble [97merror [95m0.009517[39m
+    [90mdouble [97merrorDelta [95m-0.000483[39m
+[90mobject [97mconfig
+    [90mstring [97merrorLayer [95merror[39m
+    [90mdouble [97merrorLimit [95m0.010000[39m
+    [90mstring [97mmode [95mlearning[39m

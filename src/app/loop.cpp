@@ -213,12 +213,11 @@ Loop* Loop::teacherControl()
             teacher -> setId( "teacher_thread" ) -> loop( true );
         }
 
-        /* Read batches list */
+        /* Read batches list and other config */
         teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
-        /* Read layer with errors */
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
-        /* Read error limit */
         teacher -> setErrorLimit( cfg -> getDouble( "errorLimit" ));
+        teacher -> setMode( cfg -> getString( "mode" ));
 
         teacher
         -> setLoopTimeoutMcs

@@ -1,0 +1,31 @@
+[90mstring [97mstart [95m2024-03-04 21:03:14.650724[39m
+[90mint [97mcount [95m36515[39m
+[90mstring [97mlast [95m2024-03-04 21:09:38.568722[39m
+[90mobject [97mconfig
+    [90mdouble [97mlearningSpeed [95m0.001000[39m
+    [90mdouble [97mwakeupWeight [95m0.000500[39m
+    [90mdouble [97merrorNormalize [95m0.110000[39m
+[90mobject [97mduration
+    [90mstring [97mretina [95m101mcs [39m
+    [90mstring [97mcortex_1 [95m25mls 251mcs [39m
+    [90mstring [97mcortex_2 [95m3mls 236mcs [39m
+    [90mstring [97msample [95m985mcs [39m
+    [90mstring [97mcommand [95m56mcs [39m
+    [90mstring [97mresult [95m32mls 466mcs [39m
+    [90mstring [97merror [95m11mcs [39m
+[90mobject [97mdurationMin
+    [90mint [97mretina [95m87[39m
+    [90mint [97mcortex_1 [95m7612[39m
+    [90mint [97mcortex_2 [95m2905[39m
+    [90mint [97msample [95m35[39m
+    [90mint [97mcommand [95m8[39m
+    [90mint [97mresult [95m2961[39m
+    [90mint [97merror [95m8[39m
+[90mobject [97mdurationMax
+    [90mint [97mretina [95m157953[39m
+    [90mint [97mcortex_1 [95m205941[39m
+    [90mint [97mcortex_2 [95m102215[39m
+    [90mint [97msample [95m35852[39m
+    [90mint [97mcommand [95m9234[39m
+    [90mint [97mresult [95m47061[39m
+    [90mint [97merror [95m6953[39m

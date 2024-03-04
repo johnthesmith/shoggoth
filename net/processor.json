@@ -15,7 +15,7 @@
             "loopSleepMcs"      :100,
             "learningMode"      :false,
             "learningSpeed"     :0.001,
-            "wakeupWeight"      :0.0001,
+            "wakeupWeight"      :0.0005,
             "errorNormalize"    :0.11,
             "processorCount"    :1,
             "listen":

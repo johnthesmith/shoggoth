@@ -22,7 +22,7 @@ Teacher::Teacher
 : Payload( aNet -> getApplication() )
 {
     getLog() -> trace( "Create teacher" );
-
+    mon = Mon::create( "./mon/teacher.txt" ) -> now( Path{ "start" });
     limb = LimbTeacher::create( aNet );
     batches = ParamList::create();
 }
@@ -36,6 +36,7 @@ Teacher::~Teacher()
 {
     limb -> destroy();
     batches -> destroy();
+    mon -> destroy();
     getLog() -> trace( "Teacher destroyd" );
 }
 
@@ -104,6 +105,17 @@ Teacher* Teacher::setIdErrorLayer
 )
 {
     idErrorLayer = a;
+    return this;
+}
+
+
+
+Teacher* Teacher::setMode
+(
+    string a
+)
+{
+    mode = a;
     return this;
 }
 
@@ -262,7 +274,15 @@ Teacher* Teacher::cmdFolderToLayer
 */
 void Teacher::onLoop()
 {
-    getLog() -> begin( "Check error level" );
+    mon
+    -> addInt( Path{ "count" })
+    -> now( Path{ "last", "moment" } )
+    -> setString( Path{ "config", "errorLayer" }, idErrorLayer )
+    -> setDouble( Path{ "config", "errorLimit" }, errorLimit )
+    -> setString( Path{ "config", "mode" }, mode )
+    ;
+
+    getLog() -> trapOn() -> begin( "Check error level" );
 
     /* Prepare Limb */
     limb -> getNet()
@@ -289,80 +309,92 @@ void Teacher::onLoop()
         -> prm( "error limit", errorLimit )
         ;
 
+        mon
+        -> setDouble( Path{ "last", "error" }, error )
+        -> setDouble( Path{ "last", "errorDelta" }, error - errorLimit );
+
         /* Check error limit */
         if( error <= errorLimit )
         {
             /* Check new batch */
             getLog() -> begin( "New batch" );
 
-            auto item = batches -> getRnd();
-            if( item != NULL && item -> isObject() )
+            auto list = batches -> getObject( mode );
+            if( list != NULL )
             {
-                /* Batch precessing */
-                auto batch = item -> getObject();
-                batch -> loop
-                (
-                    [ this ]
-                    ( Param* aParam )
-                    {
-                        auto obj = aParam -> getObject();
-                        if( obj != NULL )
-                        {
-                            auto command = obj -> getString( "cmd" );
-                            getLog()
-                            -> begin( "Command" )
-                            -> prm( "cmd", command )
-                            -> dump( obj, "Arguments" );
-
-                            switch( stringToTeacherTask( command ))
-                            {
-                                case TEACHER_CMD_VALUE_TO_LAYER:
-                                    cmdValueToLayer( obj );
-                                break;
-                                case TEACHER_CMD_IMAGE_TO_LAYER:
-                                    cmdImageToLayer( obj );
-                                break;
-                                case TEACHER_CMD_FOLDER_TO_LAYER:
-                                    cmdFolderToLayer( obj );
-                                break;
-                                case TEACHER_CMD_GUID_TO_LAYER:
-                                break;
-                                case TEACHER_CMD_HID_TO_LAYER:
-                                break;
-                                default:
-                                    setResult( "Unknown command" )
-                                    -> getDetails()
-                                    -> setString( "command", command );
-                                break;
-                            }
-                            getLog() -> end();
-                        }
-                        return false;
-                    }
-                );
-
-                if( isOk() )
+                auto item = list -> getRnd();
+                if( item != NULL && item -> isObject() )
                 {
-                    /* Upload values and errors to net */
-                    limb -> getNet() -> swapValuesAndErrors
+                    /* Batch precessing */
+                    auto batch = item -> getObject();
+                    batch -> loop
                     (
-                        { WRITE_VALUES, WRITE_ERRORS }, /* Action */
-                        TASK_TEACHER,   /* Role */
-                        limb /* Participant object */
+                        [ this ]
+                        ( Param* aParam )
+                        {
+                            auto obj = aParam -> getObject();
+                            if( obj != NULL )
+                            {
+                                auto command = obj -> getString( "cmd" );
+                                getLog()
+                                -> begin( "Command" )
+                                -> prm( "cmd", command )
+                                -> dump( obj, "Arguments" );
+
+                                switch( stringToTeacherTask( command ))
+                                {
+                                    case TEACHER_CMD_VALUE_TO_LAYER:
+                                        cmdValueToLayer( obj );
+                                    break;
+                                    case TEACHER_CMD_IMAGE_TO_LAYER:
+                                        cmdImageToLayer( obj );
+                                    break;
+                                    case TEACHER_CMD_FOLDER_TO_LAYER:
+                                        cmdFolderToLayer( obj );
+                                    break;
+                                    case TEACHER_CMD_GUID_TO_LAYER:
+                                    break;
+                                    case TEACHER_CMD_HID_TO_LAYER:
+                                    break;
+                                    default:
+                                        setResult( "Unknown command" )
+                                        -> getDetails()
+                                        -> setString( "command", command );
+                                    break;
+                                }
+                                getLog() -> end();
+                            }
+                            return false;
+                        }
                     );
+
+                    if( isOk() )
+                    {
+                        /* Upload values and errors to net */
+                        limb -> getNet() -> swapValuesAndErrors
+                        (
+                            { WRITE_VALUES, WRITE_ERRORS }, /* Action */
+                            TASK_TEACHER,   /* Role */
+                            limb /* Participant object */
+                        );
+                    }
+                    else
+                    {
+                        getLog()
+                        -> warning( getCode() )
+                        -> prm( "message", getMessage() )
+                        -> dump( getDetails() );
+                        setOk();
+                    }
                 }
                 else
                 {
-                    getLog()
-                    -> warning( getCode() )
-                    -> prm( "message", getMessage() )
-                    -> dump( getDetails() );
-                    setOk();
+                    getLog() -> warning( "Batch is not a object" );
                 }
             }
             else
             {
-                getLog() -> warning( "Batch is not a object" );
+                getLog() -> warning( "Mode not found" );
             }
             getLog() -> end();
         }
@@ -380,5 +412,7 @@ void Teacher::onLoop()
 
     limb -> unlock();
 
-    getLog() -> end();
+    mon -> flush();
+
+    getLog() -> end() -> trapOff();
 }

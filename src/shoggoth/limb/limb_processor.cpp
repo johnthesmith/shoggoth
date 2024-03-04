@@ -1,11 +1,3 @@
-// TODO необходимо найти место методу
-// После изменения состояния сети
-/* Build layers calculation sequence list */
-
-
-
-
-
 #include <cmath>
 
 #include "limb_processor.h"
@@ -13,6 +5,7 @@
 #include "../func.h"
 
 #include "../../../../../lib/core/math.h"
+
 
 
 
@@ -26,6 +19,7 @@ LimbProcessor::LimbProcessor
 :Limb( aNet -> getLogManager() )
 {
     net             = aNet;
+    mon             = Mon::create( "./mon/procesor.txt" ) -> now( Path{ "start" });
     forwardList     = LayerList::create( this );
     backwardList    = LayerList::create( this );
 }
@@ -39,6 +33,7 @@ LimbProcessor::~LimbProcessor()
 {
     forwardList -> destroy();
     backwardList -> destroy();
+    mon -> destroy();
 }
 
 
@@ -275,6 +270,14 @@ bool LimbProcessor::preparedChildren
 */
 LimbProcessor* LimbProcessor::calc()
 {
+    mon
+    -> addInt( Path{ "count" })
+    -> now( Path{ "last" } )
+    -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
+    -> setDouble( Path{ "config", "wakeupWeight" }, wakeupWeight )
+    -> setDouble( Path{ "config", "errorNormalize" }, errorNormalize )
+    ;
+
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
         /* Check structure with net */
@@ -317,8 +320,9 @@ LimbProcessor* LimbProcessor::calc()
             }
 
             /* Get calculated layer by index */
-            layer = ( Layer* ) forwardList
-            -> getByIndex( calcLayerIndex );
+            layer = ( Layer* ) forwardList -> getByIndex( calcLayerIndex );
+
+            mon -> startTimer( Path{ "duration", layer -> getId() });
 
             if
             (
@@ -363,8 +367,8 @@ LimbProcessor* LimbProcessor::calc()
                 calcDirection = CALC_BACKWARD;
             }
 
-            layer = ( Layer* ) backwardList
-            -> getByIndex( calcLayerIndex );
+            layer = ( Layer* ) backwardList -> getByIndex( calcLayerIndex );
+            mon -> startTimer( Path{ "duration", layer -> getId() });
 
             if
             (
@@ -401,6 +405,14 @@ LimbProcessor* LimbProcessor::calc()
                 );
             }
         }
+
+        auto id = layer -> getId();
+        mon
+        -> stopTimer( Path{ "duration", id })
+        -> minInt( Path{ "durationMin", id }, Path{ "duration", id })
+        -> maxInt( Path{ "durationMax", id }, Path{ "duration", id })
+        -> timerToString( Path{ "duration", id } )
+        -> flush();
 
         /* Dump sync to log */
         /* syncToLog( layer ); */
@@ -909,6 +921,7 @@ LimbProcessor* LimbProcessor::neuronLearning
 }
 
 
+
 /*
     Calculate neurons in the layer
 */
@@ -980,8 +993,3 @@ int LimbProcessor::calcNeuronTo
 {
     return calcNeuronFrom( aLayer, aNumber + 1 );
 }
-
-
-
-
-

@@ -10,10 +10,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+/* Core libraryes */
+#include "../../../../lib/core/mon.h"
 
 /* Local libraries */
 #include "server.h"
-
 
 
 
@@ -33,6 +34,7 @@ Server::Server
 {
     net = aNet;
     net -> getApplication() -> getLog() -> trace( "Create server" );
+    mon = Mon::create( "./mon/server.txt" );
 }
 
 
@@ -42,6 +44,7 @@ Server::Server
 */
 Server::~Server()
 {
+    mon -> destroy();
     getLog() -> trace( "Server destroyd" );
 }
 
@@ -88,7 +91,12 @@ ShoggothApplication* Server::getApplication()
 */
 void Server::onLoop()
 {
-    getLog() -> trace( "Server alive" );
+    mon
+    -> now( Path{ "now" } )
+    -> addInt( Path{ "loop" } )
+    -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
+    -> dumpResult( Path{ "result" }, this )
+    -> flush();
 }
 
 
@@ -99,6 +107,7 @@ void Server::onLoop()
 void Server::onResume()
 {
     getLog() -> begin( "Server start" );
+
 
     /* Read port */
     auto listenPort = getApplication()
@@ -129,6 +138,11 @@ void Server::onResume()
             getApplication() -> destroyThreadLog();
         }
     );
+
+    mon
+    -> now( Path{ "start" } )
+    -> setInt( Path{ "port" }, listenPort )
+    -> flush();
 
     getLog() -> end();
 }

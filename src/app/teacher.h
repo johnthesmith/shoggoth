@@ -9,6 +9,7 @@
 /* Local libraries */
 
 #include "../../../../lib/core/payload.h"
+#include "../../../../lib/core/mon.h"
 #include "../../../../lib/json/json.h"
 
 #include "shoggoth_application.h"
@@ -25,6 +26,8 @@ class Teacher : public Payload
     private:
 
         LimbTeacher*    limb            = NULL;
+        /* Monitor object */
+        Mon*            mon             = NULL;
 
         /*
             State
@@ -36,6 +39,7 @@ class Teacher : public Payload
         */
         double          errorLimit      = 0;
         string          idErrorLayer    = "";
+        string          mode            = "";
         ParamList*      batches         = NULL;
 
     public:
@@ -105,6 +109,13 @@ class Teacher : public Payload
 
 
         Teacher* setIdErrorLayer
+        (
+            string
+        );
+
+
+
+        Teacher* setMode
         (
             string
         );
