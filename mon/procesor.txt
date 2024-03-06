@@ -1,20 +1,20 @@
 [90mo [97mstart
     [90ms [97mSource [95mLimb processor[39m
     [90ms [97mnow [95m2024-03-06 10:14:21.590921[39m
-[90mi [97mcount [95m3069135[39m
-[90ms [97mlast [95m2024-03-06 17:11:24.976491[39m
+[90mi [97mcount [95m3073100[39m
+[90ms [97mlast [95m2024-03-06 17:11:54.855674[39m
 [90mo [97mconfig
     [90md [97mlearningSpeed [95m0.001000[39m
     [90md [97mwakeupWeight [95m0.000500[39m
     [90md [97merrorNormalize [95m0.110000[39m
 [90mo [97mduration
-    [90ms [97mretina [95m102mcs [39m
-    [90ms [97mcortex_1 [95m23mls 731mcs [39m
-    [90ms [97mcortex_2 [95m10mls 210mcs [39m
+    [90ms [97mretina [95m241mcs [39m
+    [90ms [97mcortex_1 [95m11mls 814mcs [39m
+    [90ms [97mcortex_2 [95m18mls 672mcs [39m
     [90ms [97msample [95m100mcs [39m
-    [90ms [97mcommand [95m22mcs [39m
-    [90ms [97mresult [95m5mls 918mcs [39m
-    [90ms [97merror [95m12mcs [39m
+    [90ms [97mcommand [95m21mcs [39m
+    [90ms [97mresult [95m9mls 662mcs [39m
+    [90ms [97merror [95m9mcs [39m
 [90mo [97mdurationMin
     [90mi [97mretina [95m88[39m
     [90mi [97mcortex_1 [95m7156[39m
