@@ -1,12 +1,11 @@
 #pragma once
 
 /* Local libraries */
- #include "../../../../lib/graph/scene_payload.h"
+#include "../../../../lib/graph/scene_payload.h"
 #include "../../../../lib/graph/camera.h"
-#include "../shoggoth/layer.h"
-#include "../shoggoth/limb/limb_ui.h"
 
 #include "shoggoth_application.h"
+#include "../shoggoth/limb/limb_ui.h"
 
 
 
@@ -64,10 +63,6 @@ class Ui : public ScenePayload
             Destructor
         */
         void destroy();
-
-
-
-        ShoggothApplication* getApplication() override;
 
 
 
@@ -237,5 +232,14 @@ class Ui : public ScenePayload
 
 
         virtual void onLoopBefore();
+
+
+
+        /**********************************************************************
+            Setters and getters
+        */
+
+        ShoggothApplication* getApplication() override;
+
 
 };

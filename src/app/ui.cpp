@@ -1,38 +1,12 @@
-#include <iostream>
-
-/* File read */
-#include <streambuf>
-#include <sstream>
-#include <fstream>
-
-/* for config update control */
-#include <sys/types.h>
-#include <sys/stat.h>
-
+/* User libraries */
+#include "ui.h"
 
 /* Local libraries */
 #include "../math.h"
 
-#include "../../../../lib/graph/scene_payload.h"
-#include "../../../../lib/graph/scene.h"
-#include "../../../../lib/graph/rgba.h"
-#include "../../../../lib/graph/log_points.h"
-#include "../../../../lib/graph/draw_mode.h"
-#include "../../../../lib/graph/chart.h"
-#include "../../../../lib/graph/rect2d.h"
-#include "../../../../lib/core/rnd.h"
-#include "../../../../lib/core/hid.h"
-#include "../../../../lib/core/moment.h"
-#include "../../../../lib/core/utils.h"
-#include "../../../../lib/json/json.h"
-
 #include "../shoggoth/limb/layer_ui.h"
 #include "../shoggoth/limb/neuron_ui.h"
 #include "../shoggoth/limb/neuron_list_ui.h"
-#include "../shoggoth/func.h"
-
-/* User libraries */
-#include "ui.h"
 
 
 

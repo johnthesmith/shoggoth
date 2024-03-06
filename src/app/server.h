@@ -1,3 +1,7 @@
+/*
+    Server payload
+    Create control and destroy the servers thread.
+*/
 #pragma once
 
 /* Local libraries */
@@ -5,7 +9,6 @@
 
 #include "shoggoth_application.h"
 #include "../shoggoth/shoggoth_rpc_server.h"
-
 #include "../shoggoth/limb/net.h"   /* TODO use limb_server*/
 
 
@@ -72,10 +75,24 @@ class Server : public Payload
             Events
         */
 
+
+
+        /*
+            Server main loop event
+        */
         virtual void onLoop();
 
+
+
+        /*
+            Server resume action
+        */
         virtual void onResume();
 
-        virtual void onPause();
 
+
+        /*
+            Server pause action
+        */
+        virtual void onPause();
 };

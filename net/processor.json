@@ -1,6 +1,5 @@
 {
-   "loopSleepMcs"  :10000000,
-
+   "loopSleepMcs"  :100000,
     "io":
     {
         "net"       :"net/net.json"

@@ -1,20 +1,4 @@
 #include <iostream>
-#include <unistd.h>
-
-/* File read */
-
-#include <streambuf>
-#include <sstream>
-#include <fstream>
-
-/* for config update control */
-#include <sys/types.h>
-#include <sys/stat.h>
-
-/* Local libraries */
-#include "../../../../lib/graph/log_points.h"
-#include "../../../../lib/core/moment.h"
-#include "../../../../lib/core/utils.h"
 
 /* User libraries */
 #include "loop.h"

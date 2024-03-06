@@ -22,7 +22,9 @@ Teacher::Teacher
 : Payload( aNet -> getApplication() )
 {
     getLog() -> trace( "Create teacher" );
-    mon = Mon::create( "./mon/teacher.txt" ) -> now( Path{ "start" });
+    mon = Mon::create( "./mon/teacher.txt" )
+    -> now( Path{ "start" })
+    -> startTimer( Path{ "startMks" });
     limb = LimbTeacher::create( aNet );
     batches = ParamList::create();
 }
@@ -275,6 +277,8 @@ Teacher* Teacher::cmdFolderToLayer
 void Teacher::onLoop()
 {
     mon
+    -> startTimer( Path{ "currentMks" })
+    -> interval( Path{ "uptime" }, Path{ "currentMks" }, Path{ "startMks" })
     -> addInt( Path{ "count" })
     -> now( Path{ "last", "moment" } )
     -> setString( Path{ "config", "errorLayer" }, idErrorLayer )

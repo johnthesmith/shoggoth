@@ -1,10 +1,13 @@
-[90mstring [97mstart [95m2024-03-04 21:03:17.527102[39m
-[90mint [97mcount [95m381[39m
-[90mobject [97mlast
-    [90mstring [97mmoment [95m2024-03-04 21:09:38.219696[39m
-    [90mdouble [97merror [95m0.009517[39m
-    [90mdouble [97merrorDelta [95m-0.000483[39m
-[90mobject [97mconfig
-    [90mstring [97merrorLayer [95merror[39m
-    [90mdouble [97merrorLimit [95m0.010000[39m
-    [90mstring [97mmode [95mlearning[39m
+[90ms [97mstart [95m2024-03-06 10:20:09.815957[39m
+[90mi [97mstartMks [95m1709720409816011[39m
+[90mi [97mcurrentMks [95m1709745084634583[39m
+[90ms [97muptime [95m6hour 51min 14sec 818mls 572mcs [39m
+[90mi [97mcount [95m24576[39m
+[90mo [97mlast
+    [90ms [97mmoment [95m2024-03-06 17:11:24.634594[39m
+    [90md [97merror [95m0.000081[39m
+    [90md [97merrorDelta [95m-0.009919[39m
+[90mo [97mconfig
+    [90ms [97merrorLayer [95merror[39m
+    [90md [97merrorLimit [95m0.010000[39m
+    [90ms [97mmode [95mlearning[39m

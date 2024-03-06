@@ -1,14 +1,5 @@
 #include <iostream>
-
-/* File read */
-#include <streambuf>
-#include <sstream>
-#include <fstream>
-#include <thread>
-
-/* for config update control */
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <thread>   /* For server thread */
 
 /* Core libraryes */
 #include "../../../../lib/core/mon.h"
@@ -33,8 +24,14 @@ Server::Server
 : Payload( aNet -> getApplication() )
 {
     net = aNet;
+
+    /* Create server monitor */
+    mon = Mon::create( "./mon/server.txt" )
+    -> setString( Path{ "start", "source" }, "Server payload" )
+    -> startTimer( Path{ "start", "moment" });
+
+    /* Log report */
     net -> getApplication() -> getLog() -> trace( "Create server" );
-    mon = Mon::create( "./mon/server.txt" );
 }
 
 
@@ -44,7 +41,10 @@ Server::Server
 */
 Server::~Server()
 {
+    /* Destroy server monitor */
     mon -> destroy();
+
+    /* Log report */
     getLog() -> trace( "Server destroyd" );
 }
 
@@ -81,19 +81,22 @@ ShoggothApplication* Server::getApplication()
 
 
 /******************************************************************************
-    Methods
+    Events
 */
 
 
 
 /*
-    Run net calculateion
+    Server main loop event
 */
 void Server::onLoop()
 {
     mon
-    -> now( Path{ "now" } )
-    -> addInt( Path{ "loop" } )
+    -> now( Path{ "current", "now" } )
+    -> startTimer( Path{ "current", "moment" } )
+    -> interval( Path{ "current", "uptime" }, Path{ "current", "moment" }, Path{ "start", "moment" })
+    -> interval( Path{ "resume", "uptime" }, Path{ "current", "moment" }, Path{ "resume", "moment" })
+    -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
     -> dumpResult( Path{ "result" }, this )
     -> flush();
@@ -122,6 +125,11 @@ void Server::onResume()
 
     srv = ShoggothRpcServer::create( net, listenPort );
 
+    mon
+    -> startTimer( Path{ "resume", "moment" })
+    -> setInt( Path{ "resume", "port" }, listenPort )
+    -> flush();
+
     serverThread = new thread
     (
         [ this ]
@@ -129,8 +137,8 @@ void Server::onResume()
         {
             /* Thread Log create */
             getApplication() -> createThreadLog( "server_listener" );
-            /* Up the therver lisener and destroy it after close  */
             getLog() -> begin( "Listen thread" ) -> lineEnd();
+            /* Up the server lisener and destroy it after close */
             srv -> up() -> destroy();
             srv = NULL;
             getLog() -> end() -> lineEnd();
@@ -138,11 +146,6 @@ void Server::onResume()
             getApplication() -> destroyThreadLog();
         }
     );
-
-    mon
-    -> now( Path{ "start" } )
-    -> setInt( Path{ "port" }, listenPort )
-    -> flush();
 
     getLog() -> end();
 }
@@ -154,10 +157,10 @@ void Server::onResume()
 */
 void Server::onPause()
 {
-    getLog() -> begin( "Server stop" );
+    getLog() -> begin( "Server stop" ) -> lineEnd();
     if( srv != NULL )
     {
-        /* Stop sochet and destroy server */
+        /* Stop socket and destroy server */
         srv -> down();
         /* Finalize and destroy server thread */
         serverThread -> join();

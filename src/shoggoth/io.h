@@ -10,7 +10,6 @@
 
 
 #include "../../../../lib/core/application.h"
-#include "../../../../lib/core/log.h"
 #include "../../../../lib/core/result.h"
 
 #include "limb/net.h"

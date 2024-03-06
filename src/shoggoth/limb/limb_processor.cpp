@@ -1,9 +1,7 @@
 #include <cmath>
 
 #include "limb_processor.h"
-
 #include "../func.h"
-
 #include "../../../../../lib/core/math.h"
 
 
@@ -19,7 +17,11 @@ LimbProcessor::LimbProcessor
 :Limb( aNet -> getLogManager() )
 {
     net             = aNet;
-    mon             = Mon::create( "./mon/procesor.txt" ) -> now( Path{ "start" });
+
+    mon = Mon::create( "./mon/procesor.txt" )
+    -> setString( Path{ "start", "Source" }, "Limb processor" )
+    -> now( Path{ "start", "now" });
+
     forwardList     = LayerList::create( this );
     backwardList    = LayerList::create( this );
 }
@@ -78,7 +80,7 @@ LimbProcessor* LimbProcessor::syncToLog
     int c = layers -> getCount();
 
 //    getMon()
-//    -> setString( Path{ "current" }, aLayer -> getId()  )
+ //    -> setString( Path{ "current" }, aLayer -> getId()  )
 
     for( int i=0; i<c; i++ )
     {

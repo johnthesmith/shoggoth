@@ -1,4 +1,5 @@
 #include "../../../../lib/sock/rpc_server.h"
+#include "../../../../lib/core/mon.h"
 
 #include "shoggoth_consts.h"
 #include "limb/net.h"
@@ -9,7 +10,11 @@ class ShoggothRpcServer : public RpcServer
 {
     private:
 
-        Net*    net = NULL; /* Net limb with main layers */
+        /* Net limb with main layers */
+        Net*    net = NULL;
+
+        /* Monitor object */
+        Mon*    mon = NULL;
 
     public:
 

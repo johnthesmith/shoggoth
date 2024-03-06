@@ -1,4 +1,4 @@
-    /*
+/*
     Layer
 
     Contains the NeuronList object.
@@ -11,14 +11,9 @@
 #include <string>
 
 #include "../../../../lib/core/result.h"
-#include "../../../../lib/core/utils.h"
-#include "../../../../lib/graph/bitmap.h"       /* TODO remove it to teachr */
-#include "../../../../lib/core/hid.h"
-#include "../../../../lib/json/param_list.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
 #include "nerve_list.h"
-#include "shoggoth_consts.h"
 
 
 using namespace std;

@@ -1,6 +1,6 @@
 /*
     Shoggoth net object on limb based
-    Its works like synchronizer between other limbs
+    Its works like synchronizer between other limbs.
 */
 
 

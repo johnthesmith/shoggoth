@@ -1,9 +1,7 @@
 #include "func.h"
-#include "layer.h"
 #include "limb.h"
 
 #include "../../../../lib/core/rnd.h"
-#include "../../../../lib/core/math.h"
 
 
 

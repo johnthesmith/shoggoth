@@ -1,3 +1,6 @@
+/*
+    Its contain the Main neuralnet mathematics
+*/
 # pragma once
 
 

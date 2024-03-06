@@ -1,12 +1,13 @@
 #pragma once
 
-/* Local libraries */
+/* Core libraries */
 #include "../../../../lib/core/payload.h"
-#include "../shoggoth/limb/limb_processor.h"
 
+/* Shogoth libraries */
 #include "shoggoth_application.h"
-
+#include "../shoggoth/limb/limb_processor.h"
 #include "../shoggoth/limb/net.h"
+
 
 
 using namespace std;
@@ -17,8 +18,8 @@ class Processor : public Payload
 {
     private:
 
-        LimbProcessor*          limb            = NULL;
-        long int                lastConfigCheck = 0;
+        /* Processors limb */
+        LimbProcessor*  limb            = NULL;
 
     public:
 
@@ -56,11 +57,23 @@ class Processor : public Payload
 
 
 
+        /****************************************************************************
+            Setters and getters
+        */
+
+
+
+        /*
+            Return application object
+        */
         ShoggothApplication* getApplication() override;
 
 
 
-        Processor* help();
+        /*
+            Return l;imb object
+        */
+        LimbProcessor* getLimb();
 
 
         /****************************************************************************
@@ -72,7 +85,4 @@ class Processor : public Payload
             Run net calculateion
         */
         virtual void onLoop();
-
-
-        LimbProcessor* getLimb();
 };

@@ -33,7 +33,7 @@
                         { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":0.0, "max":0.0 },
                         { "cmd":"FOLDER_TO_LAYER", "layer": "retina", "folder": "./patterns/test" },
                         { "cmd":"VALUE_TO_LAYER", "layer": "sample", "layer": "sample", "min": 0.0, "max":0.0 },
-                    ],
+                    ]
                 ],
                 "learning":
                 [

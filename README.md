@@ -151,6 +151,7 @@ Log -.-o Scene
     2. sig[-1;+1] = a < -1.0 ? a = -1.0 : ( a > 1.0 ? 1.0 : a )
 
 
+
 ### Neuron value calculated
 
 1. Value of each neuron c calculated like sigmoid from sum of production of parents value on bind weight.
@@ -191,7 +192,7 @@ Log -.-o Scene
 1. The layer it is the [object](#object) and contains neurons.
 0. The layer is the analog of biological organ or cortex section.
 0. Each layer has a unique auto-generated identifier for identification and a human readable name.
-    
+
 
 
 
@@ -204,44 +205,7 @@ Log -.-o Scene
 
 ## Shoggoth scheme
 
-```mermaid
-flowchart LR
-
-    subgraph shoggoth
-        Bind
-        BindList
-        Layer
-        LayerList
-        Net
-        Neuron
-        NeuronList
-        Func
-        NeuronExtention
-    end
-
-    Point2d -..-o NeuronExtention
-    Point3d -..-o NeuronExtention
-
-    Log -.-o Net
-    Log -.-o Layer
-    NeuronExtention -.-o Neuron
-    Func -.-o Neuron
-    Neuron -.-o NeuronList
-    Object ---> Layer
-    NeuronList -.-o Layer
-    Layer -.-o LayerList
-    LayerList -.-o Net
-    Bind -.-o BindList & Neuron
-    BindList -.-o Neuron
-    Heap --> BindList
-    Heap -----> NeuronList
-    Heap -----> LayerList
-```
-
-1. Solid line - extends class
-0. Dotted line - uses class
-
-
+![](shoggoth.svg)
 
 
 

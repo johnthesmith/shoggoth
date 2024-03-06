@@ -23,6 +23,13 @@ ShoggothRpcServer::ShoggothRpcServer
 )
 {
     net = aNet;
+
+    mon = Mon::create( "./mon/shoggoth_server_rpc.txt" )
+    -> setString( Path{ "start", "source" }, "shoggoth_server_rpc" )
+    -> startTimer( Path{ "start", "moment" })
+    -> now( Path{ "start", "momentStr" })
+    -> flush();
+
     getLog() -> trace( "Shoggoth server created" ) -> lineEnd();
 }
 
@@ -33,6 +40,7 @@ ShoggothRpcServer::ShoggothRpcServer
 */
 ShoggothRpcServer::~ShoggothRpcServer()
 {
+    mon -> destroy();
     getLog() -> trace( "Shoggoth server destroy" );
 }
 
@@ -52,12 +60,20 @@ ShoggothRpcServer* ShoggothRpcServer::create
 
 
 
+/******************************************************************************
+    Setters and geters
+*/
+
 
 Application* ShoggothRpcServer::getApplication()
 {
     return net -> getApplication();
 }
 
+
+/******************************************************************************
+    Events
+*/
 
 
 /*
@@ -70,11 +86,19 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     ParamList* aResults
 )
 {
+
     auto method = aArguments -> getInt( "method" );
+    auto methodStr = commandToString( ( Command ) method );
+
+    mon
+    -> now( Path{ "last", "momentStr" } )
+    -> setString( Path{ "last", "Method" }, methodStr )
+    -> addInt( Path{ "stat", methodStr })
+    -> flush();
 
     getLog()
     -> trace( "Called method" )
-    -> prm( "Name", commandToString( ( Command ) method ))
+    -> prm( "Name", methodStr )
     -> prm( "Code", method )
     -> lineEnd();
 
@@ -91,6 +115,11 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     return this;
 }
 
+
+
+
+/******************************************************************************
+*/
 
 
 /*

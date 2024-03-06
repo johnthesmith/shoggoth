@@ -1,31 +1,33 @@
-[90mstring [97mstart [95m2024-03-04 21:03:14.650724[39m
-[90mint [97mcount [95m36515[39m
-[90mstring [97mlast [95m2024-03-04 21:09:38.568722[39m
-[90mobject [97mconfig
-    [90mdouble [97mlearningSpeed [95m0.001000[39m
-    [90mdouble [97mwakeupWeight [95m0.000500[39m
-    [90mdouble [97merrorNormalize [95m0.110000[39m
-[90mobject [97mduration
-    [90mstring [97mretina [95m101mcs [39m
-    [90mstring [97mcortex_1 [95m25mls 251mcs [39m
-    [90mstring [97mcortex_2 [95m3mls 236mcs [39m
-    [90mstring [97msample [95m985mcs [39m
-    [90mstring [97mcommand [95m56mcs [39m
-    [90mstring [97mresult [95m32mls 466mcs [39m
-    [90mstring [97merror [95m11mcs [39m
-[90mobject [97mdurationMin
-    [90mint [97mretina [95m87[39m
-    [90mint [97mcortex_1 [95m7612[39m
-    [90mint [97mcortex_2 [95m2905[39m
-    [90mint [97msample [95m35[39m
-    [90mint [97mcommand [95m8[39m
-    [90mint [97mresult [95m2961[39m
-    [90mint [97merror [95m8[39m
-[90mobject [97mdurationMax
-    [90mint [97mretina [95m157953[39m
-    [90mint [97mcortex_1 [95m205941[39m
-    [90mint [97mcortex_2 [95m102215[39m
-    [90mint [97msample [95m35852[39m
-    [90mint [97mcommand [95m9234[39m
-    [90mint [97mresult [95m47061[39m
-    [90mint [97merror [95m6953[39m
+[90mo [97mstart
+    [90ms [97mSource [95mLimb processor[39m
+    [90ms [97mnow [95m2024-03-06 10:14:21.590921[39m
+[90mi [97mcount [95m3069135[39m
+[90ms [97mlast [95m2024-03-06 17:11:24.976491[39m
+[90mo [97mconfig
+    [90md [97mlearningSpeed [95m0.001000[39m
+    [90md [97mwakeupWeight [95m0.000500[39m
+    [90md [97merrorNormalize [95m0.110000[39m
+[90mo [97mduration
+    [90ms [97mretina [95m102mcs [39m
+    [90ms [97mcortex_1 [95m23mls 731mcs [39m
+    [90ms [97mcortex_2 [95m10mls 210mcs [39m
+    [90ms [97msample [95m100mcs [39m
+    [90ms [97mcommand [95m22mcs [39m
+    [90ms [97mresult [95m5mls 918mcs [39m
+    [90ms [97merror [95m12mcs [39m
+[90mo [97mdurationMin
+    [90mi [97mretina [95m88[39m
+    [90mi [97mcortex_1 [95m7156[39m
+    [90mi [97mcortex_2 [95m2848[39m
+    [90mi [97msample [95m35[39m
+    [90mi [97mcommand [95m8[39m
+    [90mi [97mresult [95m2949[39m
+    [90mi [97merror [95m8[39m
+[90mo [97mdurationMax
+    [90mi [97mretina [95m527920[39m
+    [90mi [97mcortex_1 [95m359626[39m
+    [90mi [97mcortex_2 [95m264961[39m
+    [90mi [97msample [95m32453[39m
+    [90mi [97mcommand [95m25868[39m
+    [90mi [97mresult [95m168297[39m
+    [90mi [97merror [95m17881[39m
