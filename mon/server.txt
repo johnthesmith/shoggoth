@@ -4,12 +4,12 @@
 [90mo [97mresume
     [90mi [97mmoment [95m1709720061591352[39m
     [90mi [97mport [95m11120[39m
-    [90ms [97muptime [95m6hour 57min 32sec 550mls 56mcs [39m
+    [90ms [97muptime [95m6hour 58min 7sec 561mls 653mcs [39m
 [90mo [97mcurrent
-    [90ms [97mnow [95m2024-03-06 17:11:54.141400[39m
-    [90mi [97mmoment [95m1709745114141408[39m
-    [90ms [97muptime [95m6hour 57min 32sec 550mls 511mcs [39m
-    [90mi [97mloop [95m25039[39m
+    [90ms [97mnow [95m2024-03-06 17:12:29.152997[39m
+    [90mi [97mmoment [95m1709745149153005[39m
+    [90ms [97muptime [95m6hour 58min 7sec 562mls 108mcs [39m
+    [90mi [97mloop [95m25074[39m
 [90mo [97mconfig
     [90mi [97mloopTimeoutMcs [95m1000000[39m
 [90mo [97mresult
