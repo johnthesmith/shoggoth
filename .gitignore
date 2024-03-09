@@ -11,4 +11,5 @@
 *.o
 .shab
 ./shoggot
-./mon
+./mon/*
+./log/*

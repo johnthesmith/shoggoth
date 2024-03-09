@@ -1,6 +1,0 @@
-[90mo [97mloop
-    [90mi [97mmoment [95m1709975955615631[39m
-    [90mi [97mnetConfigUpdate [95m1709933091000000[39m
-    [90mi [97mlastNetConfig [95m1709933091000000[39m
-    [90ms [97mnetConfigUpdateStr [95m11hour 54min 24sec 615mls 631mcs [39m
-    [90ms [97mlastNetConfigStr [95m11hour 54min 24sec 615mls 631mcs [39m
