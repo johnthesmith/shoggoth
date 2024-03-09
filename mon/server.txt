@@ -1,15 +1,17 @@
 [90mo [97mstart
     [90ms [97msource [95mServer payload[39m
-    [90mi [97mmoment [95m1709720061590897[39m
+    [90mi [97mmoment [95m1709933030695101[39m
 [90mo [97mresume
-    [90mi [97mmoment [95m1709720061591352[39m
+    [90mi [97mmoment [95m1709933091780352[39m
     [90mi [97mport [95m11120[39m
-    [90ms [97muptime [95m6hour 58min 7sec 561mls 653mcs [39m
+    [90mo [97mresult
+        [90ms [97mcode [95m[39m
+    [90ms [97muptime [95m11hour 50min 45sec 386mls 238mcs [39m
 [90mo [97mcurrent
-    [90ms [97mnow [95m2024-03-06 17:12:29.152997[39m
-    [90mi [97mmoment [95m1709745149153005[39m
-    [90ms [97muptime [95m6hour 58min 7sec 562mls 108mcs [39m
-    [90mi [97mloop [95m25074[39m
+    [90ms [97mnow [95m2024-03-09 09:15:37.166571[39m
+    [90mi [97mmoment [95m1709975737166590[39m
+    [90ms [97muptime [95m11hour 51min 46sec 471mls 489mcs [39m
+    [90mi [97mloop [95m42686[39m
 [90mo [97mconfig
     [90mi [97mloopTimeoutMcs [95m1000000[39m
 [90mo [97mresult

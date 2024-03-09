@@ -1,33 +1,33 @@
 [90mo [97mstart
     [90ms [97mSource [95mLimb processor[39m
-    [90ms [97mnow [95m2024-03-06 10:14:21.590921[39m
-[90mi [97mcount [95m3077922[39m
-[90ms [97mlast [95m2024-03-06 17:12:29.225982[39m
+    [90ms [97mnow [95m2024-03-08 21:23:50.695108[39m
+[90mi [97mcount [95m6976349[39m
+[90ms [97mlast [95m2024-03-09 09:15:37.675117[39m
 [90mo [97mconfig
     [90md [97mlearningSpeed [95m0.001000[39m
     [90md [97mwakeupWeight [95m0.000500[39m
     [90md [97merrorNormalize [95m0.110000[39m
 [90mo [97mduration
-    [90ms [97mretina [95m89mcs [39m
-    [90ms [97mcortex_1 [95m10mls 995mcs [39m
-    [90ms [97mcortex_2 [95m3mls 761mcs [39m
-    [90ms [97msample [95m37mcs [39m
-    [90ms [97mcommand [95m11mcs [39m
-    [90ms [97mresult [95m3mls 258mcs [39m
-    [90ms [97merror [95m27mcs [39m
+    [90ms [97mretina [95m178mcs [39m
+    [90ms [97mcortex_1 [95m65mls 801mcs [39m
+    [90ms [97mcortex_2 [95m26mls 750mcs [39m
+    [90ms [97msample [95m36mcs [39m
+    [90ms [97mcommand [95m9mcs [39m
+    [90ms [97mresult [95m24mls 174mcs [39m
+    [90ms [97merror [95m65mcs [39m
 [90mo [97mdurationMin
-    [90mi [97mretina [95m88[39m
-    [90mi [97mcortex_1 [95m7156[39m
-    [90mi [97mcortex_2 [95m2848[39m
-    [90mi [97msample [95m35[39m
-    [90mi [97mcommand [95m8[39m
-    [90mi [97mresult [95m2949[39m
-    [90mi [97merror [95m8[39m
+    [90mi [97mretina [95m81[39m
+    [90mi [97mcortex_1 [95m2742[39m
+    [90mi [97mcortex_2 [95m33[39m
+    [90mi [97msample [95m32[39m
+    [90mi [97mcommand [95m1[39m
+    [90mi [97mresult [95m2648[39m
+    [90mi [97merror [95m1[39m
 [90mo [97mdurationMax
-    [90mi [97mretina [95m527920[39m
-    [90mi [97mcortex_1 [95m359626[39m
-    [90mi [97mcortex_2 [95m264961[39m
-    [90mi [97msample [95m32453[39m
-    [90mi [97mcommand [95m25868[39m
-    [90mi [97mresult [95m168297[39m
-    [90mi [97merror [95m17881[39m
+    [90mi [97mretina [95m402505[39m
+    [90mi [97mcortex_1 [95m320067[39m
+    [90mi [97mcortex_2 [95m167031[39m
+    [90mi [97msample [95m51221[39m
+    [90mi [97mcommand [95m30065[39m
+    [90mi [97mresult [95m108942[39m
+    [90mi [97merror [95m19941[39m

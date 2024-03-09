@@ -47,7 +47,6 @@ class LimbProcessor : public Limb
             stoped till calcTick is not true.
         */
         bool        calcDebug           = false;
-        bool        calcTick            = false;
 
     public:
 

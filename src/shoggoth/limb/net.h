@@ -35,7 +35,6 @@ class Net: public Limb
         vector<string>  changedErrors;
 
         /* Events */
-        string          ptu             = "***";    /* Roles of the Net in PTU */
         ParamList*      tasks           = NULL;     /* List of participants tasks */
 
         /* Synchronization states */
@@ -44,6 +43,8 @@ class Net: public Limb
         /* Settings */
         string          id              = "";       /* Net id */
         string          storagePath     = "net";
+
+        long long       lastNetConfig;
 
     public:
 
@@ -216,17 +217,24 @@ class Net: public Limb
         /*
             Read net configuration and reallocate net objects
         */
-        Net* readNet();
+        Net* readNet
+        (
+            ParamList*  /* Answer */
+        );
 
 
 
-        /*
-            Create roles strung of the process in ptu format
-            P - process uses as processor
-            T - process uses as teacher
-            U - process has a UI interface
-        */
-        Net* buildPtuAndTasks();
+        bool isConfigUpdate
+        (
+            ParamList*  /* Config */
+        );
+
+
+
+        Net* applyNet
+        (
+            ParamList* /* Config */
+        );
 
 
 
@@ -303,6 +311,17 @@ class Net: public Limb
         (
             Layer*
         );
+
+
+
+        long long getLastNetConfig();
+
+
+        /*
+            Create roles strung of the process
+        */
+        Net* buildTasks();
+
 };
 
 

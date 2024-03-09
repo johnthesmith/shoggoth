@@ -2,6 +2,7 @@
 
 /* User libraries */
 #include "loop.h"
+#include "../../../../lib/core/moment.h"
 
 
 
@@ -236,17 +237,56 @@ Loop* Loop::teacherControl()
 */
 void Loop::onLoop()
 {
+    getLog() -> trapOn() -> begin( "Loop" );
+
+    getMon() -> startTimer( Path{ "loop", "moment" });
+
+    /* Check local application config */
     getApplication() -> checkConfigUpdate();
+
+    /* Check server net config */
+    auto netConfig = ParamList::create();
+
+    /* Read net config from server */
+    net -> readNet( netConfig );
+
+    /* Monitoring */
+    getMon()
+    -> setInt
+    (
+        Path{ "loop", "netConfigUpdate" },
+        netConfig -> getInt( "lastUpdate" ) * SECOND
+    )
+    -> setInt
+    (
+        Path{ "loop", "lastNetConfig" },
+        net -> getLastNetConfig() * SECOND
+    )
+    -> interval
+    (
+        Path{ "loop", "netConfigUpdateStr" },
+        Path{ "loop", "moment" },
+        Path{ "loop", "netConfigUpdate" }
+    )
+    -> interval
+    (
+        Path{ "loop", "lastNetConfigStr" },
+        Path{ "loop", "moment" },
+        Path{ "loop", "lastNetConfig" }
+    );
+
 
     if
     (
-        getApplication() -> getConfigUpdated() ||
-        ! getApplication() -> getConfig() -> isOk()
+        net -> isConfigUpdate( netConfig ) ||
+//        ! getApplication() -> getConfig() -> isOk() ||
+        getApplication() -> getConfigUpdated()
     )
     {
         getLog()
         -> begin( "Config updated" )
         -> prm( "File", getApplication() -> getConfigFileName() )
+        -> dump( netConfig, "Net config" )
         -> lineEnd();
 
         if( getApplication() -> getConfig() -> isOk())
@@ -272,11 +312,8 @@ void Loop::onLoop()
             if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
 
-            /*
-                TODO - the net must be reload from IO each time or timeout
-                Config apply
-            */
-            net -> readNet();
+            /* Apply config */
+            net -> applyNet( netConfig );
 
             /* Reinit process */
             processorControl();
@@ -307,9 +344,15 @@ void Loop::onLoop()
 
     net -> syncWithServer();
 
+    netConfig -> destroy();
+
     if( getApplication() -> getCli() -> getString( "config" ) == "" )
     {
         getLog() -> error( "Need the --config cli argument." );
         terminate();
     }
+
+
+    getMon() -> flush();
+    getLog() -> end( "Loop" ) -> trapOff();
 }

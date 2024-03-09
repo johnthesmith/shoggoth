@@ -722,7 +722,6 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         aLayer,
         aIndex,
         [
-            this,
             &summValue,
             &summSample,
             &summCommand,
@@ -804,8 +803,6 @@ LimbProcessor* LimbProcessor::neuronCalcValue
 
 
 
-
-
 /*
     Calculate neuron
 */
@@ -818,7 +815,6 @@ LimbProcessor* LimbProcessor::neuronLearning
     /* Define variables */
     double summWeight   = 0.0;
     double summError    = 0.0;
-    int countValue      = 0;
 
     /* Caclulate error form all children for current neuron */
     childrenLoop
@@ -826,11 +822,8 @@ LimbProcessor* LimbProcessor::neuronLearning
         aLayer,
         aIndex,
         [
-            this,
             &summWeight,
-            &summError,
-            &countValue,
-            &aIndex
+            &summError
         ]
         (
             Layer* aChild,

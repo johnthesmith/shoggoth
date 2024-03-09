@@ -42,8 +42,6 @@ class LayerUi : public LayerDim
         /*
             Settings
         */
-        /* Show neurons */
-        bool            showNeurons             = true;
         /* Bind draw mode */
         BindDrawMode    showBinds               = BDM_HIDDEN;
         /* SHow layer cover */

@@ -128,6 +128,7 @@ void Server::onResume()
     mon
     -> startTimer( Path{ "resume", "moment" })
     -> setInt( Path{ "resume", "port" }, listenPort )
+    -> setString( Path{ "resume", "result", "code" }, "" )
     -> flush();
 
     serverThread = new thread
@@ -139,7 +140,8 @@ void Server::onResume()
             getApplication() -> createThreadLog( "server_listener" );
             getLog() -> begin( "Listen thread" ) -> lineEnd();
             /* Up the server lisener and destroy it after close */
-            srv -> up() -> destroy();
+            srv -> up();
+            srv -> destroy();
             srv = NULL;
             getLog() -> end() -> lineEnd();
             /* Thread log destroy */

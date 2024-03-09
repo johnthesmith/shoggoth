@@ -59,7 +59,7 @@ class Server : public Payload
         /*
             Destructor
         */
-        void destroy();
+        void destroy() override;
 
 
 
@@ -80,19 +80,19 @@ class Server : public Payload
         /*
             Server main loop event
         */
-        virtual void onLoop();
+        virtual void onLoop() override;
 
 
 
         /*
             Server resume action
         */
-        virtual void onResume();
+        virtual void onResume() override;
 
 
 
         /*
             Server pause action
         */
-        virtual void onPause();
+        virtual void onPause() override;
 };

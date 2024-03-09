@@ -30,11 +30,6 @@ class Teacher : public Payload
         Mon*            mon             = NULL;
 
         /*
-            State
-        */
-        long int        lastBatchUpdate = 0;
-
-        /*
             Config
         */
         double          errorLimit      = 0;

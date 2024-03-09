@@ -27,15 +27,19 @@ class Io: public Result
 {
     private:
 
-        Net*        net     = NULL;
-        ParamList*  answer  = NULL;
-        ParamList*  request = NULL;
+        Net*        net         = NULL;
+        ParamList*  answer      = NULL;
+        ParamList*  request     = NULL;
+
+        /* For true IO is an owner of the Answer and must destroy it */
+        bool        answerOwner = false;
 
     public:
 
         Io
         (
-            Net* /* Net object */
+            Net*,               /* Net object */
+            ParamList* = NULL   /* External answer */
         );
 
 
@@ -49,7 +53,8 @@ class Io: public Result
         */
         static Io* create
         (
-            Net* /* Net object */
+            Net*,               /* Net object */
+            ParamList* = NULL   /* External answer */
         );
 
 

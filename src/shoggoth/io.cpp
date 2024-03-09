@@ -11,12 +11,21 @@ using namespace std;
 */
 Io::Io
 (
-    Net* aNet   /* Net object */
+    Net* aNet,          /* Net object */
+    ParamList* aAnswer  /* Answer object */
 )
 {
     net = aNet;
     request = ParamList::create();
-    answer = ParamList::create();
+    if( aAnswer == NULL )
+    {
+        answer = ParamList::create();
+        answerOwner = true;
+    }
+    else
+    {
+        answer = aAnswer;
+    }
 }
 
 
@@ -27,7 +36,10 @@ Io::Io
 Io::~Io()
 {
     request -> destroy();
-    answer -> destroy();
+    if( answerOwner )
+    {
+        answer -> destroy();
+    }
 }
 
 
@@ -37,10 +49,11 @@ Io::~Io()
 */
 Io* Io::create
 (
-    Net* aNet   /* Application object */
+    Net* aNet,   /* Application object */
+    ParamList* aAnswer  /* Answer object */
 )
 {
-    auto result = new Io( aNet );
+    auto result = new Io( aNet, aAnswer );
     return result;
 }
 
@@ -189,6 +202,11 @@ Io* Io::fileReadNet()
     -> copyTo( answer )
     -> resultTo( this )
     -> destroy();
+
+    if( isOk() )
+    {
+        answer -> setInt( "lastUpdate", fileLastUpdate( net ));
+    }
 
     return this;
 }

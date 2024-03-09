@@ -234,7 +234,7 @@ LayerList* LayerList::copyValuesFrom
 {
     aSource -> loop
     (
-        [ this, &aSource ]
+        [ this ]
         ( void* p )
         {
             auto fromLayer = (Layer*) p;
@@ -261,7 +261,7 @@ LayerList* LayerList::copyErrorsFrom
 {
     aSource -> loop
     (
-        [ this, &aSource ]
+        [ this ]
         ( void* p )
         {
             auto fromLayer = (Layer*) p;

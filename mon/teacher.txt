@@ -1,12 +1,12 @@
-[90ms [97mstart [95m2024-03-06 10:20:09.815957[39m
-[90mi [97mstartMks [95m1709720409816011[39m
-[90mi [97mcurrentMks [95m1709745148824575[39m
-[90ms [97muptime [95m6hour 52min 19sec 8mls 564mcs [39m
-[90mi [97mcount [95m24640[39m
+[90ms [97mstart [95m2024-03-08 21:26:00.186736[39m
+[90mi [97mstartMks [95m1709933160186788[39m
+[90mi [97mcurrentMks [95m1709975736784862[39m
+[90ms [97muptime [95m11hour 49min 36sec 598mls 74mcs [39m
+[90mi [97mcount [95m42442[39m
 [90mo [97mlast
-    [90ms [97mmoment [95m2024-03-06 17:12:28.824588[39m
-    [90md [97merror [95m0.000539[39m
-    [90md [97merrorDelta [95m-0.009461[39m
+    [90ms [97mmoment [95m2024-03-09 09:15:36.784888[39m
+    [90md [97merror [95m0.000035[39m
+    [90md [97merrorDelta [95m-0.009965[39m
 [90mo [97mconfig
     [90ms [97merrorLayer [95merror[39m
     [90md [97merrorLimit [95m0.010000[39m

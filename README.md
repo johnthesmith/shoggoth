@@ -1,14 +1,19 @@
-# Shoggoth
+# Intro
 
-This is [Shoggoth](https://github.com/johnthesmith/shab) neural network with visual control.
+1. To create truly universal consciousness:
+    1. it should not be linked to human consciousness and habits, perhaps they are limited by evolution;
+    0. it should not be focused on narrow tasks, they are a means, not an end;
+    0. it should not be centralized;
+    0. it should be free for development and exists.
+
+Perhaps it will be *Shoggoth*.
 
 
 
 ## Run
 
-Shoggoth is building at Ubuntu 18.04 and more.
-
-You need to install the following components:
+1. Shoggoth is building at Ubuntu 20.04 and more.
+2. You need to install the following components:
 
 ```
 sudo apt install libglfw3 libglfw3-dev libglu1-mesa-dev
@@ -17,34 +22,23 @@ sudo apt install graphicsmagick-libmagick-dev-compat
 sudo apt install upx
 ```
 
-// libgraphicsmagick++1-dev libmagick++-6-headers
-// libmagick++-dev 
-
-
-
-After that you need to run:
+3. After that you need to run:
 ```
 ./make
 ```
 
 
 
-## Authors
-
-- [@johnthesmith](https://www.github.com/johnthesmith)
-- [@igptx](https://www.github.com/igptx)
-
-
 
 ## Components
 
-The kernel was written in c++ and contains next components:
-
-1. [app](#app) - application
-0. [lib](#lib) - baisic c++ libraries
-0. [graph](#opengl) - graphics librayes
-0. [shoggoth](#neuronet) - neurlal net Shoggoth libraryes
-0. [shab](#shab) - small bash maker for Shoggoth
+1. The kernel of Shoggoth was written in c++ and requires the following projects:
+    1. [lib/core](https://github.com/johnthesmith/lib-core) -  baisic c++ libraries;
+    0. [lib/json](https://github.com/johnthesmith/lib-json) - object for key and values;
+    0. [lib/graph](https://github.com/johnthesmith/lib-json) - tiny opengl engine;
+    0. [lib/sock](https://github.com/johnthesmith/lib-sock) - libraries for tcp sockets;
+    0. [/shoggoth](https://github.com/johnthesmith/shoggoth) - SHoggoth ptoject;
+    0. [shab](#shab) - small bash maker for Shoggoth.
 
 ```mermaid
 flowchart
@@ -213,109 +207,6 @@ Log -.-o Scene
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-```mermaid
-flowchart LR
-
-ScenePayload
-Camera
-
-math((math<br>libs))
-
-subgraph app
-    main
-    Form
-end
-
-subgraph lib
-    Heap
-    Result
-    Payload
-    Log
-    Rnd
-    Utils
-end
-
-subgraph graph
-    Object
-    Camera
-    ScenePayload
-    Scene
-    math
-    Point3d
-    Point4d
-    Point2d
-    Matrix4
-    Rect2d
-    Rgba
-
-end
-
-subgraph neuron
-    Bind
-    BindList
-    Layer
-    LayerList
-    Net
-    Neuron
-    NeuronList
-    Func
-end
-
-
-Payload --> ScenePayload
-Camera -.-> Form
-
-
-ScenePayload-.-> Scene
-
-Object --> Camera
-Result --> Payload
-Result --> Scene
-Result --> Object
-
-
-Log -.-> main
-
-Form -.-> main
-Scene -.-> main
-
-Point3d -.-> math
-Point4d -.-> math
-Point2d -.-> math
-Matrix4 -.-> math
-Rect2d -.-> math
-
-math -.-> Scene
-
-Net --> Form
-ScenePayload--> Form
-
-
-Func -.-> Neuron
-Neuron -.-> NeuronList
-NeuronList -.-> Layer
-Layer -.-> LayerList
-LayerList -.-> Net
-Bind -.-> BindList
-BindList -.-> Neuron
-Heap --> BindList
-Heap --> NeuronList
-```
-
-
-
-
 ```mermaid
 flowchart LR
 
@@ -338,3 +229,10 @@ calcCompleteAfter-->|-| stop
 
 saveNerves --> saveLayers --> stop
 ```
+
+
+
+## Authors
+
+- [@igptx](https://www.github.com/igptx)
+- [@johnthesmith](https://www.github.com/johnthesmith)

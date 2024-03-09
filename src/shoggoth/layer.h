@@ -14,7 +14,7 @@
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
 #include "nerve_list.h"
-
+#include "shoggoth_consts.h"
 
 using namespace std;
 

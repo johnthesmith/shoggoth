@@ -229,7 +229,7 @@ NeuronListUi* NeuronListUi::remove
 {
     Heap::remove
     (
-        [ this, &a ]
+        [ &a ]
         ( void* aItem )
         {
             auto item = ( NeuronUi* ) aItem;

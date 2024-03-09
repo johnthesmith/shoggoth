@@ -1,5 +1,8 @@
 /*
     This file is part of the Shoggoth neuronet project.
+    Main application loop.
+    Contains the Net object.
+
     Authors:
         still@itserv.ru
         igor_ptx@gmail.com
@@ -77,7 +80,7 @@ class Loop : public Payload
         /*
             Destructor
         */
-        void destroy();
+        void destroy() override;
 
 
 
@@ -109,9 +112,8 @@ class Loop : public Payload
         */
 
 
-
         /*
             Main loop event
         */
-        virtual void onLoop();
+        virtual void onLoop() override;
 };

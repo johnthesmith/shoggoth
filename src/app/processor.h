@@ -53,7 +53,7 @@ class Processor : public Payload
         /*
             Destructor
         */
-        void destroy();
+        void destroy() override;
 
 
 
@@ -84,5 +84,5 @@ class Processor : public Payload
         /*
             Run net calculateion
         */
-        virtual void onLoop();
+        virtual void onLoop() override;
 };

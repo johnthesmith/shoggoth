@@ -62,7 +62,7 @@ class Ui : public ScenePayload
         /*
             Destructor
         */
-        void destroy();
+        void destroy() override;
 
 
 
@@ -87,21 +87,21 @@ class Ui : public ScenePayload
         virtual void onActivate
         (
             Scene&  /* Scene object */
-        );
+        ) override;
 
 
 
         virtual void onCalc
         (
             Scene*  /* Scene calculate */
-        );
+        ) override;
 
 
 
         virtual void onDraw
         (
             Scene*  /* Scene object */
-        );
+        ) override;
 
 
 
@@ -114,8 +114,7 @@ class Ui : public ScenePayload
             const int,      /* Key */
             const int,      /* Scan code*/
             const int       /* Mode */
-        );
-
+        ) override;
 
 
 
@@ -125,7 +124,7 @@ class Ui : public ScenePayload
             const int,      /* Key */
             const int,      /* Scan code*/
             const int       /* Mode */
-        );
+        ) override;
 
 
 
@@ -136,7 +135,7 @@ class Ui : public ScenePayload
         (
             Scene&,      /* Scene object */
             const Point3d&
-        );
+        ) override;
 
 
 
@@ -149,7 +148,7 @@ class Ui : public ScenePayload
         (
             Scene&,             /* Scene object */
             const Point3d&
-        );
+        ) override;
 
 
 
@@ -161,9 +160,7 @@ class Ui : public ScenePayload
         (
             Scene&,             /* Scene object */
             const Point3d&
-        );
-
-
+        ) override;
 
 
 
@@ -174,7 +171,7 @@ class Ui : public ScenePayload
         (
             Scene&,             /* Scene object */
             const Point3d&
-        );
+        ) override;
 
 
 
@@ -185,7 +182,7 @@ class Ui : public ScenePayload
         (
             Scene&,             /* Scene object */
             const Point3d&
-        );
+        ) override;
 
 
 
@@ -196,7 +193,7 @@ class Ui : public ScenePayload
         (
             Scene&, /* Scene object */
             const Point3d&
-        );
+        ) override;
 
 
 
@@ -209,7 +206,7 @@ class Ui : public ScenePayload
             Scene&,         /* Scene object */
             const Point3d&, /* Mouse position */
             const int       /* Key mode */
-        );
+        ) override;
 
 
 
@@ -221,17 +218,17 @@ class Ui : public ScenePayload
             Scene&,         /* Scene object */
             const Point3d&, /* Mouse position */
             const int       /* Key mode */
-        );
+        ) override;
 
 
 
         /*
             Run ui loop
         */
-        virtual void onLoop();
+        virtual void onLoop() override;
 
 
-        virtual void onLoopBefore();
+        virtual void onLoopBefore() override;
 
 
 

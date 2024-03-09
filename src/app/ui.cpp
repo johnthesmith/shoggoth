@@ -1,6 +1,9 @@
 /* User libraries */
 #include "ui.h"
 
+#include "../../../../lib/core/rnd.h"
+
+
 /* Local libraries */
 #include "../math.h"
 
