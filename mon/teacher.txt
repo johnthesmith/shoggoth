@@ -1,10 +1,10 @@
 [90ms [97mstart [95m2024-03-08 21:26:00.186736[39m
 [90mi [97mstartMks [95m1709933160186788[39m
-[90mi [97mcurrentMks [95m1709975871857008[39m
-[90ms [97muptime [95m11hour 51min 51sec 670mls 220mcs [39m
-[90mi [97mcount [95m42576[39m
+[90mi [97mcurrentMks [95m1709975955253607[39m
+[90ms [97muptime [95m11hour 53min 15sec 66mls 819mcs [39m
+[90mi [97mcount [95m42659[39m
 [90mo [97mlast
-    [90ms [97mmoment [95m2024-03-09 09:17:51.857018[39m
+    [90ms [97mmoment [95m2024-03-09 09:19:15.253621[39m
     [90md [97merror [95m0.000000[39m
     [90md [97merrorDelta [95m-0.010000[39m
 [90mo [97mconfig
