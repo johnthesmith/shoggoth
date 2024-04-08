@@ -84,7 +84,11 @@ class LayerTeacher : public LayerDim
         */
         LayerTeacher* imageToValue
         (
-            string,  /* File name */
+            string,     /* File name */
+            double,     /* Rotate */
+            double,     /* ZoomMin */
+            double,     /* ZoomMax */
+            double,     /* Shift */
             Result*
         );
 
@@ -106,5 +110,15 @@ class LayerTeacher : public LayerDim
             int,        /* Random seed */
             double,     /* Min value */
             double      /* Max value */
+        );
+
+
+
+        /*
+            Noise fill values of layer neurons
+        */
+        LayerTeacher* fillValue
+        (
+            ParamList*
         );
 };

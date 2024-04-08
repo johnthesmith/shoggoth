@@ -53,8 +53,8 @@ class LimbUi : public Limb
 
         int             neuronDrawSize      = 4;
 
-        Rgba            interfaceColorDark  = Rgba( 0.9, 0.9, 1.0, 0.05 );
-        Rgba            interfaceColor      = Rgba( 0.9, 0.9, 1.0, 0.7 );
+        Rgba            interfaceColorDark  = Rgba( 0.9, 0.9, 1.0, 0.1 );
+        Rgba            interfaceColor      = Rgba( 0.9, 0.9, 1.0, 0.3 );
 
         Rgba            colorBindValueM     = Rgba( 0.0, 0.5, 1.0, 0.5 );
         Rgba            colorBindValueZ     = Rgba( 1.0, 1.0, 1.0, 0.01 );
@@ -351,7 +351,7 @@ class LimbUi : public Limb
         Layer* copyLayerFrom
         (
             Layer* aFromLayer
-        );
+        ) override;
 
 
 
@@ -359,4 +359,46 @@ class LimbUi : public Limb
             Return net object
         */
         Net* getNet();
+
+
+
+        /*
+            Configuration postprocessing
+        */
+        void onAfterReconfig
+        (
+            ParamList*
+        ) override;
+
+
+
+        LimbUi* selectedToNet();
+
+
+        LimbUi* dumpXY
+        (
+            int,             /* Z layer */
+            ofstream&,      /* File stream */
+            LayerUi*,
+            function <double ( int )>
+        );
+
+
+
+        LimbUi* dumpWeights
+        (
+            LayerUi*, /* layer with neuron */
+            int, /* Neuron Index */
+            LayerUi*, /* Layer link */
+            string, /* type parent or child */
+            char*, /* buffer with weights */
+            size_t /* size of buffer */
+
+        );
+
+        LimbUi* dumpWeightsExchange();
+
 };
+
+
+

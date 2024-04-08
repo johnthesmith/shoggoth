@@ -70,8 +70,10 @@ class Limb : public Result
         */
         /* Net synchronization mutex */
         recursive_mutex sync;
-        unsigned int    age         = 0;
-
+        /* Moment of reconfuguration */
+        long long       lastUpdate = 0;
+        /* Moment last chenged (insert delete layer and nerve)*/
+        long long       lastChange = 0;
     public:
 
         /*
@@ -251,16 +253,13 @@ class Limb : public Result
         /*
             Increamet age of limb
         */
-        Limb* incAge();
-
-
-        unsigned int getAge();
-
-
-        Limb* ageFrom
+        Limb* setLastUpdate
         (
-            Limb*
+            long long
         );
+
+
+        long long getLastUpdate();
 
 
 
@@ -281,6 +280,19 @@ class Limb : public Result
         virtual Layer* copyLayerFrom
         (
             Layer* /* Source layer */
+        );
+
+
+
+        long long getLastChange();
+
+
+        /*
+            Configuration postprocessing
+        */
+        virtual void onAfterReconfig
+        (
+            ParamList*
         );
 };
 

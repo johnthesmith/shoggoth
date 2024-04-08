@@ -123,7 +123,7 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
-    Loop::create ( this )
+    Loop::create( this, "alpha", "zero" )
     -> resume()
     -> loop()
     -> destroy();

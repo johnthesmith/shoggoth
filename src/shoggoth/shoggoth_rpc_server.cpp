@@ -24,7 +24,7 @@ ShoggothRpcServer::ShoggothRpcServer
 {
     net = aNet;
 
-    mon = Mon::create( "./mon/shoggoth_server_rpc.txt" )
+    mon = Mon::create( aNet -> getMonPath( "shoggoth_server_rpc.txt" ))
     -> setString( Path{ "start", "source" }, "shoggoth_server_rpc" )
     -> startTimer( Path{ "start", "moment" })
     -> now( Path{ "start", "momentStr" })
@@ -104,11 +104,13 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 
     switch( method )
     {
-        case CMD_READ_NET       :readNet( aArguments, aResults); break;
-        case CMD_WRITE_LAYERS   :writeLayers( aArguments, aResults); break;
-        case CMD_READ_LAYERS    :readLayers( aArguments, aResults); break;
-        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
-        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
+        case CMD_READ_NET           :readNet( aArguments, aResults); break;
+        case CMD_WRITE_LAYERS       :writeLayers( aArguments, aResults); break;
+        case CMD_READ_LAYERS        :readLayers( aArguments, aResults); break;
+        case CMD_REQUEST_WEIGHTS    :requestWeights( aArguments, aResults); break;
+
+//        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
+//        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
         default                 :unknownMethod( aArguments, aResults); break;
     }
 
@@ -203,23 +205,8 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
     ParamList* aResults
 )
 {
-    ParamList* json = NULL;
-    auto io = Io::create( net );
-    if( io -> call( CMD_READ_NET ) -> isOk() )
-    {
-        json = io -> getAnswer();
-        /* Apply net */
-        if( json != NULL )
-        {
-            json -> copyTo( aResults );
-            setAnswerResult( aResults, RESULT_OK );
-        }
-        else
-        {
-            setAnswerResult( aResults, io -> getCode() );
-        }
-    }
-    io -> destroy();
+    aResults -> copyFrom( net -> getConfig() );
+    setAnswerResult( aResults, RESULT_OK );
 
     return this;
 }
@@ -461,6 +448,40 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
     return this;
 }
 
+
+
+/*
+    Remote host request weights for selected neurons
+*/
+ShoggothRpcServer* ShoggothRpcServer::requestWeights
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    aResults -> copyFrom( aArguments );
+
+    auto clientId = aResults -> getString( "clientId" );
+    auto neurons = aResults -> getObject( "neurons" );
+
+
+    if
+    (
+        validate( neurons != NULL, "NeuronsNotFound", aResults ) &&
+        validate( clientId != "", "ClientIDNotFound", aResults )
+    )
+    {
+        /* Return positive answer */
+        setAnswerResult( aResults, RESULT_OK );
+
+        net
+        -> getWeightsExchange()
+        -> synchNeuronsByClient( clientId, neurons )
+        -> prepareAnswer( clientId, neurons );
+    }
+
+    return this;
+}
 
 
 

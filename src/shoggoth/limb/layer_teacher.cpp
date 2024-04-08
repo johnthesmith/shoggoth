@@ -84,6 +84,31 @@ LayerTeacher* LayerTeacher::noiseValue
 
 
 
+
+/*
+    Noise fill values of layer neurons
+*/
+LayerTeacher* LayerTeacher::fillValue
+(
+    ParamList* aValues
+)
+{
+    getLimb() -> lock();
+    auto c = getCount();
+    auto cv = aValues -> getCount();
+    for( int i = 0; i < c; i ++ )
+    {
+        setNeuronValue( i, aValues -> getByIndex( i % cv ) -> getDouble() ) ;
+    }
+    getLimb() -> unlock();
+
+    Rnd::restoreSeed();
+
+    return this;
+}
+
+
+
 /**********************************************************************
     Load valus
 */
@@ -119,7 +144,6 @@ LayerTeacher* LayerTeacher::bitmapToValue
                     (1-(( double ) y / ( double ) size.y )) * h - 1,
                     rgba
                 );
-
                 setNeuronValue
                 (
                     indexByPos( Point3i( x, y, z )),
@@ -142,6 +166,10 @@ LayerTeacher* LayerTeacher::bitmapToValue
 LayerTeacher* LayerTeacher::imageToValue
 (
     string aFileName,
+    double aRotate,
+    double aZoomMin,
+    double aZoomMax,
+    double aShift,
     Result* result
 )
 {
@@ -154,6 +182,11 @@ LayerTeacher* LayerTeacher::imageToValue
             auto bitmap = Bitmap::create() -> load( aFileName );
             if( bitmap -> isOk() )
             {
+                bitmap
+                -> rotate( Rnd::get( -aRotate, aRotate ), true )
+                -> zoom( Rnd::get( aZoomMin, aZoomMax ), true )
+                -> shift( Rnd::get( -aShift, aShift ), Rnd::get( -aShift, aShift ));
+
                 getLog()
                 -> trace( "Image loaded" )
                 -> prm( "Layer", getNameOrId() )

@@ -15,11 +15,13 @@ using namespace std;
 */
 Loop::Loop
 (
-    ShoggothApplication* a
+    ShoggothApplication* a,
+    string aNetId,
+    string aNetVersion
 )
 : Payload( a ) /* Call parent constructor */
 {
-    net = Net::create( a, a -> getSockManager());
+    net = Net::create( a, a -> getSockManager(), aNetId, aNetVersion );
 }
 
 
@@ -44,10 +46,12 @@ Loop::~Loop()
 */
 Loop* Loop::create
 (
-    ShoggothApplication* a
+    ShoggothApplication* a,
+    string aNetId,
+    string aNetVersion
 )
 {
-    return new Loop( a );
+    return new Loop( a, aNetId, aNetVersion );
 }
 
 
@@ -106,15 +110,37 @@ Loop* Loop::processorControl()
                 processor -> getLimb() -> getLearningSpeed()
             )
         )
-        -> setWakeupWeight
+        -> setMinWeight
         (
             taskProc
-            -> getDouble( "wakeupWeight", processor -> getLimb() -> getWakeupWeight() )
+            -> getDouble( "minWeight", processor -> getLimb() -> getMinWeight() )
         )
-        -> setErrorNormalize
+        -> setMaxWeight
         (
             taskProc
-            -> getDouble( "errorNormalize", processor -> getLimb() -> getErrorNormalize() )
+            -> getDouble
+            (
+                "maxWeight",
+                processor -> getLimb() -> getMaxWeight()
+            )
+        )
+        -> setMaxError
+        (
+            taskProc
+            -> getDouble
+            (
+                "maxError",
+                processor -> getLimb() -> getMaxError()
+            )
+        )
+        -> setTickWrite
+        (
+            taskProc
+            -> getInt
+            (
+                "tickWrite",
+                processor -> getLimb() -> getTickWrite()
+            )
         )
         -> setCalcDebug
         (
@@ -260,7 +286,7 @@ void Loop::onLoop()
     -> setInt
     (
         Path{ "loop", "lastNetConfig" },
-        net -> getLastNetConfig() * SECOND
+        net -> getLastUpdate() * SECOND
     )
     -> interval
     (
@@ -279,7 +305,6 @@ void Loop::onLoop()
     if
     (
         net -> isConfigUpdate( netConfig ) ||
-//        ! getApplication() -> getConfig() -> isOk() ||
         getApplication() -> getConfigUpdated()
     )
     {

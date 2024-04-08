@@ -99,6 +99,8 @@ Layer* Limb::createLayer
         /* Create new layer object */
         result = Layer::create( this, aId );
         layers -> push( result );
+
+        lastChange = now();
     }
 
     unlock();
@@ -132,6 +134,8 @@ Limb* Limb::deleteLayer
 
         /* Destroy layer */
         layer -> destroy();
+
+        lastChange = now();
     }
     return this;
 }
@@ -158,6 +162,7 @@ Nerve* Limb::createNerve
         aBindType
     );
     nerves -> push( result );
+    lastChange = now();
     return result;
 }
 
@@ -178,6 +183,8 @@ Limb* Limb::deleteNerve
 
         /* Destroy the nerve */
         aNerve -> destroy();
+
+        lastChange = now();
     }
     return this;
 }
@@ -397,27 +404,19 @@ Limb* Limb::childrenLoop
 /*
     Increamet age of limb
 */
-Limb* Limb::incAge()
-{
-    age++;
-    return this;
-}
-
-
-unsigned int Limb::getAge()
-{
-    return age;
-}
-
-
-
-Limb* Limb::ageFrom
+Limb* Limb::setLastUpdate
 (
-    Limb* aSource
+    long long aValue
 )
 {
-    age = aSource -> getAge();
+    lastUpdate = aValue;
     return this;
+}
+
+
+long long Limb::getLastUpdate()
+{
+    return lastUpdate;
 }
 
 
@@ -462,4 +461,23 @@ Layer* Limb::copyLayerFrom
     return
     Layer::create( this, aLayerFrom -> getId() )
     -> setCount( aLayerFrom -> getCount() );
+}
+
+
+
+long long Limb::getLastChange()
+{
+    return lastChange;
+}
+
+
+
+/*
+    Configuration postprocessing
+*/
+void Limb::onAfterReconfig
+(
+    ParamList* aConfig
+)
+{
 }

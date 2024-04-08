@@ -156,6 +156,7 @@ void Ui::onCalc
 {
     /* Prepare Limb */
     limb -> getNet() -> syncToLimb( limb );
+
     limb -> getNerveList() -> weightsAllocate
     (
         []( Nerve* nerve )
@@ -163,7 +164,11 @@ void Ui::onCalc
             nerve -> fill( 1.0, 1.0 );
         }
     );
-    limb -> getNet() -> swapValuesAndErrors
+
+    limb -> dumpWeightsExchange();
+
+    limb -> getNet()
+    -> swapValuesAndErrors
     (
         Actions{ READ_VALUES, READ_ERRORS },    /* Action */
         TASK_UI,                                /* Role */
@@ -406,6 +411,9 @@ void Ui::onKeyDown
                     return false;
                 }
             );
+        break;
+        case KEY_W:
+            limb -> dumpWeightsExchange();
         break;
         case KEY_V:
             limb -> setNeuronDrawMode( NDM_VALUE );

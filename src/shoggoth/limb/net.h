@@ -18,6 +18,8 @@
 
 #include "../limb.h"
 
+#include "weights_exchange.h"
+
 
 
 class Net: public Limb
@@ -34,17 +36,31 @@ class Net: public Limb
         vector<string>  changedValues;
         vector<string>  changedErrors;
 
+        /* Weights request */
+        WeightsExchange* weightsExchange = NULL;
+
+
         /* Events */
-        ParamList*      tasks           = NULL;     /* List of participants tasks */
+        ParamList* tasks           = NULL;     /* List of participants tasks */
 
         /* Synchronization states */
         int             randVersion     = 0;        /* Random vesion after load */
 
-        /* Settings */
-        string          id              = "";       /* Net id */
-        string          storagePath     = "net";
+        /*
+            Storage settings
+            The net contains at storage
+                storate - value from net storagePath
+                    id - value from net id
+                        net.json - net configuration
+                        versions - version of net
+                            log - log files
+                            mon - mon files
+                            weights - weighs data
+        */
 
-        long long       lastNetConfig;
+        string          storagePath     = "net";    /* Path for storage */
+        string          id              = "";       /* Net id */
+        string          version         = "";       /* Net version */
 
     public:
 
@@ -54,7 +70,9 @@ class Net: public Limb
         Net
         (
             Application*,   /* Application object */
-            SockManager*
+            SockManager*,   /* Socket manager */
+            string,         /* The net id */
+            string          /* The net version */
         );
 
 
@@ -71,8 +89,10 @@ class Net: public Limb
         */
         static Net* create
         (
-            Application*,
-            SockManager*
+            Application*,   /* Application object */
+            SockManager*,   /* Socket manager */
+            string,         /* The net id */
+            string          /* The net version */
         );
 
 
@@ -167,7 +187,9 @@ class Net: public Limb
         Log* getLog();
 
 
-
+        /*
+            Set storage path
+        */
         Net* setStoragePath
         (
             const string
@@ -175,14 +197,108 @@ class Net: public Limb
 
 
 
+        /*
+            Get storage path
+        */
         string getStoragePath();
 
 
 
-        Net* setId
+        /*
+            Return net id
+        */
+        string getId();
+
+
+
+        /*
+            Return net version
+        */
+        string getVersion();
+
+
+
+        /******************************************************************************
+            Pathes
+        */
+
+
+
+        /*
+            Return net path
+        */
+        string getNetPath
         (
-            string
+            string ="" /* Subpath */
         );
+
+
+
+        /*
+            Return net version path
+        */
+        string getNetVersionPath
+        (
+            string ="" /* Subpath */
+        );
+
+
+
+        /*
+            Return net config
+        */
+        string getNetConfigFile();
+
+
+
+        /*
+            Return log path
+        */
+        string getLogPath
+        (
+            string ="" /* Subpath */
+        );
+
+
+
+        /*
+            Return mon path
+        */
+        string getMonPath
+        (
+            string = "" /* Subpath */
+        );
+
+
+
+        /*
+            Return dump path
+        */
+        string getDumpPath
+        (
+            string = "" /* Subpath */
+        );
+
+
+
+        /*
+            Return path for nerves weights
+        */
+        string getNervesPath
+        (
+            string = "" /* Subpath */
+        );
+
+
+
+        /*
+            Return weights dump path
+        */
+        string getWeightsPath
+        (
+            string = ""
+        );
+
 
 
         /******************************************************************************
@@ -247,6 +363,7 @@ class Net: public Limb
         bool getCalcDebug();
 
 
+
         int getCalcLayerIndex();
 
 
@@ -263,6 +380,15 @@ class Net: public Limb
         */
         ParamList* getConfig();
 
+
+
+        /*
+            Load selected weights to this net from the limb argument
+        */
+        Net* loadWeightsFrom
+        (
+            Limb*   /* Sorce */
+        );
 
 
         /*
@@ -314,14 +440,20 @@ class Net: public Limb
 
 
 
-        long long getLastNetConfig();
-
-
         /*
             Create roles strung of the process
         */
         Net* buildTasks();
 
+
+
+        WeightsExchange* getWeightsExchange();
+
+
+
+        /*
+            Request weights for neurons
+        */
+        Net* requestWeights();
+
 };
-
-

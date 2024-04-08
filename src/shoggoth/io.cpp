@@ -191,21 +191,19 @@ ParamList* Io::getRequest()
 */
 Io* Io::fileReadNet()
 {
-    string net = getApplication()
-    -> getConfig()
-    -> getString( Path { "io", "net" });
+    string file = net -> getNetConfigFile();
 
-    getLog() -> trace( "Net config read" ) -> prm( "file", net );
+    getLog() -> trace( "Read net config" ) -> prm( "file", file );
 
     Json::create()
-    -> fromFile( net )
+    -> fromFile( file )
     -> copyTo( answer )
     -> resultTo( this )
     -> destroy();
 
     if( isOk() )
     {
-        answer -> setInt( "lastUpdate", fileLastUpdate( net ));
+        answer -> setInt( "lastUpdate", fileLastUpdate( file ));
     }
 
     return this;

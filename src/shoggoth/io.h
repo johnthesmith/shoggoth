@@ -164,5 +164,3 @@ class Io: public Result
         */
         Io* fileReadWeights();
 };
-
-

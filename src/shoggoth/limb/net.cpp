@@ -11,17 +11,23 @@
 */
 Net::Net
 (
-    Application* aApplication,  /* Application object */
-    SockManager* aSockManager   /* Socket manager object */
+    Application*    aApplication,  /* Application object */
+    SockManager*    aSockManager,  /* Socket manager object */
+    string          aId,            /* The net id */
+    string          aVersion        /* The net version */
 )
 :Limb( aApplication -> getLogManager() )
 {
     application = aApplication;
     sockManager = aSockManager;
+    id          = aId;
+    version     = aVersion;
+
     application -> getLog() -> trace( "Create net" );
 
     tasks = ParamList::create();
     config = ParamList::create();
+    weightsExchange = WeightsExchange::create();
 }
 
 
@@ -32,6 +38,9 @@ Net::Net
 */
 Net::~Net()
 {
+    /* Weights exchanger destoy */
+    weightsExchange -> destroy();
+
     /* Config object clear and destroy */
     config -> destroy();
 
@@ -48,11 +57,13 @@ Net::~Net()
 */
 Net* Net::create
 (
-    Application* a,
-    SockManager* sockManager
+    Application*    aApplication,  /* Application object */
+    SockManager*    aSockManager,  /* Socket manager object */
+    string          aId,            /* The net id */
+    string          aVersion        /* The net version */
 )
 {
-    return new Net( a, sockManager );
+    return new Net( aApplication, aSockManager, aId, aVersion );
 }
 
 
@@ -217,6 +228,40 @@ Net* Net::writeLayers
     return this;
 }
 
+
+
+/*
+    Request weights for neurons
+*/
+Net* Net::requestWeights()
+{
+    if( weightsExchange -> needRequest() )
+    {
+        getLog() -> begin( "Request weights" );
+
+        /* Create IO object and define request */
+        auto io = Io::create( this );
+        auto request = io -> getRequest();
+        weightsExchange -> prepareRequest( request );
+
+        /* Call server and apply the answer */
+        if( io -> call( CMD_REQUEST_WEIGHTS ) -> isOk() )
+        {
+            weightsExchange
+            -> checkClearSignal()
+            -> readAnswer( io -> getAnswer() );
+        }
+        else
+        {
+            /* Call error */
+        }
+
+        io -> destroy();
+
+        getLog() -> end();
+    }
+    return this;
+}
 
 
 /*
@@ -398,6 +443,7 @@ Log* Net::getLog()
 
 
 
+
 Net* Net::readNet
 (
     ParamList* aAnswer
@@ -422,7 +468,7 @@ bool Net::isConfigUpdate
     ParamList* aConfig
 )
 {
-    return lastNetConfig < aConfig -> getInt( "lastUpdate", 0 );
+    return getLastUpdate() < aConfig -> getInt( "lastUpdate", 0 );
 }
 
 
@@ -484,7 +530,7 @@ Net* Net::applyNet
                         auto jsonNerve      = aItem -> getObject();
                         auto idFrom         = jsonNerve -> getString( "idFrom" );
                         auto idTo           = jsonNerve -> getString( "idTo" );
-                        auto bindType       = Nerve::bindTypeFromString( jsonNerve -> getString( "bindType" ));
+                        auto bindType       = bindTypeFromString( jsonNerve -> getString( "bindType" ));
                         auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
                         auto nerveDelete    = jsonNerve -> getBool( "delete" );
 
@@ -551,14 +597,8 @@ Net* Net::applyNet
         }
     }
 
-    /*
-        Next age for net
-        Other limbs can reload values and errors
-    */
-    incAge();
-
     /* Update last update net moment */
-    lastNetConfig = aConfig -> getInt( "lastUpdate", 0 );
+    setLastUpdate( aConfig -> getInt( "lastUpdate", 0 ));
 
     return this;
 }
@@ -579,6 +619,114 @@ Net* Net::setStoragePath
 string Net::getStoragePath()
 {
     return storagePath;
+}
+
+
+
+/******************************************************************************
+    Pathes
+*/
+
+
+
+/*
+    Return net path
+*/
+string Net::getNetPath
+(
+    string aSubpath
+)
+{
+    return getStoragePath() + "/" + id + ( aSubpath == "" ? "" : "/" + aSubpath );
+}
+
+
+
+
+/*
+    Return net path
+*/
+string Net::getNetVersionPath
+(
+    string aSubpath
+)
+{
+    return getNetPath( version  + ( aSubpath == "" ? "" : "/" + aSubpath ));
+}
+
+
+
+/*
+    Return net config
+*/
+string Net::getNetConfigFile()
+{
+    return getNetPath( "net.json" );
+}
+
+
+
+/*
+    Return log path
+*/
+string Net::getLogPath
+(
+    string aSubpath
+)
+{
+    return getNetVersionPath( "log" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+}
+
+
+
+/*
+    Return mon path
+*/
+string Net::getMonPath
+(
+    string aSubpath
+)
+{
+    return getNetVersionPath( "mon" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+}
+
+
+
+/*
+    Return dump path
+*/
+string Net::getDumpPath
+(
+    string aSubpath
+)
+{
+    return getNetVersionPath( "dump" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+}
+
+
+
+/*
+    Return path for nerves weights
+*/
+string Net::getNervesPath
+(
+    string aSubpath
+)
+{
+    return getNetVersionPath( "nerves" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+}
+
+
+
+/*
+    Return weights dump path
+*/
+string Net::getWeightsPath
+(
+    string aSubpath
+)
+{
+    return getDumpPath( "weights" + ( aSubpath == "" ? "" : "/" + aSubpath ));
 }
 
 
@@ -708,20 +856,6 @@ Net* Net::purgeLayers
 
 
 /*
-    Set id for net exemplar
-*/
-Net* Net::setId
-(
-    string aValue
-)
-{
-    id = aValue;
-    return this;
-}
-
-
-
-/*
     Return socket manager object
 */
 
@@ -739,6 +873,108 @@ SockManager* Net::getSockManager()
 ParamList* Net::getConfig()
 {
     return config;
+}
+
+
+
+/*
+    Load selected weights to this net from the limb argument
+*/
+Net* Net::loadWeightsFrom
+(
+    Limb*   aLimb       /* sorce */
+)
+{
+    lock();
+    aLimb -> lock();
+
+    weightsExchange -> loop
+    (
+        [ &aLimb ]
+        (
+            Param* iParam
+        )
+        {
+            if( iParam -> isObject() )
+            {
+                auto params = iParam -> getObject();
+                auto layerId = params -> getString( "layerId" );
+                auto neuronIndex = params -> getInt( "neuronIndex" );
+
+                auto layer = aLimb -> getLayerList() -> getById( layerId );
+                if( layer != NULL )
+                {
+                    /* Loop for the arguments limb nerves */
+                    aLimb -> getNerveList() -> loop
+                    (
+                        [ &layer, &params, &neuronIndex ]
+                        ( void* item )
+                        {
+                            auto nerve = (Nerve*) item;
+
+                            /* Parents processing */
+                            if( nerve -> getParent() == layer )
+                            {
+                                char* buffer = NULL;
+                                size_t  size = 0;
+                                nerve -> extractChildWeightsBuffer
+                                (
+                                    neuronIndex,
+                                    buffer,
+                                    size
+                                );
+
+                                /* collect child weights */
+                                params -> setData
+                                (
+                                    Path
+                                    {
+                                        "children",
+                                        nerve -> getChild() -> getId()
+                                    },
+                                    buffer,
+                                    size,
+                                    false
+                                );
+                            }
+
+                            /* Children processing */
+                            if( nerve -> getChild() == layer )
+                            {
+                                char* buffer = NULL;
+                                size_t  size = 0;
+                                nerve -> extractParentsWeightsBuffer
+                                (
+                                    neuronIndex,
+                                    buffer,
+                                    size
+                                );
+                                /* collect child weights */
+                                params -> setData
+                                (
+                                    Path
+                                    {
+                                        "parents",
+                                        nerve -> getParent() -> getId()
+                                    },
+                                    buffer,
+                                    size,
+                                    false
+                                );
+                            }
+                            return false;
+                        }
+                    );
+                }
+            }
+            return false;
+        }
+    );
+
+    aLimb -> unlock();
+    unlock();
+
+    return this;
 }
 
 
@@ -821,10 +1057,14 @@ Net* Net::syncToLimb
     Limb* targetLimb
 )
 {
-    if( targetLimb -> getAge() != getAge() )
+    if( targetLimb -> getLastUpdate() != getLastUpdate() )
     {
+        /* Rebuild structure layers and nervs */
         copyTo( targetLimb, true );
-        targetLimb -> ageFrom( this );
+        /* Apply specific config */
+        targetLimb -> onAfterReconfig( getConfig() );
+        /* Commit last  update */
+        targetLimb -> setLastUpdate( getLastUpdate() );
     }
     return this;
 }
@@ -876,7 +1116,7 @@ Net* Net::syncWithServer()
 
                 auto layer = ( Layer* ) aLayer;
 
-                /* Values was changed and must be write to server */
+                /* Values were changed and must be written to the server */
                 if
                 (
                     find
@@ -936,6 +1176,7 @@ Net* Net::syncWithServer()
         /* Exchange with server */
         writeLayers( writeValues, writeErrors );
         readLayers( readValues, readErrors );
+        requestWeights();
 
         /* Unlock Net */
         unlock();
@@ -978,14 +1219,6 @@ Net* Net::addChangedErrors
 
 
 
-long long Net::getLastNetConfig()
-{
-    return lastNetConfig;
-}
-
-
-
-
 /*
     Create roles strung of the process
 */
@@ -1013,4 +1246,31 @@ Net* Net::buildTasks()
         }
     }
     return this;
+}
+
+
+
+/*
+    Return net id
+*/
+string Net::getId()
+{
+    return id;
+}
+
+
+
+/*
+    Return net version
+*/
+string Net::getVersion()
+{
+    return version;
+}
+
+
+
+WeightsExchange* Net::getWeightsExchange()
+{
+    return weightsExchange;
 }

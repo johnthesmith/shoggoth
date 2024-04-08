@@ -1,12 +1,17 @@
 #include "limb_ui.h"
+#include "stdio.h"
 
 /* System */
 #include <functional>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 /* Graph libraries */
 #include "../../../../../lib/graph/chart.h"
 #include "../../../../../lib/graph/log_points.h"
+#include "../../../../../lib/core/math.h"
+#include "../../../../../lib/core/str.h"
 
 /* Shoggot libraries */
 #include "../func.h"
@@ -169,10 +174,10 @@ LimbUi* LimbUi::drawLayer
         -> setTextHorisontalAlign( ALIGN_CENTER )
         -> text( aLayer -> getNameOrId() )
         -> setTextSize( 0.05 )
-        -> textCR()
+        -> textCR( 1 )
         -> color( Rgba( RGBA_RED ))
         -> text( "Error:" + to_string( aLayer -> calcSumError()) )
-        -> textCR()
+        -> textCR( 1 )
         -> color( Rgba( RGBA_ORANGE ))
         -> text( "Value:" + to_string( aLayer -> calcSumValue()) )
         ;
@@ -317,8 +322,8 @@ LimbUi* LimbUi::drawNerve
     }
 
     /* Draw nerve arrow */
-    Rgba cFrom = getArrowColorByType( aNerve -> getBindType()).setAlpha( 0.0 );
-    Rgba cTo = getArrowColorByType( aNerve -> getBindType()).setAlpha( 0.05 );
+    Rgba cFrom = getArrowColorByType( aNerve -> getBindType()).setAlpha( 0.1 );
+    Rgba cTo = getArrowColorByType( aNerve -> getBindType()).setAlpha( 0.2 );
 
     aScene -> arrow
     (
@@ -351,6 +356,7 @@ LimbUi* LimbUi::neuronPointsScreenCalc
 
     auto c = aLayer -> getCount();
 
+
     for( int i = 0; i < c; i ++ )
     {
         auto p = aScene
@@ -374,36 +380,32 @@ LimbUi* LimbUi::drawNeuronChart
     NeuronListUi* aNeuronList
 )
 {
-    Chart2d::create()
+    Chart2d::create( aScene )
     -> setXMin( -2.0 )
     -> setXMax( 2.0 )
     -> setYMin( -2.0 )
     -> setYMax( 2.0 )
     -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
     -> setBackColor( interfaceColorDark )
-    -> setLineColor( interfaceColor )
-    -> drawBack( aScene )
-    -> setLineWeight( 1.0 )
-    -> draw( aScene, FUNC_SIGMOID_LINE_ZERO_PLUS, 1.0 )
-    -> draw( aScene, FUNC_SIGMOID_LINE_MINUS_PLUS, 1.0 )
-    -> draw( aScene, FUNC_V_LINE, 1.0 )
-
+    -> drawBack()
+    -> setLineColor( RGBA_YELLOW )
     -> setLineWeight( 2.0 )
+    -> draw( FUNC_RELU )
+    -> setLineWeight( 3.0 )
     -> setLineColor( RGBA_ORANGE )
-    -> drawX( aScene, aNeuronList -> calcAvgValue() )
+    -> drawX( aNeuronList -> calcAvgValue(), true, -1 )
     -> setLineColor( RGBA_RED )
-    -> drawX( aScene, aNeuronList -> calcAvgError() )
+    -> drawX( aNeuronList -> calcAvgError(), true, -2 )
     -> setLineColor( RGBA_GREEN )
-    -> drawX( aScene, avgWeightBySelect() )
-
+    -> drawX( avgWeightBySelect(), true, -3 )
     -> setLineColor( interfaceColor )
     -> setLineWeight( 1.0 )
-    -> drawX( aScene, 0.0 )
-    -> drawX( aScene, 1.0 )
-    -> drawX( aScene, -1.0 )
-    -> drawY( aScene, 0.0 )
-    -> drawY( aScene, 1.0 )
-    -> drawY( aScene, -1.0)
+    -> drawX( 0.0 )
+    -> drawX( 1.0 )
+    -> drawX( -1.0 )
+    -> drawY( 0.0 )
+    -> drawY( 1.0 )
+    -> drawY( -1.0)
     -> destroy();
 
     return this;
@@ -651,12 +653,37 @@ NeuronUi* LimbUi::getSelectedFirst()
 
 
 
+/*
+    Put the first Selected neuron in to WeightsExchange for sent to server
+*/
+LimbUi* LimbUi::selectedToNet()
+{
+    net -> lock();
+
+    /* Clear all neurons for current client id */
+    net -> getWeightsExchange() -> purgeByClientId();
+
+    auto first = getSelectedFirst();
+    if( first != NULL )
+    {
+        net
+        -> getWeightsExchange()
+        -> add( first -> getLayer() -> getId(), first -> getIndex() );
+    }
+    net -> unlock();
+
+    return this;
+}
+
+
+
 LimbUi* LimbUi::setSelected
 (
     NeuronUi* a
 )
 {
     selected -> resize( 0 ) -> push( a );
+    selectedToNet();
     return this;
 }
 
@@ -676,6 +703,9 @@ LimbUi* LimbUi::setSelected
         selected,
         aScene -> getMouseCurrentScreen()
     );
+
+    selectedToNet();
+
     return this;
 }
 
@@ -697,6 +727,9 @@ LimbUi* LimbUi::addSelectedByCursor
     );
     selected -> merge( current );
     current -> destroy();
+
+    selectedToNet();
+
     return this;
 }
 
@@ -718,6 +751,9 @@ LimbUi* LimbUi::removeSelectedByCursor
     );
     selected -> remove( current );
     current -> destroy();
+
+    selectedToNet();
+
     return this;
 }
 
@@ -880,28 +916,7 @@ Layer* LimbUi::copyLayerFrom
     Layer* aFromLayer
 )
 {
-    auto config = net -> getConfig();
-
     auto result = LayerUi::create( this, aFromLayer -> getId() );
-
-    auto configLayer = config -> getObject( Path { "layers", aFromLayer -> getId() } );
-    if( configLayer != NULL )
-    {
-        result -> setSize( configLayer );
-        result -> setDrawSize( configLayer );
-
-        result
-        -> setPosition( configLayer )
-
-        -> getObject()
-        -> setTop( POINT_3D_Y )
-        -> setTarget( POINT_3D_X );
-    }
-    else
-    {
-        getLog() -> error( "NetAndConfigNotConsistent" ) -> lineEnd();
-    }
-
     return ( Layer* )result;
 }
 
@@ -913,4 +928,272 @@ Layer* LimbUi::copyLayerFrom
 Net* LimbUi::getNet()
 {
     return net;
+}
+
+
+
+/*
+    Configuration postprocessing
+*/
+void LimbUi::onAfterReconfig
+(
+    ParamList*  aConfig
+)
+{
+    getLayerList() -> loop
+    (
+        [ this, &aConfig ]
+        (
+            void* aLayer
+        )
+        {
+            auto layer = (LayerUi*) aLayer;
+            auto configLayer = aConfig -> getObject
+            (
+                Path { "layers", layer -> getId() }
+            );
+
+            if( configLayer != NULL )
+            {
+                layer -> setSize( configLayer );
+                layer -> setDrawSize( configLayer );
+                layer
+                -> setPosition( configLayer )
+                -> getObject()
+                -> setTop( POINT_3D_Y )
+                -> setTarget( POINT_3D_X );
+            }
+            else
+            {
+                getLog() -> error( "NetAndConfigNotConsistent" ) -> lineEnd();
+            }
+
+            return false;
+        }
+    );
+}
+
+
+
+
+LimbUi* LimbUi::dumpXY
+(
+    int aZ,             /* Z layer */
+    ofstream &aFile,     /* File stream */
+    LayerUi* aLayer,
+    function <double ( int )> aCallback
+)
+{
+    auto pos = Point3i( 0, 0, aZ );
+
+    auto size = aLayer -> getSize();
+
+    for( pos.y = 0; pos.y < size.y ; pos.y ++ )
+    {
+        for( pos.x = 0; pos.x < size.x; pos.x++ )
+        {
+            auto index = aLayer ->  indexByPos( pos );
+            auto arg = aCallback( index );
+            auto absArg = abs( arg );
+            aFile
+            << ( absArg < EPSILON_D ? INK_WHITE : ( arg > 0.0 ? INK_RED : INK_BLUE ))
+            << strAlign( to_string( absArg ), ALIGN_RIGHT, 8 )
+            << INK_DEFAULT
+            << " ";
+        }
+        aFile << endl;
+    }
+
+    return this;
+}
+
+
+
+/*
+    dump weights in to file
+*/
+LimbUi* LimbUi::dumpWeights
+(
+    LayerUi* aLayer,
+    int aNeuronIndex,
+    LayerUi* aLayerLink,
+    string aType,
+    char* aBuffer,
+    size_t aSize
+)
+{
+    auto pos = Point3i();
+    auto size = aLayerLink -> getSize();
+    for( pos.z = 0; pos.z < size.z; pos.z++ )
+    {
+        /* Create file name */
+        stringstream s;
+        s
+        << aLayer -> getId()
+        << "_"
+        << aType
+        << "_"
+        << aLayerLink -> getId()
+        << "_z:"
+        << pos.z
+        << ".txt";
+
+        auto file = net -> getWeightsPath( s.str() );
+
+        if( checkPath( getPath( file )))
+        {
+            ofstream f;
+            f.open( file );
+            if( f.is_open() )
+            {
+                f
+                << "layer: " << aLayer -> getId() << endl
+                << "index: " << aNeuronIndex << endl
+                << "value: " << aLayer -> getNeuronValue( aNeuronIndex ) << endl
+                << "error: " << aLayer -> getNeuronError( aNeuronIndex ) << endl
+                ;
+
+                f << endl << "Weights" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aBuffer ]( int aIndex )
+                    {
+                        return *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
+                    }
+                );
+
+                /* Parent or child values */
+
+                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " values" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aLayerLink ]( int aIndex )
+                    {
+                        return aLayerLink -> getNeuronValue( aIndex );
+                    }
+                );
+
+                /* Parent or child values */
+                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " errors" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aLayerLink ]( int aIndex )
+                    {
+                        return aLayerLink -> getNeuronError( aIndex );
+                    }
+                );
+
+                /* Incoming and outcoming values */
+                f << endl << ( aType == "parent" ? "Incoming" : "Outcoming" ) << " values" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aType, &aBuffer, &aLayerLink, &aLayer, &aNeuronIndex ]( int aIndex )
+                    {
+                        return
+                        (
+                            aType == "parent"
+                            ? aLayerLink -> getNeuronValue( aIndex )
+                            : aLayer -> getNeuronValue( aNeuronIndex )
+                        ) *
+                        *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
+                    }
+                );
+
+                f.close();
+            }
+        }
+    }
+
+    return this;
+}
+
+
+
+LimbUi* LimbUi::dumpWeightsExchange()
+{
+    net -> lock();
+
+    net -> getWeightsExchange() -> loop
+    (
+        [ this ]
+        ( Param* item )
+        {
+            if( item -> isObject() )
+            {
+                auto layerId = item -> getObject() -> getString( "layerId" );
+                auto neuronIndex = item -> getObject() -> getInt( "neuronIndex" );
+                auto children = item -> getObject() -> getObject( "children" );
+                auto parents = item -> getObject() -> getObject( "parents" );
+                auto layer = (LayerUi*) getLayerList() -> getById( layerId );
+
+                if( layer != NULL)
+                {
+                    /* Dump children */
+                    if( children != NULL )
+                    {
+                        children -> loop
+                        (
+                            [ this, &layer, &neuronIndex ]
+                            ( Param* child )
+                            {
+                                auto childLayer = ( LayerUi* ) getLayerList()
+                                -> getById( child -> getName() );
+
+                                if( childLayer != NULL )
+                                {
+                                    dumpWeights
+                                    (
+                                        layer,
+                                        neuronIndex,
+                                        childLayer,
+                                        "child",
+                                        child -> getValue(),
+                                        child -> getSize()
+                                    );
+                                }
+                                return false;
+                            }
+                        );
+                    }
+
+                    /* Dump parents */
+                    if( parents != NULL )
+                    {
+                        parents -> loop
+                        (
+                            [ this, &layer, &neuronIndex]
+                            ( Param* parent )
+                            {
+                                auto parentLayer = ( LayerUi* ) getLayerList()
+                                -> getById( parent -> getName() );
+
+                                if( parentLayer != NULL )
+                                {
+                                    dumpWeights
+                                    (
+                                        layer,
+                                        neuronIndex,
+                                        parentLayer,
+                                        "parent",
+                                        parent -> getValue(),
+                                        parent -> getSize()
+                                    );
+                                }
+                                return false;
+                            }
+                        );
+                    }
+                }
+
+            }
+            return false;
+        }
+    );
+
+    net -> unlock();
+    return this;
 }

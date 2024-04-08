@@ -15,6 +15,7 @@ std::string teacherTaskToString
     {
         case TEACHER_CMD_UNKNOWN            : return "TEACHER_CMD_UNKNOWN";
         case TEACHER_CMD_VALUE_TO_LAYER     : return "VALUE_TO_LAYER";
+        case TEACHER_CMD_VALUES_TO_LAYER    : return "VALUES_TO_LAYER";
         case TEACHER_CMD_IMAGE_TO_LAYER     : return "IMAGE_TO_LAYER";
         case TEACHER_CMD_FOLDER_TO_LAYER    : return "FOLDER_TO_LAYER";
         case TEACHER_CMD_GUID_TO_LAYER      : return "GUID_TO_LAYER";
@@ -34,6 +35,7 @@ TeacherTask stringToTeacherTask
 )
 {
     if( a == "VALUE_TO_LAYER" )     return TEACHER_CMD_VALUE_TO_LAYER;
+    if( a == "VALUES_TO_LAYER" )    return TEACHER_CMD_VALUES_TO_LAYER;
     if( a == "IMAGE_TO_LAYER" )     return TEACHER_CMD_IMAGE_TO_LAYER;
     if( a == "FOLDER_TO_LAYER" )    return TEACHER_CMD_FOLDER_TO_LAYER;
     if( a == "GUID_TO_LAYER" )      return TEACHER_CMD_GUID_TO_LAYER;

@@ -32,14 +32,20 @@ class LimbProcessor : public Limb
         /* Calculation state */
         CalcDirection   calcDirection   = CALC_FORWARD; /* Calculation direction */
         int             calcLayerIndex  = 0;        /* Current lsyer for calculation */
-
+        long long int   tick            = 0;        /* Current tick */
         int             threadCount     = 1;        /* Count of threads */
+        bool            learning        = false;    /* Automatic learning mode */
 
         /* Settings */
         double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
-        double  wakeupWeight            = 0.0001;   /* 0.0 - zero weight dos not wakeup, max 0.0001 recomended */
-        double  errorNormalize          = 0.0;      /* 0.0 - full error transfer,  1.0 - full dependency from sum weight of layer */
-        bool    learningMode            = true;     /* True for backweard calculation in learning */
+        double  minWeight               = 0.0001;   /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
+        double  maxWeight               = 1000;     /* Maxumum weight */
+        double  maxError                = 100;      /* Maxumum error, have to less then maxWeight */
+
+        int     tickWrite               = 10;       /* Each of finished calculation form tickWrite will be writen to file */
+
+        ParamList* dumpWeightConf       = NULL;     /**/
+
 
         /*
             Calculation debug mode
@@ -190,15 +196,6 @@ class LimbProcessor : public Limb
 
 
 
-        /*
-            Set error normalize
-        */
-        LimbProcessor* setErrorNormalize
-        (
-            double
-        );
-
-
 
         /*
             Get learning speed
@@ -218,16 +215,33 @@ class LimbProcessor : public Limb
 
 
         /*
+            Get tick fo write weight
+        */
+        int getTickWrite();
+
+
+
+        /*
+            Set tick for write weights
+        */
+        LimbProcessor* setTickWrite
+        (
+            int /* Value */
+        );
+
+
+
+        /*
             Get wakeup weight k
         */
-        double getWakeupWeight();
+        double getMinWeight();
 
 
 
         /*
             Set wakeup koeff
         */
-        LimbProcessor* setWakeupWeight
+        LimbProcessor* setMinWeight
         (
             double /* Value */
         );
@@ -235,9 +249,36 @@ class LimbProcessor : public Limb
 
 
         /*
-            Get error normalize
+            Get max weight
         */
-        double getErrorNormalize();
+        double getMaxWeight();
+
+
+
+        /*
+            Set max weight
+        */
+        LimbProcessor* setMaxWeight
+        (
+            double /* Value */
+        );
+
+
+
+        /*
+            Get max eror
+        */
+        double getMaxError();
+
+
+
+        /*
+            Set max error
+        */
+        LimbProcessor* setMaxError
+        (
+            double /* Value */
+        );
 
 
 
@@ -261,7 +302,8 @@ class LimbProcessor : public Limb
         LimbProcessor* neuronCalcValue
         (
             Layer*, /* Layer for calculation */
-            int     /* Neuron index of layer */
+            int,    /* Neuron index of layer */
+            bool&
         );
 
 
@@ -283,7 +325,8 @@ class LimbProcessor : public Limb
         LimbProcessor* layerCalcValue
         (
             Layer*, /* Layer for calculation */
-            int     /* Current thread number */
+            int,    /* Current thread number */
+            bool&
         );
 
 

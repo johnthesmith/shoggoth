@@ -96,6 +96,8 @@ enum Command
     CMD_READ_NET,       /* Server return full Net configuration */
     CMD_WRITE_LAYERS,   /* Server send layers with errors and values plan */
     CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
+    CMD_REQUEST_WEIGHTS,/* Request weights for one neuron */
+
     CMD_WRITE_WEIGHTS,  /* Server receive  */
     CMD_READ_WEIGHTS    /* Server return the layer  */
 };
@@ -159,3 +161,24 @@ std::string calcStageToString
 (
     CalcStage
 );
+
+
+
+/*
+    Convert string to neuron bind type
+*/
+BindType bindTypeFromString
+(
+    string
+);
+
+
+
+/*
+    Convert neuron bind type to string
+*/
+string bindTypeToString
+(
+    BindType
+);
+

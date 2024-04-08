@@ -345,6 +345,7 @@ Nerve* NerveList::getByNerve
             result
             = aNerve -> getParent() -> getId() == iNerve -> getParent() -> getId()
             && aNerve -> getChild() -> getId() == iNerve -> getChild() -> getId()
+            && aNerve -> getWeightsCount() == iNerve -> getWeightsCount()
             && aNerve -> getNerveType() == iNerve -> getNerveType()
             && aNerve -> getBindType() == iNerve -> getBindType() ? iNerve : NULL;
             return result != NULL;

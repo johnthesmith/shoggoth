@@ -37,6 +37,8 @@ class Teacher : public Payload
         string          mode            = "";
         ParamList*      batches         = NULL;
 
+        long long       lastChange      = 0;
+
     public:
 
         /*
@@ -126,6 +128,13 @@ class Teacher : public Payload
 
 
         Teacher* cmdValueToLayer
+        (
+            ParamList*
+        );
+
+
+
+        Teacher* cmdValuesToLayer
         (
             ParamList*
         );

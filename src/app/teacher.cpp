@@ -141,7 +141,7 @@ ParamList* Teacher::getBatches()
 
 
 /*
-    Fill layer with values
+    Fill layer with value noise
 */
 Teacher* Teacher::cmdValueToLayer
 (
@@ -160,6 +160,38 @@ Teacher* Teacher::cmdValueToLayer
             a -> getDouble( "min", 0.0 ),
             a -> getDouble( "max", 1.0 )
         );
+    }
+    else
+    {
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
+    }
+
+    limb -> unlock();
+
+    return this;
+}
+
+
+
+
+/*
+    Fill layer with values from array
+*/
+Teacher* Teacher::cmdValuesToLayer
+(
+    ParamList* a
+)
+{
+    limb -> lock();
+
+    auto layerId = a -> getString( "layer" );
+    auto layer = limb -> getLayerById( layerId );
+
+    if( layer != NULL )
+    {
+        layer -> fillValue( a -> getObject( "values", 0 ));
     }
     else
     {
@@ -195,7 +227,15 @@ Teacher* Teacher::cmdImageToLayer
             auto file = files -> getRnd() -> getString();
             if( file != "" )
             {
-                layer -> imageToValue( file, this );
+                layer -> imageToValue
+                (
+                    file,
+                    a -> getDouble( "rotate" ),
+                    a -> getDouble( "zoomMin" ),
+                    a -> getDouble( "zoomMax" ),
+                    a -> getDouble( "shift" ),
+                    this
+                );
             }
             else
             {
@@ -240,7 +280,15 @@ Teacher* Teacher::cmdFolderToLayer
             auto file = files -> getRnd();
             if( file != NULL )
             {
-                layer -> imageToValue( folder +  "/" + file -> getString(), this );
+                layer -> imageToValue
+                (
+                    folder +  "/" + file -> getString(),
+                    a -> getDouble( "rotate" ),
+                    a -> getDouble( "zoomMin" ),
+                    a -> getDouble( "zoomMax" ),
+                    a -> getDouble( "shift" ),
+                    this
+                );
             }
             else
             {
@@ -289,7 +337,8 @@ void Teacher::onLoop()
     getLog() -> trapOn() -> begin( "Check error level" );
 
     /* Prepare Limb */
-    limb -> getNet()
+    limb
+    -> getNet()
     -> syncToLimb( limb )
     -> swapValuesAndErrors
     (
@@ -318,8 +367,14 @@ void Teacher::onLoop()
         -> setDouble( Path{ "last", "errorDelta" }, error - errorLimit );
 
         /* Check error limit */
-        if( error <= errorLimit )
+        if
+        (
+            error <= errorLimit ||
+            lastChange < limb -> getLastChange()
+        )
         {
+            lastChange = limb -> getLastChange();
+
             /* Check new batch */
             getLog() -> begin( "New batch" );
 
@@ -349,6 +404,9 @@ void Teacher::onLoop()
                                 {
                                     case TEACHER_CMD_VALUE_TO_LAYER:
                                         cmdValueToLayer( obj );
+                                    break;
+                                    case TEACHER_CMD_VALUES_TO_LAYER:
+                                        cmdValuesToLayer( obj );
                                     break;
                                     case TEACHER_CMD_IMAGE_TO_LAYER:
                                         cmdImageToLayer( obj );

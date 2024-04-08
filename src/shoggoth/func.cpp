@@ -75,6 +75,41 @@ FUNC_SIGMOID_LINE_ZERO_PLUS =
 
 
 
+
+
+/*
+    ReLU
+       ^ y                    **
+       | +1.0               **
+     - - - - - - - - - - -**
+       |                **:
+       |              **  :
+       |            **    :
+       |          **      :
+       |        **  0.5   :
+       |      **          :
+       |    **            :
+       |  **              :
+       |**                :
+    ****------------------o-> x
+        0                +s
+*/
+function
+<
+    double  /* Result */
+    (
+        double /* Argiment [-oo; +oo] */
+    )
+>
+FUNC_RELU =
+[]( double x ) -> double
+{
+    return x < 0.0 ? 0.0 : x;
+};
+
+
+
+
 /*
     Sigmoid modifer from -sensivity to +sensifity on line spline r=x
 
@@ -210,4 +245,92 @@ FUNC_SIGMOID_DERIVATIVE =
 {
     auto sigmoida = FUNC_SIGMOID( x, sensivity );
     return sigmoida * ( 1 - sigmoida );
+};
+
+
+
+
+/*
+    Weight
+
+                 ^ y
+                 | +1.0
+     - -:- - - - o - - - -***** +max
+        :        |      **:
+        :        |    **  :
+        :        |  **    :     +min
+        :        |  :     :
+    ****---------0----------> x
+        :        |  :     :
+        :   **   |  :     :     -min
+        : ** :   |  :     :
+        **   :   |  :     :
+    **** - - - - o - - - - -    -max
+        -s   :   |  :      +s
+             :      :
+            singularity
+
+*/
+
+function
+<
+    double  /* Result */
+    (
+        double,     /* Argiment [-oo; +oo] */
+        double,     /* Min [ 0; +oo] */
+        double      /* Max [ 0; +oo] */
+    )
+>
+FUNC_WEIGHT =
+[]( double x, double min, double max ) -> double
+{
+    return x > max ? max :
+    (
+        x < -max ? -max :
+        (
+            x < min && x >= 0 ? - min :
+            (
+                x > -min && x < 0 ? +min : x
+            )
+        )
+    );
+};
+
+
+
+
+/*
+    Error calculation
+
+                 ^ y
+                 |
+     - -:- - - - o - - - -***** +max
+        :        |      **:
+        :        |    **  :
+        :        |  **    :
+        :        |**      :
+    ****---------0----------> x
+        :     ** |        :
+        :   **   |        :
+        : **     |        :
+        **       |        :
+    **** - - - - o - - - - -    -max
+        -s       |        +s
+*/
+
+function
+<
+    double  /* Result */
+    (
+        double,     /* Argiment [-inf; +inf] */
+        double      /* Max      [ 0; +inf] */
+    )
+>
+FUNC_ERROR =
+[]( double x, double max ) -> double
+{
+    return x > max ? max :
+    (
+        x < -max ? -max : x
+    );
 };

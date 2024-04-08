@@ -17,6 +17,13 @@
 class Layer;
 class Limb;
 
+
+
+typedef double NeuronWeight;
+const size_t NEURON_WEIGHT_SIZE = sizeof( NeuronWeight );
+
+
+
 class Nerve: public Result
 {
     private:
@@ -115,8 +122,12 @@ class Nerve: public Result
         */
         Nerve* fill
         (
-            double = 1.0,     /* MinWeight */
-            double = -1.0      /* MaxWeight */
+            /*
+                The default value MinWeight should be less then MaxWeight
+                for using configuration properties
+            */
+            double = 1.0,    /* Default MinWeight */
+            double = -1.0    /* Default MaxWeight */
         );
 
 
@@ -169,13 +180,6 @@ class Nerve: public Result
         (
             int     /* Index of weight */,
             double  /* Value for bind */
-        );
-
-
-
-        static BindType bindTypeFromString
-        (
-            string
         );
 
 
@@ -304,6 +308,60 @@ class Nerve: public Result
         Nerve* setMaxWeight
         (
             double aValue
+        );
+
+
+
+        /*
+            Return weight storage file path
+        */
+        string getWeightFileName
+        (
+            string aPath
+        );
+
+
+
+        /*
+            Read Weigts from file
+        */
+        Nerve* loadWeight
+        (
+            string /* Path */
+        );
+
+
+
+        /*
+            Write Weigts to file
+        */
+        Nerve* saveWeight
+        (
+            string /* Path */
+        );
+
+
+
+        /*
+            Extract children weithds in to buffer by neuron index
+        */
+        Nerve* extractChildWeightsBuffer
+        (
+            int,        /* Neuron index */
+            char*&,     /* Bufer */
+            size_t&     /* Size of buffer */
+        );
+
+
+
+        /*
+            Extract parent weithds in to buffer by child neuron index
+        */
+        Nerve* extractParentsWeightsBuffer
+        (
+            int     aNeuronIndex,
+            char*   &aBuffer,
+            size_t  &aSize
         );
 
 };

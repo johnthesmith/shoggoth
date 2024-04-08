@@ -5,7 +5,7 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
-            "size"              :[ 32, 32, 1 ],
+            "size"              :[ 28, 28, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "caption"           :"Main input",
@@ -17,11 +17,12 @@
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
+
         "cortex_1":
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 1",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 16, 16, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
@@ -32,11 +33,27 @@
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
+
+        "bias":
+        {
+            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
+            "name"              :"Bias",
+            "size"              :[ 1, 1, 1 ],
+            "position"          :[ 0.0, 1.0, 1.0 ],
+            "actions":
+            {
+                "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
+                "WRITE_VALUES"  :[ "TASK_TEACHER" ],
+                "READ_ERRORS"   :[ "TASK_UI" ],
+                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+            }
+        },
+
         "cortex_2":
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 2",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 16, 16, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
             "drawSize"          :[ 0.1, 0.1. 0.1 ],
             "actions":
@@ -47,13 +64,13 @@
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
+
         "result":
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Result",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
-            "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
@@ -62,13 +79,13 @@
                 "WRITE_ERRORS"  :[ "TASK_PROC" ]
             }
         },
+
         "sample":
         {
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Sample",
-            "size"              :[ 20, 20, 1 ],
+            "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
-            "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_PROC" ],
@@ -115,8 +132,8 @@
             "idTo"              :"cortex_1",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
         },
         {
             "uses"              :[ "proc", "ui" ],
@@ -124,18 +141,40 @@
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
         },
+
+        {
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"bias",
+            "idTo"              :"cortex_1",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"VALUE",
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
+        },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"cortex_2",
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
             "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
         },
+
+        {
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"bias",
+            "idTo"              :"cortex_2",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"VALUE",
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
+        },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"sample",
@@ -145,6 +184,17 @@
             "minWeight"         :1.0,
             "maxWeight"         :1.0
         },
+
+        {
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"bias",
+            "idTo"              :"result",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"VALUE",
+            "minWeight"         :-0.01,
+            "maxWeight"         :0.01
+        },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"sample",

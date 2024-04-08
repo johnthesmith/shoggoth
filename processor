@@ -1,2 +1,2 @@
 #!/bin/bash
-./shoggoth --config=net/processor.json --mon=./mon/processor_main.txt
+./shoggoth --net=alpha --version=zero --config=net/alpha/processor.json --mon=./mon/processor_main.txt

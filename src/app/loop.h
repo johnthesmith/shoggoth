@@ -55,7 +55,9 @@ class Loop : public Payload
         */
         Loop
         (
-            ShoggothApplication*
+            ShoggothApplication*,   /* Application object */
+            string,                 /* Net id */
+            string                  /* Net version */
         );
 
 
@@ -72,7 +74,9 @@ class Loop : public Payload
         */
         static Loop* create
         (
-            ShoggothApplication*
+            ShoggothApplication*,
+            string aNetId,
+            string aNetVersion
         );
 
 

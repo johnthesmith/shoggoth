@@ -212,6 +212,7 @@ bool LayerList::compare
             [ &a, &result ]
             ( void* p )
             {
+
                 auto iLayer = (Layer*) p;
                 auto jLayer = a -> getById( iLayer -> getId() );
                 result = iLayer -> compare( jLayer );
@@ -297,7 +298,8 @@ LayerList* LayerList::dump
             getLog()
             -> trace()
             -> prm( "id", iLayer -> getId() )
-            -> prm( "address", (void*) iLayer );
+            -> prm( "address", (void*) iLayer )
+            -> prm( "size", iLayer -> getCount() );
             return false;
         }
     );

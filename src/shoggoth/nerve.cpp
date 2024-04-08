@@ -133,15 +133,16 @@ Nerve* Nerve::allocate
         /* Create buffer */
         weights = new double[ weightsCount ];
 
-        aOnAllocate( this );
-
         getLog()
         -> trace( "Memory allocated" )
         -> prm( "Binds count", weightsCount );
+
+        aOnAllocate( this );
     }
 
     return this;
 }
+
 
 
 
@@ -237,21 +238,6 @@ int Nerve::getWeightsCount()
 
 
 
-BindType Nerve::bindTypeFromString
-(
-    string a
-)
-{
-    if( a == "VALUE" )              return BT_VALUE;
-    if( a == "SAMPLE" )             return BT_SAMPLE;
-    if( a == "COMMAND" )            return BT_COMMAND;
-    if( a == "ERROR_TO_VALUE" )     return BT_ERROR_TO_VALUE;
-    return BT_VALUE;
-}
-
-
-
-
 NerveType Nerve::nerveTypeFromString
 (
     string a
@@ -265,7 +251,7 @@ NerveType Nerve::nerveTypeFromString
 
 
 /*
-    Return the parent neuron iundex by index of weight array
+    Return the parent neuron index by index of weight array
 */
 int Nerve::getParentByWeightIndex
 (
@@ -277,9 +263,24 @@ int Nerve::getParentByWeightIndex
     switch( nerveType )
     {
         case ALL_TO_ALL:
+            /*
+                Parent0--0--child0
+                      \    /
+                       2  1
+                        \/
+                        /\
+                       /  \
+                      /    \
+                parent2--3--child2
+            */
             iParent = aIndex % parent -> getCount();
         break;
         case ONE_TO_ONE:
+            /*
+                P0--0--c0
+
+                p2--1--c2
+            */
             double cp = parent -> getCount();
             double cc = child -> getCount();
             double m = max( cp, cc );
@@ -369,8 +370,11 @@ Nerve* Nerve::getWeightsRangeByChildIndex
     switch( nerveType )
     {
         case ALL_TO_ALL:
-            aFrom = aIndex * parent-> getCount();
-            aTo = aFrom + parent-> getCount();
+        {
+            auto c = parent-> getCount();
+            aFrom = aIndex * c;
+            aTo = aFrom + c;
+        }
         break;
         case ONE_TO_ONE:
             double cp = parent -> getCount();
@@ -551,4 +555,196 @@ Nerve* Nerve::setMaxWeight
     maxWeight = aValue;
     return this;
 }
+
+
+
+/*
+    Return weight storage file path
+*/
+string Nerve::getWeightFileName
+(
+    string aPath
+)
+{
+    return
+    aPath
+    + "/"
+    + getParent() -> getId()
+    + "_"
+    + bindTypeToString(bindType)
+    + "_"
+    + getChild() -> getId()
+    + ".bin";
+}
+
+
+
+/*
+    Read Weigts from file
+*/
+Nerve* Nerve::loadWeight
+(
+    string aPath
+)
+{
+    auto file = getWeightFileName( aPath );
+    auto path = getPath( file );
+
+    if( !checkPath( path ) )
+    {
+        setResult( "WeightPathCreateError" )
+        -> getDetails()
+        -> setString( "file", file )
+        -> setString( "path", path )
+        ;
+    }
+    else
+    {
+        if( !fileExists( file ))
+        {
+            setResult( "WeightFileNotExists" )
+            -> getDetails()
+            -> setString( "file", file );
+        }
+        else
+        {
+            auto size = fileSize( file );
+            if( size != weightsCount * sizeof( double ) )
+            {
+                setResult( "WeightFileSizeChanged" )
+                -> getDetails()
+                -> setString( "file", file )
+                -> setInt( "fileSize", size )
+                -> setInt( "weightSize", weightsCount * sizeof( double ) )
+                ;
+            }
+            else
+            {
+                auto h = fopen( file.c_str(), "r" );
+                if( !h )
+                {
+                    setResult( "LoadOpenStorageError" )
+                    -> getDetails()
+                    -> setString( "file", file );
+                }
+                else
+                {
+                    auto readed = fread( weights, size, 1, h );
+                    if( readed != 1 )
+                    {
+                        setResult( "LoadError" )
+                        -> getDetails()
+                        -> setString( "file", file );
+                    }
+                    else
+                    {
+                        getLog() -> trace( "Weights loaded" ) -> prm( "file", file );
+                    }
+                    fclose( h );
+                }
+            }
+        }
+    }
+
+    return this;
+}
+
+
+
+
+/*
+    Write Weigts to file
+*/
+Nerve* Nerve::saveWeight
+(
+    string aPath
+)
+{
+    auto file = getWeightFileName( aPath );
+    auto path = getPath( file );
+
+    if( !checkPath( path ) )
+    {
+        setResult( "WeightPathCreateError" )
+        -> getDetails()
+        -> setString( "file", file )
+        -> setString( "path", path )
+        ;
+    }
+    else
+    {
+        auto h = fopen( file.c_str(), "wb" );
+        if( !h )
+        {
+            setResult( "SaveOpenStorageError" )
+            -> getDetails()
+            -> setString( "file", file );
+        }
+        else
+        {
+            auto writed = fwrite( weights, weightsCount * sizeof( double ), 1, h );
+            if( writed != 1 )
+            {
+                setResult( "SaveError" )
+                -> getDetails()
+                -> setString( "file", file );
+            }
+            fclose( h );
+        }
+    }
+    return this;
+}
+
+
+
+/*
+    Extract parent weithds in to buffer by child neuron index
+*/
+Nerve* Nerve::extractParentsWeightsBuffer
+(
+    int     aNeuronIndex,
+    char*   &aBuffer,
+    size_t  &aSize
+)
+{
+    int from, to = 0;
+    getWeightsRangeByChildIndex( aNeuronIndex, from, to );
+    aSize = ( to - from ) * NEURON_WEIGHT_SIZE;
+    aBuffer = new char [ aSize ];
+    memcpy( aBuffer, weights, aSize );
+    return this;
+}
+
+
+
+
+/*
+    Extract children weithds in to buffer by paraent neuron index
+*/
+Nerve* Nerve::extractChildWeightsBuffer
+(
+    int     aNeuronIndex,
+    char*   &aBuffer,
+    size_t  &aSize
+)
+{
+    int from, to, step = 0;
+
+    getWeightsRangeByParentIndex( aNeuronIndex, from, to, step );
+
+    int count = ceil(( to - from ) / (double) step);
+    aSize = count * NEURON_WEIGHT_SIZE;
+
+    auto buffer = new NeuronWeight[ count ];
+    for( int i = 0 ; i < count ; i++ )
+    {
+        buffer[ i ] = weights[ from + i * step ];
+    }
+
+    aBuffer = (char*) buffer;
+    return this;
+}
+
+
+
 

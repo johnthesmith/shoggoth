@@ -146,6 +146,17 @@ class ShoggothRpcServer : public RpcServer
 
 
 
+        /*
+            Remote host request weights for selected neurons
+        */
+        ShoggothRpcServer* requestWeights
+        (
+            ParamList* aArguments,
+            ParamList* aResults
+        );
+
+
+
 
         /*
             Remote host send nerve weights data
