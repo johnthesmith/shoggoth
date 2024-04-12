@@ -1,13 +1,13 @@
 layer: sample
-index: 4
+index: 8
 value: 0
 error: 0
 
 Weights
-[91m1.000000[39m 
+[91m2.495198[39m 
 
 Child values
-[91m1.000000[39m 
+[91m0.500000[39m 
 
 Child errors
 [97m0.000000[39m 

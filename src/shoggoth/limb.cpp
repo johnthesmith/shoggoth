@@ -355,17 +355,25 @@ Limb* Limb::childrenLoop
 (
     Layer*          aLayer,
     int             aIndex,
+    BindType        aBindType,
     childrenLambda  aCallback
 )
 {
     /* Loop by nerves */
     getNerveList() -> loop
     (
-        [ &aLayer, &aCallback, &aIndex ]
+        [ &aLayer, &aCallback, &aIndex, &aBindType ]
         ( void* aNerve )
         {
             auto iNerve = ( Nerve* ) aNerve;
-            if( iNerve -> getParent() == aLayer )
+            if
+            (
+                iNerve -> getParent() == aLayer &&
+                (
+                    aBindType == BT_ALL ||
+                    iNerve -> getBindType() == aBindType
+                )
+            )
             {
                 int from = 0;
                 int to = 0;
@@ -460,6 +468,8 @@ Layer* Limb::copyLayerFrom
 {
     return
     Layer::create( this, aLayerFrom -> getId() )
+    -> setFrontFunc( aLayerFrom -> getFrontFunc() )
+    -> setBackFunc( aLayerFrom -> getBackFunc() )
     -> setCount( aLayerFrom -> getCount() );
 }
 
@@ -480,4 +490,31 @@ void Limb::onAfterReconfig
     ParamList* aConfig
 )
 {
+}
+
+
+
+/*
+    Check layer parents existing by type
+*/
+bool Limb::layerParentsExists
+(
+    Layer* aLayer,
+    BindType aBindType
+)
+{
+    bool result = false;
+    nerves -> loop
+    (
+        [ &aLayer, &aBindType, &result ]
+        ( void* item )
+        {
+            auto iNerve = ( Nerve* )item;
+            result
+            = iNerve -> getChild() == aLayer
+            && iNerve -> getBindType() == aBindType;
+            return result;
+        }
+    );
+    return result;
 }

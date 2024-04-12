@@ -413,8 +413,13 @@ LimbProcessor* LimbProcessor::calc()
                 /* Layer calculation */
                 layer -> calcStartBackward();
                 /* --- thread begin --- */
-                /* Calculate errors */
-                layerLearning( layer, idThread );
+
+                /* Calculate errors for layers with parents */
+                if( layerParentsExists( layer, BT_VALUE ))
+                {
+                    layerLearning( layer, idThread );
+                }
+
                 /* Set local sync for local works */
                 layer -> calcCompleteBackward();
                 /* --- thread end --- */
@@ -788,6 +793,8 @@ LimbProcessor* LimbProcessor::neuronCalcValue
             /* Calculate summ */
             switch( aNerve -> getBindType())
             {
+                case BT_ALL:
+                break;
                 case BT_VALUE:
                     summValue += w;
                     countValue ++;
@@ -813,7 +820,8 @@ LimbProcessor* LimbProcessor::neuronCalcValue
 
     if( countValue > 0 )
     {
-        aLayer -> setNeuronValue( aIndex, FUNC_RELU( summValue ));
+        /* Value calculation */
+        aLayer -> setNeuronValue( aIndex, (*( aLayer -> frontFunc ))( summValue ) );
     }
 
     if( countErrorValue > 0 )
@@ -829,16 +837,12 @@ LimbProcessor* LimbProcessor::neuronCalcValue
     /* Start error from Sample */
     if( countSample > 0 )
     {
+        auto value = aLayer -> getNeuronValue( aIndex );
         aLayer -> setNeuronError
         (
             aIndex,
-//            FUNC_ERROR
-//            (
-                ( summSample - aLayer -> getNeuronValue( aIndex )) *
-                ( summCommand > EPSILON_D ? 1.0 : 0.0 )
-                //,
-//                maxError
-//            )
+            ( summSample - value ) * ( * ( aLayer -> backFunc))( value )
+            * ( summCommand > EPSILON_D ? 1.0 : 0.0 )
         );
     }
 
@@ -863,11 +867,14 @@ LimbProcessor* LimbProcessor::neuronLearning
     int count = 0;
     double summError    = 0.0;
 
-    /* Caclulate error form all children for current neuron */
+    /*
+        caclulate error form all children for current neuron
+    */
     childrenLoop
     (
         aLayer,
         aIndex,
+        BT_VALUE,
         [
             &count,
             &summError
@@ -880,22 +887,24 @@ LimbProcessor* LimbProcessor::neuronLearning
             int aWeightIndex    /* Not use */
         ) -> bool
         {
-            switch( aNerve -> getBindType())
-            {
-                case BT_VALUE:
-                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
-                    count++;
-                break;
-                default: break;
-            }
+            summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
+            count++;
             return false;
         }
     );
 
     if( count > 0 )
     {
-        aLayer -> setNeuronError( aIndex, FUNC_ERROR( summError, maxError ));
+        auto value = aLayer -> getNeuronValue( aIndex );
+        aLayer -> setNeuronError
+        (
+            aIndex,
+            /* Part of derivative */
+            summError * ( * ( aLayer -> backFunc ))( value )
+        );
     }
+
+    auto currentNeuronError = aLayer -> getNeuronError( aIndex );
 
     /* Learning */
     parentsLoop
@@ -904,8 +913,7 @@ LimbProcessor* LimbProcessor::neuronLearning
         aIndex,
         [
             this,
-            &aLayer,
-            &aIndex
+            &currentNeuronError
         ]
         (
             Layer*  aParentLayer,
@@ -913,23 +921,23 @@ LimbProcessor* LimbProcessor::neuronLearning
             Nerve*  aNerve,
             double  aWeight,
             int     aWeightIndex
-        ) -> bool
+        )
         {
-            switch( aNerve -> getBindType())
-            {
-                default:break;
-                case BT_VALUE:
-                {
-                    double deltaWeight = aLayer -> getNeuronError( aIndex ) * aWeight;
-                    double newWeight = FUNC_WEIGHT
-                    (
-                        aWeight + deltaWeight * learningSpeed,
-                        minWeight,
-                        maxWeight
-                    );
-                    aNerve -> setWeight( aWeightIndex, newWeight );
-                }
-            }
+            /*
+                Emplementate the https://habr.com/ru/articles/313216/
+            */
+            double gradient =
+            aParentLayer -> getNeuronValue( aParentIndex )
+            * currentNeuronError;
+
+            double deltaWeight = gradient * learningSpeed
+            + aNerve -> getDeltaWeight( aWeightIndex ) * 0.3;
+
+            double newWeight = aWeight + deltaWeight;
+
+            aNerve -> setWeight( aWeightIndex, newWeight );
+            aNerve -> setDeltaWeight( aWeightIndex, deltaWeight );
+
             return false;
         }
     );

@@ -173,7 +173,16 @@ LimbUi* LimbUi::drawLayer
         -> setTextBaseLine( BASE_LINE_TOP )
         -> setTextHorisontalAlign( ALIGN_CENTER )
         -> text( aLayer -> getNameOrId() )
+        -> textCR( 1 )
+
         -> setTextSize( 0.05 )
+        -> color( Rgba( RGBA_GREY ))
+        -> text
+        (
+            neuronFuncToStr( aLayer -> getFrontFunc()) + "/" +
+            neuronFuncToStr( aLayer -> getBackFunc())
+        )
+
         -> textCR( 1 )
         -> color( Rgba( RGBA_RED ))
         -> text( "Error:" + to_string( aLayer -> calcSumError()) )
@@ -249,6 +258,9 @@ LimbUi* LimbUi::drawNerve
                     case BDM_TYPE:
                         switch( aNerve -> getBindType() )
                         {
+                            case BT_ALL:
+                                color = RGBA_RED;
+                            break;
                             case BT_VALUE:
                                 color = RGBA_YELLOW;
                             break;
@@ -381,16 +393,18 @@ LimbUi* LimbUi::drawNeuronChart
 )
 {
     Chart2d::create( aScene )
-    -> setXMin( -2.0 )
-    -> setXMax( 2.0 )
-    -> setYMin( -2.0 )
-    -> setYMax( 2.0 )
-    -> setCenterSize( Point2d( 110,110 ), Point2d( 100, 100 ) )
+    -> setXMin( -6.0 )
+    -> setXMax( 5.0 )
+    -> setYMin( -1.0 )
+    -> setYMax( 1.0 )
+    -> setCenterSize( Point2d( 310,110 ), Point2d( 300, 100 ) )
     -> setBackColor( interfaceColorDark )
     -> drawBack()
-    -> setLineColor( RGBA_YELLOW )
     -> setLineWeight( 2.0 )
-    -> draw( FUNC_RELU )
+    -> setLineColor( RGBA_MAGENTA )
+    -> draw( *(aNeuronList -> getByIndex( 0 ) -> getLayer() -> getFrontFunc()) )
+    -> setLineColor( RGBA_CYAN )
+    -> draw( *(aNeuronList -> getByIndex( 0 ) -> getLayer() -> getBackFunc()) )
     -> setLineWeight( 3.0 )
     -> setLineColor( RGBA_ORANGE )
     -> drawX( aNeuronList -> calcAvgValue(), true, -1 )
@@ -595,6 +609,9 @@ Rgba LimbUi::getArrowColorByType
     Rgba result;
     switch( aType )
     {
+        case BT_ALL:
+            result = RGBA_RED;
+        break;
         case BT_VALUE:
             result = RGBA_YELLOW;
         break;
@@ -913,10 +930,14 @@ LimbUi* LimbUi::switchShowLayer()
 */
 Layer* LimbUi::copyLayerFrom
 (
-    Layer* aFromLayer
+    Layer* aLayerFrom
 )
 {
-    auto result = LayerUi::create( this, aFromLayer -> getId() );
+    auto result =
+    LayerUi::create( this, aLayerFrom -> getId() )
+    -> setFrontFunc( aLayerFrom -> getFrontFunc() )
+    -> setBackFunc( aLayerFrom -> getBackFunc() );
+
     return ( Layer* )result;
 }
 

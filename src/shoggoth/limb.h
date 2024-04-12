@@ -228,9 +228,9 @@ class Limb : public Result
         */
         Limb* parentsLoop
         (
-            Layer*          aLayer,     /* Layer */
-            int             aIndex,     /* Neuron index */
-            parentsLambda   aCallback   /* Callback method */
+            Layer*,         /* Layer */
+            int,            /* Neuron index */
+            parentsLambda   /* Callback method */
         );
 
 
@@ -240,9 +240,10 @@ class Limb : public Result
         */
         Limb* childrenLoop
         (
-            Layer*          aLayer,     /* Layer */
-            int             aIndex,     /* Neuron index */
-            childrenLambda  aCallback   /* Callback method */
+            Layer*,         /* Layer */
+            int,            /* Neuron index */
+            BindType,       /* BindType for loop or BT_ALL */
+            childrenLambda  /* Callback method */
         );
 
 
@@ -294,5 +295,17 @@ class Limb : public Result
         (
             ParamList*
         );
+
+
+
+        /*
+            Check layer parents existing by type
+        */
+        bool layerParentsExists
+        (
+            Layer*, /* layer */
+            BindType /* Type of bind */
+        );
+
 };
 

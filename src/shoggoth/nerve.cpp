@@ -133,6 +133,9 @@ Nerve* Nerve::allocate
         /* Create buffer */
         weights = new double[ weightsCount ];
 
+        /* Create delta buffer */
+        deltaWeights = new double[ weightsCount ];
+
         getLog()
         -> trace( "Memory allocated" )
         -> prm( "Binds count", weightsCount );
@@ -155,6 +158,7 @@ Nerve* Nerve::purge()
     if( weights != NULL )
     {
         delete [] weights;
+        delete [] deltaWeights;
     }
     return this;
 }
@@ -181,6 +185,7 @@ Nerve* Nerve::fill
         for( int i = 0; i < weightsCount; i++ )
         {
             weights[ i ] = Rnd::get( aMinWeight, aMaxWeight );
+            deltaWeights[ i ] = 0.0;
         }
     }
     return this;
@@ -319,6 +324,17 @@ int Nerve::getChildByWeightIndex
 }
 
 
+
+/*
+    Return weights pointer
+*/
+double* Nerve::getWeights()
+{
+    return weights;
+}
+
+
+
 /*
     Return weight by index
 */
@@ -333,16 +349,6 @@ double Nerve::getWeight
 
 
 /*
-    Return weights pointer
-*/
-double* Nerve::getWeights()
-{
-    return weights;
-}
-
-
-
-/*
     Set weight by index
 */
 Nerve* Nerve::setWeight
@@ -352,6 +358,34 @@ Nerve* Nerve::setWeight
 )
 {
     weights[ aIndex ] = aValue;
+    return this;
+}
+
+
+
+/*
+    Return weight by index
+*/
+double Nerve::getDeltaWeight
+(
+    int aIndex
+)
+{
+    return deltaWeights[ aIndex ];
+}
+
+
+
+/*
+    Set weight by index
+*/
+Nerve* Nerve::setDeltaWeight
+(
+    int aIndex,
+    double aValue
+)
+{
+    deltaWeights[ aIndex ] = aValue;
     return this;
 }
 

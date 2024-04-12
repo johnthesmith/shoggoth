@@ -9,6 +9,7 @@
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0. 1.0 ],
             "caption"           :"Main input",
+            "function"          :"NONE",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
@@ -22,9 +23,10 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 1",
-            "size"              :[ 16, 16, 1 ],
+            "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1. 0.1 ],
+            "function"          :"RELU",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -40,6 +42,7 @@
             "name"              :"Bias",
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, 1.0, 1.0 ],
+            "function"          :"NONE",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
@@ -53,9 +56,10 @@
         {
             "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 2",
-            "size"              :[ 16, 16, 1 ],
+            "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
             "drawSize"          :[ 0.1, 0.1. 0.1 ],
+            "function"          :"RELU",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -71,6 +75,7 @@
             "name"              :"Result",
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
+            "function"          :"RELU",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
@@ -86,6 +91,7 @@
             "name"              :"Sample",
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
+            "function"          :"NONE",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_PROC" ],
@@ -100,6 +106,7 @@
             "name"              :"Command",
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, -1.0, 3.5 ],
+            "function"          : "SIGMOID",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI" ],
@@ -113,7 +120,8 @@
             "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Error",
             "size"              :[ 1, 1, 1],
-            "position"          :[ 0.0, 1.0, 3.5 ],
+            "position"          :[ 0.0, 1.0, 3.0 ],
+            "function"          :"NONE",
             "actions":
             {
                 "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
@@ -159,7 +167,7 @@
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"cortex_2",
             "idTo"              :"result",
-            "nerveType"         :"ALL_TO_ALL",
+            "nerveType"         :"ALL _TO_ALL",
             "bindType"          :"VALUE",
             "minWeight"         :-0.01,
             "maxWeight"         :0.01

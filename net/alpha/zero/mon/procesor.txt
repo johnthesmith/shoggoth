@@ -1,40 +1,40 @@
 [90mo [97mstart
     [90ms [97mSource [95mLimb processor[39m
-    [90ms [97mnow [95m2024-04-08 19:16:52.377005[39m
-[90mi [97mcount [95m16028[39m
-[90ms [97mlast [95m2024-04-08 19:17:30.627264[39m
+    [90ms [97mnow [95m2024-04-12 21:03:21.261584[39m
+[90mi [97mcount [95m310222[39m
+[90ms [97mlast [95m2024-04-12 21:07:10.428073[39m
 [90mo [97mconfig
     [90md [97mlearningSpeed [95m0.010000[39m
     [90md [97mminWeight [95m0.000001[39m
     [90md [97mmaxWeight [95m1000.000000[39m
     [90md [97mmaxError [95m10.000000[39m
 [90mo [97mduration
-    [90ms [97mretina [95m72mcs [39m
+    [90ms [97mretina [95m110mcs [39m
     [90ms [97mbias [95m3mcs [39m
-    [90ms [97msample [95m5mcs [39m
-    [90ms [97mcommand [95m4mcs [39m
-    [90ms [97mcortex_1 [95m3mls 971mcs [39m
-    [90ms [97mcortex_2 [95m2mls 236mcs [39m
-    [90ms [97mresult [95m67mcs [39m
-    [90ms [97merror [95m4mcs [39m
+    [90ms [97msample [95m4mcs [39m
+    [90ms [97mcommand [95m6mcs [39m
+    [90ms [97mcortex_1 [95m214mcs [39m
+    [90ms [97mcortex_2 [95m19mcs [39m
+    [90ms [97mresult [95m12mcs [39m
+    [90ms [97merror [95m2mcs [39m
 [90mo [97mcurrent
     [90mb [97mlearning [95mfalse[39m
-    [90mi [97mtick [95m2004[39m
+    [90mi [97mtick [95m22644[39m
 [90mo [97mdurationMin
-    [90mi [97mretina [95m71[39m
+    [90mi [97mretina [95m1[39m
     [90mi [97mbias [95m1[39m
-    [90mi [97msample [95m2[39m
+    [90mi [97msample [95m1[39m
     [90mi [97mcommand [95m2[39m
-    [90mi [97mcortex_1 [95m3518[39m
-    [90mi [97mcortex_2 [95m1138[39m
-    [90mi [97mresult [95m48[39m
-    [90mi [97merror [95m2[39m
+    [90mi [97mcortex_1 [95m207[39m
+    [90mi [97mcortex_2 [95m8[39m
+    [90mi [97mresult [95m7[39m
+    [90mi [97merror [95m1[39m
 [90mo [97mdurationMax
-    [90mi [97mretina [95m6270[39m
-    [90mi [97mbias [95m1504[39m
-    [90mi [97msample [95m6959[39m
-    [90mi [97mcommand [95m9019[39m
-    [90mi [97mcortex_1 [95m49746[39m
-    [90mi [97mcortex_2 [95m49870[39m
-    [90mi [97mresult [95m12311[39m
-    [90mi [97merror [95m5307[39m
+    [90mi [97mretina [95m19691[39m
+    [90mi [97mbias [95m11549[39m
+    [90mi [97msample [95m8767[39m
+    [90mi [97mcommand [95m6690[39m
+    [90mi [97mcortex_1 [95m32486[39m
+    [90mi [97mcortex_2 [95m14052[39m
+    [90mi [97mresult [95m10132[39m
+    [90mi [97merror [95m9068[39m

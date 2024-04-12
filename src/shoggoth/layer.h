@@ -13,6 +13,7 @@
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
+#include "func.h"
 #include "nerve_list.h"
 #include "shoggoth_consts.h"
 
@@ -66,6 +67,11 @@ class Layer : public Result
         double*         errors                  = NULL;
 
     public:
+
+        /* Function activation */
+        NeuronFunc*     frontFunc               = &FUNC_LINE;
+        /* Learning function */
+        NeuronFunc*     backFunc                = &FUNC_LINE_BACK;
 
         /*
             Constructor
@@ -487,5 +493,32 @@ class Layer : public Result
         );
 
 
+        /*
+            Apply neyron functions for layer
+        */
+        Layer* setNeuronFunc
+        (
+            string
+        );
 
+
+
+        Layer* setFrontFunc
+        (
+            NeuronFunc*
+        );
+
+
+
+        NeuronFunc* getFrontFunc();
+
+
+
+        Layer* setBackFunc
+        (
+            NeuronFunc*
+        );
+
+
+        NeuronFunc* getBackFunc();
 };

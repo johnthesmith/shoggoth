@@ -710,9 +710,11 @@ bool Layer::compare
 )
 {
     return
-    getId() == aLayer -> getId() &&
-    getCount() == aLayer -> getCount() &&
-    getName() == aLayer -> getName();
+    getId()         == aLayer -> getId() &&
+    getCount()      == aLayer -> getCount() &&
+    getName()       == aLayer -> getName() &&
+    getFrontFunc()  == aLayer -> getFrontFunc() &&
+    getBackFunc()   == aLayer -> getBackFunc();
 }
 
 
@@ -742,3 +744,58 @@ bool Layer::checkTasks
     getObject( actionToString( aAction )) ->
     isIntersect( aTasks );
 }
+
+
+
+/*
+    Apply neyron functions for layer
+*/
+Layer* Layer::setNeuronFunc
+(
+    string aFuncName
+)
+{
+    strToNeuronFunc
+    (
+        aFuncName,
+        frontFunc,
+        backFunc
+    );
+    return this;
+}
+
+
+Layer* Layer::setFrontFunc
+(
+    NeuronFunc* a
+)
+{
+    frontFunc = a;
+    return this;
+}
+
+
+
+NeuronFunc* Layer::getFrontFunc()
+{
+    return frontFunc;
+}
+
+
+
+Layer* Layer::setBackFunc
+(
+    NeuronFunc* a
+)
+{
+    backFunc = a;
+    return this;
+}
+
+
+
+NeuronFunc* Layer::getBackFunc()
+{
+    return backFunc;
+}
+

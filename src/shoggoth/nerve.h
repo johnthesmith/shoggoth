@@ -30,6 +30,7 @@ class Nerve: public Result
 
         /* Array of weights */
         double*     weights         = NULL;
+        double*     deltaWeights    = NULL;
         /* County of weights */
         int         weightsCount    = 0;
 
@@ -177,6 +178,28 @@ class Nerve: public Result
             Set weight by index
         */
         Nerve* setWeight
+        (
+            int     /* Index of weight */,
+            double  /* Value for bind */
+        );
+
+
+
+
+        /*
+            Return weights pointer
+        */
+        double getDeltaWeight
+        (
+            int
+        );
+
+
+
+        /*
+            Set weight by index
+        */
+        Nerve* setDeltaWeight
         (
             int     /* Index of weight */,
             double  /* Value for bind */

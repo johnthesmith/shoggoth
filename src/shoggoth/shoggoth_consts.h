@@ -106,6 +106,7 @@ enum Command
 
 enum BindType
 {
+    BT_ALL,             /* All binds */
     BT_VALUE,           /* Spred value */
     BT_SAMPLE,          /**/
     BT_COMMAND,

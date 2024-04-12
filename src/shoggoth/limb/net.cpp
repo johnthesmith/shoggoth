@@ -787,10 +787,12 @@ Net* Net::loadLayer
         else
         {
             /* Set event actions */
-
             aLayer
             -> getActions()
             -> copyFrom( aParams -> getObject( "actions" ) );
+
+            /* Apply neuron functions for layer */
+            aLayer -> setNeuronFunc( aParams -> getString( "function", "SIGMOID" ));
 
             /* Set Size from params */
             auto paramsSize = aParams -> getObject( "size" );
@@ -1274,3 +1276,5 @@ WeightsExchange* Net::getWeightsExchange()
 {
     return weightsExchange;
 }
+
+
