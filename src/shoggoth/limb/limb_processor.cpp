@@ -285,9 +285,68 @@ LimbProcessor* LimbProcessor::calc()
 
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
+        frame++;
+
+//      DUMP TO LOG
+//        getLog() -> begin( "calc" ) -> prm( "frame#", (double)frame );
+//        getLog() -> begin( "layers" );
+//        getLayerList() -> loop
+//        (
+//            []
+//            ( void* item )
+//            {
+//                auto layer = ( Layer* )item;
+//                layer -> dumpToLog();
+//                return false;
+//            }
+//        );
+//        getLog() -> end();
+//        getLog() -> end();
+
+
+//      DUMP TO MON
+//auto monNeurons = Mon::create( net -> getMonPath( "weights_mon.txt" ));
+//        getNerveList() -> loop
+//        (
+//            [ &monNeurons ]
+//            ( void* item )
+//            {
+//                auto nerve = ( Nerve* )item;
+//                nerve -> dumpToMon( monNeurons );
+//                return false;
+//            }
+//        );
+//monNeurons -> flush() -> destroy();
+//auto monValues = Mon::create( net -> getMonPath( "values.txt" ));
+//auto monErrors = Mon::create( net -> getMonPath( "errors_mon.txt" ));
+//        getLayerList() -> loop
+//        (
+//            [ &monValues, &monErrors ]
+//            ( void* item )
+//            {
+//                auto layer = ( Layer* )item;
+//                layer -> dumpToMon( monValues, monErrors );
+//                return false;
+//            }
+//        );
+//monValues -> flush() -> destroy();
+//monErrors -> flush() -> destroy();
+
+
+        /* Set learning speed from net config */
+        net -> lock();
+        setLearningSpeed
+        (
+            net
+            -> getConfig()
+            -> getDouble( Path{ "processor", "learningSpeed" }, 0.0 )
+        );
+        net -> unlock();
+
         /* Check structure with net */
         net -> syncToLimb( this );
 
+        /* Allocate weigth */
         getNerveList() -> weightsAllocate
         (
             [ this ]
@@ -771,6 +830,7 @@ LimbProcessor* LimbProcessor::neuronCalcValue
     (
         aLayer,
         aIndex,
+        BT_ALL,
         [
             &summValue,
             &summSample,
@@ -800,11 +860,15 @@ LimbProcessor* LimbProcessor::neuronCalcValue
                     countValue ++;
                 break;
                 case BT_ERROR_TO_VALUE:
-                    summErrorValue += abs
-                    (
-                        aParentLayer -> getNeuronError( aParentIndex ) * aWeight
-                    );
+                {
+                    auto e = aParentLayer -> getNeuronError( aParentIndex );
+                    summErrorValue += e * e * aWeight;
+//                    summErrorValue += abs
+//                    (
+//                        aParentLayer -> getNeuronError( aParentIndex ) * aWeight
+//                    );
                     countErrorValue++;
+                }
                 break;
                 case BT_COMMAND:
                     summCommand += w;
@@ -827,11 +891,12 @@ LimbProcessor* LimbProcessor::neuronCalcValue
     if( countErrorValue > 0 )
     {
         /* Write avg error from parent to layer */
-        aLayer -> setNeuronValue
-        (
-            aIndex,
-            summErrorValue / countErrorValue
-        );
+//        aLayer -> setNeuronValue
+//        (
+//            aIndex,
+//            summErrorValue / countErrorValue
+//        );
+        aLayer -> setNeuronValue( aIndex, summErrorValue / 2 );
     }
 
     /* Start error from Sample */
@@ -911,6 +976,7 @@ LimbProcessor* LimbProcessor::neuronLearning
     (
         aLayer,
         aIndex,
+        BT_VALUE,
         [
             this,
             &currentNeuronError

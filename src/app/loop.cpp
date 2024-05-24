@@ -9,7 +9,6 @@
 using namespace std;
 
 
-
 /*
     Constructor
 */
@@ -227,7 +226,6 @@ Loop* Loop::teacherControl()
         /* Read batches list and other config */
         teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
-        teacher -> setErrorLimit( cfg -> getDouble( "errorLimit" ));
         teacher -> setMode( cfg -> getString( "mode" ));
 
         teacher
@@ -305,6 +303,7 @@ void Loop::onLoop()
     if
     (
         net -> isConfigUpdate( netConfig ) ||
+        net -> isVersionChanged() ||
         getApplication() -> getConfigUpdated()
     )
     {
@@ -379,5 +378,7 @@ void Loop::onLoop()
 
 
     getMon() -> flush();
-    getLog() -> end( "Loop" ) -> trapOff();
+    getLog()
+    -> end( "Loop" )
+    -> trapOff();
 }

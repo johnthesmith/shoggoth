@@ -94,6 +94,8 @@ enum Command
 {
     CMD_UNKNWON,        /* Unknown command */
     CMD_READ_NET,       /* Server return full Net configuration */
+    CMD_CLONE_NET,      /* Server clone net */
+    CMD_SWITCH_NET,     /* Server switch to specified net */
     CMD_WRITE_LAYERS,   /* Server send layers with errors and values plan */
     CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
     CMD_REQUEST_WEIGHTS,/* Request weights for one neuron */

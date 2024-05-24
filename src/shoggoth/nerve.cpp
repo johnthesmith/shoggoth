@@ -780,5 +780,60 @@ Nerve* Nerve::extractChildWeightsBuffer
 }
 
 
+/*
+    Dump to log
+*/
+Nerve* Nerve::dumpToLog()
+{
+    getLog()
+    -> begin( "nerve" )
+    -> prm( "from", getParent() -> getId() )
+    -> prm( "to", getChild() -> getId() )
+    ;
+    for( int i = 0; i < weightsCount; i++ )
+    {
+        getLog()
+        -> trace()
+        -> value( i )
+        -> text( " | weights: " )
+        -> value( weights[ i ])
+        -> text( " | delta:   " )
+        -> value( abs( deltaWeights[ i ] ))
+        ;
+    }
+    getLog() -> end();
+    return this;
+}
 
 
+
+
+/*
+    Dump to mon
+*/
+Nerve* Nerve::dumpToMon
+(
+    Mon* aMon,
+    ChartList* aChartList
+)
+{
+    for( int i = 0; i < weightsCount; i++ )
+    {
+        auto iChart = aChartList -> add
+        (
+            "weights"
+            + to_string( i )
+            + getParent() -> getId()
+            + getChild() -> getId()
+        );
+
+        aMon
+        -> setString
+        (
+            Path{ getParent() -> getId(), getChild() -> getId(), to_string( i ) },
+            iChart -> push( abs( weights[ i ] )) -> toString( 40 )
+        );
+    }
+
+    return this;
+}

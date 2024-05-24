@@ -45,7 +45,7 @@ class LimbProcessor : public Limb
         int     tickWrite               = 10;       /* Each of finished calculation form tickWrite will be writen to file */
 
         ParamList* dumpWeightConf       = NULL;     /**/
-
+        unsigned long long int  frame   = 0;
 
         /*
             Calculation debug mode

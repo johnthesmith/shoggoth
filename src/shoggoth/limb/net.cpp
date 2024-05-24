@@ -3,6 +3,7 @@
 #include "../io.h"
 #include "../shoggoth_consts.h"
 #include "../../../../../lib/json/param_list_file.h"
+#include "../../../../../lib/core/rnd.h"
 
 
 
@@ -21,13 +22,21 @@ Net::Net
     application = aApplication;
     sockManager = aSockManager;
     id          = aId;
-    version     = aVersion;
+
+    /* Set versions */
+    version         = aVersion;
+    nextVersion     = aVersion;
 
     application -> getLog() -> trace( "Create net" );
 
     tasks = ParamList::create();
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
+
+//Rnd::storeSeed(0);
+//Rnd::randomize();
+//clone( version );
+//Rnd::restoreSeed();
 }
 
 
@@ -468,11 +477,229 @@ bool Net::isConfigUpdate
     ParamList* aConfig
 )
 {
-    return getLastUpdate() < aConfig -> getInt( "lastUpdate", 0 );
+    return getLastUpdate() != aConfig -> getInt( "lastUpdate", 0 );
 }
 
 
 
+/*
+    Clone net form parent to child
+*/
+Net* Net::clone
+(
+    string aParentNetId,
+    string aParentNetVersion,
+    string& aChildVersion,
+    bool aMutation
+)
+{
+    getLog() -> begin( "Net clone" );
+
+    /* Set current id and version for not specified */
+    aParentNetId = aParentNetId == "" ? id : aParentNetId;
+    aParentNetVersion = aParentNetVersion == "" ? version : aParentNetVersion;
+
+    /* Set default mutation path */
+    Path path = { "pure" };
+
+    /* Define net files */
+    string parentNetFile = getNetConfigFile( aParentNetVersion );
+
+    /* Create JSON structure */
+    auto json = Json::create() -> fromFile( parentNetFile );
+
+    if( aMutation )
+    {
+        /* Mutation */
+        auto mutations = json -> getParamList() -> getObject( "mutations" );
+        if( mutations != NULL )
+        {
+            /* calculate sum of rnd of all mutation */
+            double sumRnd = mutations -> calcSum( Path{ "rnd" } );
+            double dice = Rnd::get( 0.0, sumRnd );
+            double prevDice = 0.0;
+
+            getLog()
+            -> trace( "Select mutation" )
+            -> prm( "Rnd sum", sumRnd )
+            -> prm( "Dice", dice );
+
+            /* Loop for each mutation */
+            mutations -> loop
+            (
+                [ &json, this, &dice, &prevDice, &path ]
+                ( Param* iParam )
+                {
+                    if( iParam -> isObject() )
+                    {
+                        /* Processing mutation */
+                        auto mutation = iParam -> getObject();
+                        if
+                        (
+                            dice >= prevDice &&
+                            dice < prevDice + mutation -> getDouble( "rnd" )
+                        )
+                        {
+                            /* Get path for mutation */
+                            path = mutation -> getPath( Path{ "path" });
+
+                            getLog()
+                            -> trace( "Mutation" )
+                            -> prm( "param", implode( path, "." ));
+
+                            /* Get mutating parameter */
+                            auto mutated = json -> getParamList() -> getByName( path );
+
+                            if( mutated != NULL )
+                            {
+                                switch( mutated -> getType() )
+                                {
+                                    case KT_DOUBLE:
+                                    {
+                                        auto mul = mutation -> getDouble( "mul", 1.0 );
+                                        auto add = mutation -> getDouble( "add", 0.0 );
+                                        auto val = mutated -> getDouble();
+                                        auto rMul = Rnd::get( 1.0 / mul, mul );
+                                        auto rAdd = Rnd::get( -add, +add );
+                                        auto vMax = mutation -> getDouble( "max", val );
+                                        auto vMin = mutation -> getDouble( "min", val );
+
+                                        getLog()
+                                        -> prm( "val", val )
+                                        -> prm( "mul", mul )
+                                        -> prm( "add", add )
+                                        -> prm( "min", vMin )
+                                        -> prm( "max", vMax )
+                                        -> prm( "rndmul", rMul )
+                                        -> prm( "rndadd", rAdd )
+                                        ;
+
+                                        if( mul < 1.0 || add < 0.0 )
+                                        {
+                                            getLog()
+                                            -> warning( "Multiplexor or additive is low" )
+                                            -> prm( "path", implode( path, ".") )
+                                            -> prm( "mul", mul )
+                                            -> prm( "add", add )
+                                            ;
+                                        }
+                                        else
+                                        {
+                                            mutated -> setDouble
+                                            (
+                                                min
+                                                (
+                                                    vMax,
+                                                    max( vMin, val * rMul + rAdd )
+                                                )
+                                            );
+                                        }
+
+                                        getLog() -> prm( "result", mutated -> getDouble() );
+
+                                    }
+                                    break;
+                                    case KT_INT:
+                                    {
+                                        auto mul = mutation -> getDouble( "mul", 1.0 );
+                                        int add = mutation -> getInt( "add", 0 );
+                                        auto val = mutated -> getInt();
+                                        auto rMul = Rnd::get( 1.0 / mul, mul );
+                                        auto rAdd = Rnd::get( -add, +add );
+                                        auto vMax = mutation -> getDouble( "max", val );
+                                        auto vMin = mutation -> getDouble( "min", val );
+
+                                        getLog()
+                                        -> prm( "val", val )
+                                        -> prm( "mul", mul )
+                                        -> prm( "add", add )
+                                        -> prm( "min", vMin )
+                                        -> prm( "max", vMax )
+                                        -> prm( "rndmul", rMul )
+                                        -> prm( "rndadd", rAdd )
+                                        ;
+
+                                        if( mul < 1 || add < 0 )
+                                        {
+                                            getLog()
+                                            -> warning( "Multiplexor or additive is low" )
+                                            -> prm( "path", implode( path, ".") )
+                                            -> prm( "mul", mul )
+                                            -> prm( "add", add )
+                                            ;
+                                        }
+                                        else
+                                        {
+                                            mutated -> setInt
+                                            (
+                                                min
+                                                (
+                                                    vMax,
+                                                    max( vMin, val * rMul + rAdd )
+                                                )
+                                            );
+                                        }
+
+                                        getLog() -> prm( "result", mutated -> getInt() );
+
+                                    }
+                                    break;
+                                    default:
+                                        getLog()
+                                        -> warning( "Mutaded is not a DOUBLE or INT" )
+                                        -> prm( "path", implode( path, ".") );
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                getLog()
+                                -> warning( "Mutated key not found" )
+                                -> prm( "path", implode( path, ".") );
+                            }
+                        }
+                        prevDice = prevDice + mutation -> getDouble( "rnd" );
+                    }
+                    return false;
+                }
+            );
+        }
+    }
+
+    /* Create children version */
+    aChildVersion = Rnd::getUuid() + "-" + implode( path, "." );
+
+    getLog()
+    -> info( "Copy net files" )
+    -> prm( "from", aParentNetVersion )
+    -> prm( "to", aChildVersion );
+
+    /* Write child version like current */
+    json
+    -> getParamList()
+    -> setString( Path{ "id" }, aParentNetId )
+    -> setString( Path{ "version", "current" }, aChildVersion )
+    -> setString( Path{ "version", "parent" }, aParentNetVersion );
+
+    string childNetFile = getNetConfigFile( aChildVersion );
+
+    /* Save children file */
+    if( checkPath( getPath( childNetFile )))
+    {
+        json -> toFile( childNetFile );
+    }
+
+    json -> destroy();
+
+    getLog() -> end();
+
+    return this;
+}
+
+
+
+
+/**/
 Net* Net::applyNet
 (
     ParamList* aConfig
@@ -600,6 +827,9 @@ Net* Net::applyNet
     /* Update last update net moment */
     setLastUpdate( aConfig -> getInt( "lastUpdate", 0 ));
 
+    /* Set nextVersion in to version */
+    version = nextVersion;
+
     return this;
 }
 
@@ -634,10 +864,12 @@ string Net::getStoragePath()
 */
 string Net::getNetPath
 (
-    string aSubpath
+    string aSubpath,
+    string aId      /* Net id */
 )
 {
-    return getStoragePath() + "/" + id + ( aSubpath == "" ? "" : "/" + aSubpath );
+    aId = aId =="" ? id : aId;
+    return getStoragePath() + "/" + aId + ( aSubpath == "" ? "" : "/" + aSubpath );
 }
 
 
@@ -648,10 +880,13 @@ string Net::getNetPath
 */
 string Net::getNetVersionPath
 (
-    string aSubpath
+    string aSubpath,    /* Subpath */
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getNetPath( version  + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    aVersion = aVersion == "" ? version : aVersion;
+    return getNetPath( aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ));
 }
 
 
@@ -659,9 +894,13 @@ string Net::getNetVersionPath
 /*
     Return net config
 */
-string Net::getNetConfigFile()
+string Net::getNetConfigFile
+(
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
+)
 {
-    return getNetPath( "net.json" );
+    return getNetVersionPath( "net.json", aVersion, aId );
 }
 
 
@@ -671,10 +910,17 @@ string Net::getNetConfigFile()
 */
 string Net::getLogPath
 (
-    string aSubpath
+    string aSubpath,
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getNetVersionPath( "log" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetVersionPath
+    (
+        "log" + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aVersion,
+        aId
+    );
 }
 
 
@@ -684,10 +930,17 @@ string Net::getLogPath
 */
 string Net::getMonPath
 (
-    string aSubpath
+    string aSubpath,
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getNetVersionPath( "mon" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetVersionPath
+    (
+        "mon" + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aVersion,
+        aId
+    );
 }
 
 
@@ -697,10 +950,17 @@ string Net::getMonPath
 */
 string Net::getDumpPath
 (
-    string aSubpath
+    string aSubpath,
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getNetVersionPath( "dump" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetVersionPath
+    (
+        "dump" + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aVersion,
+        aId
+    );
 }
 
 
@@ -710,10 +970,17 @@ string Net::getDumpPath
 */
 string Net::getNervesPath
 (
-    string aSubpath
+    string aSubpath,
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getNetVersionPath( "nerves" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetVersionPath
+    (
+        "nerves" + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aVersion,
+        aId
+    );
 }
 
 
@@ -723,10 +990,17 @@ string Net::getNervesPath
 */
 string Net::getWeightsPath
 (
-    string aSubpath
+    string aSubpath,
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
 )
 {
-    return getDumpPath( "weights" + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getDumpPath
+    (
+        "weights" + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aVersion,
+        aId
+    );
 }
 
 
@@ -1263,6 +1537,20 @@ string Net::getId()
 
 
 /*
+    Set net id
+*/
+Net* Net::setId
+(
+    string aValue
+)
+{
+    id = aValue;
+    return this;
+}
+
+
+
+/*
     Return net version
 */
 string Net::getVersion()
@@ -1272,9 +1560,39 @@ string Net::getVersion()
 
 
 
+
 WeightsExchange* Net::getWeightsExchange()
 {
     return weightsExchange;
 }
 
 
+
+/*
+    Set the next version of the net
+*/
+Net* Net::setNextVersion
+(
+    string aValue
+)
+{
+    nextVersion = aValue;
+    return this;
+}
+
+
+
+/*
+    Return the next version of the net
+*/
+string Net::getNextVersion()
+{
+    return nextVersion;
+}
+
+
+
+bool Net::isVersionChanged()
+{
+    return nextVersion != version;
+}

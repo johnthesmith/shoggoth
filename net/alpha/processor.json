@@ -9,7 +9,7 @@
             "debug"             :false,
 
             "loopSleepMcs"      :100,
-            "learningSpeed"     :0.01,
+            "learningSpeed"     :0.001,
             "minWeight"         :0.000001,
             "maxWeight"         :1000,
             "maxError"          :10,

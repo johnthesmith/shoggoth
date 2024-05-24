@@ -309,17 +309,25 @@ Limb* Limb::parentsLoop
 (
     Layer*          aLayer,     /* Layer */
     int             aIndex,     /* Neuron index */
+    BindType        aBindType,
     parentsLambda   aCallback   /* Callback method */
 )
 {
     /* Loop by nerves */
     getNerveList() -> loop
     (
-        [ &aLayer, &aCallback, &aIndex ]
+        [ &aLayer, &aCallback, &aIndex, &aBindType ]
         ( void* aNerve )
         {
             auto iNerve = ( Nerve* ) aNerve;
-            if( iNerve -> getChild() == aLayer )
+            if
+            (
+                iNerve -> getChild() == aLayer &&
+                (
+                    aBindType == BT_ALL ||
+                    iNerve -> getBindType() == aBindType
+                )
+            )
             {
                 int from = 0;
                 int to = 0;

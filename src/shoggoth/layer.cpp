@@ -23,6 +23,7 @@ Layer::Layer
 
     /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
+
 }
 
 
@@ -798,4 +799,74 @@ NeuronFunc* Layer::getBackFunc()
 {
     return backFunc;
 }
+
+
+
+/*
+    Dump to log
+*/
+Layer* Layer::dumpToLog()
+{
+    getLog() -> begin() -> prm( "layer_id", getId() );
+    for( int i = 0; i < count; i++ )
+    {
+        getLog()
+        -> trace()
+        -> value( i )
+        -> text( " | value: " )
+        -> value( values[ i ])
+        -> text( " | error: " )
+        -> value( errors[ i ]);
+
+if( values[ i ] > 1e6 ) exit( 0 );
+    }
+    getLog() -> end();
+    return this;
+}
+
+
+
+/*
+    Dump to mon
+*/
+Layer* Layer::dumpToMon
+(
+    Mon* aMonValues,
+    Mon* aMonErrors,
+    ChartList* aChartList
+)
+{
+    for( int i = 0; i < count; i++ )
+    {
+        auto iValuesChart = aChartList -> add
+        (
+            "values"
+            + to_string( i )
+            + getId()
+        );
+        auto iErrorsChart = aChartList -> add
+        (
+            "errors"
+            + to_string( i )
+            + getId()
+        );
+
+        aMonValues
+        -> setString
+        (
+            Path{ getId(), to_string( i ) },
+            iValuesChart -> push( values[ i ] ) -> toString( 40 )
+        );
+
+        aMonErrors
+        -> setString
+        (
+            Path{ getId(), to_string( i ) },
+            iErrorsChart -> push( abs( errors[ i ] )) -> toString( 40 )
+        );
+    }
+
+    return this;
+}
+
 

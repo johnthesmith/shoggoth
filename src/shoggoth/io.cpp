@@ -100,6 +100,7 @@ Io* Io::call
         {
             string  host = config -> getString( "host" );
             int     port = config -> getInt( "port" );
+
             /* Server operation */
             RpcClient::create
             (
@@ -132,6 +133,33 @@ Io* Io::call
     return this;
 }
 
+
+
+/*
+    Call input output operation
+*/
+Io* Io::disconnect()
+{
+    auto config = getApplication()
+    -> getConfig()
+    -> selectObject( Path { "io" });
+
+    /* Read configuration */
+    if( config -> getString( "source", "LOCAL" ) != "LOCAL" )
+    {
+        /* Server operation */
+        RpcClient::create
+        (
+            getApplication() -> getLogManager(),
+            net -> getSockManager(),
+            config -> getString( "host" ),
+            config -> getInt( "port" )
+        )
+        -> disconnect()
+        -> destroy();
+    }
+    return this;
+}
 
 
 
@@ -191,7 +219,8 @@ ParamList* Io::getRequest()
 */
 Io* Io::fileReadNet()
 {
-    string file = net -> getNetConfigFile();
+    /* Buid file for next version */
+    string file = net -> getNetConfigFile( net -> getNextVersion() );
 
     getLog() -> trace( "Read net config" ) -> prm( "file", file );
 

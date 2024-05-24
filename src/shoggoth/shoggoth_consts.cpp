@@ -58,6 +58,8 @@ std::string commandToString
         default:
         case CMD_UNKNWON        : return "UNKNWON";
         case CMD_READ_NET       : return "READ_NET";
+        case CMD_CLONE_NET      : return "CLONE_NET";
+        case CMD_SWITCH_NET     : return "SWITCH_NET";
         case CMD_WRITE_LAYERS   : return "WRITE_LAYERS";
         case CMD_READ_LAYERS    : return "READ_LAYERS";
         case CMD_REQUEST_WEIGHTS: return "REQUEST_WEIGHTS";

@@ -105,6 +105,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     switch( method )
     {
         case CMD_READ_NET           :readNet( aArguments, aResults); break;
+        case CMD_CLONE_NET          :cloneNet( aArguments, aResults); break;
+        case CMD_SWITCH_NET         :switchNet( aArguments, aResults); break;
         case CMD_WRITE_LAYERS       :writeLayers( aArguments, aResults); break;
         case CMD_READ_LAYERS        :readLayers( aArguments, aResults); break;
         case CMD_REQUEST_WEIGHTS    :requestWeights( aArguments, aResults); break;
@@ -210,6 +212,70 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
 
     return this;
 }
+
+
+
+/*
+    Remote host send command for clone net configuration
+*/
+ShoggothRpcServer* ShoggothRpcServer::cloneNet
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    auto parentNetId = aArguments -> getString( "parentNetId", "" );
+    auto parentNetVersion = aArguments -> getString( "parnetNetVersion", "" );
+    auto mutation = aArguments -> getBool( "mutation", false );
+
+    /* Return positive answer */
+    setAnswerResult( aResults, RESULT_OK );
+
+    /* Version of cloned child */
+    string childVersion = "";
+
+    /* Clone network */
+    net -> clone
+    (
+        parentNetId,
+        parentNetVersion,
+        childVersion,
+        mutation
+    );
+
+    /* Return result */
+    aResults
+    -> setString( "id",  parentNetId == "" ? net -> getId() : parentNetId )
+    -> setString( "version", childVersion );
+
+    setAnswerResult( aResults, RESULT_OK );
+
+    return this;
+}
+
+
+
+/*
+    Remote host send command for switch to the other net
+*/
+ShoggothRpcServer* ShoggothRpcServer::switchNet
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    auto id = aArguments -> getString( "id", "" );
+    auto version = aArguments -> getString( "version", "" );
+
+    /* Set new value of version */
+    net -> setNextVersion( version );
+
+    /* Return positive answer */
+    setAnswerResult( aResults, RESULT_OK );
+
+    return this;
+}
+
 
 
 

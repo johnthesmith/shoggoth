@@ -230,6 +230,7 @@ class Limb : public Result
         (
             Layer*,         /* Layer */
             int,            /* Neuron index */
+            BindType,       /* BindType for loop or BT_ALL */
             parentsLambda   /* Callback method */
         );
 

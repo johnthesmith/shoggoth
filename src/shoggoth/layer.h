@@ -13,6 +13,9 @@
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
+#include "../../../../lib/core/chart_list.h"
+#include "../../../../lib/core/mon.h"
+
 #include "func.h"
 #include "nerve_list.h"
 #include "shoggoth_consts.h"
@@ -521,4 +524,24 @@ class Layer : public Result
 
 
         NeuronFunc* getBackFunc();
+
+
+
+        /*
+            Dump to log
+        */
+        Layer* dumpToLog();
+
+
+
+
+        /*
+            Dump to mon
+        */
+        Layer* dumpToMon
+        (
+            Mon*,
+            Mon*,
+            ChartList* achartList
+        );
 };

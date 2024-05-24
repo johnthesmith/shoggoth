@@ -10,6 +10,11 @@
 
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/core/log_manager.h"
+#include "../../../../lib/core/mon.h"
+
+
+#include "../../../../lib/core/chart_list.h"
+
 
 #include "shoggoth_consts.h"
 
@@ -387,4 +392,21 @@ class Nerve: public Result
             size_t  &aSize
         );
 
+
+
+        /*
+            Dump to log
+        */
+        Nerve* dumpToLog();
+
+
+
+        /*
+            Dump to log
+        */
+        Nerve* dumpToMon
+        (
+            Mon*,
+            ChartList*
+        );
 };

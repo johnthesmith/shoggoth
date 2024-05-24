@@ -32,7 +32,6 @@ class Teacher : public Payload
         /*
             Config
         */
-        double          errorLimit      = 0;
         string          idErrorLayer    = "";
         string          mode            = "";
         ParamList*      batches         = NULL;
@@ -91,16 +90,6 @@ class Teacher : public Payload
         /******************************************************************************
             Getters and setters
         */
-
-
-
-        Teacher* setErrorLimit
-        (
-            double
-        );
-
-
-
         double getErrorLimit();
 
 

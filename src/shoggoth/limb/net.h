@@ -60,7 +60,10 @@ class Net: public Limb
 
         string          storagePath     = "net";    /* Path for storage */
         string          id              = "";       /* Net id */
-        string          version         = "";       /* Net version */
+        /* Current net version */
+        string          version         = "";
+        /* Net version, for switching at next turn of calculation */
+        string          nextVersion   = "";
 
     public:
 
@@ -212,10 +215,29 @@ class Net: public Limb
 
 
         /*
+            Return net id
+        */
+        Net* setId
+        (
+            string
+        );
+
+
+
+        /*
             Return net version
         */
         string getVersion();
 
+
+
+        /*
+            Set next wersion for switching
+        */
+        Net* setNextVersion
+        (
+            string
+        );
 
 
         /******************************************************************************
@@ -229,7 +251,8 @@ class Net: public Limb
         */
         string getNetPath
         (
-            string ="" /* Subpath */
+            string = "", /* Subpath */
+            string = ""  /* Net id */
         );
 
 
@@ -239,7 +262,9 @@ class Net: public Limb
         */
         string getNetVersionPath
         (
-            string ="" /* Subpath */
+            string = "",    /* Subpath */
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -247,7 +272,11 @@ class Net: public Limb
         /*
             Return net config
         */
-        string getNetConfigFile();
+        string getNetConfigFile
+        (
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
+        );
 
 
 
@@ -256,7 +285,9 @@ class Net: public Limb
         */
         string getLogPath
         (
-            string ="" /* Subpath */
+            string = "",    /* Subpath */
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -266,7 +297,9 @@ class Net: public Limb
         */
         string getMonPath
         (
-            string = "" /* Subpath */
+            string = "",    /* Subpath */
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -276,7 +309,9 @@ class Net: public Limb
         */
         string getDumpPath
         (
-            string = "" /* Subpath */
+            string = "",    /* Subpath */
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -286,7 +321,9 @@ class Net: public Limb
         */
         string getNervesPath
         (
-            string = "" /* Subpath */
+            string = "",    /* Subpath */
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -296,7 +333,9 @@ class Net: public Limb
         */
         string getWeightsPath
         (
-            string = ""
+            string = "",
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
         );
 
 
@@ -343,6 +382,19 @@ class Net: public Limb
         bool isConfigUpdate
         (
             ParamList*  /* Config */
+        );
+
+
+
+        /*
+            Clone net form parent to child
+        */
+        Net* clone
+        (
+            string,         /* Parent Net Id */
+            string,         /* Parent Net Version */
+            string&,        /* result child version */
+            bool = false    /* true for mutation */
         );
 
 
@@ -455,5 +507,19 @@ class Net: public Limb
             Request weights for neurons
         */
         Net* requestWeights();
+
+
+
+        /*
+            Return true when nextVersion not equal verson
+        */
+        bool isVersionChanged();
+
+
+
+        /*
+            Return the next version of the net
+        */
+        string getNextVersion();
 
 };

@@ -23,9 +23,12 @@ class ShoggothApplication : public Application
 {
     private:
 
-        bool                    configUpdated       = false;
-        long int                lastConfigUpdate    = 0;
-        SockManager*            sockManager         = NULL;
+        bool            configUpdated       = false;
+        long int        lastConfigUpdate    = 0;
+        SockManager*    sockManager         = NULL;
+
+        string          netId               = "alpha";
+        string          netVersion          = "zero";
 
     public:
 

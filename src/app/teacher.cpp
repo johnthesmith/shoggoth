@@ -22,9 +22,11 @@ Teacher::Teacher
 : Payload( aNet -> getApplication() )
 {
     getLog() -> trace( "Create teacher" );
-    mon = Mon::create( "./mon/teacher.txt" )
+
+    mon = Mon::create( aNet -> getMonPath( "teacher.txt" ))
     -> now( Path{ "start" })
     -> startTimer( Path{ "startMks" });
+
     limb = LimbTeacher::create( aNet );
     batches = ParamList::create();
 }
@@ -83,20 +85,16 @@ ShoggothApplication* Teacher::getApplication()
 
 
 
-Teacher* Teacher::setErrorLimit
-(
-    double a
-)
-{
-    errorLimit = a;
-    return this;
-}
-
-
-
 double Teacher::getErrorLimit()
 {
-    return errorLimit;
+    limb -> getNet() -> lock();
+    auto result = limb
+    -> getNet()
+    -> getConfig()
+    -> getDouble( Path{ "teacher", "errorLimit" }, 1.0 );
+    limb -> getNet() -> unlock();
+
+    return result;
 }
 
 
@@ -324,6 +322,8 @@ Teacher* Teacher::cmdFolderToLayer
 */
 void Teacher::onLoop()
 {
+    auto errorLimit = getErrorLimit();
+
     mon
     -> startTimer( Path{ "currentMks" })
     -> interval( Path{ "uptime" }, Path{ "currentMks" }, Path{ "startMks" })

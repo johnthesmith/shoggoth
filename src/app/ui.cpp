@@ -11,6 +11,8 @@
 #include "../shoggoth/limb/neuron_ui.h"
 #include "../shoggoth/limb/neuron_list_ui.h"
 
+#include "../shoggoth/io.h"
+
 
 
 using namespace std;
@@ -216,7 +218,16 @@ void Ui::onDraw
     aScene
     -> color( interfaceColor )
     -> setTextSize( 20 )
-    -> drawMatrix( Point3d( 0, aScene -> getViewport().height, 0 ) );
+    -> drawMatrix( Point3d( 0, aScene -> getViewport().height, 0 ) )
+    -> textCR()
+    -> setTextHorisontalAlign( ALIGN_LEFT )
+    -> text
+    (
+        limb
+        -> getNet()
+        -> getConfig()
+        -> getString( Path{ "version", "current" })
+    );
 
     /*
         Draw neuron chart
@@ -426,6 +437,31 @@ void Ui::onKeyDown
         break;
         case KEY_C:
             limb -> switchShowLayer();
+        break;
+        case KEY_M:
+        {
+            string version = "";
+
+            /* Клонирование */
+            auto io = Io::create( limb -> getNet() );
+            io -> getRequest() -> setBool( "mutation", true );
+
+            if( io -> call( CMD_CLONE_NET ) -> isOk() )
+            {
+                version = io -> getAnswer() -> getString( "version" );
+                getLog()
+                -> info( "Net clone" )
+                -> prm( "net", io -> getAnswer() -> getString( "id" ))
+                -> prm( "version",  version )
+                -> lineEnd();
+
+                /* Переключение на клон */
+                auto io1 = Io::create( limb -> getNet() );
+                io1 -> getRequest() -> setString( "version", version );
+                io1 -> call( CMD_SWITCH_NET ) -> disconnect() -> destroy();
+            }
+            io -> destroy();
+        }
         break;
         case KEY_LEFT_CONTROL:
             camera -> setEyeLock( true );

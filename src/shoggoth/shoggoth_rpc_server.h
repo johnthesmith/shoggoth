@@ -125,6 +125,31 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
+            Remote host send command for clone net configuration
+        */
+        ShoggothRpcServer* cloneNet
+        (
+            ParamList* aArguments,
+            ParamList* aResults
+        );
+
+
+
+        /*
+            Remote host send command for switch to the other net
+            parentNetId
+            parentNetVersion
+            mutation            - true for mutation clone
+        */
+        ShoggothRpcServer* switchNet
+        (
+            ParamList* aArguments,
+            ParamList* aResults
+        );
+
+
+
+        /*
             Remote host send layers errors data
         */
         ShoggothRpcServer* writeLayers

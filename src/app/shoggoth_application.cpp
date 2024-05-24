@@ -123,10 +123,17 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
-    Loop::create( this, "alpha", "zero" )
-    -> resume()
-    -> loop()
-    -> destroy();
+    netId = getCli() -> getString( "net_id", "alpha" );
+    netVersion = getCli() -> getString( "net_version", "zero" );
+
+    /* Main loop */
+    while( true )
+    {
+        Loop::create( this, netId, netVersion )
+        -> resume()
+        -> loop()
+        -> destroy();
+    }
 
     getLog() -> end( "Application stop" );
 

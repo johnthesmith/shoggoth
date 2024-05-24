@@ -163,4 +163,12 @@ class Io: public Result
             Read nerve weights from file
         */
         Io* fileReadWeights();
+
+
+
+        /*
+            Call input output operation
+        */
+        Io* disconnect();
+
 };
