@@ -1,3 +1,6 @@
+/*
+    Shoggoth application
+*/
 #pragma once
 
 /* Local libraries */
@@ -6,16 +9,6 @@
 
 
 using namespace std;
-
-
-
-enum Role
-{
-    ROLE_TEACHER,
-    ROLE_PROCESSOR,
-    ROLE_SERVER,    /* The component of Shogooth, whos  collect and synchronize layers and other participants */
-    ROLE_UI
-};
 
 
 
@@ -40,67 +33,33 @@ class ShoggothApplication : public Application
 
 
 
+        /*
+            Destructor of the Shogoth application
+        */
         ~ShoggothApplication();
 
 
 
         /*
-            Creator
-        */
-        static ShoggothApplication* create
-        (
-            int,        /* cli argumends count */
-            char**      /* cli arguments */
-        );
-
-
-
-        /*
-            Destroy
+            Destroy of the Shogoth
         */
         void destroy();
 
 
 
         /*
-            Run application
+            Return the name of configuraion file
         */
-        ShoggothApplication* run();
-
-
-
-        /*
-            return application role by string
-        */
-        Role roleFromString
-        (
-            string
-        );
-
-
-
-        /*
-            Return application role like string from enum
-        */
-        string roleToString
-        (
-            Role aRole
-        );
-
-
-
         string getConfigFileName();
 
 
 
+        /*
+            Check update moment of the config file.
+            If file was updated, then the config object is rebuilding.
+        */
         ShoggothApplication* checkConfigUpdate();
 
-
-
-        bool getConfigUpdated();
-
-
-        SockManager* getSockManager();
 
 
         /*
@@ -109,4 +68,42 @@ class ShoggothApplication : public Application
         ShoggothApplication* onThreadAfter();
 
 
+        /*
+            Prepare configuration for application running
+        */
+        ShoggothApplication* prepareConfiguration();
+
+
+
+        /**********************************************************************
+            Setters and getters
+        */
+
+
+
+        /*
+            Return true if config wile was updated
+        */
+        bool getConfigUpdated();
+
+
+
+        /*
+            Return the sock manager from application
+        */
+        SockManager* getSockManager();
+
+
+
+        /*
+            Return the net identifier
+        */
+        string getNetId();
+
+
+
+        /*
+            Return the net version
+        */
+        string getNetVersion();
 };

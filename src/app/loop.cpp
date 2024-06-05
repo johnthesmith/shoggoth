@@ -379,6 +379,6 @@ void Loop::onLoop()
 
     getMon() -> flush();
     getLog()
-    -> end( "Loop" )
+    -> end( getCode() )
     -> trapOff();
 }

@@ -7,7 +7,7 @@
 /* Local libraries */
 #include "../../../../lib/core/payload.h"
 
-#include "shoggoth_application.h"
+#include "shoggoth_role_application.h"
 #include "../shoggoth/shoggoth_rpc_server.h"
 #include "../shoggoth/limb/net.h"   /* TODO use limb_server*/
 
@@ -63,7 +63,7 @@ class Server : public Payload
 
 
 
-        ShoggothApplication* getApplication() override;
+        ShoggothRoleApplication* getApplication() override;
 
 
 

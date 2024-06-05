@@ -73,9 +73,9 @@ void Server::destroy()
 
 
 
-ShoggothApplication* Server::getApplication()
+ShoggothRoleApplication* Server::getApplication()
 {
-    return ( ShoggothApplication* ) Payload::getApplication();
+    return ( ShoggothRoleApplication* ) Payload::getApplication();
 }
 
 

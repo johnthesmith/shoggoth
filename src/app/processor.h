@@ -4,7 +4,7 @@
 #include "../../../../lib/core/payload.h"
 
 /* Shogoth libraries */
-#include "shoggoth_application.h"
+#include "shoggoth_role_application.h"
 #include "../shoggoth/limb/limb_processor.h"
 #include "../shoggoth/limb/net.h"
 
@@ -66,7 +66,7 @@ class Processor : public Payload
         /*
             Return application object
         */
-        ShoggothApplication* getApplication() override;
+        ShoggothRoleApplication* getApplication() override;
 
 
 

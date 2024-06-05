@@ -13,7 +13,7 @@
 
     "tasks":
     {
-        "TASK_UI":
+        "UI":
         {
 
             "enabled"   :true,

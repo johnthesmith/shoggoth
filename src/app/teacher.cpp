@@ -72,9 +72,9 @@ void Teacher::destroy()
 /*
     Return application
 */
-ShoggothApplication* Teacher::getApplication()
+ShoggothRoleApplication* Teacher::getApplication()
 {
-    return (ShoggothApplication*) Payload::getApplication();
+    return (ShoggothRoleApplication*) Payload::getApplication();
 }
 
 

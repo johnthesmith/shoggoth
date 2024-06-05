@@ -79,6 +79,10 @@ Io* Io::call
 {
     if( this -> isOk() )
     {
+        getLog()
+        -> begin( "Call RPC" )
+        -> prm( "command", commandToString( aCommand ));
+
         auto config = getApplication()
         -> getConfig()
         -> selectObject( Path { "io" });
@@ -128,6 +132,8 @@ Io* Io::call
             -> dump( request )
             -> lineEnd();
         }
+
+        getLog() -> end( getCode() );
     }
 
     return this;
@@ -363,5 +369,108 @@ Io* Io::fileWriteWeights()
 */
 Io* Io::fileReadWeights()
 {
+    return this;
+}
+
+
+
+/******************************************************************************
+    Shoggoth Rpc Client methods
+*/
+
+
+
+/*
+    Clone net from id and version
+*/
+Io* Io::cloneNet
+(
+    string aNetId,
+    string aNetVersion,
+    bool aMutation
+)
+{
+    if( isOk() )
+    {
+        request
+        -> clear()
+        -> setString( "parentNetId", aNetId )
+        -> setString( "parnetNetVersion", aNetVersion )
+        -> setBool( "mutation", aMutation );
+
+        call( CMD_CLONE_NET );
+    }
+    return this;
+}
+
+
+
+/*
+    Switch net from id and version
+*/
+Io* Io::switchNet
+(
+    string aId,
+    string aVersion
+)
+{
+    if( this -> isOk() )
+    {
+        request
+        -> clear()
+        -> setString( "id", aId )
+        -> setString( "version", aVersion );
+
+        call( CMD_SWITCH_NET );
+    }
+    return this;
+}
+
+
+
+/*
+    Mutate from the parent and switch to a new net
+*/
+Io* Io::mutateParentAndSwitch()
+{
+    if( isOk() )
+    {
+        cloneNet
+        (
+            net -> getId(),
+            net -> getParentVersion(),
+            true /* Mutate */
+        );
+
+        switchNet
+        (
+            net -> getId(),
+            answer -> getString( "version" )
+        );
+    }
+    return this;
+}
+
+
+
+/*
+    Mutate from the current net and switch to a new net
+*/
+Io* Io::mutateCurrentAndSwitch()
+{
+    if( isOk() )
+    {
+        cloneNet
+        (
+            net -> getId(),
+            net -> getVersion(),
+            true /* Mutate */
+        );
+        switchNet
+        (
+            net -> getId(),
+            answer -> getString( "version" )
+        );
+    }
     return this;
 }

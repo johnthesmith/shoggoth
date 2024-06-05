@@ -62,9 +62,9 @@ void Processor::destroy()
 
 
 
-ShoggothApplication* Processor::getApplication()
+ShoggothRoleApplication* Processor::getApplication()
 {
-    return ( ShoggothApplication* ) Payload::getApplication();
+    return ( ShoggothRoleApplication* ) Payload::getApplication();
 }
 
 

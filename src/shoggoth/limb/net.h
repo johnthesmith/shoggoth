@@ -499,6 +499,16 @@ class Net: public Limb
 
 
 
+        /*
+            Add role for this net
+        */
+        Net* addTask
+        (
+            Task    /* Adding task */
+        );
+
+
+
         WeightsExchange* getWeightsExchange();
 
 
@@ -522,4 +532,10 @@ class Net: public Limb
         */
         string getNextVersion();
 
+
+
+        /*
+            Return parent net version
+        */
+        string getParentVersion();
 };

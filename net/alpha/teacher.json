@@ -10,7 +10,7 @@
 
     "tasks":
     {
-        "TASK_TEACHER":
+        "TEACHER":
         {
             "enabled"               :true,
             "loopSleepMcs"          :100000,

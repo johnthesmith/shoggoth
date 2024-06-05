@@ -1,0 +1,11 @@
+[90mo [97mstart
+    [90ms [97msource [95mshoggoth_server_rpc[39m
+    [90mi [97mmoment [95m1717447861184618[39m
+    [90ms [97mmomentStr [95m2024-06-03 20:51:01.184619[39m
+[90mo [97mlast
+    [90ms [97mmomentStr [95m2024-06-03 20:56:34.023895[39m
+    [90ms [97mMethod [95mREAD_NET[39m
+[90mo [97mstat
+    [90mi [97mREAD_NET [95m14822[39m
+    [90mi [97mREAD_LAYERS [95m14821[39m
+    [90mi [97mWRITE_LAYERS [95m71[39m

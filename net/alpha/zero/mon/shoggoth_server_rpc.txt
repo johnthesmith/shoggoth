@@ -1,12 +1,12 @@
 [90mo [97mstart
     [90ms [97msource [95mshoggoth_server_rpc[39m
-    [90mi [97mmoment [95m1716583749881557[39m
-    [90ms [97mmomentStr [95m2024-05-24 20:49:09.881559[39m
+    [90mi [97mmoment [95m1717448249302435[39m
+    [90ms [97mmomentStr [95m2024-06-03 20:57:29.302436[39m
 [90mo [97mlast
-    [90ms [97mmomentStr [95m2024-05-24 20:49:20.102729[39m
-    [90ms [97mMethod [95mREAD_LAYERS[39m
+    [90ms [97mmomentStr [95m2024-06-03 20:58:00.635133[39m
+    [90ms [97mMethod [95mREAD_NET[39m
 [90mo [97mstat
-    [90mi [97mREAD_NET [95m1616[39m
-    [90mi [97mREAD_LAYERS [95m1616[39m
+    [90mi [97mREAD_NET [95m6969[39m
+    [90mi [97mREAD_LAYERS [95m6968[39m
     [90mi [97mCLONE_NET [95m1[39m
     [90mi [97mSWITCH_NET [95m1[39m

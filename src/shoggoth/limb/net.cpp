@@ -725,17 +725,46 @@ Net* Net::applyNet
             )
             {
                 /* Create layer if its in used list */
-                auto used = iParam
-                -> getObject()
-                -> getObject( "used" );
+                auto used = ParamList::create();
 
-                if( used != NULL && used -> isIntersect( tasks ))
+                /* Build list of using roles from Actions */
+                auto actions = iParam
+                -> getObject()
+                -> getObject( "actions" );
+
+                if( actions != NULL )
                 {
-                    auto layerId = iParam -> getName();
-                    auto layer = createLayer( layerId );
-                    loadLayer( layer, iParam -> getObject() );
-                    layer -> setStoragePath( storagePath );
+                    actions -> loop
+                    (
+                        [ &used ]
+                        ( Param* item )
+                        {
+                            if( item -> isObject())
+                            {
+                                item -> getObject() -> loop
+                                (
+                                    [ &used ]
+                                    ( Param* item )
+                                    {
+                                        used -> pushString( item -> getString() );
+                                        return false;
+                                    }
+                                );
+                            }
+                            return false;
+                        }
+                    );
+
+                    if( used -> isIntersect( tasks ))
+                    {
+                        auto layerId = iParam -> getName();
+                        auto layer = createLayer( layerId );
+                        loadLayer( layer, iParam -> getObject() );
+                        layer -> setStoragePath( storagePath );
+                    }
                 }
+
+                used -> destroy();
                 return false;
             }
         );
@@ -1354,16 +1383,8 @@ Net* Net::syncToLimb
 */
 Net* Net::syncWithServer()
 {
-    auto tasksSection = getApplication()
-    -> getConfig()
-    -> getObject( "tasks" );
-
     /* The application does not have to be a processor */
-    if
-    (
-        tasksSection != NULL &&
-        tasksSection -> getObject( taskToString( TASK_PROC )) == NULL
-    )
+    if( !tasks -> valueExists( taskToString( TASK_PROC )))
     {
         getLog()
         -> trapOn()
@@ -1504,23 +1525,37 @@ Net* Net::buildTasks()
     -> getConfig()
     -> getObject( "tasks" );
 
-    tasks -> clear();
-
     if( tasksSection != NULL )
     {
+        tasks -> clear();
+
         if( tasksSection -> getObject( taskToString( TASK_PROC )) != NULL )
         {
-            tasks -> pushString( taskToString( TASK_PROC ));
+            addTask( TASK_PROC );
         }
         if( tasksSection -> getObject( taskToString( TASK_TEACHER )) != NULL )
         {
-            tasks -> pushString( taskToString( TASK_TEACHER ));
+            addTask( TASK_TEACHER );
         }
         if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
         {
-            tasks -> pushString( taskToString( TASK_UI ));
+            addTask( TASK_UI );
         }
     }
+    return this;
+}
+
+
+
+/*
+    Add role for this net
+*/
+Net* Net::addTask
+(
+    Task a
+)
+{
+    tasks -> pushString( taskToString( a ));
     return this;
 }
 
@@ -1556,6 +1591,16 @@ Net* Net::setId
 string Net::getVersion()
 {
     return version;
+}
+
+
+
+/*
+    Return parent net version
+*/
+string Net::getParentVersion()
+{
+    return config -> getString( Path{ "version", "parent" });
 }
 
 
@@ -1596,3 +1641,7 @@ bool Net::isVersionChanged()
 {
     return nextVersion != version;
 }
+
+
+
+

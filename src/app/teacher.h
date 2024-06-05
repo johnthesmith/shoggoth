@@ -12,7 +12,7 @@
 #include "../../../../lib/core/mon.h"
 #include "../../../../lib/json/json.h"
 
-#include "shoggoth_application.h"
+#include "shoggoth_role_application.h"
 #include "../shoggoth/limb/limb_teacher.h"
 
 
@@ -77,7 +77,7 @@ class Teacher : public Payload
         /*
             Return application object
         */
-        ShoggothApplication* getApplication();
+        ShoggothRoleApplication* getApplication();
 
 
 

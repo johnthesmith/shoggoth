@@ -4,7 +4,7 @@
     "version":
     {
         "current":"zero",
-        "parent":""
+        "parent":"zero"
     },
 
     "mutations":
@@ -53,7 +53,6 @@
     {
         "retina":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Retina",
             "size"              :[ 28, 28, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
@@ -62,16 +61,15 @@
             "function"          :"NONE",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_TEACHER" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "PROC", "UI" ],
+                "WRITE_VALUES"  :[ "TEACHER" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
 
         "cortex_1":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 1",
             "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
@@ -79,32 +77,30 @@
             "function"          :"RELU",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "PROC" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
 
         "bias":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Bias",
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, 1.0, 1.0 ],
             "function"          :"NONE",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_PROC", "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_TEACHER" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "PROC", "UI", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "TEACHER" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
 
         "cortex_2":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Cortex 2",
             "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
@@ -112,72 +108,69 @@
             "function"          :"RELU",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "PROC" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
 
         "result":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Result",
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
             "function"          :"RELU",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI", "TEACHER", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "PROC" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
 
         "sample":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Sample",
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
             "function"          :"NONE",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI", "TASK_PROC" ],
-                "WRITE_VALUES"  :[ "TASK_TEACHER" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI", "PROC", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "TEACHER" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
+
         "command":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI" ],
             "name"              :"Command",
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, -1.0, 3.5 ],
             "function"          : "NONE",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI" ],
-                "WRITE_VALUES"  :[ "TASK_PROC" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI" ],
+                "WRITE_VALUES"  :[ "PROC" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         },
         "error":
         {
-            "used"              :[ "TASK_PROC", "TASK_UI", "TASK_TEACHER" ],
             "name"              :"Error",
             "size"              :[ 1, 1, 1],
             "position"          :[ 0.0, 1.0, 3.0 ],
             "function"          :"NONE",
             "actions":
             {
-                "READ_VALUES"   :[ "TASK_UI", "TASK_TEACHER" ],
-                "WRITE_VALUES"  :[ "TASK_PROC", "TASK_TEACHER" ],
-                "READ_ERRORS"   :[ "TASK_UI" ],
-                "WRITE_ERRORS"  :[ "TASK_PROC" ]
+                "READ_VALUES"   :[ "UI", "TEACHER", "EVOLUTION" ],
+                "WRITE_VALUES"  :[ "PROC", "TEACHER" ],
+                "READ_ERRORS"   :[ "UI" ],
+                "WRITE_ERRORS"  :[ "PROC" ]
             }
         }
     },

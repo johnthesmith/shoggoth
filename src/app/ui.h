@@ -4,7 +4,7 @@
 #include "../../../../lib/graph/scene_payload.h"
 #include "../../../../lib/graph/camera.h"
 
-#include "shoggoth_application.h"
+#include "shoggoth_role_application.h"
 #include "../shoggoth/limb/limb_ui.h"
 
 
@@ -236,7 +236,7 @@ class Ui : public ScenePayload
             Setters and getters
         */
 
-        ShoggothApplication* getApplication() override;
+        ShoggothRoleApplication* getApplication() override;
 
 
 };

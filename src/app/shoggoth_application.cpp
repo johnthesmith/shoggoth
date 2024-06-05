@@ -1,17 +1,11 @@
 /* System libraries */
 #include <iostream>
 
-
-
 /* Libraryes */
 #include "../../../../lib/core/utils.h"
-#include "../../../../lib/core/log.h"
-#include "../../../../lib/json/param_list.h"
-#include "../../../../lib/core/buffer_to_hex.h"
 
 /* Application libraryes */
 #include "shoggoth_application.h"
-#include "loop.h"
 
 
 
@@ -19,6 +13,9 @@ using namespace std;
 
 
 
+/*
+    Constructor of the Shogoth application
+*/
 ShoggothApplication::ShoggothApplication
 (
     int aCount,        /* cli argumends count */
@@ -35,6 +32,9 @@ ShoggothApplication::ShoggothApplication
 
 
 
+/*
+    Destructor of the Shogoth application
+*/
 ShoggothApplication::~ShoggothApplication()
 {
     sockManager -> destroy();
@@ -43,21 +43,7 @@ ShoggothApplication::~ShoggothApplication()
 
 
 /*
-    Creator
-*/
-ShoggothApplication* ShoggothApplication::create
-(
-    int aCount,        /* cli argumends count */
-    char** aList       /* cli arguments */
-)
-{
-    return new ShoggothApplication( aCount, aList );
-}
-
-
-
-/*
-    Destroy
+    Destroy of the Shoogoth
 */
 void ShoggothApplication::destroy()
 {
@@ -66,48 +52,62 @@ void ShoggothApplication::destroy()
 
 
 
-
 /*
-    Return Role from string
+    Return the name of configuraion file
 */
-Role ShoggothApplication::roleFromString
-(
-    string aRole
-)
+string ShoggothApplication::getConfigFileName()
 {
-    if( aRole == roleToString( ROLE_TEACHER ))  return ROLE_TEACHER;
-    if( aRole == roleToString( ROLE_UI ))       return ROLE_UI;
-    if( aRole == roleToString( ROLE_SERVER ))   return ROLE_SERVER;
-    return ROLE_PROCESSOR;
+    return getCli() -> getString( "config" );
 }
 
 
 
-string ShoggothApplication::roleToString
-(
-    Role aRole
-)
+/*
+    Check update moment of the config file.
+    If file was updated, then the config object is rebuilding.
+*/
+ShoggothApplication* ShoggothApplication::checkConfigUpdate()
 {
-    switch( aRole )
+    string configFileName = getConfigFileName();
+
+    bool cfgUpdated = checkFileUpdate( configFileName, lastConfigUpdate );
+
+    if( cfgUpdated )
     {
-        case ROLE_TEACHER   : return "teacher";
-        case ROLE_UI        : return "ui";
-        case ROLE_SERVER    : return "server";
-        default:
-        case ROLE_PROCESSOR : return "processor";
+        getLog()
+        -> trace( "Load config file" )
+        -> prm( "name", configFileName );
+
+        /* Load config and cli */
+        getConfig()
+        -> clear()
+        -> fromJsonFile( configFileName )
+        -> copyFrom( getCli() );
     }
+
+    configUpdated = configUpdated || cfgUpdated;
+
+    return this;
 }
 
 
 
 /*
-    Run application
+    End of thread
 */
-ShoggothApplication* ShoggothApplication::run()
+ShoggothApplication* ShoggothApplication::onThreadAfter()
 {
-    getLog()
-    -> begin( "Application start" );
+    getSockManager() -> closeHandlesByThread( "" );
+    return this;
+}
 
+
+
+/*
+    Prepare configuration for application running
+*/
+ShoggothApplication* ShoggothApplication::prepareConfiguration()
+{
     /* Output cli arguments */
     getLog() -> begin( "Start CLI parameters" );
     for( int i = 0; i < getCli() -> getCount(); i++ )
@@ -123,61 +123,24 @@ ShoggothApplication* ShoggothApplication::run()
     -> trace( "Config source" )
     -> prm( "file", getConfigFileName() );
 
+    /* Set net attributes for the begining */
     netId = getCli() -> getString( "net_id", "alpha" );
     netVersion = getCli() -> getString( "net_version", "zero" );
-
-    /* Main loop */
-    while( true )
-    {
-        Loop::create( this, netId, netVersion )
-        -> resume()
-        -> loop()
-        -> destroy();
-    }
-
-    getLog() -> end( "Application stop" );
 
     return this;
 }
 
 
 
-string ShoggothApplication::getConfigFileName()
-{
-    return getCli() -> getString( "config" );
-}
+/**********************************************************************
+    Setters and getters
+*/
 
 
 
 /*
-    Check update moment of the config file.
-    If file was updated, then the config object is rebuilding.
+    Return true if config wile was updated
 */
-ShoggothApplication* ShoggothApplication::checkConfigUpdate()
-{
-    string configFileName = getConfigFileName();
-    bool cfgUpdated = checkFileUpdate( configFileName, lastConfigUpdate );
-
-    if( cfgUpdated )
-    {
-        /*
-            Load config and cli
-        */
-        getLog() -> trace( "Load config file" ) -> prm( "name", configFileName );
-
-        getConfig()
-        -> clear()
-        -> fromJsonFile( configFileName )
-        -> copyFrom( getCli() );
-    }
-
-    configUpdated = configUpdated || cfgUpdated;
-
-    return this;
-}
-
-
-
 bool ShoggothApplication::getConfigUpdated()
 {
     bool result = configUpdated;
@@ -187,6 +150,9 @@ bool ShoggothApplication::getConfigUpdated()
 
 
 
+/*
+    Return the sock manager from application
+*/
 SockManager* ShoggothApplication::getSockManager()
 {
     return sockManager;
@@ -195,11 +161,22 @@ SockManager* ShoggothApplication::getSockManager()
 
 
 /*
-    End of thread
+    Return the net identifier
 */
-ShoggothApplication* ShoggothApplication::onThreadAfter()
+string ShoggothApplication::getNetId()
 {
-    getSockManager() -> closeHandlesByThread( "" );
-    return this;
+    return netId;
 }
+
+
+
+
+/*
+    Return the net version
+*/
+string ShoggothApplication::getNetVersion()
+{
+    return netVersion;
+}
+
 

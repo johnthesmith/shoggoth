@@ -98,9 +98,9 @@ void Ui::destroy()
 
 
 
-ShoggothApplication* Ui::getApplication()
+ShoggothRoleApplication* Ui::getApplication()
 {
-    return (ShoggothApplication*) Payload::getApplication();
+    return ( ShoggothRoleApplication* ) Payload::getApplication();
 }
 
 

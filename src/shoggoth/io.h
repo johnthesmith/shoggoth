@@ -171,4 +171,48 @@ class Io: public Result
         */
         Io* disconnect();
 
+
+
+        /******************************************************************************
+            Shoggoth Rpc Client methods
+        */
+
+
+
+        /*
+            Clone net from id and version
+        */
+        Io* cloneNet
+        (
+            string, /* Net id */
+            string, /* Net version */
+            bool    /* True for mutation */
+        );
+
+
+
+        /*
+            Switch net from id and version
+        */
+        Io* switchNet
+        (
+            string, /* Net id */
+            string  /* Net version */
+        );
+
+
+
+        /*
+            Mutate from the parent and switch to a new net
+        */
+        Io* mutateParentAndSwitch();
+
+
+
+        /*
+            Mutate from the current net and switch to a new net
+        */
+        Io* mutateCurrentAndSwitch();
+
 };
+

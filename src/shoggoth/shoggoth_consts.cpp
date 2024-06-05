@@ -36,10 +36,11 @@ std::string taskToString
     switch( a )
     {
         default:
-        case TASK_UNKNOWN   : return "TASK_UNKNOWN";
-        case TASK_UI        : return "TASK_UI";
-        case TASK_PROC      : return "TASK_PROC";
-        case TASK_TEACHER   : return "TASK_TEACHER";
+        case TASK_UNKNOWN   : return "UNKNOWN";
+        case TASK_UI        : return "UI";
+        case TASK_PROC      : return "PROC";
+        case TASK_TEACHER   : return "TEACHER";
+        case TASK_EVOLUTION : return "EVOLUTION";
     }
 }
 

@@ -1,0 +1,11 @@
+{
+    "loopSleepMcs"      :1000000,
+
+    "io":
+    {
+        "source"            :"SERVER",
+        "_net"              :"net/net.json",
+        "host"              :"127.0.0.1",
+        "port"              :11120
+    }
+}

@@ -3,7 +3,7 @@
 
     "tasks":
     {
-        "TASK_PROC":
+        "PROC":
         {
             "enabled"           :true,
             "debug"             :false,
