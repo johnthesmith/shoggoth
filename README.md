@@ -10,9 +10,34 @@ Perhaps it will be *Shoggoth*.
 
 
 
-## Run
+# Shoggoth components
 
-1. Shoggoth is building at Ubuntu 20.04 and more.
+1. Processor - main calculation kernel proces;
+0. Teacher - process for teaching the network;
+0. Evolition - process for network evolition;
+0. Ui - user interface.
+
+
+
+# Requiremetns
+
+1. Ubuntu 20.04 and more;
+0. clang++ 17;
+0. imagemagic libraries.
+
+
+
+# Run
+
+1. You need to clone following projects:
+```
+git clone git@github.com:johnthesmith/lib-core.git ./lib/core
+git clone git@github.com:johnthesmith/lib-graph.git ./lib/graph
+git clone git@github.com:johnthesmith/lib-sock.git ./lib/sock
+git clone git@github.com:johnthesmith/lib-json.git ./lib/json
+git clone git@github.com:johnthesmith/shab.git ./app/shab
+git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
+```
 2. You need to install the following components:
 
 ```
@@ -27,6 +52,29 @@ sudo apt install upx
 ./make
 ```
 
+
+## Deploy the project
+
+1. This is script for project upload.
+
+```
+#!/bin/bash
+# prepare directory
+mkdir ./shoggoth && cd shoggoth
+ 
+# clone repositories
+git clone git@github.com:johnthesmith/lib-core.git ./lib/core
+git clone git@github.com:johnthesmith/lib-graph.git ./lib/graph
+git clone git@github.com:johnthesmith/lib-sock.git ./lib/sock
+git clone git@github.com:johnthesmith/lib-json.git ./lib/json
+git clone git@github.com:johnthesmith/shab.git ./app/shab
+git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
+
+# install lib
+sudo apt install libglfw3 libglfw3-dev libglu1-mesa-dev
+sudo apt install libglew-dev
+sudo apt install graphicsmagick-libmagick-dev-compat
+```
 
 
 
