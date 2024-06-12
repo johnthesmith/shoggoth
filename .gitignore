@@ -11,6 +11,6 @@
 .shab
 ./shoggot
 
-#**/mon
-#**/log
-#**/nerves
+**/mon
+**/log
+**/nerves
