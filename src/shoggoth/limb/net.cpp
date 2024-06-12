@@ -915,7 +915,7 @@ string Net::getNetVersionPath
 )
 {
     aVersion = aVersion == "" ? version : aVersion;
-    return getNetPath( aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetPath( "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ));
 }
 
 

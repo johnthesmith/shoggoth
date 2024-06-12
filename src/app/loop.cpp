@@ -94,8 +94,8 @@ Loop* Loop::processorControl()
             processor   = Processor::create( net );
 
             /* Run server and processor thread */
-            server -> setId( "server_thread" ) -> loop( true );
-            processor -> setId( "processor_thread" ) -> loop( true );
+            server -> setId( net -> getLogPath( "server_thread" )) -> loop( true );
+            processor -> setId( net -> getLogPath( "processor_thread" )) -> loop( true );
         }
 
         /* Apply config */
@@ -220,7 +220,7 @@ Loop* Loop::teacherControl()
         if( teacher == NULL )
         {
             teacher = Teacher::create(( Net* ) net );
-            teacher -> setId( "teacher_thread" ) -> loop( true );
+            teacher -> setId( net -> getLogPath( "teacher_thread" )) -> loop( true );
         }
 
         /* Read batches list and other config */

@@ -137,7 +137,7 @@ void Server::onResume()
         ()
         {
             /* Thread Log create */
-            getApplication() -> createThreadLog( "server_listener" );
+            getApplication() -> createThreadLog( net -> getLogPath( "server_listener" ));
             getLog() -> begin( "Listen thread" ) -> lineEnd();
             /* Up the server lisener and destroy it after close */
             srv -> up();

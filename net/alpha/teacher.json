@@ -16,8 +16,8 @@
             "loopSleepMcs"          :100000,
             "idErrorLayer"          :"error",
             "errorLimit"            :0.0001,
-            "mode"                  :"learning_digits",
-            "-mode"                 :"reading_digits",
+            "mode"                 :"learning_digits",
+            "-mode"                  :"reading_digits",
 
             "batches":
             {
