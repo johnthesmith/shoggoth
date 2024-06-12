@@ -4,13 +4,13 @@
 
 *.ods#
 *.save
-*.log
 *.bin
 *.swp
 *~
 *.o
 .shab
 ./shoggot
-./*/mon/*
-./*/log/*
-./*/nerves/*
+
+#**/mon
+#**/log
+#**/nerves
