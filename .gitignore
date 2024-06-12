@@ -11,6 +11,7 @@
 .shab
 ./shoggot
 
+# Exclude neuronet out files
 **/mon
 **/log
 **/nerves
