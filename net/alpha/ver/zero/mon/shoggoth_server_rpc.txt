@@ -1,0 +1,4 @@
+[90mo [97mstart
+    [90ms [97msource [95mshoggoth_server_rpc[39m
+    [90mi [97mmoment [95m1718223473059500[39m
+    [90ms [97mmomentStr [95m2024-06-12 20:17:53.059502[39m

@@ -11,5 +11,6 @@
 *.o
 .shab
 ./shoggot
-./mon/*
-./log/*
+./*/mon/*
+./*/log/*
+./*/nerves/*
