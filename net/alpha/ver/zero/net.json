@@ -172,20 +172,6 @@
                 "READ_ERRORS"   :[ "UI" ],
                 "WRITE_ERRORS"  :[ "PROC" ]
             }
-        },
-        "change":
-        {
-            "name":"Change",
-            "size":[ 1, 1, 1 ],
-            "position": [ 0.0, -1.0, 2.0 ],
-            "function":"NONE",
-            "actions":
-            {
-                "READ_VALUES"   :[ "UI", "EVOLUTION" ],
-                "WRITE_VALUES"  :[ "PROC" ],
-                "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
-            }
         }
     },
 
@@ -286,24 +272,6 @@
             "bindType"          :"ERROR_TO_VALUE",
             "minWeight"         :1.0,
             "maxWeight"         :1.0
-        },
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"retina",
-            "idTo"              :"change",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
-        },
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"sample",
-            "idTo"              :"change",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
-            "minWeight"         :-1.0,
-            "maxWeight"         :1.0
-        },
+        }
     ]
 }
