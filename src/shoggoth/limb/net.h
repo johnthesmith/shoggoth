@@ -545,4 +545,10 @@ class Net: public Limb
         */
         Net* stat();
 
+
+        Net* requestStat
+        (
+            LayerList*
+        );
+
 };

@@ -273,6 +273,124 @@ Net* Net::requestWeights()
 }
 
 
+
+Net* Net::requestStat
+(
+    LayerList* aStat
+)
+{
+    if( aStat -> getCount() > 0 )
+    {
+        getLog() -> begin( "Read stat" );
+
+        /* Create IO object and define request */
+//        auto io = Io::create( this );
+//        auto request = io -> getRequest();
+//
+//        /* Build request values */
+//        aValues -> loop
+//        (
+//            [ &request ]
+//            ( void* aLayer)
+//            {
+//                auto layer = (Layer*) aLayer;
+//
+//                request
+//                -> setPath( Path{ "values" })
+//                -> pushString( layer -> getId());
+//
+//                return false;
+//            }
+//        );
+
+        /* Build request errors */
+//        aErrors -> loop
+//        (
+//            [ &request ]
+//            ( void* aLayer)
+//            {
+//                auto layer = (Layer*) aLayer;
+//
+//                request
+//                -> setPath( Path{ "errors" })
+//                -> pushString( layer -> getId());
+//
+//                return false;
+//            }
+//        );
+//
+//        /* Call server and apply the answer */
+//        if( io -> call( CMD_READ_LAYERS ) -> isOk() )
+//        {
+//            /* Loop for values */
+//            aValues -> loop
+//            (
+//                [ &io ]
+//                ( void* aLayer)
+//                {
+//                    auto layer = (Layer*) aLayer;
+//
+//                    char* buffer = NULL;
+//                    size_t size = 0;
+//
+//                    io -> getAnswer()
+//                    -> getData
+//                    (
+//                        Path{ "values", layer -> getId() },
+//                        buffer,
+//                        size
+//                    );
+//
+//                    if( buffer != NULL )
+//                    {
+//                        layer -> setValuesFromBuffer( buffer, size );
+//                    }
+//                    return false;
+//                }
+//            );
+//
+//            /* Loop for errors */
+//            aErrors -> loop
+//            (
+//                [ &io ]
+//                ( void* aLayer)
+//                {
+//                    auto layer = (Layer*) aLayer;
+//
+//                    char* buffer = NULL;
+//                    size_t size = 0;
+//
+//
+//                    io -> getAnswer()
+//                    -> getData
+//                    (
+//                        Path{ "errors", layer -> getId() },
+//                        buffer,
+//                        size
+//                    );
+//
+//                    if( buffer != NULL )
+//                    {
+//                        layer -> errorsFromBuffer( buffer, size );
+//                    }
+//                    return false;
+//                }
+//            );
+//        }
+//        else
+//        {
+//            /* Call error */
+//        }
+//
+//        io -> destroy();
+
+        getLog() -> end();
+    }
+    return this;
+}
+
+
+
 /*
     Read value from io
 */
@@ -1395,6 +1513,7 @@ Net* Net::syncWithServer()
         auto readErrors = LayerList::create( this );
         auto writeValues = LayerList::create( this );
         auto writeErrors = LayerList::create( this );
+        auto readStat = LayerList::create( this );
 
         lock();
 
@@ -1406,7 +1525,8 @@ Net* Net::syncWithServer()
                 &readValues,
                 &readErrors,
                 &writeValues,
-                &writeErrors
+                &writeErrors,
+                &readStat
             ]
             ( void* aLayer )
             {
@@ -1464,6 +1584,13 @@ Net* Net::syncWithServer()
                         readErrors -> push( layer );
                     }
                 }
+
+                /* Check application rules stat requests */
+                if( layer -> checkTasks( tasks, READ_STAT ))
+                {
+                    readStat -> push( layer );
+                }
+
                 return false;
             }
         );
@@ -1474,6 +1601,7 @@ Net* Net::syncWithServer()
         writeLayers( writeValues, writeErrors );
         readLayers( readValues, readErrors );
         requestWeights();
+        requestStat( readStat );
 
         /* Unlock Net */
         unlock();
@@ -1483,6 +1611,7 @@ Net* Net::syncWithServer()
         readErrors -> destroy();
         writeValues -> destroy();
         writeErrors -> destroy();
+        readStat -> destroy();
 
         getLog()
         -> end()

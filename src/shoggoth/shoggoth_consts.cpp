@@ -20,6 +20,7 @@ std::string actionToString
         case READ_ERRORS    : return "READ_ERRORS";
         case WRITE_ERRORS   : return "WRITE_ERRORS";
         case SYNC_RESET     : return "SYNC_RESET";
+        case READ_STAT      : return "READ_STAT";
     }
 }
 

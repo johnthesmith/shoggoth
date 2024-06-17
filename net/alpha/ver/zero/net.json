@@ -64,7 +64,8 @@
                 "READ_VALUES"   :[ "PROC", "UI" ],
                 "WRITE_VALUES"  :[ "TEACHER" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -80,7 +81,8 @@
                 "READ_VALUES"   :[ "UI", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "PROC" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -95,7 +97,8 @@
                 "READ_VALUES"   :[ "PROC", "UI", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "TEACHER" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -111,7 +114,8 @@
                 "READ_VALUES"   :[ "UI", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "PROC" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -126,7 +130,8 @@
                 "READ_VALUES"   :[ "UI", "TEACHER", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "PROC" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -141,7 +146,8 @@
                 "READ_VALUES"   :[ "UI", "PROC", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "TEACHER" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
 
@@ -156,7 +162,8 @@
                 "READ_VALUES"   :[ "UI" ],
                 "WRITE_VALUES"  :[ "PROC" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         },
         "error":
@@ -170,7 +177,8 @@
                 "READ_VALUES"   :[ "UI", "TEACHER", "EVOLUTION" ],
                 "WRITE_VALUES"  :[ "PROC", "TEACHER" ],
                 "READ_ERRORS"   :[ "UI" ],
-                "WRITE_ERRORS"  :[ "PROC" ]
+                "WRITE_ERRORS"  :[ "PROC" ],
+                "READ_STAT"     :[ "UI", "EVOLUTION" ]
             }
         }
     },
