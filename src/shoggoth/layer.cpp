@@ -21,9 +21,13 @@ Layer::Layer
     /* Actions */
     actions         = ParamList::create();
 
+    /* Statistics */
+    chartValues      = ChartData::create();
+    chartErrors      = ChartData::create();
+    chartTick        = ChartData::create();
+
     /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
-
 }
 
 
@@ -35,6 +39,11 @@ Layer::~Layer()
 {
     /* Actions destroy */
     actions -> destroy();
+
+    /* Statistics destroy */
+    chartValues -> destroy();
+    chartErrors -> destroy();
+    chartTick -> destroy();
 
     /* Destroy neurons */
     setCount( 0 );
@@ -433,8 +442,10 @@ string Layer::getStorageValueName()
 
 Layer* Layer::calcReset()
 {
+    /* Reset forward and backward */
     forward = -1;
     backward = -1;
+
     return this;
 }
 
@@ -495,7 +506,6 @@ CalcStage Layer::getBackwardStage
         backward == aThreadCount ? CALC_COMPLETE : CALC_START
     );
 }
-
 
 
 
@@ -870,3 +880,55 @@ Layer* Layer::dumpToMon
 }
 
 
+
+/*
+    Calculate statistics for layer
+*/
+Layer* Layer::stat()
+{
+    /* Ink tick count */
+    if( tickCount >= 0)
+    {
+        tickCount ++;
+    }
+
+    chartValues -> push( calcSumValue() );
+    chartErrors -> push( calcSumError() );
+    return this;
+}
+
+
+
+/*
+    Drop tick count
+*/
+Layer* Layer::dropTickCount()
+{
+    /* Push count in to stat chart */
+    chartTick -> push( ( double ) tickCount );
+    /* Reset tick counter */
+    tickCount = 0;
+
+    return this;
+}
+
+
+
+ChartData* Layer::getChartTick()
+{
+    return chartTick;
+}
+
+
+
+ChartData* Layer::getChartValues()
+{
+    return chartValues;
+}
+
+
+
+ChartData* Layer::getChartErrors()
+{
+    return chartErrors;
+}

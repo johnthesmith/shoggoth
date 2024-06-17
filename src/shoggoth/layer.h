@@ -13,7 +13,8 @@
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 
-#include "../../../../lib/core/chart_list.h"
+#include "../../../../lib/core/chart_list.h"    /* TODO remove it*/
+#include "../../../../lib/core/chart_data.h"
 #include "../../../../lib/core/mon.h"
 
 #include "func.h"
@@ -60,7 +61,8 @@ class Layer : public Result
         int             forward                 = -1;
         int             backward                = -1;
 
-        ParamList*      actions                 = NULL;         /* List of actions for layer */
+        /* List of actions for layer */
+        ParamList*      actions                 = NULL;
 
         /*
             Plans of neurons data
@@ -68,6 +70,20 @@ class Layer : public Result
 
         double*         values                  = NULL;
         double*         errors                  = NULL;
+
+        /*
+            Ticker
+            Count tick between two tickerDrop calls
+            Monotone incremental counter
+        */
+        long long int   tickCount               = -1;
+
+        /*
+            Statistics block
+        */
+        ChartData*      chartTick               = NULL;
+        ChartData*      chartValues             = NULL;
+        ChartData*      chartErrors             = NULL;
 
     public:
 
@@ -544,4 +560,23 @@ class Layer : public Result
             Mon*,
             ChartList* achartList
         );
+
+
+        /*
+            Calculate statistics for layer
+        */
+        Layer* stat();
+
+
+
+        /*
+            Drop tick count
+        */
+        Layer* dropTickCount();
+
+
+
+        ChartData* getChartTick();
+        ChartData* getChartValues();
+        ChartData* getChartErrors();
 };

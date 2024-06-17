@@ -283,55 +283,10 @@ LimbProcessor* LimbProcessor::calc()
     -> setDouble( Path{ "config", "maxError" }, maxError )
     ;
 
+    /* Calc begin */
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
         frame++;
-
-//      DUMP TO LOG
-//        getLog() -> begin( "calc" ) -> prm( "frame#", (double)frame );
-//        getLog() -> begin( "layers" );
-//        getLayerList() -> loop
-//        (
-//            []
-//            ( void* item )
-//            {
-//                auto layer = ( Layer* )item;
-//                layer -> dumpToLog();
-//                return false;
-//            }
-//        );
-//        getLog() -> end();
-//        getLog() -> end();
-
-
-//      DUMP TO MON
-//auto monNeurons = Mon::create( net -> getMonPath( "weights_mon.txt" ));
-//        getNerveList() -> loop
-//        (
-//            [ &monNeurons ]
-//            ( void* item )
-//            {
-//                auto nerve = ( Nerve* )item;
-//                nerve -> dumpToMon( monNeurons );
-//                return false;
-//            }
-//        );
-//monNeurons -> flush() -> destroy();
-//auto monValues = Mon::create( net -> getMonPath( "values.txt" ));
-//auto monErrors = Mon::create( net -> getMonPath( "errors_mon.txt" ));
-//        getLayerList() -> loop
-//        (
-//            [ &monValues, &monErrors ]
-//            ( void* item )
-//            {
-//                auto layer = ( Layer* )item;
-//                layer -> dumpToMon( monValues, monErrors );
-//                return false;
-//            }
-//        );
-//monValues -> flush() -> destroy();
-//monErrors -> flush() -> destroy();
-
 
         /* Set learning speed from net config */
         net -> lock();
@@ -364,7 +319,6 @@ LimbProcessor* LimbProcessor::calc()
         );
 
         net
-
         /* Upload start values from Net */
         -> swapValuesAndErrors
         (
@@ -382,7 +336,13 @@ LimbProcessor* LimbProcessor::calc()
         )
 
         /* Load selected weights to net from this limb */
-        -> loadWeightsFrom( this );
+        -> loadWeightsFrom( this )
+
+        /* Write stat for Net */
+        -> stat()
+        ;
+
+
 
         /* Reset calc stages for all layers */
         calcReset();
@@ -396,6 +356,8 @@ LimbProcessor* LimbProcessor::calc()
         /* Drop learing mode flag */
         learning = false;
     }
+
+
 
     Layer* layer = NULL;
 

@@ -182,6 +182,17 @@ class ShoggothRpcServer : public RpcServer
 
 
 
+        /*
+            Drop layer tick and write it in to stat
+        */
+        ShoggothRpcServer* dropLayerTick
+        (
+            ParamList*,
+            ParamList*
+        );
+
+
+
 
         /*
             Remote host send nerve weights data
@@ -202,4 +213,19 @@ class ShoggothRpcServer : public RpcServer
             ParamList*, /* Arguments */
             ParamList*  /* Results */
         );
+
+
+
+        /*
+            Remote host request statistics for the layer
+        */
+        ShoggothRpcServer* readLayerStat
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
 };
+

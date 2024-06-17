@@ -110,6 +110,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_WRITE_LAYERS       :writeLayers( aArguments, aResults); break;
         case CMD_READ_LAYERS        :readLayers( aArguments, aResults); break;
         case CMD_REQUEST_WEIGHTS    :requestWeights( aArguments, aResults); break;
+        case CMD_DROP_LAYER_TICK    :dropLayerTick( aArguments, aResults); break;
+        case CMD_READ_LAYER_STAT    :readLayerStat( aArguments, aResults); break;
 
 //        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
 //        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
@@ -549,6 +551,98 @@ ShoggothRpcServer* ShoggothRpcServer::requestWeights
     return this;
 }
 
+
+
+/*
+    Drop layer tick and write it in to stat
+*/
+ShoggothRpcServer* ShoggothRpcServer::dropLayerTick
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    aResults -> copyFrom( aArguments );
+
+    auto layerId = aResults -> getString( "layerId" );
+    auto layer = net -> getLayerList() -> getById( layerId );
+
+    if( layer != NULL )
+    {
+        layer -> dropTickCount();
+        setAnswerResult( aResults, RESULT_OK );
+    }
+    else
+    {
+        setAnswerResult( aResults, "LayerNotFound" );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Read layers statistics
+
+    arguments
+        layerId - layer id
+        chartType - type of chart:
+            TICK
+            ERROR
+            VALUE
+*/
+ShoggothRpcServer* ShoggothRpcServer::readLayerStat
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    aResults -> copyFrom( aArguments );
+
+    auto layerId = aResults -> getString( "layerId" );
+    auto layer = net -> getLayerList() -> getById( layerId );
+    auto chartType = aResults -> getString( "chartType" );
+
+    if( layer != NULL )
+    {
+        auto buffer = BufferD1::create();
+
+        if( chartType == "TICK" )
+        {
+            layer -> getChartTick() -> toBuffer( buffer );
+        }
+        else
+        {
+            if( chartType == "ERROR" )
+            {
+                layer -> getChartErrors() -> toBuffer( buffer );
+            }
+            else
+            {
+                layer -> getChartValues() -> toBuffer( buffer );
+            }
+        }
+
+        aResults
+        -> setPath( Path{ "data" })
+        -> setData
+        (
+            layer -> getId(),
+            buffer -> getMemBuffer(),
+            buffer -> getMemSize()
+        );
+
+        /* Destroy chart buffer after toBuffer call */
+        buffer -> destroy();
+    }
+    else
+    {
+        setAnswerResult( aResults, "LayerNotFound" );
+    }
+
+    return this;
+}
 
 
 /*

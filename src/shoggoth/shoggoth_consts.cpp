@@ -66,6 +66,8 @@ std::string commandToString
         case CMD_REQUEST_WEIGHTS: return "REQUEST_WEIGHTS";
         case CMD_WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
         case CMD_READ_WEIGHTS   : return "READ_WEIGHTS";
+        case CMD_DROP_LAYER_TICK: return "CMD_DROP_LAYER_TICK";
+        case CMD_READ_LAYER_STAT: return "CMD_READ_LAYER_STAT";
     }
 }
 

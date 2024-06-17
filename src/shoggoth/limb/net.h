@@ -538,4 +538,11 @@ class Net: public Limb
             Return parent net version
         */
         string getParentVersion();
+
+
+        /*
+            Calculate statistics for layers of the net
+        */
+        Net* stat();
+
 };

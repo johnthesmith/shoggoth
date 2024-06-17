@@ -4,6 +4,7 @@ OBJECT_PATH/box3d.o
 OBJECT_PATH/buffer_to_hex.o
 OBJECT_PATH/camera.o
 OBJECT_PATH/chain_d1.o
+OBJECT_PATH/buffer_d1.o
 OBJECT_PATH/chain_item_d1.o
 OBJECT_PATH/chain_item.o
 OBJECT_PATH/chain.o

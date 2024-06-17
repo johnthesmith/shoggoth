@@ -101,6 +101,9 @@ enum Command
     CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
     CMD_REQUEST_WEIGHTS,/* Request weights for one neuron */
 
+    CMD_DROP_LAYER_TICK,/* Drop layer tick counter */
+    CMD_READ_LAYER_STAT, /* Server return the layer statistics */
+
     CMD_WRITE_WEIGHTS,  /* Server receive  */
     CMD_READ_WEIGHTS    /* Server return the layer  */
 };

@@ -1644,4 +1644,19 @@ bool Net::isVersionChanged()
 
 
 
-
+/*
+    Calculate statistics for layers of the net
+*/
+Net* Net::stat()
+{
+    getLayerList() -> loop
+    (
+        []
+        ( void* iLayer )
+        {
+            (( Layer* ) iLayer ) -> stat();
+            return false;
+        }
+    );
+    return this;
+}
