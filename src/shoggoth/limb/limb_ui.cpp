@@ -167,8 +167,8 @@ LimbUi* LimbUi::drawLayer
         /* Draw labels */
         aScene
         -> color( Rgba( RGBA_WHITE ))
-        -> setTextTop( POINT_3D_TOP )
-        -> setTextRight( POINT_3D_RIGHT )
+        -> setTextTop()
+        -> setTextRight()
         -> setTextPosition( textPoint )
         -> setTextSize( 0.1 )
         -> setTextBaseLine( BASE_LINE_TOP )
