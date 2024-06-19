@@ -31303,3 +31303,1751 @@
 [90m  180747 [94m~ [37m[94mProcess paused
 [90m 2530587 [94m~ [37m[94mMouse event[90m[string [37mname [95mleft down[90m][94m[90m[int [37mmode [95m0[90m][94m
 [90m  267450 [94m~ [37m[94mMouse event[90m[string [37mname [95mleft up[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mui_thread[90m][94m[90m[string [37mthread id [95m138147845371584[90m][94m
+[90m   79307 [94m~ [37m[94mglfl initialize
+[90m      71 [94m~ [37m[94mCreate window
+[90m  297329 [33m> [37m[33mBuild font 
+[90m     107 [94m~ [37m  [94m[90m[string [37mFont name [95m/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf[90m][94m[90m[string [37mCharset [95m !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ[90m][94m
+[90m      27 [94m~ [37m  [94mInfo[90m[int [37mSymbols count [95m171[90m][94m[90m[int [37mGliph columns count [95m14[90m][94m[90m[int [37mGliph rows count [95m13[90m][94m
+[90m  485132 [33m< [37m[33m[90m485266[33m
+[90m      67 [94m~ [37m[94mProcess paused
+[90m  180150 [94m~ [37m[94mProcess paused
+[90m18885194 [94m~ [37m[94mMouse event[90m[string [37mname [95mright down[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m     189 [94m~ [37m[94mMouse right drag begin[90m[double [37mx [95m[32m422.0000000000[95m[90m][94m[90m[double [37my [95m[32m320.0000000000[95m[90m][94m[90m[int [37mleft shift [95m0[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m 1082502 [94m~ [37m[94mMouse event[90m[string [37mname [95mright up[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m     120 [94m~ [37m[94mMouse right drag end[90m[double [37mx [95m[32m393.0000000000[95m[90m][94m[90m[double [37my [95m[32m353.0000000000[95m[90m][94m[90m[int [37mleft shift [95m0[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m00351497 [94m~ [37m[94mProcess paused
+[90m  274959 [94m~ [37m[94mCreate layer[90m[string [37mid [95mretina[90m][94m
+[90m      28 [94m~ [37m[94m... it was a layer ui
+[90m      16 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcortex_1[90m][94m
+[90m      15 [94m~ [37m[94m... it was a layer ui
+[90m      16 [94m~ [37m[94mCreate layer[90m[string [37mid [95mbias[90m][94m
+[90m      18 [94m~ [37m[94m... it was a layer ui
+[90m      23 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcortex_2[90m][94m
+[90m      40 [94m~ [37m[94m... it was a layer ui
+[90m      17 [94m~ [37m[94mCreate layer[90m[string [37mid [95mresult[90m][94m
+[90m      17 [94m~ [37m[94m... it was a layer ui
+[90m      13 [94m~ [37m[94mCreate layer[90m[string [37mid [95msample[90m][94m
+[90m      14 [94m~ [37m[94m... it was a layer ui
+[90m      15 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcommand[90m][94m
+[90m      13 [94m~ [37m[94m... it was a layer ui
+[90m      14 [94m~ [37m[94mCreate layer[90m[string [37mid [95merror[90m][94m
+[90m      22 [94m~ [37m[94m... it was a layer ui
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      14 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      15 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      87 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      15 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      36 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      26 [33m> [37m[33mLayer resize[90m[string [37mid [95mretina[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m784[90m][33m
+[90m      19 [33m< [37m[33m[90m19[33m
+[90m      35 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m      15 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m784[90m][94m
+[90m      33 [33m> [37m[33mLayer resize[90m[string [37mid [95mcortex_1[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m16[90m][33m
+[90m      17 [33m< [37m[33m[90m17[33m
+[90m      13 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      14 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m16[90m][94m
+[90m     676 [33m> [37m[33mLayer resize[90m[string [37mid [95mbias[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      28 [33m< [37m[33m[90m28[33m
+[90m      14 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      14 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      68 [33m> [37m[33mLayer resize[90m[string [37mid [95mcortex_2[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m16[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m      13 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      13 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m16[90m][94m
+[90m      17 [33m> [37m[33mLayer resize[90m[string [37mid [95mresult[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m10[90m][33m
+[90m      26 [33m< [37m[33m[90m26[33m
+[90m      14 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      13 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m10[90m][94m
+[90m      16 [33m> [37m[33mLayer resize[90m[string [37mid [95msample[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m10[90m][33m
+[90m      15 [33m< [37m[33m[90m15[33m
+[90m      13 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      14 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m10[90m][94m
+[90m      43 [33m> [37m[33mLayer resize[90m[string [37mid [95mcommand[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      14 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      15 [33m< [37m[33m[90m15[33m
+[90m      14 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      17 [33m> [37m[33mLayer resize[90m[string [37mid [95merror[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      15 [33m< [37m[33m[90m15[33m
+[90m      14 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      14 [33m< [37m[33m[90m14[33m
+[90m      26 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      58 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     183 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      17 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      23 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      20 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      14 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      13 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      13 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      13 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m   13245 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    1020 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      90 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      48 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      18 [33m< [37m[33m[90m18[33m
+[90m     103 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      58 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      18 [33m< [37m[33m[90m18[33m
+[90m      68 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      17 [33m< [37m[33m[90m17[33m
+[90m      48 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      23 [33m< [37m[33m[90m23[33m
+[90m     596 [94m~ [37m[94mProcess paused
+[90m   11170 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      27 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      20 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      26 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      18 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      30 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      56 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m      86 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      17 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m    3275 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      42 [33m< [37m[33m[90m42[33m
+[90m     122 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      18 [33m< [37m[33m[90m18[33m
+[90m      54 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      17 [33m< [37m[33m[90m17[33m
+[90m      42 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      41 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m      48 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      84 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      28 [33m< [37m[33m[90m28[33m
+[90m     304 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      78 [33m< [37m[33m[90m78[33m
+[90m39241503 [94m~ [37m[94mProcess paused
+[90m  271177 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      28 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      24 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      24 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      25 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      58 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     120 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      27 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      23 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      32 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      23 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      29 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     272 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      45 [33m< [37m[33m[90m45[33m
+[90m    4323 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      66 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      47 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      18 [33m< [37m[33m[90m18[33m
+[90m      47 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      26 [33m< [37m[33m[90m26[33m
+[90m      47 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      19 [33m< [37m[33m[90m19[33m
+[90m      67 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      29 [33m< [37m[33m[90m29[33m
+[90m      49 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      19 [33m< [37m[33m[90m19[33m
+[90m    1085 [94m~ [37m[94mProcess paused
+[90m    1924 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      29 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      15 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      15 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      16 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      38 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m      64 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      17 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      23 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      14 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     240 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      28 [33m< [37m[33m[90m28[33m
+[90m     109 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m      41 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m      37 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      17 [33m< [37m[33m[90m17[33m
+[90m      38 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      15 [33m< [37m[33m[90m15[33m
+[90m     928 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      87 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      17 [33m< [37m[33m[90m17[33m
+[90m      45 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      16 [33m< [37m[33m[90m16[33m
+[90m80950828 [94m~ [37m[94mProcess paused
+[90m  173436 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      73 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      54 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      50 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      53 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      48 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      50 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      53 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      49 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      53 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m     108 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     218 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      52 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      47 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      50 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      48 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      46 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      46 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     555 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m     156 [33m< [37m[33m[90m156[33m
+[90m     299 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      92 [33m< [37m[33m[90m92[33m
+[90m     137 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     126 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     359 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     233 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     134 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     124 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m 5556101 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     109 [33m< [37m[33m[90m109[33m
+[90m     240 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      34 [33m< [37m[33m[90m34[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      82 [33m< [37m[33m[90m82[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     112 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      34 [33m< [37m[33m[90m34[33m
+[90m     102 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      46 [33m< [37m[33m[90m46[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      40 [33m< [37m[33m[90m40[33m
+[90m     108 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      39 [33m< [37m[33m[90m39[33m
+[90m   14884 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m      74 [33m< [37m[33m[90m74[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      53 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     194 [33m< [37m[33m[90m194[33m
+[90m      98 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      75 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      58 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      23 [33m< [37m[33m[90m23[33m
+[90m      55 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      31 [33m< [37m[33m[90m31[33m
+[90m      66 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m  191190 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     179 [33m< [37m[33m[90m179[33m
+[90m     293 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      73 [33m< [37m[33m[90m73[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m     107 [33m< [37m[33m[90m107[33m
+[90m     138 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m  291307 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     185 [33m< [37m[33m[90m185[33m
+[90m     302 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     141 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     166 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m    1898 [33m< [37m[33m[90m1898[33m
+[90m     212 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      62 [33m< [37m[33m[90m62[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m  505561 [94m~ [37m[94mMouse event[90m[string [37mname [95mright down[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m      62 [94m~ [37m[94mMouse right drag begin[90m[double [37mx [95m[32m232.0000000000[95m[90m][94m[90m[double [37my [95m[32m637.0000000000[95m[90m][94m[90m[int [37mleft shift [95m0[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m    7895 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     639 [33m< [37m[33m[90m639[33m
+[90m     558 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     470 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      87 [33m< [37m[33m[90m87[33m
+[90m     171 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     139 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     154 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     158 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     165 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m   20850 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     288 [33m< [37m[33m[90m288[33m
+[90m    1288 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      76 [33m< [37m[33m[90m76[33m
+[90m     776 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     202 [33m< [37m[33m[90m202[33m
+[90m     173 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      82 [33m< [37m[33m[90m82[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   10229 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     524 [33m< [37m[33m[90m524[33m
+[90m     732 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     222 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     124 [33m< [37m[33m[90m124[33m
+[90m     446 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     613 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     377 [33m< [37m[33m[90m377[33m
+[90m    1656 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      72 [33m< [37m[33m[90m72[33m
+[90m     147 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    9820 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     201 [33m< [37m[33m[90m201[33m
+[90m     793 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     145 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      73 [33m< [37m[33m[90m73[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   16226 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     284 [33m< [37m[33m[90m284[33m
+[90m     394 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     147 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      79 [33m< [37m[33m[90m79[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     261 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      97 [33m< [37m[33m[90m97[33m
+[90m     144 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     106 [33m< [37m[33m[90m106[33m
+[90m    8819 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     232 [33m< [37m[33m[90m232[33m
+[90m     619 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      70 [33m< [37m[33m[90m70[33m
+[90m     383 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m    1114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     328 [33m< [37m[33m[90m328[33m
+[90m     604 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     411 [33m< [37m[33m[90m411[33m
+[90m    1797 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      85 [33m< [37m[33m[90m85[33m
+[90m     186 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     154 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m  170228 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     173 [33m< [37m[33m[90m173[33m
+[90m     564 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    5854 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     185 [33m< [37m[33m[90m185[33m
+[90m     301 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     143 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     113 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m   30665 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     226 [33m< [37m[33m[90m226[33m
+[90m     341 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     174 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     467 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      77 [33m< [37m[33m[90m77[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m   14394 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     183 [33m< [37m[33m[90m183[33m
+[90m     391 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     151 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     137 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     157 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     176 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m   14874 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     192 [33m< [37m[33m[90m192[33m
+[90m     355 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     232 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     195 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      80 [33m< [37m[33m[90m80[33m
+[90m     126 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   23832 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     271 [33m< [37m[33m[90m271[33m
+[90m     492 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      96 [33m< [37m[33m[90m96[33m
+[90m     501 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     305 [33m< [37m[33m[90m305[33m
+[90m     322 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     363 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     208 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     571 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     287 [33m< [37m[33m[90m287[33m
+[90m  166214 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     148 [33m< [37m[33m[90m148[33m
+[90m     230 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      33 [33m< [37m[33m[90m33[33m
+[90m      83 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m      73 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m      72 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      31 [33m< [37m[33m[90m31[33m
+[90m      73 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m      75 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m      92 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      31 [33m< [37m[33m[90m31[33m
+[90m   74212 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     201 [33m< [37m[33m[90m201[33m
+[90m     383 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     187 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     246 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      43 [33m< [37m[33m[90m43[33m
+[90m     111 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      42 [33m< [37m[33m[90m42[33m
+[90m      99 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      40 [33m< [37m[33m[90m40[33m
+[90m      97 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      40 [33m< [37m[33m[90m40[33m
+[90m      95 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      39 [33m< [37m[33m[90m39[33m
+[90m   11290 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     476 [33m< [37m[33m[90m476[33m
+[90m     885 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     147 [33m< [37m[33m[90m147[33m
+[90m     582 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     196 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      44 [33m< [37m[33m[90m44[33m
+[90m     343 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     155 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      46 [33m< [37m[33m[90m46[33m
+[90m     200 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      42 [33m< [37m[33m[90m42[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      41 [33m< [37m[33m[90m41[33m
+[90m  174480 [94m~ [37m[94mMouse event[90m[string [37mname [95mright up[90m][94m[90m[int [37mmode [95m1[90m][94m
+[90m      64 [94m~ [37m[94mMouse right drag end[90m[double [37mx [95m[32m384.0000000000[95m[90m][94m[90m[double [37my [95m[32m306.0000000000[95m[90m][94m[90m[int [37mleft shift [95m1[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m     188 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     182 [33m< [37m[33m[90m182[33m
+[90m     299 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     185 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m  266429 [94m~ [37m[94mMouse event[90m[string [37mname [95mright down[90m][94m[90m[int [37mmode [95m1[90m][94m
+[90m      69 [94m~ [37m[94mMouse right drag begin[90m[double [37mx [95m[32m277.0000000000[95m[90m][94m[90m[double [37my [95m[32m619.0000000000[95m[90m][94m[90m[int [37mleft shift [95m1[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m   69842 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     270 [33m< [37m[33m[90m270[33m
+[90m     351 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     244 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     212 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     189 [33m< [37m[33m[90m189[33m
+[90m   14512 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     206 [33m< [37m[33m[90m206[33m
+[90m     467 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     107 [33m< [37m[33m[90m107[33m
+[90m     220 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m   14706 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     201 [33m< [37m[33m[90m201[33m
+[90m     350 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     156 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     200 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     113 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m  165182 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     197 [33m< [37m[33m[90m197[33m
+[90m     571 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     165 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     140 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m    6508 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     174 [33m< [37m[33m[90m174[33m
+[90m     360 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     144 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m    4672 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     200 [33m< [37m[33m[90m200[33m
+[90m     654 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     105 [33m< [37m[33m[90m105[33m
+[90m     144 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     152 [33m< [37m[33m[90m152[33m
+[90m     146 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     745 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     334 [33m< [37m[33m[90m334[33m
+[90m    1003 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     209 [33m< [37m[33m[90m209[33m
+[90m     484 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m     179 [33m< [37m[33m[90m179[33m
+[90m     281 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m    9984 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     180 [33m< [37m[33m[90m180[33m
+[90m     363 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     133 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    5794 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     411 [33m< [37m[33m[90m411[33m
+[90m     643 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     193 [33m< [37m[33m[90m193[33m
+[90m     297 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     111 [33m< [37m[33m[90m111[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     469 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      77 [33m< [37m[33m[90m77[33m
+[90m     173 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     202 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      94 [33m< [37m[33m[90m94[33m
+[90m     173 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m   17076 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     186 [33m< [37m[33m[90m186[33m
+[90m     310 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m    2704 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     146 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m    7373 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m   21484 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1535 [33m< [37m[33m[90m1535[33m
+[90m     449 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     109 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      44 [33m< [37m[33m[90m44[33m
+[90m     143 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     228 [33m< [37m[33m[90m228[33m
+[90m     231 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     161 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      95 [33m< [37m[33m[90m95[33m
+[90m     165 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      44 [33m< [37m[33m[90m44[33m
+[90m  168671 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     229 [33m< [37m[33m[90m229[33m
+[90m     551 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      71 [33m< [37m[33m[90m71[33m
+[90m     158 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     167 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     130 [33m< [37m[33m[90m130[33m
+[90m     146 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     132 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     301 [33m< [37m[33m[90m301[33m
+[90m    7079 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     247 [33m< [37m[33m[90m247[33m
+[90m     353 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      74 [33m< [37m[33m[90m74[33m
+[90m     141 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     243 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      70 [33m< [37m[33m[90m70[33m
+[90m     200 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     145 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   76954 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     571 [33m< [37m[33m[90m571[33m
+[90m    2269 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     190 [33m< [37m[33m[90m190[33m
+[90m     348 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     123 [33m< [37m[33m[90m123[33m
+[90m     137 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     144 [33m< [37m[33m[90m144[33m
+[90m     429 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     212 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     176 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     191 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m  171530 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     158 [33m< [37m[33m[90m158[33m
+[90m     221 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      36 [33m< [37m[33m[90m36[33m
+[90m      96 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m      78 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      36 [33m< [37m[33m[90m36[33m
+[90m      79 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m      82 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      33 [33m< [37m[33m[90m33[33m
+[90m      81 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m      80 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      33 [33m< [37m[33m[90m33[33m
+[90m    1529 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     146 [33m< [37m[33m[90m146[33m
+[90m     283 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      37 [33m< [37m[33m[90m37[33m
+[90m     104 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      37 [33m< [37m[33m[90m37[33m
+[90m     109 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      37 [33m< [37m[33m[90m37[33m
+[90m     100 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      35 [33m< [37m[33m[90m35[33m
+[90m      87 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      36 [33m< [37m[33m[90m36[33m
+[90m      93 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      35 [33m< [37m[33m[90m35[33m
+[90m      92 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      45 [33m< [37m[33m[90m45[33m
+[90m   18158 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     329 [33m< [37m[33m[90m329[33m
+[90m     704 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     208 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     213 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      32 [33m< [37m[33m[90m32[33m
+[90m     101 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m      81 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m      68 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      72 [33m< [37m[33m[90m72[33m
+[90m    5845 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     116 [33m< [37m[33m[90m116[33m
+[90m     180 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      30 [33m< [37m[33m[90m30[33m
+[90m      80 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      29 [33m< [37m[33m[90m29[33m
+[90m      71 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      29 [33m< [37m[33m[90m29[33m
+[90m      74 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      31 [33m< [37m[33m[90m31[33m
+[90m      68 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      38 [33m< [37m[33m[90m38[33m
+[90m      69 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      71 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      34 [33m< [37m[33m[90m34[33m
+[90m   24752 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     370 [33m< [37m[33m[90m370[33m
+[90m     341 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     245 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      83 [33m< [37m[33m[90m83[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m      91 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m     222 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      95 [33m< [37m[33m[90m95[33m
+[90m      77 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      30 [33m< [37m[33m[90m30[33m
+[90m      59 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      26 [33m< [37m[33m[90m26[33m
+[90m   14690 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     180 [33m< [37m[33m[90m180[33m
+[90m     556 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     113 [33m< [37m[33m[90m113[33m
+[90m     491 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     107 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      28 [33m< [37m[33m[90m28[33m
+[90m      73 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     200 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      40 [33m< [37m[33m[90m40[33m
+[90m      84 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      72 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m   14515 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     244 [33m< [37m[33m[90m244[33m
+[90m     537 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     181 [33m< [37m[33m[90m181[33m
+[90m     284 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      91 [33m< [37m[33m[90m91[33m
+[90m     100 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      30 [33m< [37m[33m[90m30[33m
+[90m      75 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m     256 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m      82 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      61 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m  175303 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     182 [33m< [37m[33m[90m182[33m
+[90m     294 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     126 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     116 [33m< [37m[33m[90m116[33m
+[90m     147 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      74 [33m< [37m[33m[90m74[33m
+[90m     121 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      82 [33m< [37m[33m[90m82[33m
+[90m    4125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     430 [33m< [37m[33m[90m430[33m
+[90m    1408 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     188 [33m< [37m[33m[90m188[33m
+[90m     489 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     186 [33m< [37m[33m[90m186[33m
+[90m     396 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     246 [33m< [37m[33m[90m246[33m
+[90m     207 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     135 [33m< [37m[33m[90m135[33m
+[90m     403 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      69 [33m< [37m[33m[90m69[33m
+[90m     204 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m    2361 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     177 [33m< [37m[33m[90m177[33m
+[90m     297 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     113 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   32672 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     397 [33m< [37m[33m[90m397[33m
+[90m     618 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     254 [33m< [37m[33m[90m254[33m
+[90m     742 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     609 [33m< [37m[33m[90m609[33m
+[90m    2432 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     123 [33m< [37m[33m[90m123[33m
+[90m     291 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      69 [33m< [37m[33m[90m69[33m
+[90m     199 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m    3836 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1020 [33m< [37m[33m[90m1020[33m
+[90m    3770 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     189 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     139 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m   11295 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1765 [33m< [37m[33m[90m1765[33m
+[90m    2055 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     222 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     187 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     101 [33m< [37m[33m[90m101[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   15339 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     216 [33m< [37m[33m[90m216[33m
+[90m     527 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     179 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     244 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     159 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      72 [33m< [37m[33m[90m72[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m  172568 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     286 [33m< [37m[33m[90m286[33m
+[90m     352 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     145 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     106 [33m< [37m[33m[90m106[33m
+[90m     489 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      82 [33m< [37m[33m[90m82[33m
+[90m     158 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     248 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m    2325 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     172 [33m< [37m[33m[90m172[33m
+[90m     384 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     185 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     157 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m    7474 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     214 [33m< [37m[33m[90m214[33m
+[90m     305 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     175 [33m< [37m[33m[90m175[33m
+[90m     151 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     151 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m    8226 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     203 [33m< [37m[33m[90m203[33m
+[90m     382 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     165 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m    4538 [33m< [37m[33m[90m4538[33m
+[90m     223 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m     108 [33m< [37m[33m[90m108[33m
+[90m     152 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m    8129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1308 [33m< [37m[33m[90m1308[33m
+[90m    6190 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      91 [33m< [37m[33m[90m91[33m
+[90m     257 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     245 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   11988 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     240 [33m< [37m[33m[90m240[33m
+[90m     439 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     277 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     143 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m    4412 [33m< [37m[33m[90m4412[33m
+[90m     416 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     268 [33m< [37m[33m[90m268[33m
+[90m     539 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     111 [33m< [37m[33m[90m111[33m
+[90m     226 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     202 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      80 [33m< [37m[33m[90m80[33m
+[90m    4002 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     616 [33m< [37m[33m[90m616[33m
+[90m    1258 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     135 [33m< [37m[33m[90m135[33m
+[90m     152 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     410 [33m< [37m[33m[90m410[33m
+[90m     269 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     180 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      70 [33m< [37m[33m[90m70[33m
+[90m     197 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      69 [33m< [37m[33m[90m69[33m
+[90m     281 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     152 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m   11769 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     378 [33m< [37m[33m[90m378[33m
+[90m     811 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     186 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     213 [33m< [37m[33m[90m213[33m
+[90m     220 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     104 [33m< [37m[33m[90m104[33m
+[90m     251 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m      98 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     105 [33m< [37m[33m[90m105[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      60 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m  174795 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     182 [33m< [37m[33m[90m182[33m
+[90m     293 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     912 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      70 [33m< [37m[33m[90m70[33m
+[90m     164 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     157 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     140 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m    4924 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     262 [33m< [37m[33m[90m262[33m
+[90m     299 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     113 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   39319 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    5149 [33m< [37m[33m[90m5149[33m
+[90m     396 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     310 [33m< [37m[33m[90m310[33m
+[90m     316 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     163 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     115 [33m< [37m[33m[90m115[33m
+[90m     242 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m     414 [33m< [37m[33m[90m414[33m
+[90m     205 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m    5941 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     220 [33m< [37m[33m[90m220[33m
+[90m     351 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      64 [33m< [37m[33m[90m64[33m
+[90m     166 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     144 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     439 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      70 [33m< [37m[33m[90m70[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   10377 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1990 [33m< [37m[33m[90m1990[33m
+[90m     360 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     155 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     139 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     593 [33m< [37m[33m[90m593[33m
+[90m     230 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m   21204 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m    1924 [33m< [37m[33m[90m1924[33m
+[90m   12243 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      73 [33m< [37m[33m[90m73[33m
+[90m     151 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     133 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     131 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      79 [33m< [37m[33m[90m79[33m
+[90m     138 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      78 [33m< [37m[33m[90m78[33m
+[90m     140 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m  158640 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     183 [33m< [37m[33m[90m183[33m
+[90m     305 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     133 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    1994 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     305 [33m< [37m[33m[90m305[33m
+[90m     307 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     123 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m    7169 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     178 [33m< [37m[33m[90m178[33m
+[90m     297 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    3590 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     536 [33m< [37m[33m[90m536[33m
+[90m     815 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     122 [33m< [37m[33m[90m122[33m
+[90m     151 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     586 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      75 [33m< [37m[33m[90m75[33m
+[90m     187 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     333 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     325 [33m< [37m[33m[90m325[33m
+[90m     186 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m   29876 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     658 [33m< [37m[33m[90m658[33m
+[90m     933 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      73 [33m< [37m[33m[90m73[33m
+[90m     221 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     155 [33m< [37m[33m[90m155[33m
+[90m     337 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     167 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     409 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      91 [33m< [37m[33m[90m91[33m
+[90m     207 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      77 [33m< [37m[33m[90m77[33m
+[90m     165 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m   10646 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     640 [33m< [37m[33m[90m640[33m
+[90m    1006 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m     174 [33m< [37m[33m[90m174[33m
+[90m     376 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     209 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     185 [33m< [37m[33m[90m185[33m
+[90m     347 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      76 [33m< [37m[33m[90m76[33m
+[90m     161 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m   13030 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     577 [33m< [37m[33m[90m577[33m
+[90m     352 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m    4107 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m     178 [33m< [37m[33m[90m178[33m
+[90m     218 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     132 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     241 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m     323 [33m< [37m[33m[90m323[33m
+[90m     683 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m     471 [33m< [37m[33m[90m471[33m
+[90m     427 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     238 [33m< [37m[33m[90m238[33m
+[90m  175805 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     181 [33m< [37m[33m[90m181[33m
+[90m     293 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      69 [33m< [37m[33m[90m69[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     174 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     163 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m    1876 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     267 [33m< [37m[33m[90m267[33m
+[90m     331 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     113 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    7110 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     203 [33m< [37m[33m[90m203[33m
+[90m     361 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     173 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m     193 [33m< [37m[33m[90m193[33m
+[90m     234 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      82 [33m< [37m[33m[90m82[33m
+[90m     159 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      86 [33m< [37m[33m[90m86[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m    6241 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     196 [33m< [37m[33m[90m196[33m
+[90m     785 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      76 [33m< [37m[33m[90m76[33m
+[90m     186 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     162 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     145 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m   42900 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     217 [33m< [37m[33m[90m217[33m
+[90m     334 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     145 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      64 [33m< [37m[33m[90m64[33m
+[90m     204 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   14879 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     198 [33m< [37m[33m[90m198[33m
+[90m     340 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     152 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      59 [33m< [37m[33m[90m59[33m
+[90m     202 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     136 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     114 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     146 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m   14960 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     214 [33m< [37m[33m[90m214[33m
+[90m     402 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      62 [33m< [37m[33m[90m62[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      67 [33m< [37m[33m[90m67[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      47 [33m< [37m[33m[90m47[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m  164931 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     899 [33m< [37m[33m[90m899[33m
+[90m     515 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      64 [33m< [37m[33m[90m64[33m
+[90m     135 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     147 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      68 [33m< [37m[33m[90m68[33m
+[90m     148 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      89 [33m< [37m[33m[90m89[33m
+[90m     150 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      64 [33m< [37m[33m[90m64[33m
+[90m     141 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m  262121 [94m~ [37m[94mMouse event[90m[string [37mname [95mright up[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m      66 [94m~ [37m[94mMouse right drag end[90m[double [37mx [95m[32m429.0000000000[95m[90m][94m[90m[double [37my [95m[32m264.0000000000[95m[90m][94m[90m[int [37mleft shift [95m0[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m     195 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     176 [33m< [37m[33m[90m176[33m
+[90m     289 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     131 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     115 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     177 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      87 [33m< [37m[33m[90m87[33m
+[90m     132 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m  263046 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     287 [33m< [37m[33m[90m287[33m
+[90m     381 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     133 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     146 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m     137 [33m< [37m[33m[90m137[33m
+[90m  273040 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     201 [33m< [37m[33m[90m201[33m
+[90m     332 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     142 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     140 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     130 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     131 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m  526785 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     178 [33m< [37m[33m[90m178[33m
+[90m     370 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     338 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     129 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   41225 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     206 [33m< [37m[33m[90m206[33m
+[90m     547 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      63 [33m< [37m[33m[90m63[33m
+[90m     189 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      58 [33m< [37m[33m[90m58[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     131 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     124 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      78 [33m< [37m[33m[90m78[33m
+[90m  223846 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     181 [33m< [37m[33m[90m181[33m
+[90m     326 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      66 [33m< [37m[33m[90m66[33m
+[90m     137 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     127 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      57 [33m< [37m[33m[90m57[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     261 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     144 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m 1328788 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     113 [33m< [37m[33m[90m113[33m
+[90m     274 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      37 [33m< [37m[33m[90m37[33m
+[90m     160 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      34 [33m< [37m[33m[90m34[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      37 [33m< [37m[33m[90m37[33m
+[90m     157 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      45 [33m< [37m[33m[90m45[33m
+[90m     290 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      34 [33m< [37m[33m[90m34[33m
+[90m      67 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      19 [33m< [37m[33m[90m19[33m
+[90m      49 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      20 [33m< [37m[33m[90m20[33m
+[90m   65665 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     262 [33m< [37m[33m[90m262[33m
+[90m     597 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      87 [33m< [37m[33m[90m87[33m
+[90m     159 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     139 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      84 [33m< [37m[33m[90m84[33m
+[90m     174 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     128 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     119 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m  461117 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     246 [33m< [37m[33m[90m246[33m
+[90m     388 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      55 [33m< [37m[33m[90m55[33m
+[90m     134 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     122 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     201 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     118 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m   11393 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mretina[90m][33m
+[90m     185 [33m< [37m[33m[90m185[33m
+[90m     304 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     125 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mbias[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      92 [33m< [37m[33m[90m92[33m
+[90m     148 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mresult[90m][33m
+[90m      51 [33m< [37m[33m[90m51[33m
+[90m     120 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     116 [33m> [37m[33mCalculate neurons screen position[90m[string [37mLayer [95merror[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m 3238782 [94m~ [37m[94mProcess paused
+[90m  340436 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      69 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      55 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m     181 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      53 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      51 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      92 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      58 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      61 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      54 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m     162 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     259 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      88 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      50 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      48 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      49 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      47 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      50 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      58 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      51 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m    9982 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      93 [33m< [37m[33m[90m93[33m
+[90m     306 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      54 [33m< [37m[33m[90m54[33m
+[90m     130 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      76 [33m< [37m[33m[90m76[33m
+[90m     137 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     150 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      53 [33m< [37m[33m[90m53[33m
+[90m     138 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      56 [33m< [37m[33m[90m56[33m
+[90m     160 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      60 [33m< [37m[33m[90m60[33m
+[90m     132 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      74 [33m< [37m[33m[90m74[33m
+[90m   81811 [94m~ [37m[94mProcess paused
+[90m  176407 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m     191 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      61 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      58 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      49 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      48 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      50 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      50 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      49 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      48 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m     164 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     228 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      53 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      46 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      48 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      46 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      47 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     669 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      77 [33m< [37m[33m[90m77[33m
+[90m     289 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     128 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      48 [33m< [37m[33m[90m48[33m
+[90m     139 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      52 [33m< [37m[33m[90m52[33m
+[90m     123 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     191 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m     124 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      50 [33m< [37m[33m[90m50[33m
+[90m     116 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      49 [33m< [37m[33m[90m49[33m
+[90m13152499 [94m~ [37m[94mProcess paused
+[90m    8461 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      57 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m     109 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      93 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      74 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      44 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      48 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      44 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      43 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      43 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      93 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     175 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      45 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      48 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      42 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      71 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      43 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      41 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      40 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      41 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m    5588 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      75 [33m< [37m[33m[90m75[33m
+[90m     788 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      65 [33m< [37m[33m[90m65[33m
+[90m     149 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      45 [33m< [37m[33m[90m45[33m
+[90m     108 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      44 [33m< [37m[33m[90m44[33m
+[90m     106 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      76 [33m< [37m[33m[90m76[33m
+[90m     134 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      44 [33m< [37m[33m[90m44[33m
+[90m     106 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      43 [33m< [37m[33m[90m43[33m
+[90m     107 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
