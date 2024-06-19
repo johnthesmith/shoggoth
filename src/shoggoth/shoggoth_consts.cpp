@@ -14,13 +14,15 @@ std::string actionToString
     switch( a )
     {
         default:
-        case ACTION_UNKNOWN : return "ACTION_UNKNOWN";
-        case READ_VALUES    : return "READ_VALUES";
-        case WRITE_VALUES   : return "WRITE_VALUES";
-        case READ_ERRORS    : return "READ_ERRORS";
-        case WRITE_ERRORS   : return "WRITE_ERRORS";
-        case SYNC_RESET     : return "SYNC_RESET";
-        case READ_STAT      : return "READ_STAT";
+        case ACTION_UNKNOWN     : return "ACTION_UNKNOWN";
+        case READ_VALUES        : return "READ_VALUES";
+        case WRITE_VALUES       : return "WRITE_VALUES";
+        case READ_ERRORS        : return "READ_ERRORS";
+        case WRITE_ERRORS       : return "WRITE_ERRORS";
+        case SYNC_RESET         : return "SYNC_RESET";
+        case READ_STAT_ERROR    : return "READ_STAT_ERROR";
+        case READ_STAT_VALUE    : return "READ_STAT_VALUE";
+        case READ_STAT_TICK     : return "READ_STAT_TICK";
     }
 }
 

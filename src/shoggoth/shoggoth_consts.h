@@ -36,7 +36,9 @@ enum Action
     READ_ERRORS     = 13,
     WRITE_ERRORS    = 14,
     SYNC_RESET      = 17,
-    READ_STAT       = 18
+    READ_STAT_VALUE = 18,
+    READ_STAT_ERROR = 19,
+    READ_STAT_TICK  = 20
 };
 
 

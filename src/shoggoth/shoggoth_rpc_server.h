@@ -227,5 +227,14 @@ class ShoggothRpcServer : public RpcServer
 
 
 
+    private:
+
+        ShoggothRpcServer* buildLayerStatAnswer
+        (
+            ParamList*,
+            ParamList*,
+            string
+        );
+
 };
 

@@ -164,17 +164,21 @@ LimbUi* LimbUi::drawLayer
         auto textPoint = aLayer -> getObject() -> getEye()
         + POINT_3D_BOTTOM * aLayer -> getOuterBox().y;
 
+        /* Draw labels */
         aScene
         -> color( Rgba( RGBA_WHITE ))
-        -> setTextTop()
-        -> setTextRight()
+        -> setTextTop( POINT_3D_TOP )
+        -> setTextRight( POINT_3D_RIGHT )
         -> setTextPosition( textPoint )
         -> setTextSize( 0.1 )
         -> setTextBaseLine( BASE_LINE_TOP )
         -> setTextHorisontalAlign( ALIGN_CENTER )
+
+        /* Layer Name or Id */
         -> text( aLayer -> getNameOrId() )
         -> textCR( 1 )
 
+        /* Layer function name for fornt and backward calculation */
         -> setTextSize( 0.05 )
         -> color( Rgba( RGBA_GREY ))
         -> text
@@ -183,6 +187,7 @@ LimbUi* LimbUi::drawLayer
             neuronFuncToStr( aLayer -> getBackFunc())
         )
 
+        /* Layer error and value */
         -> textCR( 1 )
         -> color( Rgba( RGBA_RED ))
         -> text( "Error:" + to_string( aLayer -> calcSumError()) )

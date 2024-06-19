@@ -548,6 +548,8 @@ class Net: public Limb
 
         Net* requestStat
         (
+            LayerList*,
+            LayerList*,
             LayerList*
         );
 

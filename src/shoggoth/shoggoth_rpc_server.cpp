@@ -395,6 +395,26 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
 
 /*
     Remote host request the layer
+
+    arguments
+    {
+        values: [ LayerId ],
+        errors: [ LayerId ],
+    }
+
+    result
+    {
+        values:
+        {
+            LayerId: 0xdata,
+            ...
+        },
+        errors:
+        {
+            LayerId: 0xdata,
+            ...
+        }
+    }
 */
 ShoggothRpcServer* ShoggothRpcServer::readLayers
 (
@@ -586,11 +606,30 @@ ShoggothRpcServer* ShoggothRpcServer::dropLayerTick
     Read layers statistics
 
     arguments
-        layerId - layer id
-        chartType - type of chart:
-            TICK
-            ERROR
-            VALUE
+    {
+        value:[ layerId1, ... ],
+        error:[ layerId1, ... ],
+        tick:[ layerId1, ... ]
+    }
+
+    result
+    {
+        value:
+        {
+            LayerId1: 0xdata,
+            ...
+        },
+        error:
+        {
+            LayerId1: 0xdata,
+            ...
+        },
+        tick:
+        {
+            LayerId1: 0xdata,
+            ...
+        }
+    }
 */
 ShoggothRpcServer* ShoggothRpcServer::readLayerStat
 (
@@ -598,48 +637,87 @@ ShoggothRpcServer* ShoggothRpcServer::readLayerStat
     ParamList* aResults
 )
 {
+    /* Copy answer in to result */
     aResults -> copyFrom( aArguments );
 
-    auto layerId = aResults -> getString( "layerId" );
-    auto layer = net -> getLayerList() -> getById( layerId );
-    auto chartType = aResults -> getString( "chartType" );
+    /* Return positive answer */
+    setAnswerResult( aResults, RESULT_OK );
 
-    if( layer != NULL )
+    buildLayerStatAnswer( aArguments, aResults, "value" );
+    buildLayerStatAnswer( aArguments, aResults, "error" );
+    buildLayerStatAnswer( aArguments, aResults, "tick" );
+
+    return this;
+}
+
+
+
+ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
+(
+    ParamList* aArguments,
+    ParamList* aResults,
+    string aType
+)
+{
+    auto list = aArguments -> getObject( aType );
+    if( list != NULL )
     {
-        auto buffer = BufferD1::create();
-
-        if( chartType == "TICK" )
-        {
-            layer -> getChartTick() -> toBuffer( buffer );
-        }
-        else
-        {
-            if( chartType == "ERROR" )
-            {
-                layer -> getChartErrors() -> toBuffer( buffer );
-            }
-            else
-            {
-                layer -> getChartValues() -> toBuffer( buffer );
-            }
-        }
-
-        aResults
-        -> setPath( Path{ "data" })
-        -> setData
+        list -> loop
         (
-            layer -> getId(),
-            buffer -> getMemBuffer(),
-            buffer -> getMemSize()
-        );
+            [ this, &aResults, &aType ]
+            ( Param* iParam )
+            {
+                /* Read id layer */
+                auto idLayer = iParam -> getString();
+                if
+                (
+                    /* Arguments validation */
+                    validate( idLayer != "", "IdLayerIsEmpty", aResults )
+                )
+                {
+                    auto layer = net -> getLayerById( idLayer );
+                    if( layer == NULL )
+                    {
+                        setAnswerResult( aResults, "LayerUnknown" )
+                        -> setString( "idLayer", idLayer );
+                    }
+                    else
+                    {
+                        auto buffer = BufferD1::create();
 
-        /* Destroy chart buffer after toBuffer call */
-        buffer -> destroy();
+                        if( aType == "value")
+                            layer -> getChartValues() -> toBuffer( buffer );
+
+                        if( aType == "error")
+                            layer -> getChartErrors() -> toBuffer( buffer );
+
+                        if( aType == "tick")
+                            layer -> getChartTick() -> toBuffer( buffer );
+
+                        if( buffer != NULL )
+                        {
+                            aResults
+                            -> setPath( Path{ aType })
+                            -> setData
+                            (
+                                layer -> getId(),
+                                buffer -> getMemBuffer(),
+                                buffer -> getMemSize()
+                            );
+                        }
+
+                        buffer -> destroy();
+                    }
+                }
+                else
+                {
+                    setAnswerResult( aResults, "LayerIdIsEmpty" );
+                }
+                return !isAnswerOk( aResults );
+            }
+        );
     }
-    else
-    {
-        setAnswerResult( aResults, "LayerNotFound" );
-    }
+
 
     return this;
 }

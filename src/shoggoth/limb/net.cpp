@@ -274,115 +274,175 @@ Net* Net::requestWeights()
 
 
 
+/*
+    Request layers statistics
+*/
 Net* Net::requestStat
 (
-    LayerList* aStat
+    LayerList* aStatValue,    /* Layer list for stat request */
+    LayerList* aStatError,    /* Layer list for stat request */
+    LayerList* aStatTick      /* Layer list for stat request */
 )
 {
-    if( aStat -> getCount() > 0 )
+    if
+    (
+        aStatValue -> getCount() > 0 ||
+        aStatError -> getCount() > 0 ||
+        aStatTick -> getCount() > 0
+    )
     {
         getLog() -> begin( "Read stat" );
 
         /* Create IO object and define request */
-//        auto io = Io::create( this );
-//        auto request = io -> getRequest();
-//
-//        /* Build request values */
-//        aValues -> loop
-//        (
-//            [ &request ]
-//            ( void* aLayer)
-//            {
-//                auto layer = (Layer*) aLayer;
-//
-//                request
-//                -> setPath( Path{ "values" })
-//                -> pushString( layer -> getId());
-//
-//                return false;
-//            }
-//        );
+        auto io = Io::create( this );
+        auto request = io -> getRequest();
 
-        /* Build request errors */
-//        aErrors -> loop
-//        (
-//            [ &request ]
-//            ( void* aLayer)
-//            {
-//                auto layer = (Layer*) aLayer;
-//
-//                request
-//                -> setPath( Path{ "errors" })
-//                -> pushString( layer -> getId());
-//
-//                return false;
-//            }
-//        );
-//
-//        /* Call server and apply the answer */
-//        if( io -> call( CMD_READ_LAYERS ) -> isOk() )
-//        {
-//            /* Loop for values */
-//            aValues -> loop
-//            (
-//                [ &io ]
-//                ( void* aLayer)
-//                {
-//                    auto layer = (Layer*) aLayer;
-//
-//                    char* buffer = NULL;
-//                    size_t size = 0;
-//
-//                    io -> getAnswer()
-//                    -> getData
-//                    (
-//                        Path{ "values", layer -> getId() },
-//                        buffer,
-//                        size
-//                    );
-//
-//                    if( buffer != NULL )
-//                    {
-//                        layer -> setValuesFromBuffer( buffer, size );
-//                    }
-//                    return false;
-//                }
-//            );
-//
-//            /* Loop for errors */
-//            aErrors -> loop
-//            (
-//                [ &io ]
-//                ( void* aLayer)
-//                {
-//                    auto layer = (Layer*) aLayer;
-//
-//                    char* buffer = NULL;
-//                    size_t size = 0;
-//
-//
-//                    io -> getAnswer()
-//                    -> getData
-//                    (
-//                        Path{ "errors", layer -> getId() },
-//                        buffer,
-//                        size
-//                    );
-//
-//                    if( buffer != NULL )
-//                    {
-//                        layer -> errorsFromBuffer( buffer, size );
-//                    }
-//                    return false;
-//                }
-//            );
-//        }
-//        else
-//        {
-//            /* Call error */
-//        }
-//
-//        io -> destroy();
+        /* Build request value */
+        aStatValue -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
+            {
+                auto layer = ( Layer* )aLayer;
+
+                request
+                -> setPath( Path{ "value" })
+                -> pushString( layer -> getId());
+
+                return false;
+            }
+        );
+
+        /* Build request error */
+        aStatValue -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
+            {
+                auto layer = ( Layer* )aLayer;
+
+                request
+                -> setPath( Path{ "error" })
+                -> pushString( layer -> getId());
+
+                return false;
+            }
+        );
+
+        /* Build request tick */
+        aStatValue -> loop
+        (
+            [ &request ]
+            ( void* aLayer)
+            {
+                auto layer = ( Layer* )aLayer;
+
+                request
+                -> setPath( Path{ "tick" })
+                -> pushString( layer -> getId());
+
+                return false;
+            }
+        );
+
+
+        /* Call server and apply the answer */
+        if( io -> call( CMD_READ_LAYER_STAT ) -> isOk() )
+        {
+
+            /* Loop for values */
+            aStatValue -> loop
+            (
+                [ &io ]
+                ( void* aLayer)
+                {
+                    auto layer = (Layer*) aLayer;
+
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer() -> getData
+                    (
+                        Path{ "value", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer
+                        -> getChartValues()
+                        -> fromBuffer( buffer, size );
+                    }
+
+                    return false;
+                }
+            );
+
+            /* Loop for values */
+            aStatError -> loop
+            (
+                [ &io ]
+                ( void* aLayer)
+                {
+                    auto layer = (Layer*) aLayer;
+
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer() -> getData
+                    (
+                        Path{ "error", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer
+                        -> getChartErrors()
+                        -> fromBuffer( buffer, size );
+                    }
+                    return false;
+                }
+            );
+
+            /* Loop for tick layers */
+            aStatTick -> loop
+            (
+                [ &io ]
+                ( void* aLayer)
+                {
+                    auto layer = (Layer*) aLayer;
+
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer()
+                    -> getData
+                    (
+                        Path{ "tick", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer
+                        -> getChartTick()
+                        -> fromBuffer( buffer, size );
+                    }
+                    return false;
+                }
+            );
+
+        }
+        else
+        {
+            /* Call error */
+        }
+
+        io -> destroy();
 
         getLog() -> end();
     }
@@ -400,7 +460,11 @@ Net* Net::readLayers
     LayerList* aErrors
 )
 {
-    if( aValues -> getCount() > 0 || aErrors -> getCount() > 0 )
+    if
+    (
+        aValues -> getCount() > 0 ||
+        aErrors -> getCount() > 0
+    )
     {
         getLog() -> begin( "Read layers" );
 
@@ -1513,7 +1577,10 @@ Net* Net::syncWithServer()
         auto readErrors = LayerList::create( this );
         auto writeValues = LayerList::create( this );
         auto writeErrors = LayerList::create( this );
-        auto readStat = LayerList::create( this );
+
+        auto readStatValue = LayerList::create( this );
+        auto readStatError = LayerList::create( this );
+        auto readStatTick = LayerList::create( this );
 
         lock();
 
@@ -1526,7 +1593,9 @@ Net* Net::syncWithServer()
                 &readErrors,
                 &writeValues,
                 &writeErrors,
-                &readStat
+                &readStatValue,
+                &readStatError,
+                &readStatTick
             ]
             ( void* aLayer )
             {
@@ -1586,9 +1655,19 @@ Net* Net::syncWithServer()
                 }
 
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT ))
+                if( layer -> checkTasks( tasks, READ_STAT_VALUE ))
                 {
-                    readStat -> push( layer );
+                    readStatValue -> push( layer );
+                }
+                /* Check application rules stat requests */
+                if( layer -> checkTasks( tasks, READ_STAT_ERROR ))
+                {
+                    readStatError -> push( layer );
+                }
+                /* Check application rules stat requests */
+                if( layer -> checkTasks( tasks, READ_STAT_TICK ))
+                {
+                    readStatTick -> push( layer );
                 }
 
                 return false;
@@ -1601,7 +1680,7 @@ Net* Net::syncWithServer()
         writeLayers( writeValues, writeErrors );
         readLayers( readValues, readErrors );
         requestWeights();
-        requestStat( readStat );
+        requestStat( readStatValue, readStatError, readStatTick );
 
         /* Unlock Net */
         unlock();
@@ -1611,7 +1690,10 @@ Net* Net::syncWithServer()
         readErrors -> destroy();
         writeValues -> destroy();
         writeErrors -> destroy();
-        readStat -> destroy();
+
+        readStatValue -> destroy();
+        readStatError -> destroy();
+        readStatTick -> destroy();
 
         getLog()
         -> end()
