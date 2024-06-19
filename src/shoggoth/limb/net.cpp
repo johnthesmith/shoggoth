@@ -1680,7 +1680,8 @@ Net* Net::syncWithServer()
         writeLayers( writeValues, writeErrors );
         readLayers( readValues, readErrors );
         requestWeights();
-        requestStat( readStatValue, readStatError, readStatTick );
+
+//        requestStat( readStatValue, readStatError, readStatTick );
 
         /* Unlock Net */
         unlock();
