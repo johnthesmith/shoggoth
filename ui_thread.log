@@ -31148,3 +31148,158 @@
 [90m      37 [33m< [37m[33m[90m37[33m
 [90m  256531 [94m~ [37m[94mMouse event[90m[string [37mname [95mright up[90m][94m[90m[int [37mmode [95m1[90m][94m
 [90m      41 [94m~ [37m[94mMouse right drag end[90m[double [37mx [95m[32m509.0000000000[95m[90m][94m[90m[double [37my [95m[32m476.0000000000[95m[90m][94m[90m[int [37mleft shift [95m1[90m][94m[90m[int [37mleft control [95m0[90m][94m[90m[int [37mleft alt [95m0[90m][94m
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mui_thread[90m][94m[90m[string [37mthread id [95m130692428068544[90m][94m
+[90m   75538 [94m~ [37m[94mglfl initialize
+[90m      62 [94m~ [37m[94mCreate window
+[90m  265613 [33m> [37m[33mBuild font 
+[90m      99 [94m~ [37m  [94m[90m[string [37mFont name [95m/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf[90m][94m[90m[string [37mCharset [95m !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ[90m][94m
+[90m    1749 [94m~ [37m  [94mInfo[90m[int [37mSymbols count [95m171[90m][94m[90m[int [37mGliph columns count [95m14[90m][94m[90m[int [37mGliph rows count [95m13[90m][94m
+[90m  464160 [33m< [37m[33m[90m466008[33m
+[90m 8632757 [94m~ [37m[94mProcess paused
+[90m  564803 [94m~ [37m[94mCreate layer[90m[string [37mid [95mretina[90m][94m
+[90m      28 [94m~ [37m[94m... it was a layer ui
+[90m      24 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcortex_1[90m][94m
+[90m      23 [94m~ [37m[94m... it was a layer ui
+[90m      23 [94m~ [37m[94mCreate layer[90m[string [37mid [95mbias[90m][94m
+[90m      26 [94m~ [37m[94m... it was a layer ui
+[90m      23 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcortex_2[90m][94m
+[90m      22 [94m~ [37m[94m... it was a layer ui
+[90m      23 [94m~ [37m[94mCreate layer[90m[string [37mid [95mresult[90m][94m
+[90m      46 [94m~ [37m[94m... it was a layer ui
+[90m      25 [94m~ [37m[94mCreate layer[90m[string [37mid [95msample[90m][94m
+[90m      21 [94m~ [37m[94m... it was a layer ui
+[90m      24 [94m~ [37m[94mCreate layer[90m[string [37mid [95mcommand[90m][94m
+[90m      21 [94m~ [37m[94m... it was a layer ui
+[90m      22 [94m~ [37m[94mCreate layer[90m[string [37mid [95merror[90m][94m
+[90m      22 [94m~ [37m[94m... it was a layer ui
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      24 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      38 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      25 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      35 [33m> [37m[33mLayer resize[90m[string [37mid [95mretina[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m784[90m][33m
+[90m      27 [33m< [37m[33m[90m27[33m
+[90m      36 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m784[90m][94m
+[90m      49 [33m> [37m[33mLayer resize[90m[string [37mid [95mcortex_1[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m16[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      20 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m16[90m][94m
+[90m      25 [33m> [37m[33mLayer resize[90m[string [37mid [95mbias[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      21 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      22 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      25 [33m> [37m[33mLayer resize[90m[string [37mid [95mcortex_2[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m16[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      20 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m16[90m][94m
+[90m      25 [33m> [37m[33mLayer resize[90m[string [37mid [95mresult[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m10[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      20 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      22 [33m< [37m[33m[90m22[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m10[90m][94m
+[90m      24 [33m> [37m[33mLayer resize[90m[string [37mid [95msample[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m10[90m][33m
+[90m      30 [33m< [37m[33m[90m30[33m
+[90m      31 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m10[90m][94m
+[90m      25 [33m> [37m[33mLayer resize[90m[string [37mid [95mcommand[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      21 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      35 [33m< [37m[33m[90m35[33m
+[90m      22 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      25 [33m> [37m[33mLayer resize[90m[string [37mid [95merror[90m][33m[90m[int [37mfrom [95m0[90m][33m[90m[int [37mto [95m1[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      21 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      20 [94m~ [37m[94mWorld plan created[90m[int [37mcount [95m1[90m][94m
+[90m      72 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     278 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      24 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      22 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      25 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      21 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     675 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      36 [33m< [37m[33m[90m36[33m
+[90m    3401 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      61 [33m< [37m[33m[90m61[33m
+[90m     139 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      41 [33m< [37m[33m[90m41[33m
+[90m      62 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      67 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      76 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      25 [33m< [37m[33m[90m25[33m
+[90m      82 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      73 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m     632 [94m~ [37m[94mProcess paused
+[90m    5992 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      32 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      20 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      20 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      20 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m     131 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      82 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      56 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      26 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      70 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m     111 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m     104 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      20 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      28 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m     339 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m     104 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      19 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      17 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m     255 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mretina[90m][33m
+[90m      30 [33m< [37m[33m[90m30[33m
+[90m     147 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_1[90m][33m
+[90m      21 [33m< [37m[33m[90m21[33m
+[90m      49 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mbias[90m][33m
+[90m      24 [33m< [37m[33m[90m24[33m
+[90m      45 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcortex_2[90m][33m
+[90m      19 [33m< [37m[33m[90m19[33m
+[90m      51 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mresult[90m][33m
+[90m      28 [33m< [37m[33m[90m28[33m
+[90m      56 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95msample[90m][33m
+[90m      18 [33m< [37m[33m[90m18[33m
+[90m      50 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95mcommand[90m][33m
+[90m      31 [33m< [37m[33m[90m31[33m
+[90m      54 [33m> [37m[33mCalculate neurons world position[90m[string [37mLayer [95merror[90m][33m
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mui_thread[90m][94m[90m[string [37mthread id [95m136475138062016[90m][94m
+[90m   37699 [94m~ [37m[94mglfl initialize
+[90m      71 [94m~ [37m[94mCreate window
+[90m  285727 [33m> [37m[33mBuild font 
+[90m      59 [94m~ [37m  [94m[90m[string [37mFont name [95m/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf[90m][94m[90m[string [37mCharset [95m !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ[90m][94m
+[90m      24 [94m~ [37m  [94mInfo[90m[int [37mSymbols count [95m171[90m][94m[90m[int [37mGliph columns count [95m14[90m][94m[90m[int [37mGliph rows count [95m13[90m][94m
+[90m  439885 [33m< [37m[33m[90m439968[33m
+[90m      59 [94m~ [37m[94mProcess paused
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mui_thread[90m][94m[90m[string [37mthread id [95m131517504288448[90m][94m
+[90m   62586 [94m~ [37m[94mglfl initialize
+[90m      53 [94m~ [37m[94mCreate window
+[90m  242576 [33m> [37m[33mBuild font 
+[90m    2682 [94m~ [37m  [94m[90m[string [37mFont name [95m/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf[90m][94m[90m[string [37mCharset [95m !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ[90m][94m
+[90m      88 [94m~ [37m  [94mInfo[90m[int [37mSymbols count [95m171[90m][94m[90m[int [37mGliph columns count [95m14[90m][94m[90m[int [37mGliph rows count [95m13[90m][94m
+[90m  438957 [33m< [37m[33m[90m441727[33m
+[90m      68 [94m~ [37m[94mProcess paused
+[90m  180747 [94m~ [37m[94mProcess paused
+[90m 2530587 [94m~ [37m[94mMouse event[90m[string [37mname [95mleft down[90m][94m[90m[int [37mmode [95m0[90m][94m
+[90m  267450 [94m~ [37m[94mMouse event[90m[string [37mname [95mleft up[90m][94m[90m[int [37mmode [95m0[90m][94m
