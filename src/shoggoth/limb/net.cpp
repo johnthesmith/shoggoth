@@ -1578,9 +1578,9 @@ Net* Net::syncWithServer()
         auto writeValues = LayerList::create( this );
         auto writeErrors = LayerList::create( this );
 
-        auto readStatValue = LayerList::create( this );
-        auto readStatError = LayerList::create( this );
-        auto readStatTick = LayerList::create( this );
+//        auto readStatValue = LayerList::create( this );
+//        auto readStatError = LayerList::create( this );
+//        auto readStatTick = LayerList::create( this );
 
         lock();
 
@@ -1592,10 +1592,10 @@ Net* Net::syncWithServer()
                 &readValues,
                 &readErrors,
                 &writeValues,
-                &writeErrors,
-                &readStatValue,
-                &readStatError,
-                &readStatTick
+                &writeErrors
+//                &readStatValue,
+//                &readStatError,
+//                &readStatTick
             ]
             ( void* aLayer )
             {
@@ -1654,21 +1654,21 @@ Net* Net::syncWithServer()
                     }
                 }
 
-                /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_VALUE ))
-                {
-                    readStatValue -> push( layer );
-                }
-                /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_ERROR ))
-                {
-                    readStatError -> push( layer );
-                }
-                /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_TICK ))
-                {
-                    readStatTick -> push( layer );
-                }
+//                /* Check application rules stat requests */
+//                if( layer -> checkTasks( tasks, READ_STAT_VALUE ))
+//                {
+//                    readStatValue -> push( layer );
+//                }
+//                /* Check application rules stat requests */
+//                if( layer -> checkTasks( tasks, READ_STAT_ERROR ))
+//                {
+//                    readStatError -> push( layer );
+//                }
+//                /* Check application rules stat requests */
+//                if( layer -> checkTasks( tasks, READ_STAT_TICK ))
+//                {
+//                    readStatTick -> push( layer );
+//                }
 
                 return false;
             }
@@ -1692,9 +1692,9 @@ Net* Net::syncWithServer()
         writeValues -> destroy();
         writeErrors -> destroy();
 
-        readStatValue -> destroy();
-        readStatError -> destroy();
-        readStatTick -> destroy();
+//        readStatValue -> destroy();
+//        readStatError -> destroy();
+//        readStatTick -> destroy();
 
         getLog()
         -> end()

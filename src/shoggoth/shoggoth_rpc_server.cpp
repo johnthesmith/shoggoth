@@ -643,9 +643,9 @@ ShoggothRpcServer* ShoggothRpcServer::readLayerStat
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
 
-    buildLayerStatAnswer( aArguments, aResults, "value" );
-    buildLayerStatAnswer( aArguments, aResults, "error" );
-    buildLayerStatAnswer( aArguments, aResults, "tick" );
+//    buildLayerStatAnswer( aArguments, aResults, "value" );
+//    buildLayerStatAnswer( aArguments, aResults, "error" );
+//    buildLayerStatAnswer( aArguments, aResults, "tick" );
 
     return this;
 }
@@ -717,7 +717,6 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
             }
         );
     }
-
 
     return this;
 }
