@@ -86,7 +86,6 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     ParamList* aResults
 )
 {
-
     auto method = aArguments -> getInt( "method" );
     auto methodStr = commandToString( ( Command ) method );
 
@@ -638,14 +637,14 @@ ShoggothRpcServer* ShoggothRpcServer::readLayerStat
 )
 {
     /* Copy answer in to result */
-    aResults -> copyFrom( aArguments );
+//    aResults -> copyFrom( aArguments );
 
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
 
-//    buildLayerStatAnswer( aArguments, aResults, "value" );
-//    buildLayerStatAnswer( aArguments, aResults, "error" );
-//    buildLayerStatAnswer( aArguments, aResults, "tick" );
+    buildLayerStatAnswer( aArguments, aResults, "value" );
+    buildLayerStatAnswer( aArguments, aResults, "error" );
+    buildLayerStatAnswer( aArguments, aResults, "tick" );
 
     return this;
 }
@@ -660,6 +659,7 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
 )
 {
     auto list = aArguments -> getObject( aType );
+
     if( list != NULL )
     {
         list -> loop

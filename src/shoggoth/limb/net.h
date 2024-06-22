@@ -63,7 +63,7 @@ class Net: public Limb
         /* Current net version */
         string          version         = "";
         /* Net version, for switching at next turn of calculation */
-        string          nextVersion   = "";
+        string          nextVersion     = "";
 
     public:
 

@@ -1693,9 +1693,9 @@ Net* Net::syncWithServer()
         writeValues -> destroy();
         writeErrors -> destroy();
 
-//        readStatValue -> destroy();
-//        readStatError -> destroy();
-//        readStatTick -> destroy();
+        readStatValue -> destroy();
+        readStatError -> destroy();
+        readStatTick -> destroy();
 
         getLog()
         -> end()
