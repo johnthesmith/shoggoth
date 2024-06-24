@@ -156,9 +156,22 @@ void Ui::onCalc
     Scene* aScene   /* Scene object */
 )
 {
-    /* Prepare Limb */
-    limb -> getNet() -> syncToLimb( limb, true );
+    limb
+    -> getNet()
 
+    /* Prepare UI limb, check and copy structure from net */
+    -> syncToLimb( limb, true )
+
+    /* Read from net weight and errors */
+    -> swapValuesAndErrors
+    (
+        Actions{ READ_VALUES, READ_ERRORS },    /* Action */
+        TASK_UI,                                /* Role */
+        limb                                    /* Participant object */
+    );
+
+
+    /* Fill all weight TODO - remove it */
     limb -> getNerveList() -> weightsAllocate
     (
         []( Nerve* nerve )
@@ -171,13 +184,6 @@ void Ui::onCalc
 // This must be remove from net
 //    limb -> dumpWeightsExchange();
 
-    limb -> getNet()
-    -> swapValuesAndErrors
-    (
-        Actions{ READ_VALUES, READ_ERRORS },    /* Action */
-        TASK_UI,                                /* Role */
-        limb                                    /* Participant object */
-    );
 }
 
 
