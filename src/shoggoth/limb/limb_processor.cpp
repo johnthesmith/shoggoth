@@ -299,7 +299,7 @@ LimbProcessor* LimbProcessor::calc()
         net -> unlock();
 
         /* Check structure with net */
-        net -> syncToLimb( this );
+        net -> syncToLimb( this, false );
 
         /* Allocate weigth */
         getNerveList() -> weightsAllocate

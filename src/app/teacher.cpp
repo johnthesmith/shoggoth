@@ -339,7 +339,7 @@ void Teacher::onLoop()
     /* Prepare Limb */
     limb
     -> getNet()
-    -> syncToLimb( limb )
+    -> syncToLimb( limb, false )
     -> swapValuesAndErrors
     (
         Actions{ READ_VALUES }, /* Action */

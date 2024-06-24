@@ -178,7 +178,9 @@ class Limb : public Result
         Limb* copyTo
         (
             Limb*,  /* Destination */
-            bool    /* Need structure synchronize if structuires not equals */
+            bool,   /* Need structure synchronize if structuires not equals */
+            bool,   /* Skip synchronization if this was locked */
+            bool    /* Skip synchronization if limb was locked */
         );
 
 
@@ -213,6 +215,13 @@ class Limb : public Result
             Lock net for operations with layers
         */
         Limb* lock();
+
+
+
+        /*
+            Try lock net for operations with layers
+        */
+        bool tryLock();
 
 
 

@@ -1541,13 +1541,14 @@ Net* Net::swapValuesAndErrors
 
 Net* Net::syncToLimb
 (
-    Limb* targetLimb
+    Limb* targetLimb,
+    bool aSkip
 )
 {
     if( targetLimb -> getLastUpdate() != getLastUpdate() )
     {
         /* Rebuild structure layers and nervs */
-        copyTo( targetLimb, true );
+        copyTo( targetLimb, true, aSkip, false );
         /* Apply specific config */
         targetLimb -> onAfterReconfig( getConfig() );
         /* Commit last  update */

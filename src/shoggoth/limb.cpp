@@ -198,47 +198,53 @@ Limb* Limb::deleteNerve
 Limb* Limb::copyTo
 (
     Limb* aLimb,
-    bool aStrictSync
+    bool aStrictSync,
+    bool aSkipLockThis,
+    bool aSkipLockLimb
 )
 {
     if( aLimb != this )
     {
-        aLimb -> lock();
-        lock();
-
-        auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
-        auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
-
-        if( aStrictSync )
+        if( aSkipLockThis ? tryLock() : ( lock() == this ) )
         {
-            if( !layersIsEqual )
+            if( aSkipLockLimb ? aLimb -> tryLock() : ( aLimb -> lock() == aLimb ))
             {
-                /* Copy structure of layers */
-                aLimb -> copyStructureFrom( this -> getLayerList() );
-                layersIsEqual = true;
-            }
-            if( !nervesIsEqual )
-            {
-                /* Copy structure of nerves */
-                aLimb
-                -> getNerveList()
-                -> copyStructureFrom( this -> getNerveList(), aLimb -> getLayerList() );
-                nervesIsEqual = true;
-            }
-        }
 
-        if( layersIsEqual && nervesIsEqual )
-        {
-            aLimb
-            -> getLayerList()
-            -> copyValuesFrom( this -> getLayerList() )
-            -> copyErrorsFrom( this -> getLayerList() )
-            ;
-        }
+                auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
+                auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
 
-        /* Data sinchronization */
-        unlock();
-        aLimb -> unlock();
+                if( aStrictSync )
+                {
+                    if( !layersIsEqual )
+                    {
+                        /* Copy structure of layers */
+                        aLimb -> copyStructureFrom( this -> getLayerList() );
+                        layersIsEqual = true;
+                    }
+                    if( !nervesIsEqual )
+                    {
+                        /* Copy structure of nerves */
+                        aLimb
+                        -> getNerveList()
+                        -> copyStructureFrom( this -> getNerveList(), aLimb -> getLayerList() );
+                        nervesIsEqual = true;
+                    }
+                }
+
+                if( layersIsEqual && nervesIsEqual )
+                {
+                    aLimb
+                    -> getLayerList()
+                    -> copyValuesFrom( this -> getLayerList() )
+                    -> copyErrorsFrom( this -> getLayerList() )
+                    ;
+                }
+
+                /* Data sinchronization */
+                aLimb -> unlock();
+            }
+            unlock();
+        }
     }
     else
     {
@@ -287,6 +293,16 @@ Limb* Limb::lock()
 {
     sync.lock();
     return this;
+}
+
+
+
+/*
+    Try lock Limb for operations with layers
+*/
+bool Limb::tryLock()
+{
+    return sync.try_lock();
 }
 
 

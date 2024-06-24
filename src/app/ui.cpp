@@ -157,7 +157,7 @@ void Ui::onCalc
 )
 {
     /* Prepare Limb */
-    limb -> getNet() -> syncToLimb( limb );
+    limb -> getNet() -> syncToLimb( limb, true );
 
     limb -> getNerveList() -> weightsAllocate
     (

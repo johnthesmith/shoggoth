@@ -455,9 +455,13 @@ class Net: public Limb
 
 
 
+        /*
+            Send changes from net in to other limb
+        */
         Net* syncToLimb
         (
-            Limb* targetLimb
+            Limb*   /* targetLimb */,
+            bool    /* Skip synchronization for Net is lock */
         );
 
 
