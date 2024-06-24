@@ -167,7 +167,9 @@ void Ui::onCalc
         }
     );
 
-    limb -> dumpWeightsExchange();
+// Dump weights from net
+// This must be remove from net
+//    limb -> dumpWeightsExchange();
 
     limb -> getNet()
     -> swapValuesAndErrors
