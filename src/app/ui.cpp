@@ -184,8 +184,6 @@ void Ui::onCalc
 // This must be remove from net
 //    limb -> dumpWeightsExchange();
 
-<<<<<<< HEAD
-=======
     limb -> getNet()
     -> swapValuesAndErrors
     (
@@ -194,7 +192,6 @@ void Ui::onCalc
         limb,                                   /* Participant object */
         true
     );
->>>>>>> 941b93a (Auto commit)
 }
 
 
