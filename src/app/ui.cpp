@@ -167,7 +167,8 @@ void Ui::onCalc
     (
         Actions{ READ_VALUES, READ_ERRORS },    /* Action */
         TASK_UI,                                /* Role */
-        limb                                    /* Participant object */
+        limb,                                   /* Participant object */
+        true
     );
 
 
