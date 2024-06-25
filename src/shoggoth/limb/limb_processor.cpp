@@ -324,7 +324,8 @@ LimbProcessor* LimbProcessor::calc()
         (
             Actions{ READ_VALUES }, /* Actions */
             TASK_PROC,   /* Role */
-            this         /* Participant object */
+            this,        /* Participant object */
+            false
         )
 
         /* Load values and errors to net */
@@ -332,7 +333,8 @@ LimbProcessor* LimbProcessor::calc()
         (
             { WRITE_VALUES, WRITE_ERRORS }, /* Action */
             TASK_PROC,                      /* Role */
-            this                            /* Participant object */
+            this,                           /* Participant object */
+            false
         )
 
         /* Load selected weights to net from this limb */

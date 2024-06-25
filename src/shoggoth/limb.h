@@ -214,14 +214,10 @@ class Limb : public Result
         /*
             Lock net for operations with layers
         */
-        Limb* lock();
-
-
-
-        /*
-            Try lock net for operations with layers
-        */
-        bool tryLock();
+        bool lock
+        (
+            bool = false /* Skip this action for locked mutex */
+        );
 
 
 
@@ -318,4 +314,3 @@ class Limb : public Result
         );
 
 };
-

@@ -1473,65 +1473,74 @@ Net* Net::swapValuesAndErrors
 (
     Actions aActions,   /* Action for participant */
     Task    aTask,      /* Task (role) of participant */
-    Limb*   aLimb       /* Participant */
+    Limb*   aLimb,      /* Participant */
+    bool    aSkip
 )
 {
     auto configLayers = config -> getObject( "layers" );
     if( configLayers != NULL )
     {
-        /* Loop for layers configuration */
-        configLayers -> loop
-        (
-            [ this, &aLimb, &aActions, &aTask ]
-            (
-                Param* iParam
-            )
+        if( lock( aSkip ))
+        {
+            if( aLimb -> lock( aSkip ))
             {
-                /* For each of action */
-                for( auto iAction : aActions )
-                {
-                    /* Find action */
-                    auto action = iParam -> getObject()
-                    -> getObject( Path{ "actions", actionToString( iAction ) });
-                    /* If action exists in a layer... */
-                    if
+                /* Loop for layers configuration */
+                configLayers -> loop
+                (
+                    [ this, &aLimb, &aActions, &aTask ]
                     (
-                        action != NULL &&
-                        action -> contains( taskToString( aTask ))
+                        Param* iParam
                     )
                     {
-                        /* ... finds layer by id in net and participant ... */
-                        auto id = iParam -> getName();
-                        auto netLayer = getLayerList() -> getById( id );
-                        auto participantLayer = aLimb -> getLayerList() -> getById( id );
-                        /* ... if both layers fonded ... */
-                        if( netLayer != NULL && participantLayer != NULL )
+                        /* For each of action */
+                        for( auto iAction : aActions )
                         {
-                            /* ... then swap values and errors */
-                            switch( iAction )
+                            /* Find action */
+                            auto action = iParam -> getObject()
+                            -> getObject( Path{ "actions", actionToString( iAction ) });
+                            /* If action exists in a layer... */
+                            if
+                            (
+                                action != NULL &&
+                                action -> contains( taskToString( aTask ))
+                            )
                             {
-                                default: break;
-                                case READ_VALUES:
-                                    participantLayer -> copyValuesFrom( netLayer );
-                                break;
-                                case WRITE_VALUES:
-                                    netLayer -> copyValuesFrom( participantLayer );
-                                    addChangedValues( netLayer );
-                                break;
-                                case READ_ERRORS:
-                                    participantLayer -> copyErrorsFrom( netLayer );
-                                break;
-                                case WRITE_ERRORS:
-                                    netLayer -> copyErrorsFrom( participantLayer );
-                                    addChangedErrors( netLayer );
-                                break;
+                                /* ... finds layer by id in net and participant ... */
+                                auto id = iParam -> getName();
+                                auto netLayer = getLayerList() -> getById( id );
+                                auto participantLayer = aLimb -> getLayerList() -> getById( id );
+                                /* ... if both layers fonded ... */
+                                if( netLayer != NULL && participantLayer != NULL )
+                                {
+                                    /* ... then swap values and errors */
+                                    switch( iAction )
+                                    {
+                                        default: break;
+                                        case READ_VALUES:
+                                            participantLayer -> copyValuesFrom( netLayer );
+                                        break;
+                                        case WRITE_VALUES:
+                                            netLayer -> copyValuesFrom( participantLayer );
+                                            addChangedValues( netLayer );
+                                        break;
+                                        case READ_ERRORS:
+                                            participantLayer -> copyErrorsFrom( netLayer );
+                                        break;
+                                        case WRITE_ERRORS:
+                                            netLayer -> copyErrorsFrom( participantLayer );
+                                            addChangedErrors( netLayer );
+                                        break;
+                                    }
+                                }
                             }
                         }
+                        return false;
                     }
-                }
-                return false;
+                );
+                aLimb -> unlock();
             }
-        );
+            unlock();
+        }
     }
     return this;
 }

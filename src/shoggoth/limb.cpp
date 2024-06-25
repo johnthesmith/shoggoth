@@ -205,11 +205,10 @@ Limb* Limb::copyTo
 {
     if( aLimb != this )
     {
-        if( aSkipLockThis ? tryLock() : ( lock() == this ) )
+        if( lock( aSkipLockThis ))
         {
-            if( aSkipLockLimb ? aLimb -> tryLock() : ( aLimb -> lock() == aLimb ))
+            if( aLimb -> lock( aSkipLockLimb ))
             {
-
                 auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
                 auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
 
@@ -289,20 +288,22 @@ NerveList* Limb::getNerveList()
 /*
     Lock Limb for operations with layers
 */
-Limb* Limb::lock()
+bool Limb::lock
+(
+    bool aSkip
+)
 {
-    sync.lock();
-    return this;
-}
-
-
-
-/*
-    Try lock Limb for operations with layers
-*/
-bool Limb::tryLock()
-{
-    return sync.try_lock();
+    /* Let default result */
+    bool result = true;
+    if( aSkip )
+    {
+        result = sync.try_lock();
+    }
+    else
+    {
+        sync.lock();
+    }
+    return result;
 }
 
 

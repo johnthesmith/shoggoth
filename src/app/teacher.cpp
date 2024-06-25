@@ -344,7 +344,8 @@ void Teacher::onLoop()
     (
         Actions{ READ_VALUES }, /* Action */
         TASK_TEACHER,           /* Role */
-        limb                    /* Destination participant object */
+        limb,                   /* Destination participant object */
+        false
     );
 
     limb -> lock();
@@ -436,8 +437,9 @@ void Teacher::onLoop()
                         limb -> getNet() -> swapValuesAndErrors
                         (
                             { WRITE_VALUES, WRITE_ERRORS }, /* Action */
-                            TASK_TEACHER,   /* Role */
-                            limb /* Participant object */
+                            TASK_TEACHER,       /* Role */
+                            limb,               /* Participant object */
+                            false
                         );
                     }
                     else
