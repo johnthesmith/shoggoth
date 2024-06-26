@@ -344,7 +344,6 @@ Net* Net::requestStat
         aStatTick.size() > 0
     )
     {
-cout << "===2\n";
         getLog() -> begin( "Read stat" );
 
         /* Create IO object and define request */
@@ -358,8 +357,6 @@ cout << "===2\n";
         /* Call server and apply the answer */
         if( io -> call( CMD_READ_LAYER_STAT ) -> isOk() )
         {
-cout << "===3\n";
-
             lock();
 
             /* Loop for values */
@@ -416,7 +413,6 @@ cout << "===3\n";
             /* Loop for ticks */
             for( auto id : aStatTick )
             {
-cout << "===4\n";
                 auto layer = getLayerList() -> getById( id );
                 if( layer != NULL )
                 {
@@ -437,9 +433,10 @@ cout << "===4\n";
                         -> getChartTick()
                         -> fromBuffer( buffer, size );
 
-                        cout <<
+                        cout
+                        << "==============="  << size << " " <<
                         layer -> getId() <<
-                        layer -> getChartTick() -> toString( 20 ) <<
+//                        layer -> getChartTick() -> toString( 20 ) <<
                         "\n";
                     }
                 }

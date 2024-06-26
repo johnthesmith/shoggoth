@@ -6,7 +6,7 @@
         "source"                : "SERVER",
         "host"                  : "194.182.90.184",
         "port"                  : 11120,
-        "readWaitingTimeoutMcs" : 1000000
+        "readWaitingTimeoutMcs" : 100000
     },
 
     "netLoopTimeoutMcs"     :1000,
