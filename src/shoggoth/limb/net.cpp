@@ -410,7 +410,7 @@ Net* Net::requestStat
             }
 
 
-            /* Loop for errors */
+            /* Loop for ticks */
             for( auto id : aStatTick )
             {
                 auto layer = getLayerList() -> getById( id );
@@ -432,6 +432,11 @@ Net* Net::requestStat
                         layer
                         -> getChartTick()
                         -> fromBuffer( buffer, size );
+
+                        cout <<
+                        layer -> getId() <<
+                        layer -> getChartTick() -> toString( 20 ) <<
+                        "\n";
                     }
                 }
             }
