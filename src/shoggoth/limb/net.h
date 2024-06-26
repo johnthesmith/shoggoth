@@ -132,8 +132,8 @@ class Net: public Limb
         */
         Net* writeLayers
         (
-            LayerList* aValues,
-            LayerList* aErrors
+            vector<string>, /* List of layers id for the values write */
+            vector<string>  /* List of layers id for the errors write */
         );
 
 
@@ -143,8 +143,8 @@ class Net: public Limb
         */
         Net* readLayers
         (
-            LayerList* aValues,
-            LayerList* aErrors
+            vector<string>, /* List of layers id for the values write */
+            vector<string>  /* List of layers id for the errors write */
         );
 
 
@@ -553,9 +553,9 @@ class Net: public Limb
 
         Net* requestStat
         (
-            LayerList*,
-            LayerList*,
-            LayerList*
+            vector<string>,
+            vector<string>,
+            vector<string>
         );
 
 };
