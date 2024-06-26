@@ -17,7 +17,11 @@
 
             "processorCount"    :1,
             "tickWrite"         :100,
-            "listen"            :{ "port" :11120 },
+            "listen"            :
+            {
+                "port"                  :11120,
+                "readWaitingTimeoutMcs" :1000000
+            },
 
             "dumpWeight":
             [

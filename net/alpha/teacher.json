@@ -2,10 +2,11 @@
     "loopSleepMcs"    :1000,
     "io":
     {
-        "source"            :"SERVER",
-        "net"               :"net/net.json",
-        "host"              :"127.0.0.1",
-        "port"              :11120
+        "source"                :"SERVER",
+        "net"                   :"net/net.json",
+        "host"                  :"127.0.0.1",
+        "port"                  :11120,
+        "readWaitingTimeoutMcs" :500000
     },
 
     "tasks":

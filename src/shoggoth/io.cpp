@@ -102,17 +102,20 @@ Io* Io::call
         }
         else
         {
-            string  host = config -> getString( "host" );
-            int     port = config -> getInt( "port" );
+            auto  host = config -> getString( "host" );
+            auto  port = config -> getInt( "port" );
+            auto  readWaitingTimeoutMcs = config -> getInt( "readWaitingTimeoutMcs" );
 
             /* Server operation */
-            RpcClient::create
+            auto client = RpcClient::create
             (
                 getApplication() -> getLogManager(),
                 net -> getSockManager(),
                 host,
                 port
-            )
+            );
+            client -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
+            client
             -> setRequest( request )
             -> setAnswer( answer )
             -> call( aCommand )

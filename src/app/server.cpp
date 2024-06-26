@@ -111,19 +111,25 @@ void Server::onResume()
 {
     getLog() -> begin( "Server start" );
 
+    auto config = getApplication() -> getConfig();
 
     /* Read port */
-    auto listenPort = getApplication()
-    -> getConfig()
-    -> getInt
+    auto listenPort = config -> getInt
     (
         Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
         11120
     );
 
+    auto  readWaitingTimeoutMcs = config -> getInt
+    (
+        Path{ "tasks",  taskToString( TASK_PROC ), "listen", "readWaitingTimeoutMcs" },
+        READ_WAITING_TIMEOUT_MCS
+    );
+
     getLog() -> prm( "Listenen port", listenPort );
 
     srv = ShoggothRpcServer::create( net, listenPort );
+    srv -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
 
     mon
     -> startTimer( Path{ "resume", "moment" })
