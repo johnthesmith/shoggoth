@@ -344,6 +344,7 @@ Net* Net::requestStat
         aStatTick.size() > 0
     )
     {
+cout << "===2\n";
         getLog() -> begin( "Read stat" );
 
         /* Create IO object and define request */
@@ -357,6 +358,8 @@ Net* Net::requestStat
         /* Call server and apply the answer */
         if( io -> call( CMD_READ_LAYER_STAT ) -> isOk() )
         {
+cout << "===3\n";
+
             lock();
 
             /* Loop for values */
@@ -413,6 +416,7 @@ Net* Net::requestStat
             /* Loop for ticks */
             for( auto id : aStatTick )
             {
+cout << "===4\n";
                 auto layer = getLayerList() -> getById( id );
                 if( layer != NULL )
                 {
