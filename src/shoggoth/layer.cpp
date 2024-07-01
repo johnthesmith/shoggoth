@@ -827,8 +827,6 @@ Layer* Layer::dumpToLog()
         -> value( values[ i ])
         -> text( " | error: " )
         -> value( errors[ i ]);
-
-if( values[ i ] > 1e6 ) exit( 0 );
     }
     getLog() -> end();
     return this;

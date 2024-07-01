@@ -436,7 +436,7 @@ Net* Net::requestStat
                         cout
                         << "==============="  << size << " " <<
                         layer -> getId() <<
-//                        layer -> getChartTick() -> toString( 20 ) <<
+                        layer -> getChartTick() -> toString( 20 ) <<
                         "\n";
                     }
                 }
