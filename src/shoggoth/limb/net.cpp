@@ -359,6 +359,9 @@ Net* Net::requestStat
         {
             lock();
 
+//getLog() -> warning("a") -> dump( io -> getAnswer() );
+//TODO Разобратся почему не пишутся на сервере тики. они приходят в количестве 0.
+
             /* Loop for values */
             for( auto id : aStatValue )
             {
@@ -405,6 +408,13 @@ Net* Net::requestStat
                         layer
                         -> getChartErrors()
                         -> fromBuffer( buffer, size );
+
+                        cout
+                        << layer -> getChartErrors() -> toString( 20 )
+                        << " "
+                        << layer -> getId()
+                        << "\n";
+
                     }
                 }
             }
@@ -433,11 +443,11 @@ Net* Net::requestStat
                         -> getChartTick()
                         -> fromBuffer( buffer, size );
 
-                        cout
-                        << "==============="  << size << " " <<
-                        layer -> getId() <<
-                        layer -> getChartTick() -> toString( 20 ) <<
-                        "\n";
+//                        cout
+//                        << "==============="  << size << " " <<
+//                        layer -> getId() <<
+//                        layer -> getChartTick() -> toString( 20 ) <<
+//                        "\n";
                     }
                 }
             }
