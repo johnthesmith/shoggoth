@@ -827,11 +827,13 @@ Nerve* Nerve::dumpToMon
             + getChild() -> getId()
         );
 
+
+        iChart -> createLast( abs( weights[ i ] ));
         aMon
         -> setString
         (
             Path{ getParent() -> getId(), getChild() -> getId(), to_string( i ) },
-            iChart -> push( abs( weights[ i ] )) -> toString( 40 )
+            iChart -> toString( 40 )
         );
     }
 

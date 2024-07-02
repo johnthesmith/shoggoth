@@ -859,18 +859,21 @@ Layer* Layer::dumpToMon
             + getId()
         );
 
+
+        iValuesChart -> createLast( values[ i ] );
         aMonValues
         -> setString
         (
             Path{ getId(), to_string( i ) },
-            iValuesChart -> push( values[ i ] ) -> toString( 40 )
+            iValuesChart -> toString( 40 )
         );
 
+        iErrorsChart -> createLast( abs( errors[ i ] ));
         aMonErrors
         -> setString
         (
             Path{ getId(), to_string( i ) },
-            iErrorsChart -> push( abs( errors[ i ] )) -> toString( 40 )
+            iValuesChart -> toString( 40 )
         );
     }
 
@@ -889,9 +892,8 @@ Layer* Layer::stat()
     {
         tickCount ++;
     }
-
-    chartValues -> push( calcSumValue() );
-    chartErrors -> push( calcSumError() );
+    chartValues -> createLast( calcSumValue() );
+    chartErrors -> createLast( calcSumError() );
     return this;
 }
 
@@ -903,7 +905,7 @@ Layer* Layer::stat()
 Layer* Layer::dropTickCount()
 {
     /* Push count in to stat chart */
-    chartTick -> push( ( double ) tickCount );
+    chartTick -> createLast( ( double ) tickCount );
     /* Reset tick counter */
     tickCount = 0;
 
