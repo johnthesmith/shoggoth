@@ -3,7 +3,9 @@
 #include <unistd.h> /* usleep */
 #include "limb_processor.h"
 #include "../func.h"
+
 #include "../../../../../lib/core/math.h"
+#include "../../../../../lib/core/str.h"
 
 
 
@@ -286,7 +288,10 @@ LimbProcessor* LimbProcessor::calc()
     /* Calc begin */
     if( getCalcStage( CALC_ALL ) == CALC_COMPLETE )
     {
+        /* Increase total calc frame */
         frame++;
+        /* Increase tick */
+        tick ++;
 
         /* Set learning speed from net config */
         net -> lock();
@@ -344,21 +349,62 @@ LimbProcessor* LimbProcessor::calc()
         -> stat()
         ;
 
-
-
         /* Reset calc stages for all layers */
         calcReset();
 
         /* Fill forward and backward list */
         precalc();
 
-        /* Increase tick */
-        tick ++;
-
         /* Drop learing mode flag */
         learning = false;
-    }
 
+        /*
+        */
+        net -> lock();
+        net -> getLayerList() -> loop
+        (
+            [ this ]
+            (
+                void* aItem
+            )
+            {
+                auto layer = (Layer*) aItem;
+
+auto smoth = ChartData::create() -> setMaxCount( 100 );
+layer -> getChartTick() -> smoth( 0.5, smoth );
+
+                mon
+                -> setString
+                (
+                    Path{ "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartValues() -> toString( 40 )
+                )
+                -> setString
+                (
+                    Path{ "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartErrors() -> toString( 40 )
+                )
+
+                -> setString
+                (
+                    Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartTick() -> toString( 40 )
+                )
+
+                -> setString
+                (
+                    Path{ "tickssmoth", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    smoth -> toString( 40 )
+                )
+                ;
+
+smoth->destroy();
+
+                return false;
+            }
+        );
+        net -> unlock();
+    }
 
 
     Layer* layer = NULL;
@@ -481,6 +527,7 @@ LimbProcessor* LimbProcessor::calc()
         }
 
         auto id = layer -> getId();
+
         mon
         -> setBool( Path{ "current", "learning" }, learning )
         -> setInt( Path{ "current", "tick" }, tick )

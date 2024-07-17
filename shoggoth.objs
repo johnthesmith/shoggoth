@@ -45,6 +45,7 @@ OBJECT_PATH/param_list.o
 OBJECT_PATH/param.o
 OBJECT_PATH/payload.o
 
+OBJECT_PATH/gauss.o
 OBJECT_PATH/point2d.o
 OBJECT_PATH/point3i.o
 OBJECT_PATH/point3.o

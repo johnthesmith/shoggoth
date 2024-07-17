@@ -36,6 +36,7 @@ OBJECT_PATH/rpc_server.o
 
 # Graph and math
 OBJECT_PATH/point3i.o
+OBJECT_PATH/gauss.o
 
 ##############################################################################
 # Application

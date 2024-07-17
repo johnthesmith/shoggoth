@@ -14,7 +14,7 @@
         "TEACHER":
         {
             "enabled"               :true,
-            "loopSleepMcs"          :100000,
+            "loopSleepMcs"          :10000,
             "idErrorLayer"          :"error",
             "errorLimit"            :0.0001,
             "mode"                 :"learning_digits",

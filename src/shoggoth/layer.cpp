@@ -24,7 +24,7 @@ Layer::Layer
     /* Statistics */
     chartValues      = ChartData::create();
     chartErrors      = ChartData::create();
-    chartTick        = ChartData::create();
+    chartTick        = ChartData::create() -> setMaxCount( 1000 );
 
     /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
@@ -859,18 +859,15 @@ Layer* Layer::dumpToMon
             + getId()
         );
 
-
         iValuesChart -> createLast( values[ i ] );
-        aMonValues
-        -> setString
+        aMonValues -> setString
         (
             Path{ getId(), to_string( i ) },
             iValuesChart -> toString( 40 )
         );
 
         iErrorsChart -> createLast( abs( errors[ i ] ));
-        aMonErrors
-        -> setString
+        aMonErrors -> setString
         (
             Path{ getId(), to_string( i ) },
             iValuesChart -> toString( 40 )
@@ -905,7 +902,10 @@ Layer* Layer::stat()
 Layer* Layer::dropTickCount()
 {
     /* Push count in to stat chart */
-    chartTick -> createLast( ( double ) tickCount );
+    if( tickCount >= 0 )
+    {
+        chartTick -> createLast( ( double ) tickCount );
+    }
     /* Reset tick counter */
     tickCount = 0;
 

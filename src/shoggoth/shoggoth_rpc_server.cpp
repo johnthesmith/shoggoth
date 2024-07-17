@@ -328,7 +328,9 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
 
                         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
                         {
-                            layer -> setValuesFromBuffer( buffer, size );
+                            layer
+                            -> setValuesFromBuffer( buffer, size )
+                            -> dropTickCount();
                         }
                     }
                 }
