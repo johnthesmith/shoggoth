@@ -380,15 +380,6 @@ Net* Net::requestStat
                         layer
                         -> getChartValues()
                         -> fromBuffer( buffer, size );
-
-
-                        cout
-                        << layer -> getChartValues() -> toString( 20 )
-                        << " "
-                        << layer -> getId()
-                        << "\n";
-
-
                     }
                 }
             }
