@@ -84,7 +84,7 @@
                 "WRITE_VALUES"      :[ "PROC" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -102,7 +102,7 @@
                 "WRITE_VALUES"      :[ "TEACHER" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -121,7 +121,7 @@
                 "WRITE_VALUES"      :[ "PROC" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -139,7 +139,7 @@
                 "WRITE_VALUES"      :[ "PROC" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -157,7 +157,7 @@
                 "WRITE_VALUES"      :[ "TEACHER" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -175,7 +175,7 @@
                 "WRITE_VALUES"      :[ "PROC" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }
@@ -192,7 +192,7 @@
                 "WRITE_VALUES"      :[ "PROC", "TEACHER" ],
                 "READ_ERRORS"       :[ "UI" ],
                 "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
+                "READ_STAT_TICK"    :[],
                 "READ_STAT_ERROR"   :[],
                 "READ_STAT_VALUE"   :[]
             }

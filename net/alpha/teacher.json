@@ -77,7 +77,7 @@
                     [
                         { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
                         { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAevYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
                         { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                     ],
                     [

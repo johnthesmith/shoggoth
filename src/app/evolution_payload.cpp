@@ -5,6 +5,7 @@
 #include "evolution_application.h"
 #include "evolution_payload.h"
 #include "../shoggoth/io.h"
+#include "../../../../lib/core/str.h"
 
 
 
@@ -165,32 +166,77 @@ EvolutionPayload* EvolutionPayload::processing()
     };
 
     EvolutionResult action = CONTINUE;
+
     getLog() -> begin( "Processing" );
 
-    /*
-        Nan condition
-        TODO проверить почему нан не приехал
-    */
     net -> getLayerList() -> loop
     (
         [ this, &action ]
         ( void* item )
         {
-            auto layer = ( Layer* ) item;
+            auto layer = (Layer*) item;
+
+            /* Read config */
+            auto cfg = getApplication()
+            -> getConfig()
+            -> getObject( Path{ "criterions", layer -> getId() } );
+
             if( isnan( layer -> calcSumValue()) )
             {
+                /* Checking the NAN criterion */
                 action = ROLLBACK;
                 getLog() -> trace( "Result" )
                 -> prm( "layer", layer -> getId() )
-                -> prm( "reason", "is nan" );
+                -> prm( "reason", "is_nan" );
             }
+            else if
+            (
+                /* Checking the tick delta criterion */
+                cfg != NULL &&
+                cfg -> exists( Path{ "tickDeltaLimit" })
+            )
+            {
+                /* Let config params */
+                auto cfgTickSmoth = cfg -> getDouble( "tickSmoth" );
+                auto cfgTickDeltaLimit = cfg -> getDouble( "tickDeltaLimit" );
+
+                /* Ticks smothing */
+                auto smoth = ChartData::create() -> setMaxCount( 100 );
+                layer
+                -> getChartTick()
+                -> smoth( cfgTickSmoth, smoth );
+
+                /* Monitoring */
+                getMon()
+                -> setDouble( Path{ "settings", layer -> getId(), "tickDeltaLimit" }, cfgTickDeltaLimit )
+                -> setDouble( Path{ "settings", layer -> getId(), "tickSmoth" }, cfgTickSmoth )
+                -> setString
+                (
+                    Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartTick() -> toString( 40 )
+                )
+                -> setString
+                (
+                    Path{ "tickssmoth", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    smoth -> toString( 40 )
+                );
+
+                if( smoth -> deltaMinMax() < cfgTickDeltaLimit )
+                {
+                    action = MUTATE;
+                    getLog() -> trace( "Result" )
+                    -> prm( "layer", layer -> getId() )
+                    -> prm( "reason", "learning_limit" );
+                }
+
+                /* Destroy the smoth */
+                smoth -> destroy();
+            }
+
             return false;
         }
     );
 
-    /*
-        Next case of  evolution ...
-    */
 
 
     /* Define result */
@@ -222,7 +268,6 @@ EvolutionPayload* EvolutionPayload::processing()
             -> destroy();
         break;
     }
-
     getLog() -> end( result -> getCode() );
 
     result -> destroy();

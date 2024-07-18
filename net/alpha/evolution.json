@@ -1,10 +1,20 @@
 {
     "loopSleepMcs"      :1000000,
+
     "io":
     {
         "source"                : "SERVER",
         "host"                  : "127.0.0.1",
         "port"                  : 11120,
         "readWaitingTimeoutMcs" : 500000
+    },
+
+    "criterions":
+    {
+        "retina":
+        {
+            "tickSmoth": 0.5,
+            "tickDeltaLimit": 2.0
+        }
     }
 }

@@ -96,7 +96,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     -> flush();
 
     getLog()
-    -> trace( "Called method" )
+    -> trace( "Called method!" )
     -> prm( "Name", methodStr )
     -> prm( "Code", method )
     -> lineEnd();
@@ -111,7 +111,6 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_REQUEST_WEIGHTS    :requestWeights( aArguments, aResults); break;
         case CMD_DROP_LAYER_TICK    :dropLayerTick( aArguments, aResults); break;
         case CMD_READ_LAYER_STAT    :readLayerStat( aArguments, aResults); break;
-
 //        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
 //        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
         default                 :unknownMethod( aArguments, aResults); break;

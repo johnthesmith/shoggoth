@@ -370,9 +370,6 @@ LimbProcessor* LimbProcessor::calc()
             {
                 auto layer = (Layer*) aItem;
 
-auto smoth = ChartData::create() -> setMaxCount( 100 );
-layer -> getChartTick() -> smoth( 0.5, smoth );
-
                 mon
                 -> setString
                 (
@@ -390,15 +387,7 @@ layer -> getChartTick() -> smoth( 0.5, smoth );
                     Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
                     layer -> getChartTick() -> toString( 40 )
                 )
-
-                -> setString
-                (
-                    Path{ "tickssmoth", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    smoth -> toString( 40 )
-                )
                 ;
-
-smoth->destroy();
 
                 return false;
             }
