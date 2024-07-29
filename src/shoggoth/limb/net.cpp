@@ -32,11 +32,6 @@ Net::Net
     tasks = ParamList::create();
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
-
-//Rnd::storeSeed(0);
-//Rnd::randomize();
-//clone( version );
-//Rnd::restoreSeed();
 }
 
 
@@ -581,6 +576,44 @@ bool Net::isConfigUpdate
 
 
 /*
+    Reurn parent net version
+*/
+string Net::getParentVersion
+(
+    /* Net ID (not used) */
+    string aNetId,
+    /* Net version */
+    string aNetVersion,
+    /* Parent generation (0 - current net) */
+    int aParentGeneration
+)
+{
+    auto result = aNetVersion;
+
+    for( int i = 0; i < aParentGeneration; i++ )
+    {
+        /* Define net files */
+        string netFile = getNetConfigFile( result );
+
+        /* Create JSON structure */
+        auto json = Json::create() -> fromFile( netFile );
+
+        if( json != NULL )
+        {
+            auto current = json -> getString( Path{ "version", "parent" }, result );
+            if( current != "" )
+            {
+                result = current;
+            }
+        }
+    }
+
+    return result;
+}
+
+
+
+/*
     Clone net form parent to child
 */
 Net* Net::clone
@@ -811,6 +844,12 @@ Net* Net::applyNet
 
     if( configLayers != NULL )
     {
+        /* Set net version from config */
+        setNextVersion( config -> getString( Path{ "version", "current" } ) );
+
+        /* Set net version from config */
+        setSeed( config -> getInt( Path{ "seed" } ) );
+
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
 
@@ -954,8 +993,23 @@ Net* Net::applyNet
     /* Update last update net moment */
     setLastUpdate( aConfig -> getInt( "lastUpdate", 0 ));
 
-    /* Set nextVersion in to version */
-    version = nextVersion;
+    if( version != nextVersion )
+    {
+        /* Set nextVersion in to version */
+        version = nextVersion;
+
+        /* Clear tick */
+        getLayerList() -> loop
+        (
+            []
+            ( void* aLayer )
+            {
+                auto layer = ( Layer* ) aLayer;
+                layer -> getChartTick() -> clear();
+                return false;
+            }
+        );
+    }
 
     return this;
 }
@@ -1042,10 +1096,9 @@ string Net::getLogPath
     string aId          /* Net id */
 )
 {
-    return getNetVersionPath
+    return getNetPath
     (
         "log" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aVersion,
         aId
     );
 }
@@ -1062,10 +1115,9 @@ string Net::getMonPath
     string aId          /* Net id */
 )
 {
-    return getNetVersionPath
+    return getNetPath
     (
         "mon" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aVersion,
         aId
     );
 }
@@ -1787,5 +1839,29 @@ Net* Net::stat()
             return false;
         }
     );
+    return this;
+}
+
+
+
+/*
+    Return net random seed
+*/
+unsigned long long Net::getSeed()
+{
+    return seed;
+}
+
+
+
+/*
+    Set net random seed
+*/
+Net* Net::setSeed
+(
+    unsigned long long a
+)
+{
+    seed = a;
     return this;
 }

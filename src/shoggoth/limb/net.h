@@ -2,11 +2,6 @@
     Shoggoth net object on limb based
     Its works like synchronizer between other limbs.
 */
-
-
-
-
-
 #pragma once
 
 
@@ -14,6 +9,7 @@
 #include <string>
 
 #include "../../../../../lib/core/application.h"
+#include "../../../../../lib/core/rnd_obj.h"
 #include "../../../../../lib/sock/sock_manager.h"
 
 #include "../limb.h"
@@ -39,7 +35,6 @@ class Net: public Limb
         /* Weights request */
         WeightsExchange* weightsExchange = NULL;
 
-
         /* Events */
         ParamList* tasks           = NULL;     /* List of participants tasks */
 
@@ -64,6 +59,8 @@ class Net: public Limb
         string          version         = "";
         /* Net version, for switching at next turn of calculation */
         string          nextVersion     = "";
+        /* Random seed for Net */
+        unsigned long long seed         = 0;
 
     public:
 
@@ -556,6 +553,38 @@ class Net: public Limb
             vector<string>,
             vector<string>,
             vector<string>
+        );
+
+
+
+        /*
+            Reurn parent net version
+        */
+        string getParentVersion
+        (
+            /* Net ID (not used) */
+            string,
+            /* Net version */
+            string,
+            /* Parent generation (0 - current net) */
+            int = 0
+        );
+
+
+        /*
+            Return net random seed
+        */
+        unsigned long long getSeed();
+
+
+
+
+        /*
+            Set net random seed
+        */
+        Net* setSeed
+        (
+            unsigned long long
         );
 
 };

@@ -6,7 +6,7 @@
         "current":"zero",
         "parent":"zero"
     },
-
+    "seed":13,
     "mutations":
     [
         {
@@ -25,14 +25,14 @@
         },
         {
             "path":[ "layers", "cortex_1", "size", "0"],
-            "rnd":1.1,
+            "rnd":0.1,
             "add":1,
             "min":4,
             "max":100
         },
         {
             "path":[ "layers", "cortex_1", "size", "1" ],
-            "rnd":10.01,
+            "rnd":0.01,
             "add":1,
             "min":1,
             "max":3

@@ -21,7 +21,7 @@ LimbProcessor::LimbProcessor
 {
     net             = aNet;
 
-    mon = Mon::create( net -> getMonPath( "procesor.txt" ))
+    mon = Mon::create( net -> getMonPath( "procesor.json" ))
     -> setString( Path{ "start", "Source" }, "Limb processor" )
     -> now( Path{ "start", "now" });
 
@@ -306,22 +306,10 @@ LimbProcessor* LimbProcessor::calc()
         /* Check structure with net */
         net -> syncToLimb( this, false );
 
-        /* Allocate weigth */
-        getNerveList() -> weightsAllocate
-        (
-            [ this ]
-            ( Nerve* nerve )
-            {
-                if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk()  )
-                {
-                    getLog()
-                    -> warning( nerve -> getCode() )
-                    -> dump( nerve -> getDetails() );
-                    nerve -> setOk();
-                    nerve -> fill();
-                }
-            }
-        );
+        net -> lock();
+        auto seed = net -> getSeed();
+        net -> unlock();
+        nerveControl( seed );
 
         net
         /* Upload start values from Net */
@@ -500,7 +488,10 @@ LimbProcessor* LimbProcessor::calc()
                         ( void* item )
                         {
                             auto nerve = (Nerve*) item;
-                            if( !nerve -> saveWeight( net -> getNervesPath() ) -> isOk()  )
+                            if
+                            (
+                                !nerve -> saveWeight( net -> getNervesPath() ) -> isOk()
+                            )
                             {
                                 getLog()
                                 -> warning( nerve -> getCode() )
@@ -531,6 +522,63 @@ LimbProcessor* LimbProcessor::calc()
 }
 
 
+/*
+    Controling the nerve list
+*/
+LimbProcessor* LimbProcessor::nerveControl
+(
+    unsigned long long int aSeed
+)
+{
+    bool reallocated = false;
+
+    /* Allocate weigth */
+    getNerveList() -> weightsAllocate
+    (
+        [ &reallocated ]
+        ( Nerve* nerve )
+        {
+            reallocated = true;
+        }
+    );
+
+    if( reallocated )
+    {
+        /* Network was realocated and have to loading */
+        auto loadingError = false;
+        getNerveList() -> loop
+        (
+            [ this, &loadingError ]
+            ( void* item )
+            {
+                auto nerve = ( Nerve* ) item;
+                if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk() )
+                {
+                    loadingError = true;
+                }
+                return loadingError;
+            }
+        );
+        /* Generage weights */
+        if( loadingError )
+        {
+            auto rnd = RndObj::create( aSeed );
+            getNerveList() -> loop
+            (
+                [ &rnd ]
+                ( void* item )
+                {
+                    auto nerve = ( Nerve* ) item;
+                    nerve -> setOk();
+                    nerve -> fill( rnd );
+                    return false;
+                }
+            );
+            rnd -> destroy();
+        }
+    }
+    return this;
+}
 
 /*
     Return pointer of forward calulation list

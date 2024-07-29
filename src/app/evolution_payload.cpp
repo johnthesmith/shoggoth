@@ -87,7 +87,12 @@ EvolutionApplication* EvolutionPayload::getApplication()
 void EvolutionPayload::onLoop()
 {
     getLog() -> trapOn() -> begin( "Loop" );
-    getMon() -> startTimer( Path{ "loop", "moment" });
+
+    getMon()
+    -> startTimer( Path{ "loop", "moment" })
+    -> setString( Path{ "net", "id" }, net -> getId() )
+    -> setString( Path{ "net", "version" }, net -> getVersion() )
+    ;
 
     if( getApplication() -> getCli() -> getString( "config" ) == "" )
     {
@@ -160,9 +165,9 @@ EvolutionPayload* EvolutionPayload::processing()
 {
     enum EvolutionResult
     {
-        CONTINUE,
-        ROLLBACK,
-        MUTATE
+        CONTINUE,   /* Learning continue */
+        ROLLBACK,   /* Kill current and paent mutate (new child) */
+        MUTATE      /* New from current (new child) */
     };
 
     EvolutionResult action = CONTINUE;
@@ -185,7 +190,7 @@ EvolutionPayload* EvolutionPayload::processing()
             {
                 /* Checking the NAN criterion */
                 action = ROLLBACK;
-                getLog() -> trace( "Result" )
+                getLog() -> info( "Result" )
                 -> prm( "layer", layer -> getId() )
                 -> prm( "reason", "is_nan" );
             }
@@ -199,9 +204,10 @@ EvolutionPayload* EvolutionPayload::processing()
                 /* Let config params */
                 auto cfgTickSmoth = cfg -> getDouble( "tickSmoth" );
                 auto cfgTickDeltaLimit = cfg -> getDouble( "tickDeltaLimit" );
+                auto cfgTickSmothCount = cfg -> getInt( "tickSmothCount" );
 
                 /* Ticks smothing */
-                auto smoth = ChartData::create() -> setMaxCount( 100 );
+                auto smoth = ChartData::create() -> setMaxCount( cfgTickSmothCount );
                 layer
                 -> getChartTick()
                 -> smoth( cfgTickSmoth, smoth );
@@ -209,6 +215,7 @@ EvolutionPayload* EvolutionPayload::processing()
                 /* Monitoring */
                 getMon()
                 -> setDouble( Path{ "settings", layer -> getId(), "tickDeltaLimit" }, cfgTickDeltaLimit )
+                -> setDouble( Path{ "settings", layer -> getId(), "tickSmothCount" }, cfgTickSmothCount )
                 -> setDouble( Path{ "settings", layer -> getId(), "tickSmoth" }, cfgTickSmoth )
                 -> setString
                 (
@@ -221,7 +228,11 @@ EvolutionPayload* EvolutionPayload::processing()
                     smoth -> toString( 40 )
                 );
 
-                if( smoth -> deltaMinMax() < cfgTickDeltaLimit )
+                if
+                (
+                    smoth -> deltaMinMax() < cfgTickDeltaLimit &&
+                    smoth -> getCount() == cfgTickSmothCount
+                )
                 {
                     action = MUTATE;
                     getLog() -> trace( "Result" )
@@ -251,19 +262,23 @@ EvolutionPayload* EvolutionPayload::processing()
             getLog() -> trace( "action" ) -> prm( "state", "Continue" );
         break;
         case ROLLBACK:
-            getLog() -> info( "action" ) -> prm( "state", "Rollback" );
+                getLog() -> info( "action" ) -> prm( "state", "Rollback" );
+                /* Clone parent net */
 
-            /* Clone parent net */
-            Io::create( net )
-            -> mutateParentAndSwitch()
-            -> resultTo( result )
-            -> destroy();
+// TODO Обдумать весь цикл обучения и контроля на статичных картинках КАК?
+// Возможно понадобится коммуникая между еволюшеном и тичером??!!
+// присобачить условие отката сети в случае если она училась дольше #272
+
+                Io::create( net )
+                -> mutateAndSwitch( 1 /*.... ? 1 : 2 */ )
+                -> resultTo( result )
+                -> destroy();
         break;
         case MUTATE:
             getLog() -> info( "action" ) -> prm( "state", "Mutate" );
             /* Clone net */
             Io::create( net )
-            -> mutateCurrentAndSwitch()
+            -> mutateAndSwitch( 0 )
             -> resultTo( result )
             -> destroy();
         break;

@@ -168,6 +168,16 @@ class LimbProcessor : public Limb
 
 
         /*
+            The nerve list controlling
+        */
+        LimbProcessor* nerveControl
+        (
+            unsigned long long
+        );
+
+
+
+        /*
             Build layers calculation sequence list
         */
         LimbProcessor* precalc();

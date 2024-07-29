@@ -2,7 +2,7 @@
 
 #include "nerve.h"
 
-#include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/rnd_obj.h"
 #include "../../../../lib/sock/rpc_client.h"
 
 #include "limb.h"
@@ -170,8 +170,12 @@ Nerve* Nerve::purge()
 */
 Nerve* Nerve::fill
 (
-    double aMinWeight,  /* MinWeight */
-    double aMaxWeight  /* MaxWeight */
+    /* Rnd seed */
+    RndObj* aSeed,
+    /* MinWeight */
+    double aMinWeight,
+    /* MaxWeight */
+    double aMaxWeight
 )
 {
     if( aMinWeight > aMaxWeight )
@@ -184,7 +188,7 @@ Nerve* Nerve::fill
     {
         for( int i = 0; i < weightsCount; i++ )
         {
-            weights[ i ] = Rnd::get( aMinWeight, aMaxWeight );
+            weights[ i ] = aSeed == NULL ? aMinWeight : aSeed -> get( aMinWeight, aMaxWeight );
             deltaWeights[ i ] = 0.0;
         }
     }

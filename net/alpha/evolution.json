@@ -14,7 +14,8 @@
         "retina":
         {
             "tickSmoth": 0.5,
-            "tickDeltaLimit": 2.0
+            "tickDeltaLimit": 2.0,
+            "tickSmothCount": 100
         }
     }
 }

@@ -60,6 +60,7 @@ OBJECT_PATH/processor.o
 
 OBJECT_PATH/result.o
 OBJECT_PATH/rnd.o
+OBJECT_PATH/rnd_obj.o
 OBJECT_PATH/server.o
 OBJECT_PATH/shoggoth_application.o
 OBJECT_PATH/shoggoth_consts.o

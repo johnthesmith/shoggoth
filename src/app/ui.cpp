@@ -177,7 +177,7 @@ void Ui::onCalc
     (
         []( Nerve* nerve )
         {
-            nerve -> fill( 1.0, 1.0 );
+            nerve -> fill( NULL, 1.0, 1.0 );
         }
     );
 

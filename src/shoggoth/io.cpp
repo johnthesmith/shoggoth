@@ -391,6 +391,7 @@ Io* Io::cloneNet
 (
     string aNetId,
     string aNetVersion,
+    int aGeneration,
     bool aMutation
 )
 {
@@ -399,7 +400,8 @@ Io* Io::cloneNet
         request
         -> clear()
         -> setString( "parentNetId", aNetId )
-        -> setString( "parnetNetVersion", aNetVersion )
+        -> setString( "parentNetVersion", aNetVersion )
+        -> setInt( "parentGeneration", aGeneration )
         -> setBool( "mutation", aMutation );
 
         call( CMD_CLONE_NET );
@@ -435,32 +437,17 @@ Io* Io::switchNet
 /*
     Mutate from the parent and switch to a new net
 */
-Io* Io::mutateParentAndSwitch()
-{
-    if( isOk() )
-    {
-        cloneNet
-        (
-            net -> getId(),
-            net -> getParentVersion(),
-            true /* Mutate */
-        );
-
-        switchNet
-        (
-            net -> getId(),
-            answer -> getString( "version" )
-        );
-    }
-    return this;
-}
-
-
-
-/*
-    Mutate from the current net and switch to a new net
-*/
-Io* Io::mutateCurrentAndSwitch()
+Io* Io::mutateAndSwitch
+(
+    /*
+        The generation
+        0 - the current net
+        1 - parent of the current net
+        2 - parent of parrent of the curent net
+        3 - ...
+    */
+    int aGeneration
+)
 {
     if( isOk() )
     {
@@ -468,8 +455,10 @@ Io* Io::mutateCurrentAndSwitch()
         (
             net -> getId(),
             net -> getVersion(),
+            aGeneration,
             true /* Mutate */
         );
+
         switchNet
         (
             net -> getId(),
@@ -478,3 +467,5 @@ Io* Io::mutateCurrentAndSwitch()
     }
     return this;
 }
+
+

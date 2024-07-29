@@ -24,7 +24,7 @@ ShoggothRpcServer::ShoggothRpcServer
 {
     net = aNet;
 
-    mon = Mon::create( aNet -> getMonPath( "shoggoth_server_rpc.txt" ))
+    mon = Mon::create( aNet -> getMonPath( "shoggoth_server_rpc.json" ))
     -> setString( Path{ "start", "source" }, "shoggoth_server_rpc" )
     -> startTimer( Path{ "start", "moment" })
     -> now( Path{ "start", "momentStr" })
@@ -225,8 +225,11 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
 )
 {
     auto parentNetId = aArguments -> getString( "parentNetId", "" );
-    auto parentNetVersion = aArguments -> getString( "parnetNetVersion", "" );
+    auto parentNetVersion = aArguments -> getString( "parentNetVersion", "" );
+    auto parentGeneration = aArguments -> getInt( "parentGeneration", 0 );
     auto mutation = aArguments -> getBool( "mutation", false );
+
+    getLog() -> info( "Clone net argument" ) -> dump( aArguments );
 
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
@@ -238,7 +241,12 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
     net -> clone
     (
         parentNetId,
-        parentNetVersion,
+        net -> getParentVersion
+        (
+            parentNetId,
+            parentNetVersion,
+            parentGeneration
+        ),
         childVersion,
         mutation
     );

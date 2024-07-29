@@ -11,6 +11,7 @@
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/core/log_manager.h"
 #include "../../../../lib/core/mon.h"
+#include "../../../../lib/core/rnd_obj.h"
 
 
 #include "../../../../lib/core/chart_list.h"
@@ -132,8 +133,12 @@ class Nerve: public Result
                 The default value MinWeight should be less then MaxWeight
                 for using configuration properties
             */
-            double = 1.0,    /* Default MinWeight */
-            double = -1.0    /* Default MaxWeight */
+            /* Random seed */
+            RndObj*,
+            /* Default MinWeight */
+            double = 1.0,
+            /* Default MaxWeight */
+            double = -1.0
         );
 
 

@@ -23,7 +23,7 @@ Teacher::Teacher
 {
     getLog() -> trace( "Create teacher" );
 
-    mon = Mon::create( aNet -> getMonPath( "teacher.txt" ))
+    mon = Mon::create( aNet -> getMonPath( "teacher.json" ))
     -> now( Path{ "start" })
     -> startTimer( Path{ "startMks" });
 

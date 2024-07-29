@@ -26,7 +26,7 @@ Server::Server
     net = aNet;
 
     /* Create server monitor */
-    mon = Mon::create( aNet -> getMonPath( "server.txt" ))
+    mon = Mon::create( aNet -> getMonPath( "server.json" ))
     -> setString( Path{ "start", "source" }, "Server payload" )
     -> startTimer( Path{ "start", "moment" });
 

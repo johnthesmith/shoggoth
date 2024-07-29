@@ -186,6 +186,7 @@ class Io: public Result
         (
             string, /* Net id */
             string, /* Net version */
+            int,    /* Parent generation */
             bool    /* True for mutation */
         );
 
@@ -205,14 +206,16 @@ class Io: public Result
         /*
             Mutate from the parent and switch to a new net
         */
-        Io* mutateParentAndSwitch();
-
-
-
-        /*
-            Mutate from the current net and switch to a new net
-        */
-        Io* mutateCurrentAndSwitch();
-
+        Io* mutateAndSwitch
+        (
+            /*
+                The generation
+                0 - the current net
+                1 - parent of the current net
+                2 - parent of parrent of the curent net
+                3 - ...
+            */
+            int
+        );
 };
 
