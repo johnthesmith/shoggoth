@@ -461,10 +461,7 @@ LimbProcessor* LimbProcessor::calc()
                 /* --- thread begin --- */
 
                 /* Calculate errors for layers with parents */
-                if( layerParentsExists( layer, BT_VALUE ))
-                {
-                    layerLearning( layer, idThread );
-                }
+                layerLearning( layer, idThread );
 
                 /* Set local sync for local works */
                 layer -> calcCompleteBackward();
@@ -865,13 +862,12 @@ LimbProcessor* LimbProcessor::neuronCalcValue
     bool &aLearning
 )
 {
-    double summValue        = 0.0;
-    double summCommand      = 0.0;
-    double summSample       = 0.0;
-    double summErrorValue   = 0.0;
-    int countSample         = 0;
-    int countValue          = 0;
-    int countErrorValue     = 0;
+    /* Additive accum */
+    double add = 0.0;
+    /* Multiplexor accum */
+    double mul = 1.0;
+    /* Additive count */
+    int count = 0;
 
     /* Neuron has a binds and it is not a Receptor */
     parentsLoop
@@ -880,90 +876,91 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         aIndex,
         BT_ALL,
         [
-            &summValue,
-            &summSample,
-            &summCommand,
-            &countSample,
-            &countValue,
-            &countErrorValue,
-            &summErrorValue
+            &add, &mul, &count
         ]
         (
-            Layer* aParentLayer,
-            int aParentIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex /* not use */
+            Layer*  aParentLayer,
+            int     aParentIndex,
+            Nerve*  aNerve,
+            double  aWeight,
+            int     aWeightIndex /* not use */
         ) -> bool
         {
+            /* The incoming value from parent to current neuron */
             auto w = aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
 
             /* Calculate summ */
-            switch( aNerve -> getBindType())
+            switch( aNerve -> getBindType() )
             {
-                case BT_ALL:
+                default:
                 break;
-                case BT_VALUE:
-                    summValue += w;
-                    countValue ++;
+                case BT_ADD:
+                    count ++;
+                    add += w;
                 break;
-                case BT_ERROR_TO_VALUE:
-                {
-                    auto e = aParentLayer -> getNeuronError( aParentIndex );
-                    summErrorValue += e * e * aWeight;
-//                    summErrorValue += abs
-//                    (
-//                        aParentLayer -> getNeuronError( aParentIndex ) * aWeight
-//                    );
-                    countErrorValue++;
-                }
-                break;
-                case BT_COMMAND:
-                    summCommand += w;
-                break;
-                case BT_SAMPLE:
-                    summSample += w;
-                    countSample ++;
+                case BT_MUL:
+                    mul *= w;
                 break;
             }
             return false;
         }
     );
 
-    if( countValue > 0 )
+    if( count > 0 )
     {
-        /* Value calculation */
-        aLayer -> setNeuronValue( aIndex, (*( aLayer -> frontFunc ))( summValue ) );
-    }
-
-    if( countErrorValue > 0 )
-    {
-        /* Write avg error from parent to layer */
-//        aLayer -> setNeuronValue
-//        (
-//            aIndex,
-//            summErrorValue / countErrorValue
-//        );
-        aLayer -> setNeuronValue( aIndex, summErrorValue / 2 );
-    }
-
-    /* Start error from Sample */
-    if( countSample > 0 )
-    {
-        auto value = aLayer -> getNeuronValue( aIndex );
-        aLayer -> setNeuronError
+        aLayer -> setNeuronValue
         (
             aIndex,
-            ( summSample - value ) * ( * ( aLayer -> backFunc))( value )
-            * ( summCommand > EPSILON_D ? 1.0 : 0.0 )
+            /* Main value calculation */
+            (*( aLayer -> frontFunc ))( add * mul )
         );
     }
 
-    /* Teaching detected */
-    aLearning = aLearning || summCommand > EPSILON_D;
-
     return this;
 }
+
+
+
+
+
+//                case BT_ERROR_TO_VALUE:
+//                {
+//                    auto e = aParentLayer -> getNeuronError( aParentIndex );
+//                    summErrorValue += e * e * aWeight;
+//                    countErrorValue++;
+//                }
+//                break;
+//                case BT_COMMAND:
+//                    summCommand += w;
+//                break;
+//                case BT_SAMPLE:
+//                    summSample += w;
+//                    countSample ++;
+//                break;
+//
+//    if( countErrorValue > 0 )
+//    {
+//        /* Write avg error from parent to layer */
+//        aLayer -> setNeuronValue( aIndex, summErrorValue / 2 );
+//    }
+//
+//    /* Start error from Sample */
+//    if( countSample > 0 )
+//    {
+//        auto value = aLayer -> getNeuronValue( aIndex );
+//        aLayer -> setNeuronError
+//        (
+//            aIndex,
+//            ( summSample - value ) * ( * ( aLayer -> backFunc))( value )
+//            * ( summCommand > EPSILON_D ? 1.0 : 0.0 )
+//        );
+//    }
+//
+//    /* Teaching detected */
+//    aLearning = aLearning || summCommand > EPSILON_D;
+
+
+
 
 
 
@@ -980,42 +977,61 @@ LimbProcessor* LimbProcessor::neuronLearning
     int count = 0;
     double summError    = 0.0;
 
-    /*
-        caclulate error form all children for current neuron
-    */
-    childrenLoop
-    (
-        aLayer,
-        aIndex,
-        BT_VALUE,
-        [
-            &count,
-            &summError
-        ]
-        (
-            Layer* aChild,
-            int aChildIndex,
-            Nerve* aNerve,
-            double aWeight,
-            int aWeightIndex    /* Not use */
-        ) -> bool
-        {
-            summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
-            count++;
-            return false;
-        }
-    );
-
-    if( count > 0 )
+    switch( aLayer -> getErrorCalc() )
     {
-        auto value = aLayer -> getNeuronValue( aIndex );
-        aLayer -> setNeuronError
-        (
-            aIndex,
-            /* Part of derivative */
-            summError * ( * ( aLayer -> backFunc ))( value )
-        );
+        default:
+        case EC_NONE:
+            /* Error not changing */
+        break;
+        case EC_LEARNING:
+        {
+            /*
+                caclulate error form all children for current neuron
+            */
+            childrenLoop
+            (
+                aLayer,
+                aIndex,
+                BT_ADD,
+                [
+                    &count,
+                    &summError
+                ]
+                (
+                    Layer* aChild,
+                    int aChildIndex,
+                    Nerve* aNerve,
+                    double aWeight,
+                    int aWeightIndex    /* Not use */
+                ) -> bool
+                {
+                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
+                    count++;
+                    return false;
+                }
+            );
+
+            if( count > 0 )
+            {
+                auto value = aLayer -> getNeuronValue( aIndex );
+                aLayer -> setNeuronError
+                (
+                    aIndex,
+                    /* Part of derivative */
+                    summError * ( * ( aLayer -> backFunc ))( value )
+                );
+            }
+        }
+        break;
+        case EC_VALUE:
+            aLayer -> setNeuronError( aIndex, aLayer -> getNeuronError( aIndex ));
+        break;
     }
+
+
+//            TODO далее пишем отсюда..
+
+
 
     auto currentNeuronError = aLayer -> getNeuronError( aIndex );
 

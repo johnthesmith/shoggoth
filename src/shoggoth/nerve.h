@@ -49,7 +49,7 @@ class Nerve: public Result
         LogManager* logManager      = NULL;
 
         string      id              = "";
-        BindType    bindType        = BT_VALUE;
+        BindType    bindType        = BT_ADD;
         NerveType   nerveType       = ALL_TO_ALL;
 
         Layer*      parent          = NULL;

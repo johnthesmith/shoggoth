@@ -72,6 +72,12 @@ class Layer : public Result
         double*         errors                  = NULL;
 
         /*
+            Layer settings
+        */
+        ErrorCalc       erroreCalc              = EC_NONE;
+        WeightCalc      weightCalc              = WC_NONE;
+
+        /*
             Ticker
             Count tick between two tickerDrop calls
             Monotone incremental counter

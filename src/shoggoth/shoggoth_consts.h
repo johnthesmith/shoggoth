@@ -96,7 +96,7 @@ enum CalcStage
 */
 enum Command
 {
-    CMD_UNKNWON,        /* Unknown command */
+    CMD_UNKNOWN,        /* Unknown command */
     CMD_READ_NET,       /* Server return full Net configuration */
     CMD_CLONE_NET,      /* Server clone net */
     CMD_SWITCH_NET,     /* Server switch to specified net */
@@ -134,9 +134,9 @@ enum ErrorCalc
 enum ValueCalc
 {
     /* Value not calculating */
-    VA_NONE,
+    VC_NONE,
     /* Value calculating */
-    VA_CALC
+    VC_CALC
 };
 
 
@@ -156,6 +156,8 @@ enum WeightCalc
 
 enum BindType
 {
+    /* All binds */
+    BT_ALL,
     /* Additive bind*/
     BT_ADD,
     /* Multiplexor bind */
@@ -251,3 +253,22 @@ string errorCalcToString
     ErrorCalc
 );
 
+
+
+/*
+    Converts string to weight calculation
+*/
+WeightCalc weightCalcFromString
+(
+    string a
+);
+
+
+
+/*
+    Converts error calculation to string
+*/
+string weightCalcToString
+(
+    WeightCalc
+);
