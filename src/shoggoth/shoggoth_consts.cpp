@@ -60,7 +60,7 @@ std::string commandToString
     switch( a )
     {
         default:
-        case CMD_UNKNWON        : return "UNKNWON";
+        case CMD_UNKNOWN        : return "UNKNOWN";
         case CMD_READ_NET       : return "READ_NET";
         case CMD_CLONE_NET      : return "CLONE_NET";
         case CMD_SWITCH_NET     : return "SWITCH_NET";
@@ -97,20 +97,24 @@ std::string calcStageToString
 
 
 
+/*
+    Converts string to bind type
+*/
 BindType bindTypeFromString
 (
     std::string a
 )
 {
-    if( a == "VALUE" )              return BT_VALUE;
-    if( a == "SAMPLE" )             return BT_SAMPLE;
-    if( a == "COMMAND" )            return BT_COMMAND;
-    if( a == "ERROR_TO_VALUE" )     return BT_ERROR_TO_VALUE;
-    return BT_VALUE;
+    if( a == "MUL" ) return BT_MUL;
+    if( a == "ADD" ) return BT_ADD;
+    return BT_ADD;
 }
 
 
 
+/*
+    Converts bind type to string
+*/
 std::string bindTypeToString
 (
     BindType a
@@ -119,9 +123,76 @@ std::string bindTypeToString
     switch( a )
     {
         default:
-        case BT_VALUE           : return "VALUE";
-        case BT_SAMPLE          : return "SAMPLE";
-        case BT_COMMAND         : return "COMMAND";
-        case BT_ERROR_TO_VALUE  : return"ERROR_TO_VALUE";
+        case BT_ADD             : return "ADD";
+        case BT_MUL             : return "MUL";
+    };
+}
+
+
+
+
+/*
+    Converts string to error calculation
+*/
+ErrorCalc errorCalcFromString
+(
+    std::string a
+)
+{
+    if( a == "LEARNING" ) return EC_LEARNING;
+    if( a == "VALUE" ) return EC_VALUE;
+    if( a == "NONE" ) return EC_NONE;
+    return EC_NONE;
+}
+
+
+
+/*
+    Converts error calculation to string
+*/
+std::string errorCalcToString
+(
+    ErrorCalc a
+)
+{
+    switch( a )
+    {
+        default:
+        case EC_NONE        : return "NONE";
+        case EC_LEARNING    : return "LEARNING";
+        case EC_VALUE       : return "VALUE";
+    };
+}
+
+
+
+/*
+    Converts string to weight calculation
+*/
+WeightCalc weightCalcFromString
+(
+    std::string a
+)
+{
+    if( a == "CALC" ) return WC_CALC;
+    if( a == "NONE" ) return WC_NONE;
+    return WC_NONE;
+}
+
+
+
+/*
+    Converts error calculation to string
+*/
+std::string weightCalcToString
+(
+    WeightCalc a
+)
+{
+    switch( a )
+    {
+        default:
+        case WC_NONE    : return "NONE";
+        case WC_CALC    : return "CALC";
     };
 }

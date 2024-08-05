@@ -113,13 +113,53 @@ enum Command
 
 
 
+/*
+    Neuron layer error calculation types
+*/
+enum ErrorCalc
+{
+    /* Error not changeing */
+    EC_NONE,
+    /* Calculating error for learning */
+    EC_LEARNING,
+    /* Put value in to error */
+    EC_VALUE
+};
+
+
+
+/*
+    Neuron layer value calculation types
+*/
+enum ValueCalc
+{
+    /* Value not calculating */
+    VA_NONE,
+    /* Value calculating */
+    VA_CALC
+};
+
+
+
+/*
+    Weight layer error calculation types
+*/
+enum WeightCalc
+{
+    /* Weight not changeing */
+    WC_NONE,
+    /* Calculating weight for learning */
+    WC_CALC
+};
+
+
+
 enum BindType
 {
-    BT_ALL,             /* All binds */
-    BT_VALUE,           /* Spred value */
-    BT_SAMPLE,          /**/
-    BT_COMMAND,
-    BT_ERROR_TO_VALUE
+    /* Additive bind*/
+    BT_ADD,
+    /* Multiplexor bind */
+    BT_MUL
 };
 
 
@@ -190,5 +230,24 @@ BindType bindTypeFromString
 string bindTypeToString
 (
     BindType
+);
+
+
+
+/*
+    Converts string to error calculation
+*/
+ErrorCalc errorCalcFromString
+(
+    string
+);
+
+
+/*
+    Converts error calculation to string
+*/
+string errorCalcToString
+(
+    ErrorCalc
 );
 

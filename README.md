@@ -284,3 +284,26 @@ saveNerves --> saveLayers --> stop
 
 - [@igptx](https://www.github.com/igptx)
 - [@johnthesmith](https://www.github.com/johnthesmith)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Enums for neurons calculation
+
+
+"forward_function"  : [ NONE, RELU, LINE, SIGMOID]
+"backward_function" : [ NONE, RELU, LINE, SIGMOID_BACK ]
+"value_algorithm"   : [ NONE, CALC_VALUE ]
+"error_algoritm"    : [ NONE, ERROR_LEARNING, NEURON_VALUE ]
+"weight_algoritm"   : [ NONE, WEIGHT_LEARNING ]
