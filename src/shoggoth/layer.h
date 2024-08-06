@@ -74,7 +74,7 @@ class Layer : public Result
         /*
             Layer settings
         */
-        ErrorCalc       erroreCalc              = EC_NONE;
+        ErrorCalc       errorCalc               = EC_NONE;
         WeightCalc      weightCalc              = WC_NONE;
 
         /*
@@ -585,4 +585,8 @@ class Layer : public Result
         ChartData* getChartTick();
         ChartData* getChartValues();
         ChartData* getChartErrors();
+
+
+
+        ErrorCalc getErrorCalc();
 };

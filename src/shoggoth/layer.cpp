@@ -932,3 +932,10 @@ ChartData* Layer::getChartErrors()
 {
     return chartErrors;
 }
+
+
+
+ErrorCalc Layer::getErrorCalc()
+{
+    return errorCalc;
+}

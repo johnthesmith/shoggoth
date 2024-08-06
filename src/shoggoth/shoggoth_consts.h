@@ -122,8 +122,8 @@ enum ErrorCalc
     EC_NONE,
     /* Calculating error for learning */
     EC_LEARNING,
-    /* Put value in to error */
-    EC_VALUE
+    /* Put value in to the error */
+    EC_CURRENT_VALUE
 };
 
 

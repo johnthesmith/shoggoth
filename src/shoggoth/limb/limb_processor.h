@@ -319,7 +319,18 @@ class LimbProcessor : public Limb
 
 
         /*
-            Calculate neuron
+            Calculate neuron error
+        */
+        LimbProcessor* neuronCalcError
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Neuron index of layer */
+        );
+
+
+
+        /*
+            Calculate neuron parent weights
         */
         LimbProcessor* neuronLearning
         (

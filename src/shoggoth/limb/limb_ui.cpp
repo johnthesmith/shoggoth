@@ -266,16 +266,10 @@ LimbUi* LimbUi::drawNerve
                             case BT_ALL:
                                 color = RGBA_RED;
                             break;
-                            case BT_VALUE:
-                                color = RGBA_YELLOW;
-                            break;
-                            case BT_SAMPLE:
-                                color = RGBA_MAGENTA;
-                            break;
-                            case BT_COMMAND:
+                            case BT_ADD:
                                 color = RGBA_CYAN;
                             break;
-                            case BT_ERROR_TO_VALUE:
+                            case BT_MUL:
                                 color = RGBA_ORANGE;
                             break;
                         }
@@ -617,16 +611,10 @@ Rgba LimbUi::getArrowColorByType
         case BT_ALL:
             result = RGBA_RED;
         break;
-        case BT_VALUE:
-            result = RGBA_YELLOW;
-        break;
-        case BT_SAMPLE:
-            result = RGBA_MAGENTA;
-        break;
-        case BT_COMMAND:
+        case BT_ADD:
             result = RGBA_CYAN;
         break;
-        case BT_ERROR_TO_VALUE:
+        case BT_MUL:
             result = RGBA_ORANGE;
         break;
     }

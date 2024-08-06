@@ -962,41 +962,35 @@ LimbProcessor* LimbProcessor::neuronCalcValue
 
 
 
-
-
 /*
-    Calculate neuron
+    Calculate neuron error
 */
-LimbProcessor* LimbProcessor::neuronLearning
+LimbProcessor* LimbProcessor::neuronCalcError
 (
     Layer*  aLayer, /* Layer for calculation */
     int     aIndex  /* Neuron index of layer */
 )
 {
     /* Define variables */
-    int count = 0;
-    double summError    = 0.0;
+    double error    = 0.0;
 
     switch( aLayer -> getErrorCalc() )
     {
         default:
         case EC_NONE:
+            error = 0;
             /* Error not changing */
         break;
         case EC_LEARNING:
-        {
             /*
-                caclulate error form all children for current neuron
+                caclulate error form all children for the current neuron
             */
             childrenLoop
             (
                 aLayer,
                 aIndex,
                 BT_ADD,
-                [
-                    &count,
-                    &summError
-                ]
+                [ &error ]
                 (
                     Layer* aChild,
                     int aChildIndex,
@@ -1005,72 +999,96 @@ LimbProcessor* LimbProcessor::neuronLearning
                     int aWeightIndex    /* Not use */
                 ) -> bool
                 {
-                    summError += aChild -> getNeuronError( aChildIndex ) * aWeight;
-                    count++;
+                    error += aChild -> getNeuronError( aChildIndex ) * aWeight;
                     return false;
                 }
             );
-
-            if( count > 0 )
-            {
-                auto value = aLayer -> getNeuronValue( aIndex );
-                aLayer -> setNeuronError
-                (
-                    aIndex,
-                    /* Part of derivative */
-                    summError * ( * ( aLayer -> backFunc ))( value )
-                );
-            }
-        }
         break;
-        case EC_VALUE:
-            aLayer -> setNeuronError( aIndex, aLayer -> getNeuronError( aIndex ));
+        case EC_CURRENT_VALUE:
+            error = 1;
         break;
     }
 
-
-//            TODO далее пишем отсюда..
-
-
-
-    auto currentNeuronError = aLayer -> getNeuronError( aIndex );
-
-    /* Learning */
-    parentsLoop
+    /*
+        Calculate current neuron error
+        https://habr.com/ru/articles/313216/
+    */
+    auto currentError = error * ( * ( aLayer -> backFunc ))
     (
-        aLayer,
-        aIndex,
-        BT_VALUE,
-        [
-            this,
-            &currentNeuronError
-        ]
-        (
-            Layer*  aParentLayer,
-            int     aParentIndex,
-            Nerve*  aNerve,
-            double  aWeight,
-            int     aWeightIndex
-        )
-        {
-            /*
-                Emplementate the https://habr.com/ru/articles/313216/
-            */
-            double gradient =
-            aParentLayer -> getNeuronValue( aParentIndex )
-            * currentNeuronError;
-
-            double deltaWeight = gradient * learningSpeed
-            + aNerve -> getDeltaWeight( aWeightIndex ) * 0.3;
-
-            double newWeight = aWeight + deltaWeight;
-
-            aNerve -> setWeight( aWeightIndex, newWeight );
-            aNerve -> setDeltaWeight( aWeightIndex, deltaWeight );
-
-            return false;
-        }
+        aLayer -> getNeuronValue( aIndex )
     );
+
+    /* Write error in to neuron */
+    aLayer -> setNeuronError( aIndex, currentError );
+
+    return this;
+}
+
+
+// TODO изменить конфиг сети ну и проверить
+// Сделать загурзку парамтров слоя
+//      ErrorCalc       errorCalc               = EC_NONE;
+//      WeightCalc      weightCalc              = WC_NONE;
+
+
+
+
+/*
+    Learning a neuron by recalculating
+    the weights of parent connections.
+*/
+LimbProcessor* LimbProcessor::neuronLearning
+(
+    Layer*  aLayer, /* Layer for calculation */
+    int     aIndex  /* Neuron index of layer */
+)
+{
+    /* Learnin, calculating weights */
+    switch( aLayer -> getErrorCalc() )
+    {
+        default:
+            /* EC_NONE */
+            /* EC_VALUE */
+        break;
+        case EC_LEARNING:
+            auto error = aLayer -> getNeuronError( aIndex );
+            parentsLoop
+            (
+                aLayer,
+                aIndex,
+                BT_ADD,
+                [
+                    this,
+                    &error
+                ]
+                (
+                    Layer*  aParentLayer,
+                    int     aParentIndex,
+                    Nerve*  aNerve,
+                    double  aWeight,
+                    int     aWeightIndex
+                )
+                {
+                    /*
+                        Emplementate the https://habr.com/ru/articles/313216/
+                    */
+                    double gradient =
+                    aParentLayer -> getNeuronValue( aParentIndex )
+                    * error;
+
+                    double deltaWeight = gradient * learningSpeed
+                    + aNerve -> getDeltaWeight( aWeightIndex ) * 0.3;
+
+                    double newWeight = aWeight + deltaWeight;
+
+                    aNerve -> setWeight( aWeightIndex, newWeight );
+                    aNerve -> setDeltaWeight( aWeightIndex, deltaWeight );
+
+                    return false;
+                }
+            );
+        break;
+    }
 
     return this;
 }
@@ -1112,6 +1130,7 @@ LimbProcessor* LimbProcessor::layerLearning
 
     for( int i = b; i < e; i ++ )
     {
+        neuronCalcError( aLayer, i );
         neuronLearning( aLayer, i );
     }
 

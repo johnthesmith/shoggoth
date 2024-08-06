@@ -140,7 +140,7 @@ ErrorCalc errorCalcFromString
 )
 {
     if( a == "LEARNING" ) return EC_LEARNING;
-    if( a == "VALUE" ) return EC_VALUE;
+    if( a == "CURRENT_VALUE" ) return EC_CURRENT_VALUE;
     if( a == "NONE" ) return EC_NONE;
     return EC_NONE;
 }
@@ -158,9 +158,9 @@ std::string errorCalcToString
     switch( a )
     {
         default:
-        case EC_NONE        : return "NONE";
-        case EC_LEARNING    : return "LEARNING";
-        case EC_VALUE       : return "VALUE";
+        case EC_NONE            : return "NONE";
+        case EC_LEARNING        : return "LEARNING";
+        case EC_CURRENT_VALUE   : return "CURRENT_VALUE";
     };
 }
 
