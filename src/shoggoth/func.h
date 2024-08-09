@@ -12,6 +12,7 @@ typedef function <double ( double )> NeuronFunc;
 /* Neural net functions */
 extern NeuronFunc FUNC_LINE;
 extern NeuronFunc FUNC_LINE_BACK;
+extern NeuronFunc FUNC_STEP;
 extern NeuronFunc FUNC_SIGMOID;
 extern NeuronFunc FUNC_SIGMOID_BACK;
 extern NeuronFunc FUNC_SIGMOID_DERIVATIVE;

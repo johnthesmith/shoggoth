@@ -29,22 +29,33 @@ class LimbProcessor : public Limb
         /* Layer list with backward calculation sequence */
         LayerList*      backwardList    = NULL;
 
-        /* Calculation state */
-        CalcDirection   calcDirection   = CALC_FORWARD; /* Calculation direction */
-        int             calcLayerIndex  = 0;        /* Current lsyer for calculation */
-        long long int   tick            = 0;        /* Current tick */
-        int             threadCount     = 1;        /* Count of threads */
-        bool            learning        = false;    /* Automatic learning mode */
+        /*
+            Calculation state
+        */
 
-        /* Settings */
-        double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
-        double  minWeight               = 0.0001;   /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
-        double  maxWeight               = 1000;     /* Maxumum weight */
-        double  maxError                = 100;      /* Maxumum error, have to less then maxWeight */
+        /* Current tick */
+        long long int   tick            = 0;
+        /* Count of threads */
+        int             threadCount     = 1;
+        /* Automatic learning mode */
+        bool            learning        = false;
 
-        int     tickWrite               = 10;       /* Each of finished calculation form tickWrite will be writen to file */
+        /*
+            Settings
+        */
+        /* 0.0 - learning disable, max 0.1 recomended */
+        double  learningSpeed           = 0.001;
+        /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
+        double  minWeight               = 0.0001;
+        /* Maxumum weight */
+        double  maxWeight               = 1000;
+        /* Maxumum error, have to less then maxWeight */
+        double  maxError                = 100;
 
-        ParamList* dumpWeightConf       = NULL;     /**/
+        /* Each of finished calculation form tickWrite will be writen to file */
+        int     tickWrite               = 10;
+
+        ParamList* dumpWeightConf       = NULL;
         unsigned long long int  frame   = 0;
 
         /*
@@ -89,30 +100,6 @@ class LimbProcessor : public Limb
 
 
 
-        /* Dump sync info to log */
-        LimbProcessor* syncToLog
-        (
-            Layer* layer
-        );
-
-
-
-        /*
-            Return calc stage for layers with direction
-        */
-        CalcStage getCalcStage
-        (
-            CalcDirection CALC_ALL /* Direction */
-        );
-
-
-
-        /*
-            Reset forward and backward counts for layers
-        */
-        LimbProcessor* calcReset();
-
-
 
         /*
             Set processors count for calculation
@@ -129,29 +116,6 @@ class LimbProcessor : public Limb
         */
         int getThreadCount();
 
-
-
-        /*
-            Load parents layers and check forward calculation
-            return true if all parents layers is forward calculated
-            otherwise return false
-        */
-        bool preparedParents
-        (
-            Layer* /* Layer for parents check */
-        );
-
-
-
-        /*
-            Load children layers and check backward calculation
-            return true if all children layers is backward calculated
-            otherwise return false
-        */
-        bool preparedChildren
-        (
-            Layer* /* Layer for children check */
-        );
 
 
         LayerList* getForwardList();
@@ -332,7 +296,7 @@ class LimbProcessor : public Limb
         /*
             Calculate neuron parent weights
         */
-        LimbProcessor* neuronLearning
+        LimbProcessor* neuronCalcWeight
         (
             Layer*, /* Layer for calculation */
             int     /* Neuron index of layer */
@@ -352,7 +316,15 @@ class LimbProcessor : public Limb
 
 
 
-        LimbProcessor* layerLearning
+        LimbProcessor* layerCalcError
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Current thread number */
+        );
+
+
+
+        LimbProcessor* layerCalcWeight
         (
             Layer*, /* Layer for calculation */
             int     /* Current thread number */

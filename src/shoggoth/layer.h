@@ -58,9 +58,6 @@ class Layer : public Result
 
         string          storagePath             = "";
 
-        int             forward                 = -1;
-        int             backward                = -1;
-
         /* List of actions for layer */
         ParamList*      actions                 = NULL;
 
@@ -369,43 +366,6 @@ class Layer : public Result
         /************************************************************
             Layer calculateion service
         */
-
-
-
-        /*
-            Reset calculate states
-        */
-        Layer* calcReset();
-
-
-
-        Layer* calcStartForward();
-
-
-
-        Layer* calcStartBackward();
-
-
-
-        Layer* calcCompleteForward();
-
-
-
-        Layer* calcCompleteBackward();
-
-
-
-        CalcStage getForwardStage
-        (
-            int
-        );
-
-
-
-        CalcStage getBackwardStage
-        (
-            int
-        );
 
 
 

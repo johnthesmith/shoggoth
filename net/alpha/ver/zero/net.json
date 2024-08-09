@@ -58,7 +58,12 @@
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0, 1.0 ],
             "caption"           :"Main input",
-            "function"          :"NONE",
+
+            "functionFront"     :"LINE",
+            "functionBack"      :"LINE",
+            "errorCalc"         :"EC_NONE",
+            "weightCalc"        :"WC_NONE",
+
             "actions":
             {
                 "READ_VALUES"       :[ "PROC", "UI" ],
@@ -77,7 +82,14 @@
             "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
-            "function"          :"RELU",
+
+            "functionFront"     :"FUNC_LINE",
+            "functionBack"      :"FUNC_LINE",
+            "errorCalc"         :"EC_NONE",
+            "weightCalc"        :"WC_NONE",
+
+
+           "function"          :"RELU",
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "EVOLUTION" ],

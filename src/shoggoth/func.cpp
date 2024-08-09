@@ -22,6 +22,33 @@ NeuronFunc FUNC_LINE =
 
 
 
+
+/*
+    Heaviside step Function
+    |
+    |           Power = 10
+    |
+    |               ^
+    |               ************
+    |               *
+    |               *
+    |               *
+    |               *  0.5
+    |               *
+    |               *
+    |               *
+    |               *
+    |  -1***********0-----------1
+*/
+
+NeuronFunc FUNC_STEP =
+[]( double x ) -> double
+{
+    return x < 0 ? 0 : 1 ;
+};
+
+
+
 /*
     Linear learning
 */
@@ -365,6 +392,13 @@ void strToNeuronFunc
         return;
     }
 
+    if( aArgument == "STEP" )
+    {
+        aFront = &FUNC_STEP;
+        aBack = &FUNC_LINE_BACK;
+        return;
+    }
+
     if( aArgument == "RELU" )
     {
         aFront = &FUNC_RELU;
@@ -393,6 +427,7 @@ string neuronFuncToStr
 {
     if( a == &FUNC_LINE )               return "LINE";
     if( a == &FUNC_LINE_BACK )          return "LINE_BACK";
+    if( a == &FUNC_STEP )               return "STEP";
     if( a == &FUNC_SIGMOID )            return "SIGMOID";
     if( a == &FUNC_SIGMOID_BACK )       return "SIGMOID_BACK";
     if( a == &FUNC_SIGMOID_DERIVATIVE ) return "SIGMOID_DERIVATIVE";
