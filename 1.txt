@@ -1,1 +1,0 @@
-Syntax: 'carbonio-clamav setup' to automatically configure the service

@@ -24,7 +24,6 @@ class LimbProcessor : public Limb
         Net*            net             = NULL;
         /* Monitor object */
         Mon*            mon             = NULL;
-
         /*
             Calculation state
         */
@@ -111,6 +110,11 @@ class LimbProcessor : public Limb
             Return processors count
         */
         int getThreadCount();
+
+
+
+        LayerList* getForwardList();
+        LayerList* getBackwardList();
 
 
 

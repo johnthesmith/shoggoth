@@ -23,6 +23,7 @@ OBJECT_PATH/layer.o
 OBJECT_PATH/layer_teacher.o
 OBJECT_PATH/layer_ui.o
 OBJECT_PATH/limb.o
+OBJECT_PATH/calc_table.o
 OBJECT_PATH/limb_processor.o
 OBJECT_PATH/limb_teacher.o
 OBJECT_PATH/limb_ui.o

@@ -2,13 +2,11 @@
 
 #include <unistd.h> /* usleep */
 #include "limb_processor.h"
-#include "calc_table.h"
-
 #include "../func.h"
 
 #include "../../../../../lib/core/math.h"
 #include "../../../../../lib/core/str.h"
-
+#include "./calc_table.h"
 
 
 
@@ -26,6 +24,9 @@ LimbProcessor::LimbProcessor
     mon = Mon::create( net -> getMonPath( "procesor.json" ))
     -> setString( Path{ "start", "Source" }, "Limb processor" )
     -> now( Path{ "start", "now" });
+
+    forwardList     = LayerList::create( this );
+    backwardList    = LayerList::create( this );
 }
 
 
@@ -35,6 +36,8 @@ LimbProcessor::LimbProcessor
 */
 LimbProcessor::~LimbProcessor()
 {
+    forwardList -> destroy();
+    backwardList -> destroy();
     mon -> destroy();
 }
 
@@ -189,19 +192,16 @@ LimbProcessor* LimbProcessor::calc()
 
 
 
-
-
     /*
-        Forward calculation (neuron values)
+        Forward calculation
     */
-
     CalcTable::loop
     (
         net,
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( calcItem* item, Layer* layer )
         {
-            if( record -> isParentsCalculated() )
+            if( item -> isParentCalculated())
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "values", layer -> getId() });
@@ -209,12 +209,11 @@ LimbProcessor* LimbProcessor::calc()
                 int idThread = 0;
                 layerCalcValue( layer, idThread, learning );
                 mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
-                record -> setCalculated();
+                item -> calculated();
             }
             return false;
         }
     );
-
 
 
 
@@ -225,9 +224,9 @@ LimbProcessor* LimbProcessor::calc()
     (
         net,
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( calcItem* item, Layer* layer )
         {
-            if( record -> isChildrenCalculated() )
+            if( item -> isChildrenCalculated())
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
@@ -236,7 +235,7 @@ LimbProcessor* LimbProcessor::calc()
                 /* Calculate errors for layers with parents */
                 layerCalcError( layer, idThread );
                 mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
-                record -> setCalculated();
+                item -> calculated();
             }
             return false;
         }
@@ -244,28 +243,28 @@ LimbProcessor* LimbProcessor::calc()
 
 
 
-
     /*
         Learning calculation (nerve weights)
     */
-    CalcTable::loop
+    backwardList -> loop
     (
-        net,
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( void* item )
         {
+            auto layer = ( Layer* ) item;
             /* Let elapsed begin */
             mon -> startTimer( Path{ "duration", "weights", layer -> getId() });
+
             /* Set default thread id */
             int idThread = 0;
+
             /* Calculate weights in nervs of layers */
             layerCalcWeight( layer, idThread );
+
             mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
-            record -> setCalculated();
             return false;
         }
     );
-
 
 
 
@@ -368,6 +367,136 @@ LimbProcessor* LimbProcessor::nerveControl
     return this;
 }
 
+/*
+    Return pointer of forward calulation list
+*/
+
+LayerList* LimbProcessor::getForwardList()
+{
+    return forwardList;
+}
+
+
+
+/*
+    Return pointer of backward calulation list
+*/
+
+LayerList* LimbProcessor::getBackwardList()
+{
+    return backwardList;
+}
+
+
+
+/*
+    Build layers calculation sequence list
+    Method fills the next lists:
+        forwardList
+        backwardList
+*/
+LimbProcessor* LimbProcessor::precalc()
+{
+    auto layers = getLayerList();
+    if( layers -> getCount() > 0 )
+    {
+        /* Clear forward and backward lists */
+        forwardList -> resize( 0 );
+        backwardList -> resize( 0 );
+
+        /* Calculate forward */
+        bool add = false;
+        int index = 0;
+        auto stop = false;
+        while( !stop )
+        {
+            /* Get calculated layer by index */
+            Layer* layer = ( Layer* ) layers -> getByIndex( index );
+
+            if
+            (
+                /* if layer not forward calculated and ... */
+                layer -> getForwardStage( 1 ) == CALC_NOT_START &&
+                /* all parents is prepared */
+                preparedParents( layer )
+            )
+            {
+                layer -> calcStartForward() -> calcCompleteForward();
+                forwardList -> push( layer );
+                add = true;
+            }
+
+            index++;
+
+            if( index >= layers -> getCount() )
+            {
+                index = 0;
+                if( ! add )
+                {
+                    stop = true;
+                    setCode( "LoopedNetForward" );
+                }
+                else
+                {
+                    add = false;
+                }
+            }
+
+            if( getCalcStage( CALC_FORWARD ) == CALC_COMPLETE )
+            {
+                stop = true;
+            }
+        }
+
+        /* Calculate backward */
+        add = false;
+        index = 0;
+        stop = false;
+        while( !stop )
+        {
+            /* Get calculated layer by index */
+            Layer* layer = ( Layer* ) layers -> getByIndex( index );
+
+            if
+            (
+                /* if layer not forward calculated and ... */
+                layer -> getBackwardStage( 1 ) == CALC_NOT_START &&
+                /* all parents is prepared */
+                preparedChildren( layer )
+            )
+            {
+                layer -> calcStartBackward() -> calcCompleteBackward();
+                backwardList -> push( layer );
+                add = true;
+            }
+
+            index++;
+
+            if( index >= layers -> getCount() )
+            {
+                index = 0;
+                if( ! add )
+                {
+                    stop = true;
+                    setCode( "LoopedNetBackward" );
+                }
+                else
+                {
+                    add = false;
+                }
+            }
+
+            if( getCalcStage( CALC_BACKWARD ) == CALC_COMPLETE )
+            {
+                stop = true;
+            }
+        }
+
+        calcReset();
+    }
+
+    return this;
+}
 
 
 
@@ -495,6 +624,15 @@ bool LimbProcessor::getCalcDebug()
     return calcDebug;
 }
 
+
+
+/*
+    Return the current calculated layer index
+*/
+int LimbProcessor::getCalcLayerIndex()
+{
+    return calcLayerIndex;
+}
 
 
 
@@ -642,7 +780,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
     Learning a neuron by recalculating
     the weights of parent connections.
 */
-LimbProcessor* LimbProcessor::neuronCalcWeight
+LimbProcessor* LimbProcessor::neuronLearning
 (
     Layer*  aLayer, /* Layer for calculation */
     int     aIndex  /* Neuron index of layer */
