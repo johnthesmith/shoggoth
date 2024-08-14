@@ -195,13 +195,13 @@ LimbProcessor* LimbProcessor::calc()
         Forward calculation (neuron values)
     */
 
-    CalcTable::loop
+    CalcTable::create( net )
+    -> loop
     (
-        net,
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( CalcTable* table, CalcRecord* record, Layer* layer )
         {
-            if( record -> isParentsCalculated() )
+            if( table -> isParentsCalculated( record ))
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "values", layer -> getId() });
@@ -209,11 +209,12 @@ LimbProcessor* LimbProcessor::calc()
                 int idThread = 0;
                 layerCalcValue( layer, idThread, learning );
                 mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
-                record -> setCalculated();
+                return true;
             }
             return false;
         }
-    );
+    )
+    -> destroy();
 
 
 
@@ -221,13 +222,13 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Backward calculation (neuron errors)
     */
-    CalcTable::loop
+    CalcTable::create( net )
+    -> loop
     (
-        net,
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( CalcTable* table, CalcRecord* record, Layer* layer )
         {
-            if( record -> isChildrenCalculated() )
+            if( table -> isChildrenCalculated( record ) )
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
@@ -236,11 +237,12 @@ LimbProcessor* LimbProcessor::calc()
                 /* Calculate errors for layers with parents */
                 layerCalcError( layer, idThread );
                 mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
-                record -> setCalculated();
+                return true;
             }
             return false;
         }
-    );
+    )
+    -> destroy();
 
 
 
@@ -248,9 +250,9 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Learning calculation (nerve weights)
     */
-    CalcTable::loop
+    CalcTable::create( net )
+    -> loop
     (
-        net,
         [ this ]
         ( CalcRecord* record, Layer* layer )
         {
@@ -262,9 +264,11 @@ LimbProcessor* LimbProcessor::calc()
             layerCalcWeight( layer, idThread );
             mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
             record -> setCalculated();
-            return false;
+            return true;
         }
-    );
+        return false;
+    )
+    -> detroy();
 
 
 
