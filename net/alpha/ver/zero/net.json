@@ -54,15 +54,17 @@
         "retina":
         {
             "name"              :"Retina",
+            "type"              :"in",
+
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
             "size"              :[ 28, 28, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0, 1.0 ],
             "caption"           :"Main input",
-
-            "functionFront"     :"LINE",
-            "functionBack"      :"LINE",
-            "errorCalc"         :"EC_NONE",
-            "weightCalc"        :"WC_NONE",
 
             "actions":
             {
@@ -79,17 +81,17 @@
         "cortex_1":
         {
             "name"              :"Cortex 1",
+            "type"              :"coretex",
+
+            "functionFront"     :"RELU",
+            "functionBack"      :"ONE",
+            "errorCalc"         :"LEARNING",
+            "weightCalc"        :"CALC",
+
             "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
 
-            "functionFront"     :"FUNC_LINE",
-            "functionBack"      :"FUNC_LINE",
-            "errorCalc"         :"EC_NONE",
-            "weightCalc"        :"WC_NONE",
-
-
-           "function"          :"RELU",
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "EVOLUTION" ],
@@ -105,9 +107,16 @@
         "bias":
         {
             "name"              :"Bias",
+            "type"              :"in",
+
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, 1.0, 1.0 ],
-            "function"          :"NONE",
+
             "actions":
             {
                 "READ_VALUES"       :[ "PROC", "UI", "EVOLUTION" ],
@@ -123,10 +132,17 @@
         "cortex_2":
         {
             "name"              :"Cortex 2",
+            "type"              :"in",
+
+            "functionFront"     :"RELU",
+            "functionBack"      :"ONE",
+            "errorCalc"         :"LEARNING",
+            "weightCalc"        :"CALC",
+
             "size"              :[ 16, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
-            "function"          :"RELU",
+
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "EVOLUTION" ],
@@ -142,9 +158,16 @@
         "result":
         {
             "name"              :"Result",
+            "type"              :"result",
+
+            "functionFront"     :"RELU",
+            "functionBack"      :"ONE",
+            "errorCalc"         :"LEARNING",
+            "weightCalc"        :"CALC",
+
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
-            "function"          :"RELU",
+
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "TEACHER", "EVOLUTION" ],
@@ -160,9 +183,16 @@
         "sample":
         {
             "name"              :"Sample",
+            "type"              :"in",
+
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
             "size"              :[ 10, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
-            "function"          :"NONE",
+
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "PROC", "EVOLUTION" ],
@@ -178,9 +208,16 @@
         "command":
         {
             "name"              :"Command",
+            "type"              :"command",
+
+            "functionFront"     :"STEP",
+            "functionBack"      :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
             "size"              :[ 1, 1, 1 ],
             "position"          :[ 0.0, -1.0, 3.5 ],
-            "function"          : "NONE",
+
             "actions":
             {
                 "READ_VALUES"       :[ "UI" ],
@@ -195,9 +232,16 @@
         "error":
         {
             "name"              :"Error",
+            "type"              :"error",
+
+            "functionFront"     :"LINE",
+            "functionBack"      :"LINE",
+            "errorCalc"         :"VALUE",
+            "weightCalc"        :"NONE",
+
             "size"              :[ 1, 1, 1],
             "position"          :[ 0.0, 1.0, 3.0 ],
-            "function"          :"NONE",
+
             "actions":
             {
                 "READ_VALUES"       :[ "UI", "TEACHER", "EVOLUTION" ],

@@ -199,9 +199,9 @@ LimbProcessor* LimbProcessor::calc()
     -> loop
     (
         [ this ]
-        ( CalcTable* table, CalcRecord* record, Layer* layer )
+        ( CalcTable* table, Layer* layer )
         {
-            if( table -> isParentsCalculated( record ))
+            if( table -> isParentsCalculated( layer ))
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "values", layer -> getId() });
@@ -226,9 +226,9 @@ LimbProcessor* LimbProcessor::calc()
     -> loop
     (
         [ this ]
-        ( CalcTable* table, CalcRecord* record, Layer* layer )
+        ( CalcTable* table, Layer* layer )
         {
-            if( table -> isChildrenCalculated( record ) )
+            if( table -> isChildrenCalculated( layer ) )
             {
                 /* Let elapsed begin */
                 mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
@@ -254,7 +254,7 @@ LimbProcessor* LimbProcessor::calc()
     -> loop
     (
         [ this ]
-        ( CalcRecord* record, Layer* layer )
+        ( CalcTable* table, Layer* layer )
         {
             /* Let elapsed begin */
             mon -> startTimer( Path{ "duration", "weights", layer -> getId() });
@@ -263,12 +263,10 @@ LimbProcessor* LimbProcessor::calc()
             /* Calculate weights in nervs of layers */
             layerCalcWeight( layer, idThread );
             mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
-            record -> setCalculated();
             return true;
         }
-        return false;
     )
-    -> detroy();
+    -> destroy();
 
 
 
@@ -632,13 +630,6 @@ LimbProcessor* LimbProcessor::neuronCalcError
 
     return this;
 }
-
-
-// TODO изменить конфиг сети ну и проверить
-// Сделать загурзку парамтров слоя
-//      ErrorCalc       errorCalc               = EC_NONE;
-//      WeightCalc      weightCalc              = WC_NONE;
-
 
 
 

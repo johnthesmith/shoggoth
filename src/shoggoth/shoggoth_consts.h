@@ -109,7 +109,7 @@ enum ErrorCalc
     /* Calculating error for learning */
     EC_LEARNING,
     /* Put value in to the error */
-    EC_CURRENT_VALUE
+    EC_VALUE
 };
 
 

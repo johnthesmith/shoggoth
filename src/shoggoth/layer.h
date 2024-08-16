@@ -3,6 +3,17 @@
 
     Contains the NeuronList object.
     The layer creates new neurons or removes them when resized.
+
+
+
+    Table of function using for the type of layers
+    layers  FrontF Back   CalcError  CalcWeight Example
+    -----------------------------------------------------------------
+    in      NULL   NULL   NONE       NONE       retina, bias, sample
+    cortex  RELU   ONE    LEARNING   CALC       cortex
+    result  RELU   ONE    LEARNING   CALC       result
+    error   LINE   LINE   VALUE      NONE       error
+    command STEP   NULL   NONE       NONE       command
 */
 
 
@@ -91,9 +102,9 @@ class Layer : public Result
     public:
 
         /* Function activation */
-        NeuronFunc*     frontFunc               = &FUNC_LINE;
+        NeuronFunc*     frontFunc               = &FUNC_NULL;
         /* Learning function */
-        NeuronFunc*     backFunc                = &FUNC_LINE_BACK;
+        NeuronFunc*     backFunc                = &FUNC_NULL;
 
         /*
             Constructor
@@ -478,16 +489,10 @@ class Layer : public Result
         );
 
 
+
         /*
-            Apply neyron functions for layer
+            Set front function for the layer
         */
-        Layer* setNeuronFunc
-        (
-            string
-        );
-
-
-
         Layer* setFrontFunc
         (
             NeuronFunc*
@@ -499,6 +504,9 @@ class Layer : public Result
 
 
 
+        /*
+            Set back function for the layer
+        */
         Layer* setBackFunc
         (
             NeuronFunc*
@@ -548,5 +556,37 @@ class Layer : public Result
 
 
 
+        /*
+            Set error calc flag for the layer.
+            Layer will be calculating erors.
+        */
+        Layer* setErrorCalc
+        (
+            ErrorCalc
+        );
+
+
+
+        /*
+            Return the layer calculation flag for the layer
+        */
         ErrorCalc getErrorCalc();
+
+
+
+        /*
+            Set weight calc flag for the layer.
+            Layer will be calculating weights.
+        */
+        Layer* setWeightCalc
+        (
+            WeightCalc
+        );
+
+
+
+        /*
+            Return the layer calculation flag for the layer
+        */
+        WeightCalc getWeightCalc();
 };

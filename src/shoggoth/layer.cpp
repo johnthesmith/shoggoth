@@ -684,24 +684,6 @@ bool Layer::checkTasks
 
 
 
-/*
-    Apply neyron functions for layer
-*/
-Layer* Layer::setNeuronFunc
-(
-    string aFuncName
-)
-{
-    strToNeuronFunc
-    (
-        aFuncName,
-        frontFunc,
-        backFunc
-    );
-    return this;
-}
-
-
 Layer* Layer::setFrontFunc
 (
     NeuronFunc* a
@@ -861,7 +843,50 @@ ChartData* Layer::getChartErrors()
 
 
 
+/*
+    Set error calc flag for the layer.
+    Layer will be calculating erors.
+*/
+Layer* Layer::setErrorCalc
+(
+    ErrorCalc a
+)
+{
+    errorCalc = a;
+    return this;
+}
+
+
+
+/*
+    Return the layer calculation flag for the layer
+*/
 ErrorCalc Layer::getErrorCalc()
 {
     return errorCalc;
+}
+
+
+
+/*
+    Set weight calc flag for the layer.
+    Layer will be calculating weights.
+*/
+Layer* Layer::setWeightCalc
+(
+    WeightCalc a
+)
+{
+    weightCalc = a;
+    return this;
+}
+
+
+
+/*
+    Return the layer calculation flag for the layer
+*/
+WeightCalc Layer::getWeightCalc()
+{
+    return weightCalc;
 }

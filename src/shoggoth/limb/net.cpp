@@ -847,6 +847,7 @@ Net* Net::applyNet
         /* Set net version from config */
         setNextVersion( config -> getString( Path{ "version", "current" } ) );
 
+
         /* Set net version from config */
         setSeed( config -> getInt( Path{ "seed" } ) );
 
@@ -1245,7 +1246,23 @@ Net* Net::loadLayer
             -> copyFrom( aParams -> getObject( "actions" ) );
 
             /* Apply neuron functions for layer */
-            aLayer -> setNeuronFunc( aParams -> getString( "function", "SIGMOID" ));
+            aLayer
+            -> setFrontFunc
+            (
+                strToFunc( aParams -> getString( "functionFront", "NULL" ))
+            )
+            -> setBackFunc
+            (
+                strToFunc( aParams -> getString( "functionBack", "NULL" ))
+            )
+            -> setErrorCalc
+            (
+                errorCalcFromString( aParams -> getString( "errorCalc", "NONE" ))
+            )
+            -> setWeightCalc
+            (
+                weightCalcFromString( aParams -> getString( "weightCalc", "NONE" ))
+            );
 
             /* Set Size from params */
             auto paramsSize = aParams -> getObject( "size" );
@@ -1865,3 +1882,7 @@ Net* Net::setSeed
     seed = a;
     return this;
 }
+
+
+
+
