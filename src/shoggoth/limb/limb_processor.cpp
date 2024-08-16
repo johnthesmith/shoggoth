@@ -611,7 +611,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
                 }
             );
         break;
-        case EC_CURRENT_VALUE:
+        case EC_VALUE:
             error = 1;
         break;
     }
