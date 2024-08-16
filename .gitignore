@@ -9,7 +9,6 @@
 *~
 *.o
 .shab
-./shoggot
 
 # Exclude neuronet out files
 **/mon
