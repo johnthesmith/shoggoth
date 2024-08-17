@@ -29,7 +29,18 @@ Perhaps it will be *Shoggoth*.
 
 # Run
 
-1. You need to clone following projects:
+1. You need to install the following components:
+
+```
+sudo apt install -y 
+    clang \
+    libglfw3 libglfw3-dev libglu1-mesa-dev \
+    libglew-dev \
+    graphicsmagick-libmagick-dev-compat \
+    upx
+```
+
+2. You need to clone following projects:
 ```
 git clone git@github.com:johnthesmith/lib-core.git ./lib/core
 git clone git@github.com:johnthesmith/lib-graph.git ./lib/graph
@@ -37,14 +48,6 @@ git clone git@github.com:johnthesmith/lib-sock.git ./lib/sock
 git clone git@github.com:johnthesmith/lib-json.git ./lib/json
 git clone git@github.com:johnthesmith/shab.git ./app/shab
 git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
-```
-2. You need to install the following components:
-
-```
-sudo apt install libglfw3 libglfw3-dev libglu1-mesa-dev
-sudo apt install libglew-dev
-sudo apt install graphicsmagick-libmagick-dev-compat 
-sudo apt install upx
 ```
 
 3. After that you need to run:
