@@ -159,6 +159,7 @@ Log -.-o Scene
 0. Shoggoth library located at [src/shoggoth](src/shoggoth).
 
 
+
 ## Math definition
 
 1. Each neuron have the:

@@ -267,7 +267,7 @@ LimbUi* LimbUi::drawNerve
                                 color = RGBA_RED;
                             break;
                             case BT_ADD:
-                                color = RGBA_CYAN;
+                                color = RGBA_YELLOW;
                             break;
                             case BT_MUL:
                                 color = RGBA_ORANGE;
