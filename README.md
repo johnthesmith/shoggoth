@@ -67,6 +67,7 @@ git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
     0. [shoggoth](https://github.com/johnthesmith/shoggoth) - Shoggoth ptoject;
     0. [shab](#shab) - small bash maker for Shoggoth.
 
+
 ```mermaid
 flowchart
     proj --> app
@@ -76,8 +77,7 @@ flowchart
     lib --> graph
     lib --> json
     lib --> sock
-    lib --> core
-    
+    lib --> core    
 ```
 
 
