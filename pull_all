@@ -1,0 +1,20 @@
+#!/bin/bash
+# Repsitory update on the current branch
+
+cd ../..
+
+current=`pwd`;
+echo -e "\033[0;32m$current \033[0m"
+
+
+# Libraries
+
+cd $current && cd ./lib/core && ./pull && \
+cd $current && cd ./lib/graph && ./pull && \
+cd $current && cd ./lib/json && ./pull && \
+cd $current && cd ./lib/sock && ./pull && \
+
+cd $current && cd ./app/shab && ./pull && \
+cd $current && cd ./app/shoggoth && ./pull && \
+
+echo COMPLETE
