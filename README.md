@@ -70,11 +70,13 @@ git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
 
 ```mermaid
 flowchart LR
+    graphics[graph]
+
     proj --> app
     proj --> lib
     app --> shab
     app --> shggoth
-    lib --> graph
+    lib --> graphics
     lib --> json
     lib --> sock
     lib --> core
