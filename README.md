@@ -62,22 +62,22 @@ git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
 1. The kernel of Shoggoth was written in c++ and requires the following projects:
     1. [lib/core](https://github.com/johnthesmith/lib-core) -  baisic c++ libraries;
     0. [lib/json](https://github.com/johnthesmith/lib-json) - object for key and values;
-    0. [lib/graph](https://github.com/johnthesmith/lib-json) - tiny opengl engine;
+    0. [lib/graph](https://github.com/johnthesmith/lib-graph) - graphic library;
     0. [lib/sock](https://github.com/johnthesmith/lib-sock) - libraries for tcp sockets;
     0. [shoggoth](https://github.com/johnthesmith/shoggoth) - Shoggoth ptoject;
     0. [shab](#shab) - small bash maker for Shoggoth.
 
 ```mermaid
 flowchart
-    graphics[graph]    
-
-    core --> graphics
-    core --> json
-    graphics --> app
-    shoggoth --> app
-    lib --> shoggoth
-    lib --> app
-    shab
+    proj --> app
+    proj --> lib
+    app --> shab
+    app --> shggoth
+    lib --> graph
+    lib --> json
+    lib --> sock
+    lib --> core
+    
 ```
 
 
