@@ -69,7 +69,7 @@ git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
 
 
 ```mermaid
-flowchart
+flowchart LR
     proj --> app
     proj --> lib
     app --> shab
@@ -77,7 +77,7 @@ flowchart
     lib --> graph
     lib --> json
     lib --> sock
-    lib --> core    
+    lib --> core
 ```
 
 
