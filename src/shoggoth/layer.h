@@ -7,13 +7,14 @@
 
 
     Table of function using for the type of layers
-    layers  FrontF Back   CalcError  CalcWeight Example
-    -----------------------------------------------------------------
-    in      NULL   NULL   NONE       NONE       retina, bias, sample
-    cortex  RELU   ONE    LEARNING   CALC       cortex
-    result  RELU   ONE    LEARNING   CALC       result
-    error   LINE   LINE   VALUE      NONE       error
-    command STEP   NULL   NONE       NONE       command
+
+        layers  FrontFunc   BackFunc    CalcError  CalcWeight Example
+        --------------------------------------------------------------------------
+        in      NULL        NULL        NONE       NONE       retina, bias, sample
+        cortex  RELU        ONE         LEARNING   CALC       cortex
+        result  RELU        ONE         LEARNING   CALC       result
+        error   LINE        LINE        VALUE      NONE       error
+        command STEP        NULL        NONE       NONE       command
 */
 
 
@@ -524,7 +525,6 @@ class Layer : public Result
 
 
 
-
         /*
             Dump to mon
         */
@@ -534,6 +534,7 @@ class Layer : public Result
             Mon*,
             ChartList* achartList
         );
+
 
 
         /*
