@@ -229,6 +229,7 @@
                 "READ_STAT_VALUE"   :[]
             }
         },
+
         "error":
         {
             "name"              :"Error",
@@ -266,6 +267,7 @@
             "minWeight"         :-0.1,
             "maxWeight"         :0.1
         },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"cortex_1",
@@ -335,6 +337,7 @@
             "minWeight"         :1.0,
             "maxWeight"         :1.0
         },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"command",
@@ -344,6 +347,7 @@
             "minWeight"         :1.0,
             "maxWeight"         :1.0
         },
+
         {
             "uses"              :[ "proc", "ui" ],
             "idFrom"            :"result",
