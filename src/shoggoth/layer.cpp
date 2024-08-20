@@ -651,7 +651,10 @@ bool Layer::compare
     getCount()      == aLayer -> getCount() &&
     getName()       == aLayer -> getName() &&
     getFrontFunc()  == aLayer -> getFrontFunc() &&
-    getBackFunc()   == aLayer -> getBackFunc();
+    getBackFunc()   == aLayer -> getBackFunc() &&
+    getErrorCalc()  == aLayer -> getErrorCalc() &&
+    getWeightCalc() == aLayer -> getWeightCalc()
+    ;
 }
 
 

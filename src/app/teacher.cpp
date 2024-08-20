@@ -355,7 +355,7 @@ void Teacher::onLoop()
 
     if( errorLayer != NULL )
     {
-        auto error = errorLayer -> calcSumValue();
+        auto error = abs( errorLayer -> calcSumValue() );
 
         getLog()
         -> trace( "Compare" )

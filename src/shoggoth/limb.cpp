@@ -337,6 +337,7 @@ Limb* Limb::parentsLoop
         ( void* aNerve )
         {
             auto iNerve = ( Nerve* ) aNerve;
+
             if
             (
                 iNerve -> getChild() == aLayer &&
@@ -493,6 +494,8 @@ Layer* Limb::copyLayerFrom
 {
     return
     Layer::create( this, aLayerFrom -> getId() )
+    -> setErrorCalc( aLayerFrom -> getErrorCalc() )
+    -> setWeightCalc( aLayerFrom -> getWeightCalc() )
     -> setFrontFunc( aLayerFrom -> getFrontFunc() )
     -> setBackFunc( aLayerFrom -> getBackFunc() )
     -> setCount( aLayerFrom -> getCount() );

@@ -58,14 +58,14 @@ Layer* CalcRecord::getLayer()
 
 CalcTable::CalcTable
 (
-    /* The Net object */
-    Net* aNet
+    /* The LimbProcessor object */
+    LimbProcessor* aLimb
 )
 :
-    net( aNet ),
-    table( aNet -> getLayerList() -> getCount() )
+    limb( aLimb ),
+    table( aLimb -> getLayerList() -> getCount() )
 {
-    auto layers = net -> getLayerList();
+    auto layers = limb -> getLayerList();
     /* Load Calc records */
     for( int i = 0; i < layers -> getCount(); i++ )
     {
@@ -80,11 +80,11 @@ CalcTable::CalcTable
 */
 CalcTable* CalcTable::create
 (
-    /* The Net object */
-    Net* aNet
+    /* The limb object */
+    LimbProcessor* aLimb
 )
 {
-    return new CalcTable( aNet );
+    return new CalcTable( aLimb );
 }
 
 
@@ -132,9 +132,9 @@ bool CalcTable::isParentsCalculated
     bool result = true;
 
     /* Get nerve list */
-    NerveList* nerveList = net -> getNerveList();
+    NerveList* nerveList = limb -> getNerveList();
 
-    auto parents = LayerList::create( net );
+    auto parents = LayerList::create( limb );
     nerveList -> getParentsByLayer( aLayer , parents );
 
     parents -> loop
@@ -166,9 +166,9 @@ bool CalcTable::isChildrenCalculated
     bool result = true;
 
     /* Get nerve list */
-    NerveList* nerveList = net -> getNerveList();
+    NerveList* nerveList = limb-> getNerveList();
 
-    auto children = LayerList::create( net );
+    auto children = LayerList::create( limb );
     nerveList -> getChildrenByLayer( aLayer , children );
 
     children -> loop
@@ -195,7 +195,7 @@ bool CalcTable::isChildrenCalculated
 
 /*
     Loop for all notcalculated layers
-    Fills a CalcRecord vector with data from aNet and calls
+    Fills a CalcRecord vector with data from alimb and calls
     aCallback for each unprocessed layer until all layers are processed.
 */
 CalcTable* CalcTable::loop
@@ -206,7 +206,7 @@ CalcTable* CalcTable::loop
 {
     /* Count of layer calculated */
     int calculatedCount = 0;
-    auto layers = net -> getLayerList();
+    auto layers = limb -> getLayerList();
     auto layersCount = layers -> getCount();
 
     /* Main loop */

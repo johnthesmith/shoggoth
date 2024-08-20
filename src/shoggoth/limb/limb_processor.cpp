@@ -195,7 +195,7 @@ LimbProcessor* LimbProcessor::calc()
         Forward calculation (neuron values)
     */
 
-    CalcTable::create( net )
+    CalcTable::create( this )
     -> loop
     (
         [ this ]
@@ -222,7 +222,7 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Backward calculation (neuron errors)
     */
-    CalcTable::create( net )
+    CalcTable::create( this )
     -> loop
     (
         [ this ]
@@ -250,7 +250,7 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Learning calculation (nerve weights)
     */
-    CalcTable::create( net )
+    CalcTable::create( this )
     -> loop
     (
         [ this ]
@@ -568,6 +568,13 @@ LimbProcessor* LimbProcessor::neuronCalcValue
 }
 
 
+TODO 
+1. не регулируется ошибка тичера
+2. ошибка тичера сейчас изрядно меньше той что достигаем при расчете
+3. Результат - сеть становится в обчение на очень мелких изменениях и не завершает цикл обучения
+
+
+
 
 /*
     Calculate neuron error
@@ -606,13 +613,14 @@ LimbProcessor* LimbProcessor::neuronCalcError
                     int aWeightIndex    /* Not use */
                 ) -> bool
                 {
+
                     error += aChild -> getNeuronError( aChildIndex ) * aWeight;
                     return false;
                 }
             );
         break;
         case EC_VALUE:
-            error = 1;
+            error = aLayer -> getNeuronValue( aIndex );
         break;
     }
 

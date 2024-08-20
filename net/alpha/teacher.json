@@ -16,56 +16,12 @@
             "enabled"               :true,
             "loopSleepMcs"          :10000,
             "idErrorLayer"          :"error",
-            "errorLimit"            :0.0001,
+            "errorLimit"            :0.001,
             "mode"                 :"learning_digits",
             "-mode"                  :"reading_digits",
 
             "batches":
             {
-                "learning_small":
-                [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 1.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0 ] }
-                    ],
-
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 0.0, 1.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 1.0 ] }
-                    ]
-                ],
-                "reading_small":
-                [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 1.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ],
-
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 0.0, 1.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ]
-                ],
                 "learning_digits":
                 [
                     [

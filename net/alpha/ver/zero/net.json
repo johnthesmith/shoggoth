@@ -237,7 +237,7 @@
 
             "functionFront"     :"LINE",
             "functionBack"      :"LINE",
-            "errorCalc"         :"VALU",
+            "errorCalc"         :"VALUE",
             "weightCalc"        :"NONE",
 
             "size"              :[ 1, 1, 1],
@@ -273,7 +273,7 @@
             "idFrom"            :"cortex_1",
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
+            "bindType"          :"ADD",
             "minWeight"         :-0.1,
             "maxWeight"         :0.1
         },
@@ -283,17 +283,7 @@
             "idFrom"            :"bias",
             "idTo"              :"cortex_1",
             "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
-            "minWeight"         :-0.1,
-            "maxWeight"         :0.1
-        },
-
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"cortex_2",
-            "idTo"              :"result",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
+            "bindType"          :"ADD",
             "minWeight"         :-0.1,
             "maxWeight"         :0.1
         },
@@ -303,19 +293,19 @@
             "idFrom"            :"bias",
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
+            "bindType"          :"ADD",
             "minWeight"         :-0.1,
             "maxWeight"         :0.1
         },
 
         {
             "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"sample",
+            "idFrom"            :"cortex_2",
             "idTo"              :"result",
-            "nerveType"         :"ONE_TO_ONE",
-            "bindType"          :"SAMPLE",
-            "minWeight"         :1.0,
-            "maxWeight"         :1.0
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"ADD",
+            "minWeight"         :-0.1,
+            "maxWeight"         :0.1
         },
 
         {
@@ -323,29 +313,9 @@
             "idFrom"            :"bias",
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
+            "bindType"          :"ADD",
             "minWeight"         :-0.1,
             "maxWeight"         :0.1
-        },
-
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"sample",
-            "idTo"              :"command",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"VALUE",
-            "minWeight"         :1.0,
-            "maxWeight"         :1.0
-        },
-
-        {
-            "uses"              :[ "proc", "ui" ],
-            "idFrom"            :"command",
-            "idTo"              :"result",
-            "nerveType"         :"ALL_TO_ALL",
-            "bindType"          :"COMMAND",
-            "minWeight"         :1.0,
-            "maxWeight"         :1.0
         },
 
         {
@@ -353,9 +323,42 @@
             "idFrom"            :"result",
             "idTo"              :"error",
             "nerveType"         :"ONE_TO_ONE",
-            "bindType"          :"ERROR_TO_VALUE",
+            "bindType"          :"ADD",
             "minWeight"         :1.0,
             "maxWeight"         :1.0
+        },
+
+        {
+            "description"       :"Formering the command signal",
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"sample",
+            "idTo"              :"command",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"ADD",
+            "minWeight"         :1.0,
+            "maxWeight"         :1.0
+        },
+
+        {
+            "desciption"        :"Turn on/off the error layer",
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"command",
+            "idTo"              :"error",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"MUL",
+            "minWeight"         :1.0,
+            "maxWeight"         :1.0
+        },
+
+        {
+            "description"       :"Calculate error for sample",
+            "uses"              :[ "proc", "ui" ],
+            "idFrom"            :"sample",
+            "idTo"              :"error",
+            "nerveType"         :"ONE_TO_ONE",
+            "bindType"          :"ADD",
+            "minWeight"         :-1.0,
+            "maxWeight"         :-1.0
         }
     ]
 }

@@ -5,7 +5,7 @@
 
 #include <functional>   /* for lyambda */
 
-#include "net.h"
+#include "./limb_processor.h"
 #include "../layer.h"
 
 
@@ -79,7 +79,7 @@ class CalcTable
 {
     private:
 
-        Net* net = NULL;
+        LimbProcessor* limb = NULL;
         vector <CalcRecord> table;
 
     public:
@@ -87,7 +87,7 @@ class CalcTable
         CalcTable
         (
             /* The Net object */
-            Net*
+            LimbProcessor*
         );
 
 
@@ -98,7 +98,7 @@ class CalcTable
         static CalcTable* create
         (
             /* The Net object */
-            Net*
+            LimbProcessor*
         );
 
 
