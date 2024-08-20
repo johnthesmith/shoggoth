@@ -223,6 +223,63 @@ Log -.-o Scene
 
 ### Net
 
+```mermaid
+flowchart TD
+    subgraph calc
+        retina
+        cortex_1
+        cortex_2
+        bias
+        result
+    end
+
+    subgraph learning
+        error_learn
+        command_learn
+        sample
+    end
+
+    subgraph work
+        error_work
+        command_work
+        test
+    end
+
+    retina --->|+ x <-r;+r>| cortex_1
+    cortex_1 -->|+ x <-r;+r>/| cortex_2
+    cortex_2 -->|+ x <-r;+r>| result
+    bias -->|+ x <-r;+r>| cortex_1
+    bias -->|+ x <-r;+r>| cortex_2
+    bias -->|+ x <-r;+r>| result
+
+    result -->|+ x <1;1>| error_learn
+    sample -->|+ = <-1;-1>| error_learn
+    sample -->|+ x <1;1>| command_learn
+    command_learn -->|* x <-1;-1>| error_learn
+
+    test --> |+ = <-1;-1>| error_work
+    test --> |+ x <1;1>| command_work
+    command_work --> | * x <-1;-1> | error_work
+    result --> |+ x 1;1| error_work
+
+    teacher1((teacher)) .-> retina
+    teacher1((teacher)) .-> sample
+    teacher1((teacher)) .-> bias
+    error_learn .-> teacher3((teacher))
+    evolution1((evolution)) .-> test
+
+    classDef in      fill:#FF00FF50,stroke:#FF00FFFF;
+    classDef cortex  fill:#FFA50050,stroke:#FFA500FF;
+    classDef command fill:#00FF0050,stroke:#00FF00FF;
+    classDef error   fill:#FF000050,stroke:#FF0000FF;
+    classDef result  fill:#00FFFF50,stroke:#00FFFFFF;   
+
+    class retina,bias,sample,test in;
+    class cortex_1,cortex_2 cortex;
+    class result result;
+    class command_work,command_learn command;
+    class error_work,error_learn error;
+```
 
 
 
@@ -267,3 +324,5 @@ saveNerves --> saveLayers --> stop
 
 - [@igptx](https://www.github.com/igptx)
 - [@johnthesmith](https://www.github.com/johnthesmith)
+
+
