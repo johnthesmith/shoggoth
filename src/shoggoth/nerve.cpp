@@ -247,18 +247,6 @@ int Nerve::getWeightsCount()
 
 
 
-NerveType Nerve::nerveTypeFromString
-(
-    string a
-)
-{
-    if( a == "ONE_TO_ONE" ) return ONE_TO_ONE;
-    if( a == "ALL_TO_ALL" ) return ALL_TO_ALL;
-    return ALL_TO_ALL;
-};
-
-
-
 /*
     Return the parent neuron index by index of weight array
 */
@@ -831,8 +819,8 @@ Nerve* Nerve::dumpToMon
             + getChild() -> getId()
         );
 
-
         iChart -> createLast( abs( weights[ i ] ));
+
         aMon
         -> setString
         (
@@ -842,4 +830,22 @@ Nerve* Nerve::dumpToMon
     }
 
     return this;
+}
+
+
+
+/*
+    Calculate nerve id like
+        parent_id-(bind,nerve)-child_id
+*/
+string Nerve::calcId()
+{
+    return
+    getParent() -> getId()
+    + "-("
+    + bindTypeToString( getBindType() )
+    + ","
+    + nerveTypeToString( getNerveType())
+    + ")-"
+    + getChild() -> getId();
 }

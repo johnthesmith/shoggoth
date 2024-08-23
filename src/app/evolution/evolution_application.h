@@ -1,7 +1,7 @@
 #pragma once
 
 /* Local libraries */
-#include "shoggoth_application.h"
+#include "../shoggoth_application.h"
 
 
 using namespace std;

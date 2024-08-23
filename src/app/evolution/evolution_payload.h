@@ -1,5 +1,5 @@
 /*
-    This file is part of the Shoggoth neuronet project.
+    This file of Evolution Shoggoth network
     Main application loop.
     Contains the Net object.
 
@@ -10,21 +10,11 @@
 
 #pragma once
 
-/*
-    Shoggoths main loop
-    Launched from the shoggoth application
-*/
 
 
 /* Local libraries */
-#include "../../../../lib/core/payload.h"
-#include "../shoggoth/limb/net.h"
-
-/* Payloads */
-#include "ui.h"
-#include "./teacher/teacher.h"
-#include "processor.h"
-#include "server.h"
+#include "../../../../../lib/core/payload.h"
+#include "../../shoggoth/limb/net.h"
 
 
 
@@ -32,18 +22,12 @@ using namespace std;
 
 
 
-class Loop : public Payload
+class EvolutionPayload : public Payload
 {
     private:
 
         /* Neural net object */
         Net*        net             = NULL;
-
-        /* Payloads object  of roles */
-        Ui*         ui              = NULL;
-        Teacher*    teacher         = NULL;
-        Processor*  processor       = NULL;
-        Server*     server          = NULL;
 
         /* State */
         long int    lastConfigCheck = 0;
@@ -53,9 +37,9 @@ class Loop : public Payload
         /*
             Constructor
         */
-        Loop
+        EvolutionPayload
         (
-            ShoggothApplication*,   /* Application object */
+            EvolutionApplication*,   /* Application object */
             string,                 /* Net id */
             string                  /* Net version */
         );
@@ -65,16 +49,16 @@ class Loop : public Payload
         /*
             Destructor
         */
-        ~Loop();
+        ~EvolutionPayload();
 
 
 
         /*
             Creator
         */
-        static Loop* create
+        static EvolutionPayload* create
         (
-            ShoggothApplication*,
+            EvolutionApplication*,
             string aNetId,
             string aNetVersion
         );
@@ -91,23 +75,14 @@ class Loop : public Payload
         /*
             Return application object
         */
-        ShoggothApplication* getApplication() override;
+        EvolutionApplication* getApplication() override;
 
 
 
         /*
             Help method
         */
-        Loop* help();
-
-
-
-        /*
-            Control ui components after reconfiguration
-        */
-        Loop* uiControl();
-        Loop* processorControl();
-        Loop* teacherControl();
+        EvolutionPayload* help();
 
 
 
@@ -116,8 +91,22 @@ class Loop : public Payload
         */
 
 
+
         /*
             Main loop event
         */
         virtual void onLoop() override;
+
+
+
+        /******************************************************************************
+            Private methods
+        */
+
+        private:
+
+        /*
+            Processing of the loop
+        */
+        EvolutionPayload* processing();
 };

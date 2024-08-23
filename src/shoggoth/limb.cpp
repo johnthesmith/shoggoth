@@ -546,3 +546,113 @@ bool Limb::layerParentsExists
     );
     return result;
 }
+
+
+
+/*
+    Dump weights from neuron of the layer in to the file
+*/
+Limb* Limb::dumpWeights
+(
+    /* The layer */
+    Layer*      aLayer,
+    /* Neuron Index in the layer */
+    int         aNeuronIndex,
+    /* Layer link */
+    Layer*      aLayerLink,
+    /* Type parent or child */
+    string      aType,
+    /* buffer with weights */
+    char*       aBuffer,
+    /* size of buffer */
+    size_t      aSize
+)
+{
+    auto pos = Point3i();
+    auto size = aLayerLink -> getSize();
+    for( pos.z = 0; pos.z < size.z; pos.z++ )
+    {
+        /* Create file name */
+        stringstream s;
+        s
+        << aLayer -> getId()
+        << "_"
+        << aType
+        << "_"
+        << aLayerLink -> getId()
+        << "_z:"
+        << pos.z
+        << ".txt";
+
+        auto file = net -> getWeightsPath( s.str() );
+
+        if( checkPath( getPath( file )))
+        {
+            ofstream f;
+            f.open( file );
+            if( f.is_open() )
+            {
+                f
+                << "layer: " << aLayer -> getId() << endl
+                << "index: " << aNeuronIndex << endl
+                << "value: " << aLayer -> getNeuronValue( aNeuronIndex ) << endl
+                << "error: " << aLayer -> getNeuronError( aNeuronIndex ) << endl
+                ;
+
+                f << endl << "Weights" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aBuffer ]( int aIndex )
+                    {
+                        return *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
+                    }
+                );
+
+                /* Parent or child values */
+
+                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " values" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aLayerLink ]( int aIndex )
+                    {
+                        return aLayerLink -> getNeuronValue( aIndex );
+                    }
+                );
+
+                /* Parent or child values */
+                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " errors" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aLayerLink ]( int aIndex )
+                    {
+                        return aLayerLink -> getNeuronError( aIndex );
+                    }
+                );
+
+                /* Incoming and outcoming values */
+                f << endl << ( aType == "parent" ? "Incoming" : "Outcoming" ) << " values" << endl;
+                dumpXY
+                (
+                    pos.z, f, aLayerLink,
+                    [ &aType, &aBuffer, &aLayerLink, &aLayer, &aNeuronIndex ]( int aIndex )
+                    {
+                        return
+                        (
+                            aType == "parent"
+                            ? aLayerLink -> getNeuronValue( aIndex )
+                            : aLayer -> getNeuronValue( aNeuronIndex )
+                        ) *
+                        *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
+                    }
+                );
+
+                f.close();
+            }
+        }
+    }
+
+    return this;
+}

@@ -925,7 +925,7 @@ Net* Net::applyNet
                         auto idFrom         = jsonNerve -> getString( "idFrom" );
                         auto idTo           = jsonNerve -> getString( "idTo" );
                         auto bindType       = bindTypeFromString( jsonNerve -> getString( "bindType" ));
-                        auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
+                        auto nerveType      = nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
                         auto nerveDelete    = jsonNerve -> getBool( "delete" );
 
                         /* Find the layers */

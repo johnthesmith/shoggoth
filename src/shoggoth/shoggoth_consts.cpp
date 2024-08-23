@@ -96,6 +96,33 @@ std::string calcStageToString
 
 
 
+NerveType nerveTypeFromString
+(
+    string a
+)
+{
+    if( a == "ONE_TO_ONE" ) return ONE_TO_ONE;
+    if( a == "ALL_TO_ALL" ) return ALL_TO_ALL;
+    return ALL_TO_ALL;
+};
+
+
+
+string nerveTypeToString
+(
+    NerveType a
+)
+{
+    switch( a )
+    {
+        default:
+        case ALL_TO_ALL : return "ALL_TO_ALL";
+        case ONE_TO_ONE : return "ONE_TO_ONE";
+    }
+}
+
+
+
 
 /*
     Converts string to bind type

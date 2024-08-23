@@ -61,6 +61,8 @@ class LimbProcessor : public Limb
         */
         bool        calcDebug           = false;
 
+        ChartList*  weightsChart        = NULL;
+
     public:
 
         /*

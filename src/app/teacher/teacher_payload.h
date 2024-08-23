@@ -1,5 +1,7 @@
 /*
-    This file of Evolution Shoggoth network
+TODO переделать на использование тещего модуля
+
+    This file of Teacher Shoggoth network
     Main application loop.
     Contains the Net object.
 
@@ -13,8 +15,8 @@
 
 
 /* Local libraries */
-#include "../../../../lib/core/payload.h"
-#include "../shoggoth/limb/net.h"
+#include "../../../../../lib/core/payload.h"
+#include "../../shoggoth/limb/net.h"
 
 
 
@@ -22,7 +24,7 @@ using namespace std;
 
 
 
-class EvolutionPayload : public Payload
+class TeacherPayload : public Payload
 {
     private:
 
@@ -37,9 +39,9 @@ class EvolutionPayload : public Payload
         /*
             Constructor
         */
-        EvolutionPayload
+        TeacherPayload
         (
-            EvolutionApplication*,   /* Application object */
+            TeacherApplication*,  /* Application object */
             string,                 /* Net id */
             string                  /* Net version */
         );
@@ -49,16 +51,16 @@ class EvolutionPayload : public Payload
         /*
             Destructor
         */
-        ~EvolutionPayload();
+        ~TeacherPayload();
 
 
 
         /*
             Creator
         */
-        static EvolutionPayload* create
+        static TeacherPayload* create
         (
-            EvolutionApplication*,
+            TeacherApplication*,
             string aNetId,
             string aNetVersion
         );
@@ -75,14 +77,14 @@ class EvolutionPayload : public Payload
         /*
             Return application object
         */
-        EvolutionApplication* getApplication() override;
+        TeacherApplication* getApplication() override;
 
 
 
         /*
             Help method
         */
-        EvolutionPayload* help();
+        TeacherPayload* help();
 
 
 
@@ -93,7 +95,7 @@ class EvolutionPayload : public Payload
 
 
         /*
-            Main loop event
+            Main teacher loop event
         */
         virtual void onLoop() override;
 
@@ -108,5 +110,5 @@ class EvolutionPayload : public Payload
         /*
             Processing of the loop
         */
-        EvolutionPayload* processing();
+        TeacherPayload* processing();
 };

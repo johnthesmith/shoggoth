@@ -1,7 +1,7 @@
 /*
     Evolution main file for Shoggoth neural network
 */
-#include "../app/evolution_application.h"
+#include "evolution_application.h"
 
 
 using namespace std;

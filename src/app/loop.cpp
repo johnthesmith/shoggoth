@@ -157,6 +157,7 @@ Loop* Loop::processorControl()
             taskProc
             -> getDouble( "loopSleepMcs", processor -> getLoopTimeoutMcs() )
         );
+
         processor -> resume();
     }
     else
@@ -270,7 +271,6 @@ void Loop::onLoop()
 
     /* Check server net config */
     auto netConfig = ParamList::create();
-
     /* Read net config from server */
     net -> readNet( netConfig );
 

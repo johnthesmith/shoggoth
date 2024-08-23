@@ -1,10 +1,14 @@
+/*
+    Используется.
+    TODO Переделать в teacher_payload
+*/
 #include <iostream>
 
 /* User libraries */
 #include "teacher.h"
-#include "../../../../lib/core/math.h"
-#include "../../../../lib/core/rnd.h"
-#include "../../../../lib/core/utils.h"
+#include "../../../../../lib/core/math.h"
+#include "../../../../../lib/core/rnd.h"
+#include "../../../../../lib/core/utils.h"
 #include "teacher_consts.h"
 
 using namespace std;
@@ -355,7 +359,7 @@ void Teacher::onLoop()
 
     if( errorLayer != NULL )
     {
-        auto error = abs( errorLayer -> calcSumValue() );
+        auto error = errorLayer -> calcRmsValue();
 
         getLog()
         -> trace( "Compare" )

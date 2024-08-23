@@ -87,7 +87,6 @@ int LimbProcessor::getThreadCount()
 */
 LimbProcessor* LimbProcessor::calc()
 {
-cout << "======================" << "\n";
     /*
         Calculation begin
     */
@@ -294,10 +293,9 @@ cout << "======================" << "\n";
                 auto nerve = (Nerve*) item;
 
                 auto nerveLog = Log::create() -> setFileName( net -> getLogPath( nerve -> calcId() ));
-                nerve -> dumpToLog();
+                nerve -> dumpToLog( );
                 nerveLog -> close();
                 nerveLog -> destroy();
-
 
 /*
     Write nerves in to files

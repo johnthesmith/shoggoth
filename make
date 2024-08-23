@@ -34,10 +34,13 @@ $shab build "../../lib/graph/*.cpp"
 $shab build "src/shoggoth/*.cpp"
 $shab build "src/shoggoth/limb/*.cpp"
 $shab build "src/app/*.cpp"
+$shab build "src/app/teacher/*.cpp"
+$shab build "src/app/evolution/*.cpp"
 
 ## Make executable file
 $shab header "make shoggoth"
 $shab execute "COMPILER -O3 -o shoggoth $(grep -v '^#' shoggoth.objs) -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw -lMagick++"
+
 $shab header "make evolution"
 $shab execute "COMPILER -O3 -o evolution $(grep -v '^#' evolution.objs) -lpthread"
 

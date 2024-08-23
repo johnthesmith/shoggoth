@@ -254,6 +254,13 @@ class Layer : public Result
 
 
         /*
+            Calculate Root Main Square of neurons value
+        */
+        double calcRmsValue();
+
+
+
+        /*
             Set source path
         */
         Layer* setSourcePath

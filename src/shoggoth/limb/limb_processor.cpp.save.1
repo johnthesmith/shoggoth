@@ -87,7 +87,7 @@ int LimbProcessor::getThreadCount()
 */
 LimbProcessor* LimbProcessor::calc()
 {
-cout << "======================" << "\n";
+cou
     /*
         Calculation begin
     */
@@ -293,11 +293,11 @@ cout << "======================" << "\n";
             {
                 auto nerve = (Nerve*) item;
 
-                auto nerveLog = Log::create() -> setFileName( net -> getLogPath( nerve -> calcId() ));
-                nerve -> dumpToLog();
-                nerveLog -> close();
-                nerveLog -> destroy();
+cout << net -> getMonPath( nerve -> calcId() + ".json" ) << "\n";
 
+                auto nerveMon = Mon::create( net -> getMonPath( nerve -> calcId() ) + ".json" );
+                nerve -> dumpToMon( nerveMon, weightsChart );
+                nerveMon -> destroy();
 
 /*
     Write nerves in to files

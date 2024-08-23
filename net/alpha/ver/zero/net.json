@@ -41,7 +41,7 @@
 
     "teacher":
     {
-        "errorLimit"        :0.00001
+        "errorLimit"        :0.001
     },
 
     "processor":

@@ -4,8 +4,8 @@
 /* User libraries */
 #include "evolution_application.h"
 #include "evolution_payload.h"
-#include "../shoggoth/io.h"
-#include "../../../../lib/core/str.h"
+#include "../../shoggoth/io.h"
+#include "../../../../../lib/core/str.h"
 
 
 

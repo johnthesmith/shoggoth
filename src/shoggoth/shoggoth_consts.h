@@ -258,3 +258,18 @@ string weightCalcToString
 (
     WeightCalc
 );
+
+
+
+NerveType nerveTypeFromString
+(
+    string
+);
+
+
+
+string nerveTypeToString
+(
+    NerveType
+);
+

@@ -2,6 +2,7 @@
 #include "cmath"
 
 #include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/math.h"
 
 #include "func.h"
 
@@ -44,7 +45,7 @@ NeuronFunc FUNC_LINE =
 NeuronFunc FUNC_STEP =
 []( double x ) -> double
 {
-    return x < 0.0 ? 0.0 : 1.0;
+    return x < EPSILON_D ? 0.0 : 1.0;
 };
 
 

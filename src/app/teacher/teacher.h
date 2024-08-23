@@ -1,4 +1,5 @@
 /*
+TODO переделать на использование тещего модуля
     Teacher payload
 */
 
@@ -8,12 +9,12 @@
 
 /* Local libraries */
 
-#include "../../../../lib/core/payload.h"
-#include "../../../../lib/core/mon.h"
-#include "../../../../lib/json/json.h"
+#include "../../../../../lib/core/payload.h"
+#include "../../../../../lib/core/mon.h"
+#include "../../../../../lib/json/json.h"
 
-#include "shoggoth_role_application.h"
-#include "../shoggoth/limb/limb_teacher.h"
+#include "../shoggoth_role_application.h"
+#include "../../shoggoth/limb/limb_teacher.h"
 
 
 

@@ -217,13 +217,6 @@ class Nerve: public Result
 
 
 
-        static NerveType nerveTypeFromString
-        (
-            string
-        );
-
-
-
         /*
             Return the parent neuron index by index of weight array
         */
@@ -414,4 +407,12 @@ class Nerve: public Result
             Mon*,
             ChartList*
         );
+
+
+
+        /*
+            Calculate nerve id like
+                parent_id-(bind,nerve)-child_id
+        */
+        string calcId();
 };

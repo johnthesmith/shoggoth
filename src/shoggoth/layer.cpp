@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "func.h"
 #include "limb.h"
 
@@ -389,6 +391,25 @@ double Layer::calcSumValue()
     getLimb() -> unlock();
 
     return result;
+}
+
+
+
+/*
+    Calculate Root Main Square of neurons value
+*/
+double Layer::calcRmsValue()
+{
+    double result = 0.0;
+
+    getLimb() -> lock();
+    for( int i = 0; i < count; i ++ )
+    {
+        result += values[ i ] * values[ i ];
+    }
+    getLimb() -> unlock();
+
+    return count > 0 ? sqrt( result / count ) : 0;
 }
 
 

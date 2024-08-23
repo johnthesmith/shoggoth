@@ -313,4 +313,25 @@ class Limb : public Result
             BindType /* Type of bind */
         );
 
+
+
+        /*
+            Dump weights from neuron of the layer
+        */
+        Limb* dumpWeights
+        (
+            /* The layer */
+            Layer*,
+            /* Neuron Index in the layer */
+            int,
+            /* Layer link */
+            Layer*,
+            /* Type parent or child */
+            string,
+            /* buffer with weights */
+            char*,
+            /* size of buffer */
+            size_t
+        );
+
 };
