@@ -51,7 +51,7 @@ class LimbProcessor : public Limb
         /* Each of finished calculation form tickWrite will be writen to file */
         int     tickWrite               = 10;
 
-        ParamList* dumpWeightConf       = NULL;
+        ParamList* dumpConf             = NULL;
         unsigned long long int  frame   = 0;
 
         /*
@@ -343,5 +343,15 @@ class LimbProcessor : public Limb
         (
             Layer*,
             int
+        );
+
+
+
+        /*
+            Copy configuration from argument
+        */
+        LimbProcessor* setDumpConf
+        (
+            ParamList*
         );
 };

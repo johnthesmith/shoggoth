@@ -4,6 +4,7 @@
 #include "../shoggoth_consts.h"
 #include "../../../../../lib/json/param_list_file.h"
 #include "../../../../../lib/core/rnd.h"
+#include "../../../../../lib/graph/param_point.h"
 
 
 
@@ -855,20 +856,19 @@ Net* Net::applyNet
         purgeLayers( configLayers );
 
         /* Create layers */
-        configLayers -> loop
+        configLayers -> objectsLoop
         (
             [ this ]
             (
-                Param* iParam
+                ParamList* iParam,
+                string iName
             )
             {
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
                 /* Build list of using roles from Actions */
-                auto actions = iParam
-                -> getObject()
-                -> getObject( "actions" );
+                auto actions = iParam -> getObject( "actions" );
 
                 if( actions != NULL )
                 {
@@ -895,9 +895,9 @@ Net* Net::applyNet
 
                     if( used -> isIntersect( tasks ))
                     {
-                        auto layerId = iParam -> getName();
+                        auto layerId = iName;
                         auto layer = createLayer( layerId );
-                        loadLayer( layer, iParam -> getObject() );
+                        loadLayer( layer, iParam );
                         layer -> setStoragePath( storagePath );
                     }
                 }
@@ -1265,22 +1265,16 @@ Net* Net::loadLayer
             );
 
             /* Set Size from params */
-            auto paramsSize = aParams -> getObject( "size" );
-            if( paramsSize != NULL )
-            {
-                auto newCount =
-                paramsSize -> getInt( 0 ) *
-                paramsSize -> getInt( 1 ) *
-                paramsSize -> getInt( 2 );
+            auto size = ParamPoint::point3i( aParams -> getObject( "size" ) );
 
-                /* Remove nerves for size changed layer */
-                if( newCount != aLayer -> getCount() )
-                {
-                    getNerveList() -> removeByLayer( aLayer );
-                }
-                /* Update layer */
-                aLayer -> setCount( newCount );
+            /* Remove nerves for size changed layer */
+            if( size.mulComponents() != aLayer -> getCount() )
+            {
+                getNerveList() -> removeByLayer( aLayer );
             }
+
+            /* Update layer */
+            aLayer -> setSize( size );
         }
     }
     return this;

@@ -5,9 +5,11 @@
 #include "calc_table.h"
 
 #include "../func.h"
+#include "../shoggoth_consts.h"
 
 #include "../../../../../lib/core/math.h"
 #include "../../../../../lib/core/str.h"
+#include "../../../../../lib/graph/param_point.h"
 
 
 
@@ -28,6 +30,7 @@ LimbProcessor::LimbProcessor
     -> now( Path{ "start", "now" });
 
     weightsChart = ChartList::create();
+    dumpConf = ParamList::create();
 }
 
 
@@ -37,6 +40,7 @@ LimbProcessor::LimbProcessor
 */
 LimbProcessor::~LimbProcessor()
 {
+    dumpConf -> destroy();
     weightsChart -> destroy();
 
     mon -> destroy();
@@ -87,7 +91,6 @@ int LimbProcessor::getThreadCount()
 */
 LimbProcessor* LimbProcessor::calc()
 {
-cout << "======================" << "\n";
     /*
         Calculation begin
     */
@@ -274,8 +277,6 @@ cout << "======================" << "\n";
     -> destroy();
 
 
-
-
     /*
         End of calculation
     */
@@ -283,24 +284,14 @@ cout << "======================" << "\n";
     /*
         Write the nerves weights in to storage
     */
-
-//    if( tick % tickWrite == 0 )
-//    {
+    if( tick % tickWrite == 0 )
+    {
         getNerveList() -> loop
         (
             [ this ]
             ( void* item )
             {
                 auto nerve = (Nerve*) item;
-
-                auto nerveLog = Log::create() -> setFileName( net -> getLogPath( nerve -> calcId() ));
-                nerve -> dumpToLog();
-                nerveLog -> close();
-                nerveLog -> destroy();
-
-
-/*
-    Write nerves in to files
                 if
                 (
                     !nerve -> saveWeight( net -> getNervesPath() ) -> isOk()
@@ -311,13 +302,70 @@ cout << "======================" << "\n";
                     -> dump( nerve -> getDetails() );
                     nerve -> setOk();
                 }
-*/
                 return false;
             }
         );
-//    }
+    }
 
-    /* Write monitoring */
+    /*
+        Write monitoring
+    */
+    dumpConf -> objectsLoop
+    (
+        [ this ]
+        ( ParamList* params, string )
+        {
+            auto layer      = getLayerList() -> getById( params -> getString( "layer" ));
+            auto layerLink  = getLayerList() -> getById( params -> getString( "layerLink" ));
+            auto dataList   = params -> getObject( "data" );
+            auto direction  = directionFromString( params -> getString( "direction" ));
+            auto neuronPos  = params -> getObject( "neuronsPos" );
+
+            if( layer == NULL || layerLink == NULL )
+            {
+                getLog()
+                -> warning( "Layer monitoring not found" );
+            }
+            else
+            {
+                /* Data type loop */
+                dataList -> loop
+                (
+                    [ this, &layer, &layerLink, &direction, &neuronPos ]
+                    ( Param* dataItem )
+                    {
+                        auto data = dataFromString( dataItem -> getString());
+                        /* Neuron pos loop */
+                        neuronPos -> objectsLoop
+                        (
+                            [ this, &layer, &layerLink, &direction, &data ]
+                            ( ParamList* item, string )
+                            {
+                                auto pos = ParamPoint::point3i( item );
+                                /* Dump */
+                                dump
+                                (
+                                    net -> getMonPath(),
+                                    layer,
+                                    pos,
+                                    layerLink,
+                                    direction,
+                                    data
+                                );
+                                return false;
+                            }
+                        );
+                        return false;
+                    }
+                );
+            }
+            return false;
+        }
+    );
+
+    /*
+        Write final monitoring
+    */
     mon
     -> setBool( Path{ "current", "learning" }, learning )
     -> setInt( Path{ "current", "tick" }, tick )
@@ -677,7 +725,7 @@ LimbProcessor* LimbProcessor::neuronCalcWeight
                     this,
                     &error
                 ]
-                (
+                 (
                     Layer*  aParentLayer,
                     int     aParentIndex,
                     Nerve*  aNerve,
@@ -829,3 +877,19 @@ LimbProcessor* LimbProcessor::setTickWrite
     tickWrite = aValue;
     return this;
 }
+
+
+
+LimbProcessor* LimbProcessor::setDumpConf
+(
+    ParamList* a
+)
+{
+    if( a != NULL )
+    {
+        dumpConf -> copyFrom( a );
+    }
+    return this;
+}
+
+

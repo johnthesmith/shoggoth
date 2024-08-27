@@ -969,7 +969,6 @@ void LimbUi::onAfterReconfig
 
             if( configLayer != NULL )
             {
-                layer -> setSize( configLayer );
                 layer -> setDrawSize( configLayer );
                 layer
                 -> setPosition( configLayer )
@@ -989,121 +988,87 @@ void LimbUi::onAfterReconfig
 
 
 
-
-LimbUi* LimbUi::dumpXY
-(
-    int aZ,             /* Z layer */
-    ofstream &aFile,     /* File stream */
-    LayerUi* aLayer,
-    function <double ( int )> aCallback
-)
-{
-    auto pos = Point3i( 0, 0, aZ );
-
-    auto size = aLayer -> getSize();
-
-    for( pos.y = 0; pos.y < size.y ; pos.y ++ )
-    {
-        for( pos.x = 0; pos.x < size.x; pos.x++ )
-        {
-            auto index = aLayer ->  indexByPos( pos );
-            auto arg = aCallback( index );
-            auto absArg = abs( arg );
-            aFile
-            << ( absArg < EPSILON_D ? INK_WHITE : ( arg > 0.0 ? INK_RED : INK_BLUE ))
-            << strAlign( to_string( absArg ), ALIGN_RIGHT, 8 )
-            << INK_DEFAULT
-            << " ";
-        }
-        aFile << endl;
-    }
-
-    return this;
-}
-
-
-
 LimbUi* LimbUi::dumpWeightsExchange()
 {
     net -> lock();
 
-    net -> getWeightsExchange() -> loop
-    (
-        [ this ]
-        ( Param* item )
-        {
-            if( item -> isObject() )
-            {
-                auto layerId = item -> getObject() -> getString( "layerId" );
-                auto neuronIndex = item -> getObject() -> getInt( "neuronIndex" );
-                auto children = item -> getObject() -> getObject( "children" );
-                auto parents = item -> getObject() -> getObject( "parents" );
-                auto layer = (LayerUi*) getLayerList() -> getById( layerId );
-
-                if( layer != NULL)
-                {
-                    /* Dump children */
-                    if( children != NULL )
-                    {
-                        children -> loop
-                        (
-                            [ this, &layer, &neuronIndex ]
-                            ( Param* child )
-                            {
-                                auto childLayer = ( LayerUi* ) getLayerList()
-                                -> getById( child -> getName() );
-
-                                if( childLayer != NULL )
-                                {
-                                    dumpWeights
-                                    (
-                                        layer,
-                                        neuronIndex,
-                                        childLayer,
-                                        "child",
-                                        child -> getValue(),
-                                        child -> getSize()
-                                    );
-                                }
-                                return false;
-                            }
-                        );
-                    }
-
-                    /* Dump parents */
-                    if( parents != NULL )
-                    {
-                        parents -> loop
-                        (
-                            [ this, &layer, &neuronIndex]
-                            ( Param* parent )
-                            {
-                                auto parentLayer = ( LayerUi* ) getLayerList()
-                                -> getById( parent -> getName() );
-
-                                if( parentLayer != NULL )
-                                {
-                                    dumpWeights
-                                    (
-                                        layer,
-                                        neuronIndex,
-                                        parentLayer,
-                                        "parent",
-                                        parent -> getValue(),
-                                        parent -> getSize()
-                                    );
-                                }
-                                return false;
-                            }
-                        );
-                    }
-                }
-
-            }
-            return false;
-        }
-    );
-
-    net -> unlock();
+//    net -> getWeightsExchange() -> loop
+//    (
+//        [ this ]
+//        ( Param* item )
+//        {
+//            if( item -> isObject() )
+//            {
+//                auto layerId = item -> getObject() -> getString( "layerId" );
+//                auto neuronIndex = item -> getObject() -> getInt( "neuronIndex" );
+//                auto children = item -> getObject() -> getObject( "children" );
+//                auto parents = item -> getObject() -> getObject( "parents" );
+//                auto layer = (LayerUi*) getLayerList() -> getById( layerId );
+//
+//                if( layer != NULL)
+//                {
+//                    /* Dump children */
+//                    if( children != NULL )
+//                    {
+//                        children -> loop
+//                        (
+//                            [ this, &layer, &neuronIndex ]
+//                            ( Param* child )
+//                            {
+//                                auto childLayer = ( LayerUi* ) getLayerList()
+//                                -> getById( child -> getName() );
+//
+//                                if( childLayer != NULL )
+//                                {
+//                                    dumpWeights
+//                                    (
+//                                        layer,
+//                                        neuronIndex,
+//                                        childLayer,
+//                                        "child",
+//                                        child -> getValue(),
+//                                        child -> getSize()
+//                                    );
+//                                }
+//                                return false;
+//                            }
+//                        );
+//                    }
+//
+//                    /* Dump parents */
+//                    if( parents != NULL )
+//                    {
+//                        parents -> loop
+//                        (
+//                            [ this, &layer, &neuronIndex]
+//                            ( Param* parent )
+//                            {
+//                                auto parentLayer = ( LayerUi* ) getLayerList()
+//                                -> getById( parent -> getName() );
+//
+//                                if( parentLayer != NULL )
+//                                {
+//                                    dumpWeights
+//                                    (
+//                                        layer,
+//                                        neuronIndex,
+//                                        parentLayer,
+//                                        "parent",
+//                                        parent -> getValue(),
+//                                        parent -> getSize()
+//                                    );
+//                                }
+//                                return false;
+//                            }
+//                        );
+//                    }
+//                }
+//
+//            }
+//            return false;
+//        }
+//    );
+//
+//    net -> unlock();
     return this;
 }

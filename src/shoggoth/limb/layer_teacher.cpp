@@ -11,7 +11,7 @@ LayerTeacher::LayerTeacher
     Limb* aLimb,
     string aId
 )
-:LayerDim( aLimb, aId )
+:Layer( aLimb, aId )
 {
     getLog() -> trace( "... it was a layer teacher" );
 }

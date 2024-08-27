@@ -223,3 +223,73 @@ std::string weightCalcToString
         case WC_CALC    : return "CALC";
     };
 }
+
+
+
+/*
+    Convert datatype from string
+*/
+Data dataFromString
+(
+    string a
+)
+{
+    if( a == "WEIGHTS" ) return DATA_WEIGHTS;
+    if( a == "VALUES" ) return DATA_VALUES;
+    if( a == "ERRORS" ) return DATA_ERRORS;
+    return DATA_UNKNOWN;
+}
+
+
+
+/*
+    Convert datatype to string
+*/
+string dataToString
+(
+    Data a
+)
+{
+    switch( a )
+    {
+        default:
+        case DATA_UNKNOWN   : return "UNKNOWN";
+        case DATA_VALUES    : return "VALUES";
+        case DATA_ERRORS    : return "ERRORS";
+        case DATA_WEIGHTS   : return "WEIGHTS";
+    };
+}
+
+
+
+/*
+    Convert direction from string
+*/
+Direction directionFromString
+(
+    string a
+)
+{
+    if( a == "PARENT" ) return DIRECTION_PARENT;
+    if( a == "CHILD" )  return DIRECTION_CHILD;
+    return DIRECTION_UNKNOWN;
+}
+
+
+
+/*
+    Convert direction to string
+*/
+string directionToString
+(
+    Direction a
+)
+{
+    switch( a )
+    {
+        default:
+        case DIRECTION_UNKNOWN  : return "UNKNOWN";
+        case DIRECTION_PARENT   : return "PARENT";
+        case DIRECTION_CHILD    : return "CHILD";
+    };
+}

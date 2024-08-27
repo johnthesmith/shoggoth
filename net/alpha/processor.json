@@ -1,38 +1,6 @@
 {
     "loopSleepMcs"  :1000000,
 
-    "mutations":
-    [
-        {
-            "path": [ "processor", "learningSpeed" ],
-            "rnd":0.3,
-            "mul":1.1,
-            "min":0.0,
-            "max":1.0
-        },
-        {
-            "path":[ "teacher", "errorLimit" ],
-            "rnd":0.3,
-            "mul":1.5,
-            "min":0.000001,
-            "max":0.0001
-        },
-        {
-            "path":[ "layers", "cortex_1", "size", "0"],
-            "rnd":0.2,
-            "add":1,
-            "min":4,
-            "max":100
-        },
-        {
-            "path":[ "layers", "cortex_1", "size", "1" ],
-            "rnd":0.01,
-            "add":1,
-            "min":1,
-            "max":3
-        }
-    ],
-
     "tasks":
     {
         "PROC":
@@ -55,14 +23,21 @@
                 "readWaitingTimeoutMcs" :1000000
             },
 
-            "dumpWeight":
+            "dump":
             [
                 {
-                    "fromId"    :"cortex_1",
-                    "fromNeuron":"10",
-                    "child"     :"cortex_2",
-                    "parent"    :"retina",
-                    "bindType"  : "VALUE"
+                    "layer"         :"cortex_1",
+                    "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ] ],
+                    "layerLink"     :"retina",
+                    "direction"     :"PARENT",
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
+                }
+                {
+                    "layer"         :"cortex_1",
+                    "neuronsPos"    :[ [ 0,0,0 ] ],
+                    "layerLink"     :"cortex_2",
+                    "direction"     :"CHILD",
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
                 }
             ]
         }

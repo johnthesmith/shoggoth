@@ -60,6 +60,7 @@ childrenLambda;
 class Limb : public Result
 {
     private:
+
         LogManager*     logManager  = NULL;
 
         LayerList*      layers      = NULL;
@@ -74,6 +75,7 @@ class Limb : public Result
         long long       lastUpdate = 0;
         /* Moment last chenged (insert delete layer and nerve)*/
         long long       lastChange = 0;
+
     public:
 
         /*
@@ -318,20 +320,22 @@ class Limb : public Result
         /*
             Dump weights from neuron of the layer
         */
-        Limb* dumpWeights
+        Limb* dump
         (
+            /* Store path */
+            string,
             /* The layer */
             Layer*,
             /* Neuron Index in the layer */
-            int,
+            Point3i,
             /* Layer link */
             Layer*,
             /* Type parent or child */
-            string,
-            /* buffer with weights */
-            char*,
-            /* size of buffer */
-            size_t
+            Direction,
+            /* Data type */
+            Data
         );
+
+
 
 };

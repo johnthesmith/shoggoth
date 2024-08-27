@@ -1,4 +1,4 @@
-/*
+    /*
     Shoggoth constants and conversion methods
 */
 
@@ -50,6 +50,42 @@ typedef vector <Action> Actions;
 
 
 
+
+/*
+    Type of neuron direction
+    Uses for neuronet monitoring
+*/
+enum Direction
+{
+    /* Unknown direction */
+    DIRECTION_UNKNOWN,
+    /* Direction from the current layer to the parent layer */
+    DIRECTION_PARENT,
+    /* Direction from the current layer to the child layer */
+    DIRECTION_CHILD
+};
+
+
+
+/*
+    Type for array of data
+    Uses for neuronet monitoring.
+*/
+enum Data
+{
+    /* Unknown data */
+    DATA_UNKNOWN,
+    /* Nerve weights */
+    DATA_WEIGHTS,
+    /* Neuron values */
+    DATA_VALUES,
+    /* Neuron errors */
+    DATA_ERRORS
+};
+
+
+
+
 /*
     List of participants task
 */
@@ -82,19 +118,28 @@ enum CalcStage
 */
 enum Command
 {
-    CMD_UNKNOWN,        /* Unknown command */
-    CMD_READ_NET,       /* Server return full Net configuration */
-    CMD_CLONE_NET,      /* Server clone net */
-    CMD_SWITCH_NET,     /* Server switch to specified net */
-    CMD_WRITE_LAYERS,   /* Server send layers with errors and values plan */
-    CMD_READ_LAYERS,    /* Server receive layers with errors and values plan */
-    CMD_REQUEST_WEIGHTS,/* Request weights for one neuron */
-
-    CMD_DROP_LAYER_TICK,/* Drop layer tick counter */
-    CMD_READ_LAYER_STAT, /* Server return the layer statistics */
-
-    CMD_WRITE_WEIGHTS,  /* Server receive  */
-    CMD_READ_WEIGHTS    /* Server return the layer  */
+    /* Unknown command */
+    CMD_UNKNOWN,
+    /* Server return full Net configuration */
+    CMD_READ_NET,
+    /* Server clone net */
+    CMD_CLONE_NET,
+    /* Server switch to specified net */
+    CMD_SWITCH_NET,
+    /* Server send layers with errors and values plan */
+    CMD_WRITE_LAYERS,
+    /* Server receive layers with errors and values plan */
+    CMD_READ_LAYERS,
+    /* Request weights for one neuron */
+    CMD_REQUEST_WEIGHTS,
+    /* Drop layer tick counter */
+    CMD_DROP_LAYER_TICK,
+    /* Server return the layer statistics */
+    CMD_READ_LAYER_STAT,
+    /* Server receive  */
+    CMD_WRITE_WEIGHTS,
+    /* Server return the layer  */
+    CMD_READ_WEIGHTS
 };
 
 
@@ -273,3 +318,42 @@ string nerveTypeToString
     NerveType
 );
 
+
+
+/*
+    Convert datatype from string
+*/
+Data dataFromString
+(
+    string
+);
+
+
+
+/*
+    Convert datatype to string
+*/
+string dataToString
+(
+    Data
+);
+
+
+
+/*
+    Convert direction from string
+*/
+Direction directionFromString
+(
+    string
+);
+
+
+
+/*
+    Convert direction to string
+*/
+string directionToString
+(
+    Direction
+);

@@ -112,7 +112,11 @@ Loop* Loop::processorControl()
         -> setMinWeight
         (
             taskProc
-            -> getDouble( "minWeight", processor -> getLimb() -> getMinWeight() )
+            -> getDouble
+            (
+                "minWeight",
+                processor -> getLimb() -> getMinWeight()
+            )
         )
         -> setMaxWeight
         (
@@ -145,18 +149,26 @@ Loop* Loop::processorControl()
         (
             taskProc
             -> getBool( "debug", processor -> getLimb() -> getCalcDebug() )
-        );
-
+        )
+        -> setDumpConf
+        (
+            taskProc
+            -> getObject( "dump" )
+        )
+        ;
 
         server -> setLoopTimeoutMcs( 1000000 );
-        server -> resume();
+
+// TODO  SRETCA !!!!
+//        server -> resume();
 
         processor
         -> setLoopTimeoutMcs
         (
             taskProc
             -> getDouble( "loopSleepMcs", processor -> getLoopTimeoutMcs() )
-        );
+        )
+        ;
 
         processor -> resume();
     }

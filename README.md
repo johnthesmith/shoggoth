@@ -246,7 +246,7 @@ flowchart TD
     end
 
     retina --->|+ x <-r;+r>| cortex_1
-    cortex_1 -->|+ x <-r;+r>/| cortex_2
+    cortex_1 -->|+ x <-r;+r>| cortex_2
     cortex_2 -->|+ x <-r;+r>| result
     bias -->|+ x <-r;+r>| cortex_1
     bias -->|+ x <-r;+r>| cortex_2
@@ -256,12 +256,12 @@ flowchart TD
     sample -->|+ = <-1;-1>| error_learn
     sample -->|+ x <1;1>| command_learn
     command_learn -->|* x <-1;-1>| error_learn
-
+    
     test --> |+ = <-1;-1>| error_work
     test --> |+ x <1;1>| command_work
     command_work --> | * x <-1;-1> | error_work
     result --> |+ x 1;1| error_work
-
+    
     teacher1((teacher)) .-> retina
     teacher1((teacher)) .-> sample
     teacher1((teacher)) .-> bias

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "../layer_dim.h"
+#include "../layer.h"
 #include "../../../../../lib/graph/bitmap.h"
 #include "../../../../../lib/core/hid.h"
 
@@ -20,7 +20,7 @@ using namespace std;
 
 
 
-class LayerTeacher : public LayerDim
+class LayerTeacher : public Layer
 {
     private:
 

@@ -24,6 +24,7 @@
 
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
+#include "../../../../lib/json/param_list.h"    /* For read size from params */
 
 #include "../../../../lib/core/chart_list.h"    /* TODO remove it*/
 #include "../../../../lib/core/chart_data.h"
@@ -59,7 +60,6 @@ class Layer : public Result
         int             count                   = 0;
         /* Dimention size */
         Point3i         size                    = POINT_3I_0;
-
 
         bool            errorChange             = false;        /* True - method errorChange return true for any neuron, else false */
         bool            incomeChanged           = false;        /* True if preceptron chenged. Set in neuron->setValue*/
@@ -99,6 +99,17 @@ class Layer : public Result
         ChartData*      chartTick               = NULL;
         ChartData*      chartValues             = NULL;
         ChartData*      chartErrors             = NULL;
+
+
+        /*
+            Set neurons count and reallocate plans
+            Do not use this method.
+            Use the setSize
+        */
+        virtual Layer* setCount
+        (
+            const int = 0 /* New count */
+        );
 
     public:
 
@@ -144,15 +155,6 @@ class Layer : public Result
 
 
 
-        /*
-            Set neurons count and reallocate plans
-        */
-        virtual Layer* setCount
-        (
-            const int = 0 /* New count */
-        );
-
-
 
         /*
             Return count of neurons in layer
@@ -160,6 +162,41 @@ class Layer : public Result
         int getCount();
 
 
+
+        /*
+            Set dimentions size
+        */
+        Layer* setSize
+        (
+            const Point3i& = POINT_3I_0
+        );
+
+
+
+        /*
+            Set dimentions size from params
+        */
+        Layer* setSize
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Return 3d layer size at neurons for each axis
+        */
+        Point3i getSize();
+
+
+
+        /*
+            Return index by point 3i at layer
+        */
+        int indexByPos
+        (
+            const Point3i&
+        );
 
 
         /**********************************************************************

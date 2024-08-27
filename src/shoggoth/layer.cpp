@@ -48,7 +48,7 @@ Layer::~Layer()
     chartTick -> destroy();
 
     /* Destroy neurons */
-    setCount( 0 );
+    setSize( POINT_3I_0 );
 
     /* Destroy the list of neurons */
 
@@ -82,6 +82,68 @@ void Layer::destroy()
 }
 
 
+
+/*
+    Set dimations size
+*/
+Layer* Layer::setSize
+(
+    const Point3i& a
+)
+{
+    setCount( a.x * a.y * a.z );
+    size = a;
+    return this;
+}
+
+
+
+/*
+    Set dimentions size from ParamList object
+*/
+Layer* Layer::setSize
+(
+    ParamList* a
+)
+{
+    auto jsonSize = a -> getObject( "size" );
+    if( jsonSize != NULL )
+    {
+        setSize
+        (
+            Point3i
+            (
+                jsonSize -> getInt( 0 ),
+                jsonSize -> getInt( 1 ),
+                jsonSize -> getInt( 2 )
+            )
+        );
+    }
+    return this;
+}
+
+
+/*
+    Return 3d size of layer
+*/
+Point3i Layer::getSize()
+{
+    return size;
+}
+
+
+
+/*
+    Return linear index of neuron by position
+*/
+int Layer::indexByPos
+(
+    const Point3i& a
+)
+{
+    auto s = getSize();
+    return a.x + a.y * s.x + a.z * s.x * s.y;
+}
 
 
 
@@ -212,6 +274,9 @@ Log* Layer::getLog()
 
 /*
     Set count of neurons
+    Do not use this method.
+    Use the setSize
+
     Thes method reallocate memory fot plans
 */
 Layer* Layer::setCount

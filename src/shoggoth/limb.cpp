@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "limb.h"
 
 
@@ -498,7 +500,7 @@ Layer* Limb::copyLayerFrom
     -> setWeightCalc( aLayerFrom -> getWeightCalc() )
     -> setFrontFunc( aLayerFrom -> getFrontFunc() )
     -> setBackFunc( aLayerFrom -> getBackFunc() )
-    -> setCount( aLayerFrom -> getCount() );
+    -> setSize( aLayerFrom -> getSize() );
 }
 
 
@@ -550,109 +552,154 @@ bool Limb::layerParentsExists
 
 
 /*
-    Dump weights from neuron of the layer in to the file
+    Dump weights errors values from neuron of the layer in to the file
 */
-Limb* Limb::dumpWeights
+Limb* Limb::dump
 (
+    /* Store path */
+    string      aPath,
     /* The layer */
     Layer*      aLayer,
     /* Neuron Index in the layer */
-    int         aNeuronIndex,
+    Point3i     aNeuronPos,
     /* Layer link */
     Layer*      aLayerLink,
     /* Type parent or child */
-    string      aType,
-    /* buffer with weights */
-    char*       aBuffer,
-    /* size of buffer */
-    size_t      aSize
+    Direction   aDirection,
+    /* Data type */
+    Data        aData
 )
 {
-    auto pos = Point3i();
-    auto size = aLayerLink -> getSize();
-    for( pos.z = 0; pos.z < size.z; pos.z++ )
+    /* Damp data definition function */
+    auto dumpVal =
+    []
+    (
+        ofstream&   f,
+        Data&       data,
+        double      weight,
+        Layer*      layerLink,
+        int         layerLinkIndex
+    )
     {
-        /* Create file name */
-        stringstream s;
-        s
-        << aLayer -> getId()
-        << "_"
-        << aType
-        << "_"
-        << aLayerLink -> getId()
-        << "_z:"
-        << pos.z
-        << ".txt";
-
-        auto file = net -> getWeightsPath( s.str() );
-
-        if( checkPath( getPath( file )))
+        double val = 0.0;
+        switch( data )
         {
-            ofstream f;
-            f.open( file );
-            if( f.is_open() )
+            default:
+            case DATA_WEIGHTS:
+                val = weight;
+            break;
+            case DATA_VALUES:
+                val = layerLink -> getNeuronValue( layerLinkIndex );
+            break;
+            case DATA_ERRORS:
+                val = layerLink -> getNeuronError( layerLinkIndex );
+            break;
+        }
+        f << val << "|";
+    };
+
+    /* Get layer size */
+    auto size = aLayerLink -> getSize();
+
+    /* Create file name */
+    stringstream s;
+    s
+    << aLayer -> getId()
+    << "_"
+    << directionToString( aDirection )
+    << "_"
+    << aLayerLink -> getId()
+    << ".txt"
+    ;
+
+    /* Let file path */
+    auto file = aPath + "/" + s.str();
+
+    if( checkPath( getPath( file )))
+    {
+        /* Open file stream */
+        ofstream f;
+        f.open( file );
+        auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
+        if( f.is_open() )
+        {
+            f << "layer:    " << aLayer -> getId() << endl;
+            f << "index:    " << aNeuronPos.toString() << endl;
+            f << "link:     " << aLayerLink -> getId() << endl;
+            f << "direction:" << directionToString( aDirection ) << endl;
+            f << "value:    " << aLayer -> getNeuronValue( neuronIndex ) << endl;
+            f << "error:    " << aLayer -> getNeuronError( neuronIndex ) << endl;
+
+            for( int z = 0; z < size.z; z++)
             {
-                f
-                << "layer: " << aLayer -> getId() << endl
-                << "index: " << aNeuronIndex << endl
-                << "value: " << aLayer -> getNeuronValue( aNeuronIndex ) << endl
-                << "error: " << aLayer -> getNeuronError( aNeuronIndex ) << endl
-                ;
+                /*  Write z pos */
+                f << "z:" << z << endl;
 
-                f << endl << "Weights" << endl;
-                dumpXY
-                (
-                    pos.z, f, aLayerLink,
-                    [ &aBuffer ]( int aIndex )
-                    {
-                        return *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
-                    }
-                );
-
-                /* Parent or child values */
-
-                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " values" << endl;
-                dumpXY
-                (
-                    pos.z, f, aLayerLink,
-                    [ &aLayerLink ]( int aIndex )
-                    {
-                        return aLayerLink -> getNeuronValue( aIndex );
-                    }
-                );
-
-                /* Parent or child values */
-                f << endl << ( aType == "parent" ? "Parent" : "Child" ) << " errors" << endl;
-                dumpXY
-                (
-                    pos.z, f, aLayerLink,
-                    [ &aLayerLink ]( int aIndex )
-                    {
-                        return aLayerLink -> getNeuronError( aIndex );
-                    }
-                );
-
-                /* Incoming and outcoming values */
-                f << endl << ( aType == "parent" ? "Incoming" : "Outcoming" ) << " values" << endl;
-                dumpXY
-                (
-                    pos.z, f, aLayerLink,
-                    [ &aType, &aBuffer, &aLayerLink, &aLayer, &aNeuronIndex ]( int aIndex )
-                    {
-                        return
+                switch( aDirection )
+                {
+                    default:
+                        f << "Unknown direction" << "\n";
+                    break;
+                    case DIRECTION_PARENT:
+                        parentsLoop
                         (
-                            aType == "parent"
-                            ? aLayerLink -> getNeuronValue( aIndex )
-                            : aLayer -> getNeuronValue( aNeuronIndex )
-                        ) *
-                        *((double*) &aBuffer[ aIndex * NEURON_WEIGHT_SIZE ]);
-                    }
-                );
-
-                f.close();
+                            aLayer,
+                            neuronIndex,
+                            BT_ALL,
+                            [ &f, &aData, &dumpVal ]
+                            (
+                                Layer*  aParentLayer,
+                                int     aParentNeuronIndex,
+                                Nerve*  aNerve,
+                                double  aWeight,
+                                int     aWeightIndex
+                            )
+                            {
+                                dumpVal
+                                (
+                                    f,
+                                    aData,
+                                    aWeight,
+                                    aParentLayer,
+                                    aParentNeuronIndex
+                                );
+                                return false;
+                            }
+                        );
+                    break;
+                    case DIRECTION_CHILD:
+                        childrenLoop
+                        (
+                            aLayer,
+                            neuronIndex,
+                            BT_ALL,
+                            [ &f, &aData, &dumpVal ]
+                            (
+                                Layer*  aChildLayer,
+                                int     aChildNeuronIndex,
+                                Nerve*  aNerve,
+                                double  aWeight,
+                                int     aWeightIndex
+                            )
+                            {
+                                dumpVal
+                                (
+                                    f,
+                                    aData,
+                                    aWeight,
+                                    aChildLayer,
+                                    aChildNeuronIndex
+                                );
+                                return false;
+                            }
+                        );
+                    break;
+                }
             }
+            f.close();
         }
     }
 
     return this;
 }
+
