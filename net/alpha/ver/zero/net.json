@@ -61,7 +61,7 @@
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 28, 28, 1 ],
+            "size"              :[ 3, 3, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0, 1.0 ],
             "caption"           :"Main input",

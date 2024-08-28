@@ -328,8 +328,6 @@ class Limb : public Result
             Layer*,
             /* Neuron Index in the layer */
             Point3i,
-            /* Layer link */
-            Layer*,
             /* Type parent or child */
             Direction,
             /* Data type */

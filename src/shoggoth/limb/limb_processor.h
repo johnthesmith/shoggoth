@@ -12,6 +12,8 @@
 
 #include "../../../../../lib/core/mon.h"
 
+
+
 #include "../limb.h"
 #include "net.h"
 
@@ -309,6 +311,9 @@ class LimbProcessor : public Limb
 
 
 
+        /*
+            Calculate error in the layer
+        */
         LimbProcessor* layerCalcError
         (
             Layer*, /* Layer for calculation */

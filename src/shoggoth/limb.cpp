@@ -562,8 +562,6 @@ Limb* Limb::dump
     Layer*      aLayer,
     /* Neuron Index in the layer */
     Point3i     aNeuronPos,
-    /* Layer link */
-    Layer*      aLayerLink,
     /* Type parent or child */
     Direction   aDirection,
     /* Data type */
@@ -595,20 +593,18 @@ Limb* Limb::dump
                 val = layerLink -> getNeuronError( layerLinkIndex );
             break;
         }
-        f << val << "|";
+        f << toString( val, 6, DF_FIXED, true );
     };
-
-    /* Get layer size */
-    auto size = aLayerLink -> getSize();
 
     /* Create file name */
     stringstream s;
     s
     << aLayer -> getId()
-    << "_"
+    << aNeuronPos.toString()
+    << "-"
     << directionToString( aDirection )
-    << "_"
-    << aLayerLink -> getId()
+    << "-"
+    << dataToString( aData )
     << ".txt"
     ;
 
@@ -623,78 +619,123 @@ Limb* Limb::dump
         auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
         if( f.is_open() )
         {
-            f << "layer:    " << aLayer -> getId() << endl;
-            f << "index:    " << aNeuronPos.toString() << endl;
-            f << "link:     " << aLayerLink -> getId() << endl;
-            f << "direction:" << directionToString( aDirection ) << endl;
-            f << "value:    " << aLayer -> getNeuronValue( neuronIndex ) << endl;
-            f << "error:    " << aLayer -> getNeuronError( neuronIndex ) << endl;
+            f << "layer     :" << aLayer -> getId() << endl;
+            f << "index     :" << aNeuronPos.toString() << endl;
+            f << "direction :" << directionToString( aDirection ) << endl;
+            f << "value     :" << aLayer -> getNeuronValue( neuronIndex ) << endl;
+            f << "error     :" << aLayer -> getNeuronError( neuronIndex ) << endl;
 
-            for( int z = 0; z < size.z; z++)
+            switch( aDirection )
             {
-                /*  Write z pos */
-                f << "z:" << z << endl;
-
-                switch( aDirection )
+                default:
+                    f << "Unknown direction" << "\n";
+                break;
+                case DIRECTION_PARENT:
                 {
-                    default:
-                        f << "Unknown direction" << "\n";
-                    break;
-                    case DIRECTION_PARENT:
-                        parentsLoop
+                    Layer* lastParentLayer = NULL;
+                    auto size = POINT_3I_0;
+
+                    parentsLoop
+                    (
+                        aLayer,
+                        neuronIndex,
+                        BT_ALL,
+                        [ &f, &aData, &dumpVal, &size, &lastParentLayer ]
                         (
-                            aLayer,
-                            neuronIndex,
-                            BT_ALL,
-                            [ &f, &aData, &dumpVal ]
-                            (
-                                Layer*  aParentLayer,
-                                int     aParentNeuronIndex,
-                                Nerve*  aNerve,
-                                double  aWeight,
-                                int     aWeightIndex
-                            )
+                            Layer*  aParentLayer,
+                            int     aParentNeuronIndex,
+                            Nerve*  aNerve,
+                            double  aWeight,
+                            int     aWeightIndex
+                        )
+                        {
+                            if( aParentLayer != lastParentLayer )
                             {
-                                dumpVal
-                                (
-                                    f,
-                                    aData,
-                                    aWeight,
-                                    aParentLayer,
-                                    aParentNeuronIndex
-                                );
-                                return false;
+                                /* Start new layer table */
+                                f
+                                << endl
+                                << dataToString( aData )
+                                << " "
+                                << aParentLayer -> getId()
+                                << endl;
+
+                                lastParentLayer = aParentLayer;
+                                size = aParentLayer -> getSize();
                             }
-                        );
-                    break;
-                    case DIRECTION_CHILD:
-                        childrenLoop
-                        (
-                            aLayer,
-                            neuronIndex,
-                            BT_ALL,
-                            [ &f, &aData, &dumpVal ]
+
+                            auto p = Point3i::byIndex( size, aParentNeuronIndex );
+
+                            /* Dump val */
+                            dumpVal
                             (
-                                Layer*  aChildLayer,
-                                int     aChildNeuronIndex,
-                                Nerve*  aNerve,
-                                double  aWeight,
-                                int     aWeightIndex
-                            )
-                            {
-                                dumpVal
-                                (
-                                    f,
-                                    aData,
-                                    aWeight,
-                                    aChildLayer,
-                                    aChildNeuronIndex
-                                );
-                                return false;
-                            }
-                        );
-                    break;
+                                f,
+                                aData,
+                                aWeight,
+                                aParentLayer,
+                                aParentNeuronIndex
+                            );
+
+                            /* Check new line or delimiter */
+                            f << (( p.x == size.x - 1 ) ? "\n" : " | ");
+
+                            return false;
+                        }
+                    );
                 }
+                break;
+                case DIRECTION_CHILD:
+                {
+                    Layer* lastChildLayer = NULL;
+                    auto size = POINT_3I_0;
+
+                    childrenLoop
+                    (
+                        aLayer,
+                        neuronIndex,
+                        BT_ALL,
+                        [ &f, &aData, &dumpVal, &size, &lastChildLayer ]
+                        (
+                            Layer*  aChildLayer,
+                            int     aChildNeuronIndex,
+                            Nerve*  aNerve,
+                            double  aWeight,
+                            int     aWeightIndex
+                        )
+                        {
+                            if( aChildLayer != lastChildLayer )
+                            {
+                                /* Start new layer table */
+                                f
+                                << endl
+                                << dataToString( aData )
+                                << " "
+                                << aChildLayer -> getId()
+                                << endl;
+
+                                lastChildLayer = aChildLayer;
+                                size = aChildLayer -> getSize();
+                            }
+
+                            auto p = Point3i::byIndex( size, aChildNeuronIndex );
+
+                            /* Dump val */
+                            dumpVal
+                            (
+                                f,
+                                aData,
+                                aWeight,
+                                aChildLayer,
+                                aChildNeuronIndex
+                            );
+
+                            /* Check new line or delimiter */
+                            f << (( p.x == size.x - 1 ) ? "\n" : " | ");
+
+                            return false;
+                        }
+                    );
+                }
+                break;
             }
             f.close();
         }

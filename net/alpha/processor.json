@@ -27,15 +27,19 @@
             [
                 {
                     "layer"         :"cortex_1",
-                    "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ] ],
-                    "layerLink"     :"retina",
+                    "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ], [ 2,0,0 ] ],
                     "direction"     :"PARENT",
                     "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
-                }
+                },
                 {
                     "layer"         :"cortex_1",
                     "neuronsPos"    :[ [ 0,0,0 ] ],
-                    "layerLink"     :"cortex_2",
+                    "direction"     :"CHILD",
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
+                },
+                {
+                    "layer"         :"result",
+                    "neuronsPos"    :[ [ 0,0,0 ] ],
                     "direction"     :"CHILD",
                     "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
                 }

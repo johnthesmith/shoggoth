@@ -316,12 +316,11 @@ LimbProcessor* LimbProcessor::calc()
         ( ParamList* params, string )
         {
             auto layer      = getLayerList() -> getById( params -> getString( "layer" ));
-            auto layerLink  = getLayerList() -> getById( params -> getString( "layerLink" ));
             auto dataList   = params -> getObject( "data" );
             auto direction  = directionFromString( params -> getString( "direction" ));
             auto neuronPos  = params -> getObject( "neuronsPos" );
 
-            if( layer == NULL || layerLink == NULL )
+            if( layer == NULL )
             {
                 getLog()
                 -> warning( "Layer monitoring not found" );
@@ -331,14 +330,14 @@ LimbProcessor* LimbProcessor::calc()
                 /* Data type loop */
                 dataList -> loop
                 (
-                    [ this, &layer, &layerLink, &direction, &neuronPos ]
+                    [ this, &layer, &direction, &neuronPos ]
                     ( Param* dataItem )
                     {
                         auto data = dataFromString( dataItem -> getString());
                         /* Neuron pos loop */
                         neuronPos -> objectsLoop
                         (
-                            [ this, &layer, &layerLink, &direction, &data ]
+                            [ this, &layer, &direction, &data ]
                             ( ParamList* item, string )
                             {
                                 auto pos = ParamPoint::point3i( item );
@@ -348,7 +347,6 @@ LimbProcessor* LimbProcessor::calc()
                                     net -> getMonPath(),
                                     layer,
                                     pos,
-                                    layerLink,
                                     direction,
                                     data
                                 );
