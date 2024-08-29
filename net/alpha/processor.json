@@ -26,22 +26,32 @@
             "dump":
             [
                 {
+                    "enabled"       :true,
+                    "file"          :"%tick%-%stage%-%layer%-%direction%-%data%-%neuron%.txt"
                     "layer"         :"cortex_1",
                     "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ], [ 2,0,0 ] ],
                     "direction"     :"PARENT",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
+                    "pause"         :true
                 },
                 {
+                    "enabled"       :true,
                     "layer"         :"cortex_1",
                     "neuronsPos"    :[ [ 0,0,0 ] ],
                     "direction"     :"CHILD",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
+                    "pause"         :true
                 },
                 {
+                    "enabled"       :true,
                     "layer"         :"result",
                     "neuronsPos"    :[ [ 0,0,0 ] ],
                     "direction"     :"CHILD",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ]
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
+                    "pause"         :true
                 }
             ]
         }

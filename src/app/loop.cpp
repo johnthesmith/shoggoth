@@ -145,11 +145,6 @@ Loop* Loop::processorControl()
                 processor -> getLimb() -> getTickWrite()
             )
         )
-        -> setCalcDebug
-        (
-            taskProc
-            -> getBool( "debug", processor -> getLimb() -> getCalcDebug() )
-        )
         -> setDumpConf
         (
             taskProc

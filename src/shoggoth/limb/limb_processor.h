@@ -54,15 +54,6 @@ class LimbProcessor : public Limb
         int     tickWrite               = 10;
 
         ParamList* dumpConf             = NULL;
-        unsigned long long int  frame   = 0;
-
-        /*
-            Calculation debug mode
-            With calcDebug == true each calculation loop will be
-            stoped till calcTick is not true.
-        */
-        bool        calcDebug           = false;
-
         ChartList*  weightsChart        = NULL;
 
     public:
@@ -251,16 +242,6 @@ class LimbProcessor : public Limb
 
 
 
-        LimbProcessor* setCalcDebug
-        (
-            bool
-        );
-
-
-        bool getCalcDebug();
-
-
-
         int getCalcLayerIndex();
 
 
@@ -359,4 +340,22 @@ class LimbProcessor : public Limb
         (
             ParamList*
         );
+
+
+
+        /*
+            Create processor lock file and waiting it removing
+        */
+        LimbProcessor* calcDebugWait
+        (
+            CalcStage aStage
+        );
+
+
+
+        LimbProcessor* calcDebugDump
+        (
+            CalcStage aStage
+        );
+
 };

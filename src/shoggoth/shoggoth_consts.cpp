@@ -77,7 +77,7 @@ std::string commandToString
 
 
 /*
-    Convert command to string
+    Convert calculation stage to string
 */
 std::string calcStageToString
 (
@@ -87,11 +87,31 @@ std::string calcStageToString
     switch( a )
     {
         default:
-        case CALC_UNKNOWN   : return "CALC_UNKNOWN";
-        case CALC_NOT_START : return "CALC_NOT_START";
-        case CALC_START     : return "CALC_START";
-        case CALC_COMPLETE  : return "CALC_COMPLETE";
+        case CALC_STAGE_UNKNOWN         : return "UNKNOWN";
+        case CALC_STAGE_ALL             : return "ALL";
+        case CALC_STAGE_START           : return "START";
+        case CALC_STAGE_AFTER_FRONT     : return "AFTER_FRONT";
+        case CALC_STAGE_AFTER_BACK      : return "AFTER_BACK";
+        case CALC_STAGE_AFTER_LEARNING  : return "AFTER_LEARNING";
     }
+}
+
+
+
+/*
+    Convert calculation stage from string
+*/
+CalcStage calcStageToString
+(
+    std::string a
+)
+{
+    if( a == "ALL" )            return CALC_STAGE_ALL;
+    if( a == "START" )          return CALC_STAGE_START;
+    if( a == "AFTER_FRONT" )    return CALC_STAGE_AFTER_FRONT;
+    if( a == "AFTER_BACK" )     return CALC_STAGE_AFTER_BACK;
+    if( a == "AFTER_LEARNING" ) return CALC_STAGE_AFTER_LEARNING;
+    return CALC_STAGE_UNKNOWN;
 }
 
 
@@ -150,8 +170,8 @@ std::string bindTypeToString
     switch( a )
     {
         default:
-        case BT_ADD             : return "ADD";
-        case BT_MUL             : return "MUL";
+        case BT_ADD : return "ADD";
+        case BT_MUL : return "MUL";
     };
 }
 

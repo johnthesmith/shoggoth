@@ -102,13 +102,19 @@ enum Task
 
 /*
     Shoggoth layers calculation stage
+    The calculation stages works in LimbProcessor::calc.
 */
 enum CalcStage
 {
-    CALC_UNKNOWN,
-    CALC_NOT_START,
-    CALC_START,
-    CALC_COMPLETE
+    /* Unknown stage for configuration errors detecting */
+    CALC_STAGE_UNKNOWN,
+    /* Works for all stages */
+    CALC_STAGE_ALL,
+    /* On calculation start */
+    CALC_STAGE_START,
+    CALC_STAGE_AFTER_FRONT,
+    CALC_STAGE_AFTER_BACK,
+    CALC_STAGE_AFTER_LEARNING
 };
 
 
@@ -238,11 +244,21 @@ std::string commandToString
 
 
 /*
-    Convert calculation stage to to string
+    Convert calculation stage to string
 */
 std::string calcStageToString
 (
     CalcStage
+);
+
+
+
+/*
+    Convert calculation stage from string
+*/
+CalcStage calcStageFromString
+(
+    string
 );
 
 

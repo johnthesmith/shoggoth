@@ -1,6 +1,7 @@
 #include <cmath>
-
+#include <fstream>
 #include <unistd.h> /* usleep */
+
 #include "limb_processor.h"
 #include "calc_table.h"
 
@@ -103,9 +104,6 @@ LimbProcessor* LimbProcessor::calc()
     -> setDouble( Path{ "config", "maxError" }, maxError )
     ;
 
-    /* Increase total calc frame */
-    frame++;
-
     /* Increase tick */
     tick ++;
 
@@ -158,6 +156,8 @@ LimbProcessor* LimbProcessor::calc()
     /* Drop learing mode flag */
     learning = false;
 
+
+
     /*
         Write monitoring
     */
@@ -195,9 +195,7 @@ LimbProcessor* LimbProcessor::calc()
     );
     net -> unlock();
 
-
-
-
+    calcDebugDump( CALC_STAGE_START );
 
     /*
         Forward calculation (neuron values)
@@ -224,8 +222,7 @@ LimbProcessor* LimbProcessor::calc()
     )
     -> destroy();
 
-
-
+    calcDebugDump( CALC_STAGE_AFTER_FRONT );
 
     /*
         Backward calculation (neuron errors)
@@ -252,8 +249,7 @@ LimbProcessor* LimbProcessor::calc()
     )
     -> destroy();
 
-
-
+    calcDebugDump( CALC_STAGE_AFTER_BACK );
 
     /*
         Learning calculation (nerve weights)
@@ -276,6 +272,7 @@ LimbProcessor* LimbProcessor::calc()
     )
     -> destroy();
 
+    calcDebugDump( CALC_STAGE_AFTER_LEARNING );
 
     /*
         End of calculation
@@ -306,60 +303,6 @@ LimbProcessor* LimbProcessor::calc()
             }
         );
     }
-
-    /*
-        Write monitoring
-    */
-    dumpConf -> objectsLoop
-    (
-        [ this ]
-        ( ParamList* params, string )
-        {
-            auto layer      = getLayerList() -> getById( params -> getString( "layer" ));
-            auto dataList   = params -> getObject( "data" );
-            auto direction  = directionFromString( params -> getString( "direction" ));
-            auto neuronPos  = params -> getObject( "neuronsPos" );
-
-            if( layer == NULL )
-            {
-                getLog()
-                -> warning( "Layer monitoring not found" );
-            }
-            else
-            {
-                /* Data type loop */
-                dataList -> loop
-                (
-                    [ this, &layer, &direction, &neuronPos ]
-                    ( Param* dataItem )
-                    {
-                        auto data = dataFromString( dataItem -> getString());
-                        /* Neuron pos loop */
-                        neuronPos -> objectsLoop
-                        (
-                            [ this, &layer, &direction, &data ]
-                            ( ParamList* item, string )
-                            {
-                                auto pos = ParamPoint::point3i( item );
-                                /* Dump */
-                                dump
-                                (
-                                    net -> getMonPath(),
-                                    layer,
-                                    pos,
-                                    direction,
-                                    data
-                                );
-                                return false;
-                            }
-                        );
-                        return false;
-                    }
-                );
-            }
-            return false;
-        }
-    );
 
     /*
         Write final monitoring
@@ -533,30 +476,6 @@ double LimbProcessor::getMaxError()
 double LimbProcessor::getLearningSpeed()
 {
     return learningSpeed;
-}
-
-
-
-/*
-    Set calculation debug mode flag
-*/
-LimbProcessor* LimbProcessor::setCalcDebug
-(
-    bool a
-)
-{
-    calcDebug = a;
-    return this;
-}
-
-
-
-/*
-    Return calculation debug mode flag
-*/
-bool LimbProcessor::getCalcDebug()
-{
-    return calcDebug;
 }
 
 
@@ -891,3 +810,123 @@ LimbProcessor* LimbProcessor::setDumpConf
 }
 
 
+
+/*
+    Create processor lock file and waiting it removing
+*/
+LimbProcessor* LimbProcessor::calcDebugWait
+(
+    CalcStage aStage
+)
+{
+    auto file = net -> getMonPath( "calc.lock" );
+    if( checkPath( getPath( file )))
+    {
+        /* Open lock stream */
+        ofstream f;
+        f.open( file );
+        if( f.is_open() )
+        {
+            f << calcStageToString( aStage ) << endl << tick << endl;
+            f.close();
+        }
+    }
+
+    /* Waiting file removing */
+    while( fileExists( file ) )
+    {
+        usleep( 10000 );
+    }
+
+    return this;
+}
+
+
+
+/*
+    Write debug monitoring
+*/
+LimbProcessor* LimbProcessor::calcDebugDump
+(
+    CalcStage aStage
+)
+{
+    /* Convert stage */
+    auto stage = calcStageToString( aStage );
+    auto stageAll = calcStageToString( CALC_STAGE_ALL );
+
+    /* Loop for monitoring rules from config */
+    dumpConf -> objectsLoop
+    (
+        [ this, &aStage, &stage, &stageAll ]
+        ( ParamList* params, string )
+        {
+            /* Enabled check */
+            if( params -> getBool( "enabled", true ))
+            {
+                auto stages = params -> getObject( "stages" );
+                /* Stage check */
+                if
+                (
+                    stages -> contains( stage ) ||
+                    stages -> contains( stageAll )
+                )
+                {
+                    /* Layer defining */
+                    auto layer = getLayerList() -> getById( params -> getString( "layer" ));
+                    if( layer == NULL )
+                    {
+                        getLog()
+                        -> warning( "Layer monitoring not found" );
+                    }
+                    else
+                    {
+                        auto dataList   = params -> getObject( "data" );
+                        auto direction  = directionFromString( params -> getString( "direction" ));
+                        auto neuronPos  = params -> getObject( "neuronsPos" );
+
+                        /* Data type loop */
+                        dataList -> loop
+                        (
+                            [ this, &layer, &direction, &neuronPos ]
+                            ( Param* dataItem )
+                            {
+                                auto data = dataFromString( dataItem -> getString());
+                                /* Neuron pos loop */
+                                neuronPos -> objectsLoop
+                                (
+                                    [ this, &layer, &direction, &data ]
+                                    ( ParamList* item, string )
+                                    {
+                                        auto pos = ParamPoint::point3i( item );
+                                        /* Dump */
+                                        dump
+                                        (
+                                            net -> getMonPath(),
+                                            layer,
+                                            pos,
+                                            direction,
+                                            data
+                                        );
+                                        return false;
+                                    }
+                                );
+                                return false;
+                            }
+                        );
+                    } /* Layer */
+
+                    /* Calculation pause */
+                    if( params -> getBool( "pause", false ))
+                    {
+                        calcDebugWait( aStage );
+                    }
+
+                } /* Stage check */
+            } /* Enabled check */
+            return false;
+        }
+    );
+
+    return this;
+}
