@@ -27,7 +27,7 @@
             [
                 {
                     "enabled"       :true,
-                    "file"          :"%tick%-%stage%-%layer%-%direction%-%data%-%neuron%.txt"
+                    "file"          :"%stage%-%layer%%neuron%-%direction%-%data%.txt"
                     "layer"         :"cortex_1",
                     "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ], [ 2,0,0 ] ],
                     "direction"     :"PARENT",

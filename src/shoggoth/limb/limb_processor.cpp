@@ -812,39 +812,12 @@ LimbProcessor* LimbProcessor::setDumpConf
 
 
 /*
-    Create processor lock file and waiting it removing
-*/
-LimbProcessor* LimbProcessor::calcDebugWait
-(
-    CalcStage aStage
-)
-{
-    auto file = net -> getMonPath( "calc.lock" );
-    if( checkPath( getPath( file )))
-    {
-        /* Open lock stream */
-        ofstream f;
-        f.open( file );
-        if( f.is_open() )
-        {
-            f << calcStageToString( aStage ) << endl << tick << endl;
-            f.close();
-        }
-    }
-
-    /* Waiting file removing */
-    while( fileExists( file ) )
-    {
-        usleep( 10000 );
-    }
-
-    return this;
-}
-
-
-
-/*
     Write debug monitoring
+    %stage%
+    %tick%
+    %layer%
+    %direction%
+    %neuron%
 */
 LimbProcessor* LimbProcessor::calcDebugDump
 (
@@ -881,28 +854,49 @@ LimbProcessor* LimbProcessor::calcDebugDump
                     }
                     else
                     {
+                        /* Extract the arguments */
                         auto dataList   = params -> getObject( "data" );
                         auto direction  = directionFromString( params -> getString( "direction" ));
                         auto neuronPos  = params -> getObject( "neuronsPos" );
+                        auto file       = params -> getString( "file" );
+
+                        /* Replace file name */
+                        file = replace
+                        (
+                            file,
+                            vector <string>
+                            {
+                                "%tick%","%stage%","%layer%", "%direction%"
+                            },
+                            vector <string>
+                            {
+                                toString( tick ),
+                                stage,
+                                layer -> getId(),
+                                directionToString( direction )
+                            }
+                        );
 
                         /* Data type loop */
                         dataList -> loop
                         (
-                            [ this, &layer, &direction, &neuronPos ]
+                            [ this, &layer, &direction, &neuronPos, &file ]
                             ( Param* dataItem )
                             {
                                 auto data = dataFromString( dataItem -> getString());
+                                auto file1 = replace( file, "%data%", dataToString( data ) );
                                 /* Neuron pos loop */
                                 neuronPos -> objectsLoop
                                 (
-                                    [ this, &layer, &direction, &data ]
+                                    [ this, &layer, &direction, &data, &file1 ]
                                     ( ParamList* item, string )
                                     {
                                         auto pos = ParamPoint::point3i( item );
+                                        auto file2 = replace( file1, "%neuron%", pos.toString() );
                                         /* Dump */
                                         dump
                                         (
-                                            net -> getMonPath(),
+                                            file2,
                                             layer,
                                             pos,
                                             direction,
@@ -916,10 +910,20 @@ LimbProcessor* LimbProcessor::calcDebugDump
                         );
                     } /* Layer */
 
+
                     /* Calculation pause */
                     if( params -> getBool( "pause", false ))
                     {
-                        calcDebugWait( aStage );
+                        params = ParamList::create();
+                        params
+                        -> setString( "stage", calcStageToString( aStage ) )
+                        -> setInt( "tick", tick );
+                        net -> getApplication() -> lock
+                        (
+                            net -> getMonPath( "processor_thread_calc_lock.json" ),
+                            params
+                        );
+                        params -> destroy();
                     }
 
                 } /* Stage check */

@@ -596,26 +596,11 @@ Limb* Limb::dump
         f << toString( val, 6, DF_FIXED, true );
     };
 
-    /* Create file name */
-    stringstream s;
-    s
-    << aLayer -> getId()
-    << aNeuronPos.toString()
-    << "-"
-    << directionToString( aDirection )
-    << "-"
-    << dataToString( aData )
-    << ".txt"
-    ;
-
-    /* Let file path */
-    auto file = aPath + "/" + s.str();
-
-    if( checkPath( getPath( file )))
+    if( checkPath( getPath( aPath )))
     {
         /* Open file stream */
         ofstream f;
-        f.open( file );
+        f.open( aPath );
         auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
         if( f.is_open() )
         {
