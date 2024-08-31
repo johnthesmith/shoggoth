@@ -14,44 +14,33 @@
             "maxWeight"         :1000,
             "maxError"          :10,
             "errorNormalize"    :0.11,
-
             "processorCount"    :1,
-            "tickWrite"         :100,
+
+            "tickWrite"         :0,
+            "tickChart"         :100,
+
             "listen"            :
             {
                 "port"                  :11120,
                 "readWaitingTimeoutMcs" :1000000
             },
-
             "dump":
             [
                 {
                     "enabled"       :true,
-                    "file"          :"%stage%-%layer%%neuron%-%direction%-%data%.txt"
-                    "layer"         :"cortex_1",
-                    "neuronsPos"    :[ [ 0,0,0 ], [ 1,0,0 ], [ 2,0,0 ] ],
-                    "direction"     :"PARENT",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "description"   :"test",
+                    "file"          :"dump/%stage%/%data%/%layer%%neuron%-%direction%.txt",
                     "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
-                    "pause"         :true
+                    "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "error", "sample" ],
+                    "neurons"       :[ [ 0,0,0 ] ],
+                    "directions"    :[ "PARENT", "CHILD" ],
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
                 },
                 {
                     "enabled"       :true,
-                    "layer"         :"cortex_1",
-                    "neuronsPos"    :[ [ 0,0,0 ] ],
-                    "direction"     :"CHILD",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
-                    "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
-                    "pause"         :true
-                },
-                {
-                    "enabled"       :true,
-                    "layer"         :"result",
-                    "neuronsPos"    :[ [ 0,0,0 ] ],
-                    "direction"     :"CHILD",
-                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
-                    "stages"        :[ "START", "AFTER_FRONT", "AFTER_BACK", "AFTER_LEARNING" ],
-                    "pause"         :true
+                    "pauseMcs"      :0,
+                    "stages"        :[ "AFTER_LEARNING" ],
+                    "lock"          :false
                 }
             ]
         }

@@ -1,3 +1,8 @@
+/*
+    Evolution appliction definitions
+    Called from evolution.h
+*/
+
 #pragma once
 
 /* Local libraries */

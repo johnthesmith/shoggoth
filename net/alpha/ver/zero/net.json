@@ -61,7 +61,7 @@
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 3, 3, 1 ],
+            "size"              :[ 4, 1, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0, 1.0 ],
             "caption"           :"Main input",
@@ -88,7 +88,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 16, 1, 1 ],
+            "size"              :[ 2, 2, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
 
@@ -139,7 +139,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 16, 1, 1 ],
+            "size"              :[ 2, 2, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
 
@@ -165,7 +165,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 10, 1, 1 ],
+            "size"              :[ 4, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
 
             "actions":
@@ -190,7 +190,7 @@
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 10, 1, 1 ],
+            "size"              :[ 4, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
 
             "actions":

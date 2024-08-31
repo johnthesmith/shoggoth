@@ -68,6 +68,20 @@ LimbProcessor* LimbProcessor::create
 
 
 
+/*
+    Set terminated signal
+*/
+LimbProcessor* LimbProcessor::setTerminated
+(
+    bool a
+)
+{
+    terminated = a;
+    return this;
+}
+
+
+
 LimbProcessor* LimbProcessor::setThreadCount
 (
     int a
@@ -86,12 +100,14 @@ int LimbProcessor::getThreadCount()
 
 
 
-
 /*
     Calculate all layers
 */
 LimbProcessor* LimbProcessor::calc()
 {
+    /* Increase the tick */
+    tick ++;
+
     /*
         Calculation begin
     */
@@ -103,19 +119,6 @@ LimbProcessor* LimbProcessor::calc()
     -> setDouble( Path{ "config", "maxWeight" }, maxWeight )
     -> setDouble( Path{ "config", "maxError" }, maxError )
     ;
-
-    /* Increase tick */
-    tick ++;
-
-    /* Set learning speed from net config */
-    net -> lock();
-    setLearningSpeed
-    (
-        net
-        -> getConfig()
-        -> getDouble( Path{ "processor", "learningSpeed" }, 0.0 )
-    );
-    net -> unlock();
 
     /* Check structure with net */
     net -> syncToLimb( this, false );
@@ -146,7 +149,7 @@ LimbProcessor* LimbProcessor::calc()
         false
     )
 
-    /* Load selected weights to net from this limb */
+    /* Load weights to Net from this limb */
     -> loadWeightsFrom( this )
 
     /* Write stat for Net */
@@ -156,51 +159,11 @@ LimbProcessor* LimbProcessor::calc()
     /* Drop learing mode flag */
     learning = false;
 
-
-
-    /*
-        Write monitoring
-    */
-    net -> lock();
-    net -> getLayerList() -> loop
-    (
-        [ this ]
-        (
-            void* aItem
-        )
-        {
-            auto layer = (Layer*) aItem;
-
-            mon
-            -> setString
-            (
-                Path{ "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                layer -> getChartValues() -> toString( 40 )
-            )
-            -> setString
-            (
-                Path{ "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                layer -> getChartErrors() -> toString( 40 )
-            )
-
-            -> setString
-            (
-                Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                layer -> getChartTick() -> toString( 40 )
-            )
-            ;
-
-            return false;
-        }
-    );
-    net -> unlock();
-
     calcDebugDump( CALC_STAGE_START );
 
     /*
         Forward calculation (neuron values)
     */
-
     CalcTable::create( this )
     -> loop
     (
@@ -217,7 +180,7 @@ LimbProcessor* LimbProcessor::calc()
                 mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
                 return true;
             }
-            return false;
+            return terminated;
         }
     )
     -> destroy();
@@ -244,7 +207,7 @@ LimbProcessor* LimbProcessor::calc()
                 mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
                 return true;
             }
-            return false;
+            return terminated;
         }
     )
     -> destroy();
@@ -278,10 +241,13 @@ LimbProcessor* LimbProcessor::calc()
         End of calculation
     */
 
-    /*
-        Write the nerves weights in to storage
-    */
-    if( tick % tickWrite == 0 )
+    /* Write the nerves weights in to storage */
+    if
+    (
+        !terminated &&
+        tickWrite != 0 &&
+        tick % tickWrite == 0
+    )
     {
         getNerveList() -> loop
         (
@@ -291,7 +257,9 @@ LimbProcessor* LimbProcessor::calc()
                 auto nerve = (Nerve*) item;
                 if
                 (
-                    !nerve -> saveWeight( net -> getNervesPath() ) -> isOk()
+                    !nerve
+                    -> saveWeight( net -> getNervesPath() )
+                    -> isOk()
                 )
                 {
                     getLog()
@@ -304,9 +272,48 @@ LimbProcessor* LimbProcessor::calc()
         );
     }
 
-    /*
-        Write final monitoring
-    */
+    /* Write chart monitoring */
+    if
+    (
+        !terminated &&
+        tickChart != 0 &&
+        tick % tickChart == 0
+    )
+    {
+        getLayerList() -> loop
+        (
+            [ this ]
+            (
+                void* aItem
+            )
+            {
+                auto layer = (Layer*) aItem;
+
+                mon
+                -> setString
+                (
+                    Path{ "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartValues() -> toString( 40 )
+                )
+                -> setString
+                (
+                    Path{ "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartErrors() -> toString( 40 )
+                )
+
+                -> setString
+                (
+                    Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartTick() -> toString( 40 )
+                )
+                ;
+
+                return false;
+            }
+        );
+    }
+
+    /* Write final monitoring */
     mon
     -> setBool( Path{ "current", "learning" }, learning )
     -> setInt( Path{ "current", "tick" }, tick )
@@ -374,7 +381,6 @@ LimbProcessor* LimbProcessor::nerveControl
     }
     return this;
 }
-
 
 
 
@@ -504,7 +510,7 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         aIndex,
         BT_ALL,
         [
-            &add, &mul, &count
+            this, &add, &mul, &count
         ]
         (
             Layer*  aParentLayer,
@@ -530,7 +536,7 @@ LimbProcessor* LimbProcessor::neuronCalcValue
                     mul *= w;
                 break;
             }
-            return false;
+            return terminated;
         }
     );
 
@@ -577,7 +583,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
                 aLayer,
                 aIndex,
                 BT_ADD,
-                [ &error ]
+                [ this, &error ]
                 (
                     Layer* aChild,
                     int aChildIndex,
@@ -588,7 +594,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
                 {
 
                     error += aChild -> getNeuronError( aChildIndex ) * aWeight;
-                    return false;
+                    return terminated;
                 }
             );
         break;
@@ -665,7 +671,7 @@ LimbProcessor* LimbProcessor::neuronCalcWeight
                     aNerve -> setWeight( aWeightIndex, newWeight );
                     aNerve -> setDeltaWeight( aWeightIndex, deltaWeight );
 
-                    return false;
+                    return terminated;
                 }
             );
         break;
@@ -688,7 +694,7 @@ LimbProcessor* LimbProcessor::layerCalcValue
 {
     int b = calcNeuronFrom( aLayer, aThread );
     int e = calcNeuronTo( aLayer, aThread );
-    for( int i = b; i < e; i ++ )
+    for( int i = b; i < e && !terminated; i ++ )
     {
         neuronCalcValue( aLayer, i, aLearning );
     }
@@ -709,7 +715,7 @@ LimbProcessor* LimbProcessor::layerCalcError
     int b = calcNeuronFrom( aLayer, aThread );
     int e = calcNeuronTo( aLayer, aThread );
 
-    for( int i = b; i < e; i ++ )
+    for( int i = b; i < e && !terminated; i ++ )
     {
         neuronCalcError( aLayer, i );
     }
@@ -731,7 +737,7 @@ LimbProcessor* LimbProcessor::layerCalcWeight
     int b = calcNeuronFrom( aLayer, aThread );
     int e = calcNeuronTo( aLayer, aThread );
 
-    for( int i = b; i < e; i ++ )
+    for( int i = b; i < e && !terminated; i ++ )
     {
         neuronCalcWeight( aLayer, i );
     }
@@ -788,10 +794,24 @@ int LimbProcessor::getTickWrite()
 */
 LimbProcessor* LimbProcessor::setTickWrite
 (
-    int aValue
+    int a
 )
 {
-    tickWrite = aValue;
+    tickWrite = a;
+    return this;
+}
+
+
+
+/*
+    Set tick for write charts
+*/
+LimbProcessor* LimbProcessor::setTickChart
+(
+    int a
+)
+{
+    tickChart = a;
     return this;
 }
 
@@ -804,7 +824,7 @@ LimbProcessor* LimbProcessor::setDumpConf
 {
     if( a != NULL )
     {
-        dumpConf -> copyFrom( a );
+        dumpConf -> clear() -> copyFrom( a );
     }
     return this;
 }
@@ -813,11 +833,13 @@ LimbProcessor* LimbProcessor::setDumpConf
 
 /*
     Write debug monitoring
-    %stage%
-    %tick%
-    %layer%
-    %direction%
-    %neuron%
+
+    File name keys for replacing
+        %stage%
+        %tick%
+        %layer%
+        %neuron%
+        %direction%
 */
 LimbProcessor* LimbProcessor::calcDebugDump
 (
@@ -841,92 +863,147 @@ LimbProcessor* LimbProcessor::calcDebugDump
                 /* Stage check */
                 if
                 (
-                    stages -> contains( stage ) ||
-                    stages -> contains( stageAll )
+                    stages != NULL &&
+                    (
+                        stages -> contains( stage ) ||
+                        stages -> contains( stageAll )
+                    )
                 )
                 {
                     /* Layer defining */
-                    auto layer = getLayerList() -> getById( params -> getString( "layer" ));
-                    if( layer == NULL )
+                    auto layers = params -> getObject( "layers" );
+                    if( layers != NULL )
                     {
-                        getLog()
-                        -> warning( "Layer monitoring not found" );
-                    }
-                    else
-                    {
-                        /* Extract the arguments */
-                        auto dataList   = params -> getObject( "data" );
-                        auto direction  = directionFromString( params -> getString( "direction" ));
-                        auto neuronPos  = params -> getObject( "neuronsPos" );
-                        auto file       = params -> getString( "file" );
-
-                        /* Replace file name */
-                        file = replace
+                        layers -> loop
                         (
-                            file,
-                            vector <string>
+                            [ this, &stage, &params ]
+                            ( Param* param )
                             {
-                                "%tick%","%stage%","%layer%", "%direction%"
-                            },
-                            vector <string>
-                            {
-                                toString( tick ),
-                                stage,
-                                layer -> getId(),
-                                directionToString( direction )
-                            }
-                        );
+                                /* Get layer by index */
+                                auto layer = getLayerList()
+                                -> getById( param -> getString());
 
-                        /* Data type loop */
-                        dataList -> loop
-                        (
-                            [ this, &layer, &direction, &neuronPos, &file ]
-                            ( Param* dataItem )
-                            {
-                                auto data = dataFromString( dataItem -> getString());
-                                auto file1 = replace( file, "%data%", dataToString( data ) );
-                                /* Neuron pos loop */
-                                neuronPos -> objectsLoop
-                                (
-                                    [ this, &layer, &direction, &data, &file1 ]
-                                    ( ParamList* item, string )
+                                if( layer == NULL )
+                                {
+                                    getLog()
+                                    -> warning( "Layer monitoring not found" );
+                                }
+                                else
+                                {
+                                    /* Let directions */
+                                    auto directions = params -> getObject( "directions" );
+                                    if( directions != NULL )
                                     {
-                                        auto pos = ParamPoint::point3i( item );
-                                        auto file2 = replace( file1, "%neuron%", pos.toString() );
-                                        /* Dump */
-                                        dump
+                                        directions -> loop
                                         (
-                                            file2,
-                                            layer,
-                                            pos,
-                                            direction,
-                                            data
+                                            [ this, &stage, &params, &layer ]
+                                            ( Param* param )
+                                            {
+                                                /* Extract the config arguments */
+                                                auto direction = directionFromString( param -> getString() );
+                                                auto datas = params -> getObject( "data" );
+                                                auto neurons = params -> getObject( "neurons" );
+                                                auto file = net -> getMonPath
+                                                (
+                                                    params -> getString
+                                                    (
+                                                        "file",
+                                                        "tick_%tick%/%stage%/%layer%%neuron%-%direction%-%data%.txt"
+                                                    )
+                                                );
+
+                                                if( neurons != NULL && datas != NULL )
+                                                {
+                                                    /* Data type loop */
+                                                    datas -> loop
+                                                    (
+                                                        [ this, &layer, &direction, &neurons, &file, &stage ]
+                                                        ( Param* item )
+                                                        {
+                                                            auto data = dataFromString( item -> getString());
+                                                            /* Neuron pos loop */
+                                                            neurons -> objectsLoop
+                                                            (
+                                                                [ this, &layer, &direction, &data, &file, &stage ]
+                                                                ( ParamList* item, string )
+                                                                {
+                                                                    auto pos = ParamPoint::point3i( item );
+
+                                                                    /* Replace file name */
+                                                                    auto f = replace
+                                                                    (
+                                                                        file,
+                                                                        vector <string>
+                                                                        {
+                                                                            "%tick%",
+                                                                            "%stage%",
+                                                                            "%layer%",
+                                                                            "%direction%",
+                                                                            "%data%",
+                                                                            "%neuron%"
+                                                                        },
+                                                                        vector <string>
+                                                                        {
+                                                                            toString( tick ),
+                                                                            stage,
+                                                                            layer -> getId(),
+                                                                            directionToString( direction ),
+                                                                            dataToString( data ),
+                                                                            pos.toString()
+                                                                        }
+                                                                    );
+
+                                                                    /* Dump */
+                                                                    dump
+                                                                    (
+                                                                        f,
+                                                                        layer,
+                                                                        pos,
+                                                                        direction,
+                                                                        data,
+                                                                        tick
+                                                                    );
+                                                                    return false;
+                                                                }
+                                                            );
+                                                            return false;
+                                                        }
+                                                    );
+                                                } /* Neuron list and data exists */
+                                                return false;
+                                            } /* Direction loop lymbda */
                                         );
-                                        return false;
-                                    }
-                                );
+                                    } /* Directions exists */
+                                } /* Layer exists */
                                 return false;
-                            }
-                        );
-                    } /* Layer */
-
-
-                    /* Calculation pause */
-                    if( params -> getBool( "pause", false ))
-                    {
-                        params = ParamList::create();
-                        params
-                        -> setString( "stage", calcStageToString( aStage ) )
-                        -> setInt( "tick", tick );
-                        net -> getApplication() -> lock
-                        (
-                            net -> getMonPath( "processor_thread_calc_lock.json" ),
-                            params
-                        );
-                        params -> destroy();
-                    }
-
+                            } /* Layers loop lambda */
+                        ); /* Layers loop */
+                    } /* Layers exists */
                 } /* Stage check */
+
+                /* Pause */
+                auto pause = params -> getInt( "pauseMcs", 0 );
+                if( pause > 0 )
+                {
+                    usleep( pause );
+                }
+
+                /* Lock */
+                if( params -> getBool( "lock", false ))
+                {
+                    params = ParamList::create();
+                    params
+                    -> setString( "stage", calcStageToString( aStage ) )
+                    -> setInt( "tick", tick );
+                    net -> getApplication() -> lock
+                    (
+                        net -> getMonPath( "processor_thread_calc_lock.json" ),
+                        params,
+                        [ this ](){ return terminated; }
+                    );
+                    params -> destroy();
+                }
+
             } /* Enabled check */
             return false;
         }

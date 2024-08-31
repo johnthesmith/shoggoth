@@ -44,6 +44,10 @@ $shab execute "COMPILER -O3 -o shoggoth $(grep -v '^#' shoggoth.objs) -lGL -lGLU
 $shab header "make evolution"
 $shab execute "COMPILER -O3 -o evolution $(grep -v '^#' evolution.objs) -lpthread"
 
+#$shab header "make teacher"
+#$shab execute "COMPILER -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread"
+
 #$shab header "compress"
 #$shab execute "upx -9 shoggoth"
 #$shab execute "upx -9 evolution"
+#$shab execute "upx -9 teacher"

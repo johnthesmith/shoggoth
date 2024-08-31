@@ -331,7 +331,9 @@ class Limb : public Result
             /* Type parent or child */
             Direction,
             /* Data type */
-            Data
+            Data,
+            /* Tick number */
+            long long int
         );
 
 

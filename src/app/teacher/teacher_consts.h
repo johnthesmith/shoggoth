@@ -1,5 +1,5 @@
 /*
-    Shoggoth constants and conversion methods
+    Shoggoth Teacher specific constants
 */
 
 #pragma once

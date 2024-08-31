@@ -1,7 +1,6 @@
 /* System libraries */
 #include <iostream>
 
-
 /* Application libraryes */
 #include "evolution_application.h"
 #include "evolution_payload.h"

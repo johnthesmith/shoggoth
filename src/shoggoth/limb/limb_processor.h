@@ -22,20 +22,21 @@
 class LimbProcessor : public Limb
 {
     private:
-        /* Net object */
+        /* External Net object */
         Net*            net             = NULL;
         /* Monitor object */
         Mon*            mon             = NULL;
+        /* Terminated status, stop the calculation and dump works */
+        bool            terminated      = false;
 
         /*
             Calculation state
         */
-
         /* Current tick */
         long long int   tick            = 0;
         /* Count of threads */
         int             threadCount     = 1;
-        /* Automatic learning mode */
+        /* Automatic learning mode, indicates learning stage */
         bool            learning        = false;
 
         /*
@@ -50,10 +51,13 @@ class LimbProcessor : public Limb
         /* Maxumum error, have to less then maxWeight */
         double  maxError                = 100;
 
-        /* Each of finished calculation form tickWrite will be writen to file */
+        /* Each tickWrite from tick all Weights will be writen to file */
         int     tickWrite               = 10;
-
+        /* Each tickChart from ешсл Chartss will be writen to mon */
+        int     tickChart               = 10;
+        /* Configuration objtct for neurnos dump */
         ParamList* dumpConf             = NULL;
+
         ChartList*  weightsChart        = NULL;
 
     public:
@@ -89,6 +93,15 @@ class LimbProcessor : public Limb
             ...
         */
 
+
+
+        /*
+            Set terminated signal
+        */
+        LimbProcessor* setTerminated
+        (
+            bool
+        );
 
 
 
@@ -185,6 +198,16 @@ class LimbProcessor : public Limb
             Set tick for write weights
         */
         LimbProcessor* setTickWrite
+        (
+            int /* Value */
+        );
+
+
+
+        /*
+            Set tick for write charts
+        */
+        LimbProcessor* setTickChart
         (
             int /* Value */
         );
@@ -357,5 +380,4 @@ class LimbProcessor : public Limb
         (
             CalcStage aStage
         );
-
 };

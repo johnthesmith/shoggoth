@@ -383,14 +383,19 @@ void Teacher::onLoop()
             /* Check new batch */
             getLog() -> begin( "New batch" );
 
-            auto list = batches -> getObject( mode );
-            if( list != NULL )
+            auto list = batches -> getObject( Path{ mode, "list" } );
+            auto all = batches -> getObject( Path{ mode, "all" } );
+
+            if( list != NULL && all != NULL )
             {
                 auto item = list -> getRnd();
                 if( item != NULL && item -> isObject() )
                 {
+                    auto batch = ParamList::create()
+                    -> copyFrom( all )
+                    -> copyFrom( item -> getObject() );
+
                     /* Batch precessing */
-                    auto batch = item -> getObject();
                     batch -> loop
                     (
                         [ this ]
@@ -435,6 +440,9 @@ void Teacher::onLoop()
                         }
                     );
 
+                    /* Destroy the batch */
+                    batch -> destroy();
+
                     if( isOk() )
                     {
                         /* Upload values and errors to net */
@@ -462,7 +470,7 @@ void Teacher::onLoop()
             }
             else
             {
-                getLog() -> warning( "Mode not found" );
+                getLog() -> warning( "Batch section 'all' and 'list' not found " );
             }
             getLog() -> end();
         }

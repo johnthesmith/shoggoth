@@ -85,4 +85,18 @@ class Processor : public Payload
             Run net calculateion
         */
         virtual void onLoop() override;
+
+
+
+        /*
+            Pause processor thread
+        */
+        virtual void onPause() override;
+
+
+
+        /*
+            Resume processor thread
+        */
+        virtual void onResume() override;
 };

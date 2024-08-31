@@ -565,7 +565,9 @@ Limb* Limb::dump
     /* Type parent or child */
     Direction   aDirection,
     /* Data type */
-    Data        aData
+    Data        aData,
+    /* */
+    long long int aTick
 )
 {
     /* Damp data definition function */
@@ -604,6 +606,7 @@ Limb* Limb::dump
         auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
         if( f.is_open() )
         {
+            f << "tickr     :" << aTick << endl;
             f << "layer     :" << aLayer -> getId() << endl;
             f << "index     :" << aNeuronPos.toString() << endl;
             f << "direction :" << directionToString( aDirection ) << endl;

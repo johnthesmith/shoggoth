@@ -92,79 +92,28 @@ Loop* Loop::processorControl()
             /* Create server and processor payloads */
             server      = Server::create( net );
             processor   = Processor::create( net );
-
             /* Run server and processor thread */
             server -> setId( net -> getLogPath( "server_thread" )) -> loop( true );
             processor -> setId( net -> getLogPath( "processor_thread" )) -> loop( true );
         }
 
-        /* Apply config */
+        /* Apply config for processor */
         processor
         -> getLimb()
-        -> setLearningSpeed
-        (
-            taskProc -> getDouble
-            (
-                "learningSpeed",
-                processor -> getLimb() -> getLearningSpeed()
-            )
-        )
-        -> setMinWeight
-        (
-            taskProc
-            -> getDouble
-            (
-                "minWeight",
-                processor -> getLimb() -> getMinWeight()
-            )
-        )
-        -> setMaxWeight
-        (
-            taskProc
-            -> getDouble
-            (
-                "maxWeight",
-                processor -> getLimb() -> getMaxWeight()
-            )
-        )
-        -> setMaxError
-        (
-            taskProc
-            -> getDouble
-            (
-                "maxError",
-                processor -> getLimb() -> getMaxError()
-            )
-        )
-        -> setTickWrite
-        (
-            taskProc
-            -> getInt
-            (
-                "tickWrite",
-                processor -> getLimb() -> getTickWrite()
-            )
-        )
-        -> setDumpConf
-        (
-            taskProc
-            -> getObject( "dump" )
-        )
+        -> setLearningSpeed( taskProc -> getDouble( "learningSpeed", 0.001 ))
+        -> setMinWeight( taskProc -> getDouble( "minWeight", 1.0e-5 ))
+        -> setMaxWeight( taskProc -> getDouble( "maxWeight", 1.0e5 ))
+        -> setMaxError( taskProc -> getDouble( "maxError", 0.01 ))
+        -> setTickWrite( taskProc -> getInt( "tickWrite", 0 ))
+        -> setTickChart( taskProc -> getInt( "tickChart", 0 ))
+        -> setDumpConf( taskProc -> getObject( "dump" ))
+//        -> setLoopTimeoutMcs( taskProc -> getInt( "loopSleepMcs", 1000000 ))
         ;
 
+        /* Apply config for server */
         server -> setLoopTimeoutMcs( 1000000 );
 
-// TODO  SRETCA !!!!
-//        server -> resume();
-
-        processor
-        -> setLoopTimeoutMcs
-        (
-            taskProc
-            -> getDouble( "loopSleepMcs", processor -> getLoopTimeoutMcs() )
-        )
-        ;
-
+        server -> resume();
         processor -> resume();
     }
     else
@@ -232,7 +181,7 @@ Loop* Loop::teacherControl()
         }
 
         /* Read batches list and other config */
-        teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
+        teacher -> getBatches() -> clear() -> copyFrom( cfg -> getObject( Path{ "batches" }));
         teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
         teacher -> setMode( cfg -> getString( "mode" ));
 
@@ -306,19 +255,27 @@ void Loop::onLoop()
         Path{ "loop", "lastNetConfig" }
     );
 
+    auto netConfigUpdated = net -> isConfigUpdate( netConfig );
+    auto netVersionChanged = net -> isVersionChanged();
+    auto appConfigUpdated = getApplication() -> getConfigUpdated();
 
-    if
-    (
-        net -> isConfigUpdate( netConfig ) ||
-        net -> isVersionChanged() ||
-        getApplication() -> getConfigUpdated()
-    )
+    if( netConfigUpdated || netVersionChanged || appConfigUpdated )
     {
         getLog()
-        -> begin( "Config updated" )
+        -> begin( "Restarting" )
+        -> info( "by reason" )
+        -> prm( "Net updated", netConfigUpdated )
+        -> prm( "Net version changed", netVersionChanged )
+        -> prm( "App config updated", appConfigUpdated)
         -> prm( "File", getApplication() -> getConfigFileName() )
-        -> dump( netConfig, "Net config" )
         -> lineEnd();
+
+        /* Dump net config if changed */
+        if( netConfigUpdated )
+        {
+            getLog() -> dump( netConfig, "Net config" );
+        }
+
 
         if( getApplication() -> getConfig() -> isOk())
         {
@@ -331,17 +288,24 @@ void Loop::onLoop()
                 -> getDouble( "loopSleepMcs", getLoopTimeoutMcs() )
             );
 
+            getLog() -> begin( "Threads stoping" );
+
             /* Paused processes */
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
             if( teacher != NULL )   teacher -> pause();
             if( ui != NULL )        ui -> pause();
 
+            getLog() -> begin( "Threads waiting begin" );
+
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
             if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
+
+            getLog() -> end( "" );
+            getLog() -> end( "Threads stoped" );
 
             /* Apply config */
             net -> applyNet( netConfig );
