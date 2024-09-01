@@ -1,12 +1,5 @@
-/*
-    TODO переделать на использование тещего модуля
-    Teacher application
-*/
-
 /* System libraries */
 #include <iostream>
-
-
 
 /* Application libraryes */
 #include "teacher_application.h"
@@ -55,7 +48,7 @@ TeacherApplication* TeacherApplication::create
 */
 TeacherApplication* TeacherApplication::run()
 {
-    getLog() -> begin( "Start he Shoggoth Teacher application" );
+    getLog() -> begin( "Start the Shoggoth Teacher application" );
 
     prepareConfiguration();
 

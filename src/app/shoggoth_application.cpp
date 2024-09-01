@@ -139,7 +139,7 @@ ShoggothApplication* ShoggothApplication::prepareConfiguration()
 
 
 /*
-    Return true if config wile was updated
+    Return true if config was updated
 */
 bool ShoggothApplication::getConfigUpdated()
 {

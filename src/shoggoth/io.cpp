@@ -137,7 +137,7 @@ Io* Io::call
             -> lineEnd();
         }
 
-        getLog() -> end( getCode() );
+        getLog() -> end();
     }
 
     return this;

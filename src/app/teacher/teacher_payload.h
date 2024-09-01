@@ -1,6 +1,4 @@
 /*
-TODO переделать на использование тещего модуля
-
     This file of Teacher Shoggoth network
     Main application loop.
     Contains the Net object.
@@ -13,10 +11,13 @@ TODO переделать на использование тещего моду�
 #pragma once
 
 
-
 /* Local libraries */
+#include "../../../../../lib/json/json.h"
 #include "../../../../../lib/core/payload.h"
 #include "../../shoggoth/limb/net.h"
+
+/* Local libraries */
+#include "../../shoggoth/limb/limb_teacher.h"
 
 
 
@@ -29,10 +30,11 @@ class TeacherPayload : public Payload
     private:
 
         /* Neural net object */
-        Net*        net             = NULL;
+        Net*            net             = NULL;
+        LimbTeacher*    limb            = NULL;
 
-        /* State */
-        long int    lastConfigCheck = 0;
+        long long       lastChange      = 0;
+
 
     public:
 
@@ -100,6 +102,41 @@ class TeacherPayload : public Payload
         virtual void onLoop() override;
 
 
+        /******************************************************************************
+            Getters and setters
+        */
+
+        /*
+            Return current error limit from Net config
+        */
+        double getErrorLimit();
+
+
+
+        /*
+            Return error layer id from application config
+            Teacher uses this layer for for controlling
+        */
+        string getIdErrorLayer();
+
+
+
+        /*
+            Return name of mode for batches from application config
+        */
+        string getMode();
+
+
+
+        /*
+            Return enabled status
+        */
+        bool getEnabled();
+
+
+
+        ParamList* getBatches();
+
 
         /******************************************************************************
             Private methods
@@ -111,4 +148,34 @@ class TeacherPayload : public Payload
             Processing of the loop
         */
         TeacherPayload* processing();
+
+
+        /*
+            Batch put value to layer
+        */
+        TeacherPayload* cmdValueToLayer
+        (
+            ParamList*
+        );
+
+
+
+        TeacherPayload* cmdValuesToLayer
+        (
+            ParamList*
+        );
+
+
+
+        TeacherPayload* cmdImageToLayer
+        (
+            ParamList*
+        );
+
+
+
+        TeacherPayload* cmdFolderToLayer
+        (
+            ParamList*
+        );
 };

@@ -1,16 +1,19 @@
 /*
-    TODO переделать на использование тещего модуля
+    Teacher payload
 */
 
+/* Vanilla libraris */
 #include <iostream>
 #include <cmath>
+
+/* Shoggoth libraries */
+#include "../../shoggoth/io.h"
+#include "../../../../../lib/core/str.h"
 
 /* User libraries */
 #include "teacher_application.h"
 #include "teacher_payload.h"
-#include "../../shoggoth/io.h"
-#include "../../../../../lib/core/str.h"
-
+#include "teacher_consts.h"
 
 
 using namespace std;
@@ -30,6 +33,7 @@ TeacherPayload::TeacherPayload
 {
     net = Net::create( a, a -> getSockManager(), aNetId, aNetVersion );
     net -> addTask( TASK_TEACHER );
+    limb = LimbTeacher::create( net );
 }
 
 
@@ -39,6 +43,7 @@ TeacherPayload::TeacherPayload
 */
 TeacherPayload::~TeacherPayload()
 {
+    limb -> destroy();
     net -> destroy();
 }
 
@@ -94,6 +99,7 @@ void TeacherPayload::onLoop()
     getLog() -> trapOn() -> begin( "Loop" );
 
     getMon()
+    -> interval( Path{ "uptime" }, Path{ "currentMks" }, Path{ "startMks" })
     -> startTimer( Path{ "loop", "moment" })
     -> setString( Path{ "net", "id" }, net -> getId() )
     -> setString( Path{ "net", "version" }, net -> getVersion() )
@@ -106,53 +112,71 @@ void TeacherPayload::onLoop()
     }
     else
     {
+        /* Reset net state */
+        net -> setOk();
+
         /* Check local application config */
-        getApplication() -> checkConfigUpdate();
+        getApplication()
+        -> checkConfigUpdate()
+        -> getConfigUpdated();
 
-        if( getApplication() -> getConfigUpdated() )
+        /* Check enabled */
+        auto enabled = getEnabled();
+        getMon() -> setBool( Path{ "enabled" }, enabled );
+
+        if( enabled )
         {
-            auto cfg = getApplication() -> getConfig();
+            /* Check server net config */
+            auto netConfig = ParamList::create();
 
-            if( cfg != NULL )
+            /* Read net config from server */
+            net -> readNet( netConfig );
+            if
+            (
+                net -> isConfigUpdate( netConfig ) ||
+                net -> isVersionChanged()
+            )
             {
-                setLoopTimeoutMcs( cfg -> getDouble( "loopSleepMcs", 100 ));
+                getLog()
+                -> begin( "Net config updated" )
+                -> prm( "File", getApplication() -> getConfigFileName() )
+                -> dump( netConfig, "Net config" )
+                -> lineEnd();
+                net -> applyNet( netConfig );
+                getLog() -> end();
             }
+
+            netConfig -> destroy();
+
+            /* Synchronize net from the Shoggoth server */
+            net -> syncWithServer();
+            net -> resultTo( this );
+            /* Processing Teacher */
+            processing();
         }
-
-        /* Check server net config */
-        auto netConfig = ParamList::create();
-
-        /* Read net config from server */
-        net -> readNet( netConfig );
-
-        if
-        (
-            net -> isConfigUpdate( netConfig ) ||
-            net -> isVersionChanged()
-        )
+        else
         {
-            getLog()
-            -> begin( "Config updated" )
-            -> prm( "File", getApplication() -> getConfigFileName() )
-            -> dump( netConfig, "Net config" )
-            -> lineEnd();
-
-            net -> applyNet( netConfig );
-
-            getLog() -> end();
+            setCode( "disabled" );
         }
-
-        netConfig -> destroy();
-
-        /* Synchronize net from the server */
-        net -> syncWithServer();
-
-        /* Processing Teacher */
-        processing();
     }
 
-    getMon() -> flush();
-    getLog() -> end( getCode() ) -> trapOff();
+    /* Define sleep timeout */
+    auto sleep = getApplication() -> getConfig() -> getInt( Path{ "loopSleepMcs", getCode() });
+    if( sleep == 0 )
+    {
+        sleep = getApplication() -> getConfig() -> getInt( Path{ "loopSleepMcs", "*" }, 1000000 );
+    }
+    setLoopTimeoutMcs( sleep );
+
+    /* Final monitoring */
+    getMon() -> setString( Path{ "Result" }, getCode() )-> flush();
+
+    if( !isOk() )
+    {
+        getLog() -> warning( getCode() );
+    }
+
+    getLog() -> end() -> trapOff();
 }
 
 
@@ -168,7 +192,390 @@ void TeacherPayload::onLoop()
 */
 TeacherPayload* TeacherPayload::processing()
 {
-    getLog() -> begin( "Processing" );
-    getLog() -> end();
+    if( isOk() )
+    {
+        getLog() -> begin( "Teacher processing" );
+
+        auto errorLimit = getErrorLimit();
+        auto idErrorLayer = getIdErrorLayer();
+        auto mode = getMode();
+        auto batches = getBatches();
+
+        getMon()
+        -> startTimer( Path{ "currentMks" })
+        -> addInt( Path{ "count" })
+        -> now( Path{ "last", "moment" } )
+        -> setString( Path{ "config", "errorLayer" }, idErrorLayer )
+        -> setDouble( Path{ "config", "errorLimit" }, errorLimit )
+        -> setString( Path{ "config", "mode" }, mode )
+        ;
+
+        getLog() -> trace( "Check error level" );
+
+        /* Prepare Limb */
+        limb
+        -> getNet()
+        -> syncToLimb( limb, false )
+        -> swapValuesAndErrors
+        (
+            Actions{ READ_VALUES }, /* Action */
+            TASK_TEACHER,           /* Role */
+            limb,                   /* Destination participant object */
+            false
+        );
+
+        limb -> lock();
+
+        /* Retrive error layer by id */
+        auto errorLayer = limb -> getLayerById( idErrorLayer );
+
+        if( errorLayer != NULL )
+        {
+            auto error = errorLayer -> calcRmsValue();
+
+            getLog()
+            -> trace( "Compare" )
+            -> prm( "error", error )
+            -> prm( "error limit", errorLimit )
+            ;
+
+            getMon()
+            -> setDouble( Path{ "last", "error" }, error )
+            -> setDouble( Path{ "last", "errorDelta" }, error - errorLimit );
+
+            /* Check error limit */
+            if
+            (
+                error <= errorLimit ||
+                lastChange < limb -> getLastChange()
+            )
+            {
+                lastChange = limb -> getLastChange();
+
+                /* Check new batch */
+                getLog() -> begin( "New batch" );
+
+                auto list = batches -> getObject( Path{ mode, "list" } );
+                auto all = batches -> getObject( Path{ mode, "all" } );
+
+                if( list != NULL && all != NULL )
+                {
+                    auto item = list -> getRnd();
+                    if( item != NULL && item -> isObject() )
+                    {
+                        auto batch = ParamList::create()
+                        -> copyFrom( all )
+                        -> copyFrom( item -> getObject() );
+
+                        /* Batch precessing */
+                        batch -> loop
+                        (
+                            [ this ]
+                            ( Param* aParam )
+                            {
+                                auto obj = aParam -> getObject();
+                                if( obj != NULL )
+                                {
+                                    auto command = obj -> getString( "cmd" );
+                                    getLog()
+                                    -> begin( "Command" )
+                                    -> prm( "cmd", command )
+                                    -> dump( obj, "Arguments" );
+
+                                    switch( stringToTeacherTask( command ))
+                                    {
+                                        case TEACHER_CMD_VALUE_TO_LAYER:
+                                            cmdValueToLayer( obj );
+                                        break;
+                                        case TEACHER_CMD_VALUES_TO_LAYER:
+                                            cmdValuesToLayer( obj );
+                                        break;
+                                        case TEACHER_CMD_IMAGE_TO_LAYER:
+                                            cmdImageToLayer( obj );
+                                        break;
+                                        case TEACHER_CMD_FOLDER_TO_LAYER:
+                                            cmdFolderToLayer( obj );
+                                        break;
+                                        case TEACHER_CMD_GUID_TO_LAYER:
+                                        break;
+                                        case TEACHER_CMD_HID_TO_LAYER:
+                                        break;
+                                        default:
+                                            setResult( "Unknown command" )
+                                            -> getDetails()
+                                            -> setString( "command", command );
+                                        break;
+                                    }
+                                    getLog() -> end();
+                                }
+                                return false;
+                            }
+                        );
+
+                        /* Destroy the batch */
+                        batch -> destroy();
+
+                        if( isOk() )
+                        {
+                            /* Upload values and errors to net */
+                            limb -> getNet() -> swapValuesAndErrors
+                            (
+                                { WRITE_VALUES, WRITE_ERRORS }, /* Action */
+                                TASK_TEACHER,       /* Role */
+                                limb,               /* Participant object */
+                                false
+                            );
+                        }
+                    }
+                    else
+                    {
+                        setCode( "batch_is_not_a_object" );
+                    }
+                }
+                else
+                {
+                    setCode( "batch_sections_not_found" );
+                }
+                getLog() -> end();
+            }
+            else
+            {
+                setCode( "hight_error_rate" );
+            }
+        }
+        else
+        {
+            setCode( "error_layer_not_found" );
+        }
+        limb -> unlock();
+        getMon() -> flush();
+        getLog() -> end();
+    }
+    return this;
+}
+
+
+/******************************************************************************
+    Getters and setters
+*/
+
+
+/*
+    Return current error limit from Net config
+*/
+double TeacherPayload::getErrorLimit()
+{
+    limb -> getNet() -> lock();
+    auto result = limb
+    -> getNet()
+    -> getConfig()
+    -> getDouble( Path{ "teacher", "errorLimit" }, 1.0 );
+    limb -> getNet() -> unlock();
+
+    return result;
+}
+
+
+
+/*
+    Return error layer id from application config
+*/
+string TeacherPayload::getIdErrorLayer()
+{
+    return getApplication() -> getConfig() -> getString( "idErrorLayer" );
+}
+
+
+
+string TeacherPayload::getMode()
+{
+    return getApplication() -> getConfig() -> getString( "mode" );
+}
+
+
+
+bool TeacherPayload::getEnabled()
+{
+    return getApplication() -> getConfig() -> getBool( "enabled" );
+}
+
+
+
+ParamList* TeacherPayload::getBatches()
+{
+    return getApplication() -> getConfig() -> getObject( "batches" );
+}
+
+
+
+/*
+    Fill layer with value noise
+*/
+TeacherPayload* TeacherPayload::cmdValueToLayer
+(
+    ParamList* a
+)
+{
+    limb -> lock();
+
+    auto layerId = a -> getString( "layer" );
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        layer -> noiseValue
+        (
+            a -> getInt( "seed", 0 ),
+            a -> getDouble( "min", 0.0 ),
+            a -> getDouble( "max", 1.0 )
+        );
+    }
+    else
+    {
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
+    }
+
+    limb -> unlock();
+
+    return this;
+}
+
+
+
+
+/*
+    Fill layer with values from array
+*/
+TeacherPayload* TeacherPayload::cmdValuesToLayer
+(
+    ParamList* a
+)
+{
+    limb -> lock();
+
+    auto layerId = a -> getString( "layer" );
+    auto layer = limb -> getLayerById( layerId );
+
+    if( layer != NULL )
+    {
+        layer -> fillValue( a -> getObject( "values", 0 ));
+    }
+    else
+    {
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
+    }
+
+    limb -> unlock();
+
+    return this;
+}
+
+
+
+/*
+    Fill layer from image
+*/
+TeacherPayload* TeacherPayload::cmdImageToLayer
+(
+    ParamList* a
+)
+{
+    auto layerId = a -> getString( "layer" );
+
+    limb -> lock();
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        auto files = a -> getObject( "files" );
+        if( files != NULL )
+        {
+            auto file = files -> getRnd() -> getString();
+            if( file != "" )
+            {
+                layer -> imageToValue
+                (
+                    file,
+                    a -> getDouble( "rotate" ),
+                    a -> getDouble( "zoomMin" ),
+                    a -> getDouble( "zoomMax" ),
+                    a -> getDouble( "shift" ),
+                    this
+                );
+            }
+            else
+            {
+                setResult( "file_name_is_empty" );
+            }
+        }
+        else
+        {
+            setResult( "files_section_not_found" );
+        }
+    }
+    else
+    {
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
+    }
+    limb -> unlock();
+    return this;
+}
+
+
+
+
+/*
+    Fill layer from folder image
+*/
+TeacherPayload* TeacherPayload::cmdFolderToLayer
+(
+    ParamList* a
+)
+{
+    auto layerId = a -> getString( "layer" );
+
+    limb -> lock();
+    auto layer = limb -> getLayerById( layerId );
+    if( layer != NULL )
+    {
+        auto folder = a -> getString( "folder", "" );
+        if( folder != "" )
+        {
+            auto files = ParamList::create() -> filesFromPath( folder );
+            auto file = files -> getRnd();
+            if( file != NULL )
+            {
+                layer -> imageToValue
+                (
+                    folder +  "/" + file -> getString(),
+                    a -> getDouble( "rotate" ),
+                    a -> getDouble( "zoomMin" ),
+                    a -> getDouble( "zoomMax" ),
+                    a -> getDouble( "shift" ),
+                    this
+                );
+            }
+            else
+            {
+                setResult( "file_not_found" );
+            }
+            files -> destroy();
+        }
+        else
+        {
+            setResult( "folder_is_empty" );
+        }
+    }
+    else
+    {
+        setResult( "layer_not_found" )
+        -> getDetails()
+        -> setString( "id", layerId );
+    }
+    limb -> unlock();
     return this;
 }

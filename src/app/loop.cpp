@@ -30,7 +30,7 @@ Loop::Loop
 */
 Loop::~Loop()
 {
-    if( teacher != NULL)    teacher -> destroy();
+//    if( teacher != NULL)    teacher -> destroy();
     if( processor != NULL)  processor -> destroy();
     if( server != NULL)     server -> destroy();
     if( ui != NULL)         ui -> destroy();
@@ -165,45 +165,45 @@ Loop* Loop::uiControl()
 
 
 
-Loop* Loop::teacherControl()
-{
-    auto cfg =
-    getApplication()
-    -> getConfig()
-    -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
-
-    if( cfg != NULL && cfg -> getBool( "enabled" ))
-    {
-        if( teacher == NULL )
-        {
-            teacher = Teacher::create(( Net* ) net );
-            teacher -> setId( net -> getLogPath( "teacher_thread" )) -> loop( true );
-        }
-
-        /* Read batches list and other config */
-        teacher -> getBatches() -> clear() -> copyFrom( cfg -> getObject( Path{ "batches" }));
-        teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
-        teacher -> setMode( cfg -> getString( "mode" ));
-
-        teacher
-        -> setLoopTimeoutMcs
-        (
-            cfg
-            -> getDouble( "loopSleepMcs", teacher -> getLoopTimeoutMcs() )
-        )
-        -> resume();
-    }
-    else
-    {
-        if( teacher )
-        {
-            teacher -> destroy();
-            teacher = NULL;
-        }
-    }
-
-    return this;
-}
+//Loop* Loop::teacherControl()
+//{
+//    auto cfg =
+//    getApplication()
+//    -> getConfig()
+//    -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
+//
+//    if( cfg != NULL && cfg -> getBool( "enabled" ))
+//    {
+//        if( teacher == NULL )
+//        {
+//            teacher = Teacher::create(( Net* ) net );
+//            teacher -> setId( net -> getLogPath( "teacher_thread" )) -> loop( true );
+//        }
+//
+//        /* Read batches list and other config */
+//        teacher -> getBatches() -> clear() -> copyFrom( cfg -> getObject( Path{ "batches" }));
+//        teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
+//        teacher -> setMode( cfg -> getString( "mode" ));
+//
+//        teacher
+//        -> setLoopTimeoutMcs
+//        (
+//            cfg
+//            -> getDouble( "loopSleepMcs", teacher -> getLoopTimeoutMcs() )
+//        )
+//        -> resume();
+//    }
+//    else
+//    {
+//        if( teacher )
+//        {
+//            teacher -> destroy();
+//            teacher = NULL;
+//        }
+//    }
+//
+//    return this;
+//}
 
 
 
@@ -293,7 +293,7 @@ void Loop::onLoop()
             /* Paused processes */
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
-            if( teacher != NULL )   teacher -> pause();
+//            if( teacher != NULL )   teacher -> pause();
             if( ui != NULL )        ui -> pause();
 
             getLog() -> begin( "Threads waiting begin" );
@@ -301,7 +301,7 @@ void Loop::onLoop()
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
-            if( teacher != NULL )   teacher -> waitPause();
+//            if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
 
             getLog() -> end( "" );
@@ -312,7 +312,7 @@ void Loop::onLoop()
 
             /* Reinit process */
             processorControl();
-            teacherControl();
+//            teacherControl();
             uiControl();
         }
         else

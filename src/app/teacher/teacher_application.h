@@ -1,15 +1,12 @@
 /*
-TODO переделать на использование тещего модуля
-    Teacher application definitions
+    The Teacher application definitions
+    Called from teacher.h
 */
-
-
 
 #pragma once
 
-
-
 /* Local libraries */
+/* Load base shoggoth application class */
 #include "../shoggoth_application.h"
 
 
@@ -55,4 +52,3 @@ class TeacherApplication : public ShoggothApplication
         TeacherApplication* loop();
 
 };
-

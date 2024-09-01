@@ -22,7 +22,7 @@
 
 /* Payloads */
 #include "ui.h"
-#include "./teacher/teacher.h"
+//#include "./teacher/teacher.h"
 #include "processor.h"
 #include "server.h"
 
@@ -41,7 +41,7 @@ class Loop : public Payload
 
         /* Payloads object  of roles */
         Ui*         ui              = NULL;
-        Teacher*    teacher         = NULL;
+//        Teacher*    teacher         = NULL;
         Processor*  processor       = NULL;
         Server*     server          = NULL;
 
@@ -107,7 +107,7 @@ class Loop : public Payload
         */
         Loop* uiControl();
         Loop* processorControl();
-        Loop* teacherControl();
+//        Loop* teacherControl();
 
 
 

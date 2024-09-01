@@ -557,6 +557,7 @@ Net* Net::readNet
     /* Read net */
     Io::create( this, aAnswer )
     -> call( CMD_READ_NET )
+    -> resultTo( this )
     -> destroy();
 
     getLog() -> end();

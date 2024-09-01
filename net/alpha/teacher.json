@@ -1,5 +1,22 @@
 {
-    "loopSleepMcs"    :1000,
+    "enabled"               :true,
+
+    "code":
+    [
+        "ok"                        : { "action":"TRACE",   "timeoutMcs":1000 }
+        "disabled"                  : { "action":"TRACE",   "timeoutMcs":1000000 },
+        "hight_error_rate"          : { "action":"TRACE",   "timeoutMcs":1000 },
+        "batch_sections_not_found"  : { "action":"WARNING", "timeoutMcs":1000000 }
+        "*"                         : { "action":"ERROR" }
+    ],
+
+    "loopSleepMcs":
+    {
+        "*"                 :1000000,
+        "disabled"          :1000000,
+        "ok"                :1000
+    },
+
     "io":
     {
         "source"                :"SERVER",
@@ -9,45 +26,37 @@
         "readWaitingTimeoutMcs" :500000
     },
 
-    "tasks":
-    {
-        "TEACHER":
-        {
-            "enabled"               :true,
-            "loopSleepMcs"          :10000,
-            "idErrorLayer"          :"error",
-            "mode"                  :"learning",
+    "idErrorLayer"          :"error",
+    "mode"                  :"learning",
 
-            "batches":
-            {
-                "learning":
-                {
-                    "all":
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
-                    ],
-                    "list":
-                    [
-                        [
-                            { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 1.0 ] },
-                            { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0 ] }
-                        ],
-                        [
-                            { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 1.0, 0.0 ] },
-                            { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0 ] }
-                        ],
-                        [
-                            { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 1.0, 1.0 ] },
-                            { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0 ] }
-                        ],
-                        [
-                            { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 0.0, 0.0 ] },
-                            { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0 ] }
-                        ]
-                    ]
-                }
-            }
+    "batches":
+    {
+        "learning":
+        {
+            "all":
+            [
+                { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
+            ],
+            "list":
+            [
+                [
+                    { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 1.0 ] },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0 ] }
+                ],
+                [
+                    { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 1.0, 0.0 ] },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 1.0, 1.0 ] },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 0.0, 0.0 ] },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0 ] }
+                ]
+            ]
         }
     }
 }

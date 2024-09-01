@@ -26,18 +26,18 @@ class LimbProcessor : public Limb
         Net*            net             = NULL;
         /* Monitor object */
         Mon*            mon             = NULL;
-        /* Terminated status, stop the calculation and dump works */
-        bool            terminated      = false;
+        /* Chart list object */
+        ChartList*  weightsChart        = NULL;
 
         /*
             Calculation state
         */
         /* Current tick */
         long long int   tick            = 0;
-        /* Count of threads */
-        int             threadCount     = 1;
         /* Automatic learning mode, indicates learning stage */
         bool            learning        = false;
+        /* Terminated status, stop the calculation and dump works */
+        bool            terminated      = false;
 
         /*
             Settings
@@ -50,16 +50,14 @@ class LimbProcessor : public Limb
         double  maxWeight               = 1000;
         /* Maxumum error, have to less then maxWeight */
         double  maxError                = 100;
-
+        /* Count of threads */
+        int     threadCount             = 1;
         /* Each tickWrite from tick all Weights will be writen to file */
         int     tickWrite               = 10;
         /* Each tickChart from ешсл Chartss will be writen to mon */
         int     tickChart               = 10;
         /* Configuration objtct for neurnos dump */
         ParamList* dumpConf             = NULL;
-
-        ChartList*  weightsChart        = NULL;
-
     public:
 
         /*

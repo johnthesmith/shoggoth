@@ -285,16 +285,6 @@ flowchart TD
 
 
 
-## Shoggoth scheme
-
-![](shoggoth.svg)
-
-
-
-
-
-
-
 ```mermaid
 flowchart LR
 
