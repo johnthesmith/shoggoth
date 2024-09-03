@@ -1,20 +1,18 @@
 {
     "enabled"               :true,
 
-    "code":
-    [
-        "ok"                        : { "action":"TRACE",   "timeoutMcs":1000 }
-        "disabled"                  : { "action":"TRACE",   "timeoutMcs":1000000 },
-        "hight_error_rate"          : { "action":"TRACE",   "timeoutMcs":1000 },
-        "batch_sections_not_found"  : { "action":"WARNING", "timeoutMcs":1000000 }
-        "*"                         : { "action":"ERROR" }
-    ],
-
-    "loopSleepMcs":
+    "teacher":
     {
-        "*"                 :1000000,
-        "disabled"          :1000000,
-        "ok"                :1000
+        "code":
+        {
+            "ok"                        : { "log":"TRACE",      "timeoutMcs":1000 },
+            "disabled"                  : { "log":"TRACE",      "timeoutMcs":1000000 },
+            "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":1000 },
+            "batch_sections_not_found"  : { "log":"WARNING",    "timeoutMcs":5000000 },
+            "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
+            "SocketWriteError"          : { "log":"ERROR",      "timeoutMcs":1000000 },
+            "*"                         : { "log":"ERROR",      "exit":true }
+        }
     },
 
     "io":

@@ -105,21 +105,18 @@ void TeacherPayload::onLoop()
     -> setString( Path{ "net", "version" }, net -> getVersion() )
     ;
 
-    if( getApplication() -> getCli() -> getString( "config" ) == "" )
-    {
-        getLog() -> error( "Need the --config cli argument." );
-        terminate();
-    }
-    else
-    {
-        /* Reset net state */
-        net -> setOk();
+    /* Reset net state */
+    net -> setOk();
 
-        /* Check local application config */
-        getApplication()
-        -> checkConfigUpdate()
-        -> getConfigUpdated();
+    /* Check local application config */
+    getApplication()
+    -> checkConfigUpdate()
+    -> getConfigUpdated();
 
+    getApplication() -> getConfig() -> resultTo( this );
+
+    if( isOk() )
+    {
         /* Check enabled */
         auto enabled = getEnabled();
         getMon() -> setBool( Path{ "enabled" }, enabled );
@@ -160,21 +157,53 @@ void TeacherPayload::onLoop()
         }
     }
 
-    /* Define sleep timeout */
-    auto sleep = getApplication() -> getConfig() -> getInt( Path{ "loopSleepMcs", getCode() });
-    if( sleep == 0 )
+    /*
+        Define result state action
+    */
+    auto code = getApplication()
+    -> getConfig()
+    -> getObject( Path{ "teacher", "code", getCode() });
+
+    if( code == NULL )
     {
-        sleep = getApplication() -> getConfig() -> getInt( Path{ "loopSleepMcs", "*" }, 1000000 );
+        /* Read default result state action */
+        code = getApplication()
+        -> getConfig()
+        -> getObject( Path{ "teacher", "code", "*" });
     }
-    setLoopTimeoutMcs( sleep );
+
+    if( code != NULL )
+    {
+        /* Log out */
+        getLog()
+        -> record
+        (
+            Log::logRecordFromString( code -> getString( "log", "ERROR" )),
+            getCode()
+        )
+        -> text( getMessage() );
+
+        /* Exit form payload */
+        if( code -> getBool( "exit", false ))
+        {
+            terminate();
+        }
+
+        /* Sleep timeout */
+        auto sleep = code -> getInt( "timeoutMcs", 0 );
+        if( sleep != 0)
+        {
+            setLoopTimeoutMcs( sleep );
+        }
+    }
+    else
+    {
+        getLog() -> error( "unknown_action" ) -> prm( "code", getCode() );
+        terminate();
+    }
 
     /* Final monitoring */
     getMon() -> setString( Path{ "Result" }, getCode() )-> flush();
-
-    if( !isOk() )
-    {
-        getLog() -> warning( getCode() );
-    }
 
     getLog() -> end() -> trapOff();
 }
@@ -196,10 +225,10 @@ TeacherPayload* TeacherPayload::processing()
     {
         getLog() -> begin( "Teacher processing" );
 
-        auto errorLimit = getErrorLimit();
-        auto idErrorLayer = getIdErrorLayer();
-        auto mode = getMode();
-        auto batches = getBatches();
+        auto errorLimit     = getErrorLimit();
+        auto idErrorLayer   = getIdErrorLayer();
+        auto mode           = getMode();
+        auto batches        = getBatches();
 
         getMon()
         -> startTimer( Path{ "currentMks" })
@@ -396,7 +425,7 @@ string TeacherPayload::getMode()
 
 bool TeacherPayload::getEnabled()
 {
-    return getApplication() -> getConfig() -> getBool( "enabled" );
+    return getApplication() -> getConfig() -> getBool( "enabled", true );
 }
 
 

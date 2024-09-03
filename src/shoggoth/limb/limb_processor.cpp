@@ -173,11 +173,11 @@ LimbProcessor* LimbProcessor::calc()
             if( table -> isParentsCalculated( layer ))
             {
                 /* Let elapsed begin */
-                mon -> startTimer( Path{ "duration", "values", layer -> getId() });
+//                mon -> startTimer( Path{ "duration", "values", layer -> getId() });
                 /* Set default thread id */
                 int idThread = 0;
                 layerCalcValue( layer, idThread, learning );
-                mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
+//                mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
                 return true;
             }
             return terminated;
@@ -199,12 +199,12 @@ LimbProcessor* LimbProcessor::calc()
             if( table -> isChildrenCalculated( layer ) )
             {
                 /* Let elapsed begin */
-                mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
+//                mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
                 /* Set default thread id */
                 int idThread = 0;
                 /* Calculate errors for layers with parents */
                 layerCalcError( layer, idThread );
-                mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
+//                mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
                 return true;
             }
             return terminated;
@@ -224,12 +224,12 @@ LimbProcessor* LimbProcessor::calc()
         ( CalcTable* table, Layer* layer )
         {
             /* Let elapsed begin */
-            mon -> startTimer( Path{ "duration", "weights", layer -> getId() });
+//            mon -> startTimer( Path{ "duration", "weights", layer -> getId() });
             /* Set default thread id */
             int idThread = 0;
             /* Calculate weights in nervs of layers */
             layerCalcWeight( layer, idThread );
-            mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
+//            mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
             return true;
         }
     )
@@ -272,7 +272,7 @@ LimbProcessor* LimbProcessor::calc()
         );
     }
 
-    /* Write chart monitoring */
+    /* Write charts in to monitoring */
     if
     (
         !terminated &&
@@ -522,7 +522,6 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         {
             /* The incoming value from parent to current neuron */
             auto w = aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
-
             /* Calculate summ */
             switch( aNerve -> getBindType() )
             {

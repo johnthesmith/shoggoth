@@ -57,7 +57,7 @@ void ShoggothApplication::destroy()
 */
 string ShoggothApplication::getConfigFileName()
 {
-    return getCli() -> getString( "config" );
+    return getCli() -> getString( "config", "./config.json" );
 }
 
 
@@ -69,23 +69,34 @@ string ShoggothApplication::getConfigFileName()
 ShoggothApplication* ShoggothApplication::checkConfigUpdate()
 {
     string configFileName = getConfigFileName();
-
-    bool cfgUpdated = checkFileUpdate( configFileName, lastConfigUpdate );
-
-    if( cfgUpdated )
+    if( fileExists( configFileName ))
     {
-        getLog()
-        -> trace( "Load config file" )
-        -> prm( "name", configFileName );
+        bool cfgUpdated = checkFileUpdate( configFileName, lastConfigUpdate );
 
-        /* Load config and cli */
-        getConfig()
-        -> clear()
-        -> fromJsonFile( configFileName )
-        -> copyFrom( getCli() );
+        if( cfgUpdated )
+        {
+            getLog()
+            -> trace( "Load config file" )
+            -> prm( "name", configFileName );
+
+            /* Load config and cli */
+            getConfig()
+            -> clear()
+            -> fromJsonFile( configFileName );
+
+            if( getConfig() -> isOk())
+            {
+                getConfig() -> resultTo( this );
+                getConfig() -> copyFrom( getCli() ) ;
+            }
+        }
+
+        configUpdated = configUpdated || cfgUpdated;
     }
-
-    configUpdated = configUpdated || cfgUpdated;
+    else
+    {
+        getConfig() -> setResult( "config_not_exists" );
+    }
 
     return this;
 }

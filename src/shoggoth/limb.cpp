@@ -606,7 +606,7 @@ Limb* Limb::dump
         auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
         if( f.is_open() )
         {
-            f << "tickr     :" << aTick << endl;
+            f << "tick      :" << aTick << endl;
             f << "layer     :" << aLayer -> getId() << endl;
             f << "index     :" << aNeuronPos.toString() << endl;
             f << "direction :" << directionToString( aDirection ) << endl;
