@@ -1,0 +1,48 @@
+{
+    "loopSleepMcs"  :1000000,
+
+    "tasks":
+    {
+        "PROC":
+        {
+            "enabled"           :true,
+            "debug"             :false,
+
+            "loopSleepMcs"      :100,
+            "learningSpeed"     :0.001,
+            "minWeight"         :0.000001,
+            "maxWeight"         :1000,
+            "maxError"          :10,
+            "errorNormalize"    :0.11,
+            "processorCount"    :1,
+
+            "tickWrite"         :0,
+            "tickChart"         :100,
+
+            "listen"            :
+            {
+                "port"                  :11120,
+                "readWaitingTimeoutMcs" :1000000
+            },
+            "dump":
+            [
+                {
+                    "enabled"       :true,
+                    "description"   :"test",
+                    "file"          :"dump/%stage%_%data%_%layer%%neuron%-%direction%.txt",
+                    "stages"        :[ "AFTER_FRONT" ],
+                    "layers"        :[ "retina", "cortex_1" ],
+                    "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
+                    "directions"    :[ "PARENT", "CHILD" ],
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                },
+                {
+                    "enabled"       :true,
+                    "pauseMcs"      :0,
+                    "stages"        :[ "AFTER_LEARNING" ],
+                    "lock"          :false
+                }
+            ]
+        }
+    }
+}

@@ -24,6 +24,7 @@ OBJECT_PATH/chart_list.o
 # Application libraries
 OBJECT_PATH/application.o
 OBJECT_PATH/payload.o
+OBJECT_PATH/payload_engine.o
 
 # Json
 OBJECT_PATH/json.o
@@ -61,7 +62,6 @@ OBJECT_PATH/shoggoth_consts.o
 OBJECT_PATH/shoggoth_application.o
 
 # Teacher
-
 OBJECT_PATH/teacher.o
 OBJECT_PATH/teacher_consts.o
 OBJECT_PATH/layer_teacher.o

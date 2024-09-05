@@ -59,6 +59,8 @@ enum Direction
 {
     /* Unknown direction */
     DIRECTION_UNKNOWN,
+    /* Direction not specified */
+    DIRECTION_NONE,
     /* Direction from the current layer to the parent layer */
     DIRECTION_PARENT,
     /* Direction from the current layer to the child layer */

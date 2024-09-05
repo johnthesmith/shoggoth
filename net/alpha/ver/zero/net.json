@@ -41,7 +41,7 @@
 
     "teacher":
     {
-        "errorLimit"        :0.001
+        "errorLimit"        :0.01
     },
 
     "processor":
@@ -61,7 +61,7 @@
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 4, 1, 1 ],
+            "size"              :[ 2, 2, 1 ],
             "position"          :[ 0.0, 0.0, 0.0 ],
             "drawSize"          :[ 1.0, 1.0, 1.0 ],
             "caption"           :"Main input",
@@ -88,7 +88,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 2, 2, 1 ],
+            "size"              :[ 2, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.0 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
 
@@ -139,7 +139,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 2, 2, 1 ],
+            "size"              :[ 2, 1, 1 ],
             "position"          :[ 0.0, 0.0, 1.5 ],
             "drawSize"          :[ 0.1, 0.1, 0.1 ],
 
@@ -165,7 +165,7 @@
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
-            "size"              :[ 4, 1, 1 ],
+            "size"              :[ 2, 1, 1 ],
             "position"          :[ 0.0, 0.0, 3.0 ],
 
             "actions":
@@ -190,7 +190,7 @@
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 4, 1, 1 ],
+            "size"              :[ 2, 1, 1 ],
             "position"          :[ 0.0, 0.0, 4.0 ],
 
             "actions":
@@ -236,11 +236,11 @@
             "type"              :"error",
 
             "functionFront"     :"LINE",
-            "functionBack"      :"LINE",
+            "functionBack"      :"ONE",
             "errorCalc"         :"VALUE",
             "weightCalc"        :"NONE",
 
-            "size"              :[ 1, 1, 1],
+            "size"              :[ 2, 1, 1],
             "position"          :[ 0.0, 1.0, 3.0 ],
 
             "actions":

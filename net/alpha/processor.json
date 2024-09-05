@@ -27,20 +27,39 @@
             "dump":
             [
                 {
-                    "enabled"       :true,
-                    "description"   :"test",
+                    "enabled"       :false,
                     "file"          :"dump/%stage%_%data%_%layer%%neuron%-%direction%.txt",
-                    "stages"        :[ "AFTER_FRONT" ],
-                    "layers"        :[ "retina", "cortex_1" ],
-                    "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
+                    "stages"        :[ "AFTER_LEARNING" ],
+                    "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error" ],
                     "directions"    :[ "PARENT", "CHILD" ],
+                    "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
                     "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "precision"     :4
+                },
+                {
+                    "enabled"       :true,
+                    "file"          :"dump/%stage%_%layer%_%data%.txt",
+                    "stages"        :[ "AFTER_FRONT" ],
+                    "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+                    "directions"    :[ "NONE" ],
+                    "data"          :[ "VALUES" ],
+                    "precision"     :4
+                },
+                {
+                    "enabled"       :true,
+                    "file"          :"dump/%stage%_%layer%_%data%.txt",
+                    "stages"        :[ "AFTER_BACK" ],
+                    "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+                    "directions"    :[ "NONE" ],
+                    "data"          :[ "ERRORS" ],
+                    "precision"     :4
                 },
                 {
                     "enabled"       :true,
                     "pauseMcs"      :0,
                     "stages"        :[ "AFTER_LEARNING" ],
-                    "lock"          :false
+                    "lock"          :false,
+                    "precision"     :4
                 }
             ]
         }

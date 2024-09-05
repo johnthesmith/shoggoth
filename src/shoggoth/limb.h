@@ -317,6 +317,36 @@ class Limb : public Result
 
 
 
+        Limb* dumpValue
+        (
+            ofstream&,
+            Data&,
+            double,
+            Layer*,
+            int
+        );
+
+
+
+        /*
+            Dump weights from neuron of the layer
+        */
+        Limb* dump
+        (
+            /* Store path */
+            string,
+            /* Data type */
+            CalcStage,
+            /* The layer */
+            Layer*,
+            /* Data type */
+            Data,
+            /* Tick number */
+            long long int
+        );
+
+
+
         /*
             Dump weights from neuron of the layer
         */

@@ -13,11 +13,11 @@
 
 /* Local libraries */
 #include "../../../../../lib/json/json.h"
-#include "../../../../../lib/core/payload.h"
+#include "../../../../../lib/core/payload_engine.h"
 #include "../../shoggoth/limb/net.h"
 
 /* Local libraries */
-#include "../../shoggoth/limb/limb_teacher.h"
+#include "./limb_teacher.h"
 
 
 
@@ -25,7 +25,7 @@ using namespace std;
 
 
 
-class TeacherPayload : public Payload
+class TeacherPayload : public PayloadEngine
 {
     private:
 
@@ -144,11 +144,6 @@ class TeacherPayload : public Payload
         */
 
         private:
-
-        /*
-            Processing of the loop
-        */
-        TeacherPayload* processing();
 
 
         /*

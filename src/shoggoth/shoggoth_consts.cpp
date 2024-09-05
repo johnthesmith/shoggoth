@@ -290,6 +290,7 @@ Direction directionFromString
     string a
 )
 {
+    if( a == "NONE" )   return DIRECTION_NONE;
     if( a == "PARENT" ) return DIRECTION_PARENT;
     if( a == "CHILD" )  return DIRECTION_CHILD;
     return DIRECTION_UNKNOWN;
@@ -309,6 +310,7 @@ string directionToString
     {
         default:
         case DIRECTION_UNKNOWN  : return "UNKNOWN";
+        case DIRECTION_NONE     : return "NONE";
         case DIRECTION_PARENT   : return "PARENT";
         case DIRECTION_CHILD    : return "CHILD";
     };

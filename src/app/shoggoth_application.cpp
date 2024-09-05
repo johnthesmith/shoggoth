@@ -53,57 +53,6 @@ void ShoggothApplication::destroy()
 
 
 /*
-    Return the name of configuraion file
-*/
-string ShoggothApplication::getConfigFileName()
-{
-    return getCli() -> getString( "config", "./config.json" );
-}
-
-
-
-/*
-    Check update moment of the config file.
-    If file was updated, then the config object is rebuilding.
-*/
-ShoggothApplication* ShoggothApplication::checkConfigUpdate()
-{
-    string configFileName = getConfigFileName();
-    if( fileExists( configFileName ))
-    {
-        bool cfgUpdated = checkFileUpdate( configFileName, lastConfigUpdate );
-
-        if( cfgUpdated )
-        {
-            getLog()
-            -> trace( "Load config file" )
-            -> prm( "name", configFileName );
-
-            /* Load config and cli */
-            getConfig()
-            -> clear()
-            -> fromJsonFile( configFileName );
-
-            if( getConfig() -> isOk())
-            {
-                getConfig() -> resultTo( this );
-                getConfig() -> copyFrom( getCli() ) ;
-            }
-        }
-
-        configUpdated = configUpdated || cfgUpdated;
-    }
-    else
-    {
-        getConfig() -> setResult( "config_not_exists" );
-    }
-
-    return this;
-}
-
-
-
-/*
     End of thread
 */
 ShoggothApplication* ShoggothApplication::onThreadAfter()
@@ -146,18 +95,6 @@ ShoggothApplication* ShoggothApplication::prepareConfiguration()
 /**********************************************************************
     Setters and getters
 */
-
-
-
-/*
-    Return true if config was updated
-*/
-bool ShoggothApplication::getConfigUpdated()
-{
-    bool result = configUpdated;
-    configUpdated = false;
-    return result;
-}
 
 
 

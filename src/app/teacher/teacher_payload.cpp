@@ -29,7 +29,7 @@ TeacherPayload::TeacherPayload
     string aNetId,
     string aNetVersion
 )
-: Payload( a ) /* Call parent constructor */
+: PayloadEngine( a ) /* Call parent constructor */
 {
     net = Net::create( a, a -> getSockManager(), aNetId, aNetVersion );
     net -> addTask( TASK_TEACHER );
@@ -84,7 +84,6 @@ TeacherApplication* TeacherPayload::getApplication()
 
 
 
-
 /******************************************************************************
     Payload events
 */
@@ -96,133 +95,41 @@ TeacherApplication* TeacherPayload::getApplication()
 */
 void TeacherPayload::onLoop()
 {
-    getLog() -> trapOn() -> begin( "Loop" );
+    /* Reset net state */
+    net -> setOk();
 
     getMon()
-    -> interval( Path{ "uptime" }, Path{ "currentMks" }, Path{ "startMks" })
-    -> startTimer( Path{ "loop", "moment" })
     -> setString( Path{ "net", "id" }, net -> getId() )
     -> setString( Path{ "net", "version" }, net -> getVersion() )
     ;
 
-    /* Reset net state */
-    net -> setOk();
-
-    /* Check local application config */
-    getApplication()
-    -> checkConfigUpdate()
-    -> getConfigUpdated();
-
-    getApplication() -> getConfig() -> resultTo( this );
-
-    if( isOk() )
+    /* Check server net config */
+    auto netConfig = ParamList::create();
+    /* Read net config from server */
+    net -> readNet( netConfig );
+    if
+    (
+        net -> isConfigUpdate( netConfig ) ||
+        net -> isVersionChanged()
+    )
     {
-        /* Check enabled */
-        auto enabled = getEnabled();
-        getMon() -> setBool( Path{ "enabled" }, enabled );
-
-        if( enabled )
-        {
-            /* Check server net config */
-            auto netConfig = ParamList::create();
-
-            /* Read net config from server */
-            net -> readNet( netConfig );
-            if
-            (
-                net -> isConfigUpdate( netConfig ) ||
-                net -> isVersionChanged()
-            )
-            {
-                getLog()
-                -> begin( "Net config updated" )
-                -> prm( "File", getApplication() -> getConfigFileName() )
-                -> dump( netConfig, "Net config" )
-                -> lineEnd();
-                net -> applyNet( netConfig );
-                getLog() -> end();
-            }
-
-            netConfig -> destroy();
-
-            /* Synchronize net from the Shoggoth server */
-            net -> syncWithServer();
-            net -> resultTo( this );
-            /* Processing Teacher */
-            processing();
-        }
-        else
-        {
-            setCode( "disabled" );
-        }
-    }
-
-    /*
-        Define result state action
-    */
-    auto code = getApplication()
-    -> getConfig()
-    -> getObject( Path{ "teacher", "code", getCode() });
-
-    if( code == NULL )
-    {
-        /* Read default result state action */
-        code = getApplication()
-        -> getConfig()
-        -> getObject( Path{ "teacher", "code", "*" });
-    }
-
-    if( code != NULL )
-    {
-        /* Log out */
         getLog()
-        -> record
-        (
-            Log::logRecordFromString( code -> getString( "log", "ERROR" )),
-            getCode()
-        )
-        -> text( getMessage() );
-
-        /* Exit form payload */
-        if( code -> getBool( "exit", false ))
-        {
-            terminate();
-        }
-
-        /* Sleep timeout */
-        auto sleep = code -> getInt( "timeoutMcs", 0 );
-        if( sleep != 0)
-        {
-            setLoopTimeoutMcs( sleep );
-        }
+        -> begin( "Net config updated" )
+        -> prm( "File", getApplication() -> getConfigFileName() )
+        -> dump( netConfig, "Net config" )
+        -> lineEnd();
+        net -> applyNet( netConfig );
+        getLog() -> end();
     }
-    else
-    {
-        getLog() -> error( "unknown_action" ) -> prm( "code", getCode() );
-        terminate();
-    }
+    netConfig -> destroy();
 
-    /* Final monitoring */
-    getMon() -> setString( Path{ "Result" }, getCode() )-> flush();
+    /* Synchronize net from the Shoggoth server */
+    net -> syncWithServer();
+    net -> resultTo( this );
 
-    getLog() -> end() -> trapOff();
-}
-
-
-
-/******************************************************************************
-    Private methods
-*/
-
-
-
-/*
-    Processing of the loop
-*/
-TeacherPayload* TeacherPayload::processing()
-{
     if( isOk() )
     {
+        /* Processing Teacher */
         getLog() -> begin( "Teacher processing" );
 
         auto errorLimit     = getErrorLimit();
@@ -376,12 +283,12 @@ TeacherPayload* TeacherPayload::processing()
         {
             setCode( "error_layer_not_found" );
         }
+
         limb -> unlock();
-        getMon() -> flush();
         getLog() -> end();
     }
-    return this;
 }
+
 
 
 /******************************************************************************
