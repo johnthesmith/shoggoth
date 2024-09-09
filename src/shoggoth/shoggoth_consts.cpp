@@ -315,3 +315,41 @@ string directionToString
         case DIRECTION_CHILD    : return "CHILD";
     };
 }
+
+
+
+/*
+    Convert Dataview from string
+*/
+Dataview dataviewFromString
+(
+    /* String argument for conversion */
+    string aValue,
+    /* Defaule value */
+    Dataview aDefault
+)
+{
+    if( aValue == "UNKNOWN" )   return DATAVIEW_UNKNOWN;
+    if( aValue == "GRAPH" )     return DATAVIEW_GRAPH;
+    if( aValue == "DIGITS" )    return DATAVIEW_DIGITS;
+    return aDefault;
+}
+
+
+
+/*
+    Convert Dataview to string
+*/
+string dataviewToString
+(
+    Dataview a
+)
+{
+    switch( a )
+    {
+        default:
+        case DATAVIEW_UNKNOWN   : return "UNKNOWN";
+        case DATAVIEW_GRAPH     : return "GRAPH";
+        case DATAVIEW_DIGITS    : return "DIGITS";
+    };
+}

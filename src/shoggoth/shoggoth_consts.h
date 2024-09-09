@@ -1,4 +1,4 @@
-    /*
+/*
     Shoggoth constants and conversion methods
 */
 
@@ -84,6 +84,30 @@ enum Data
     /* Neuron errors */
     DATA_ERRORS
 };
+
+
+
+/*
+    Data view type
+*/
+enum Dataview
+{
+    /* Unknown out type */
+    DATAVIEW_UNKNOWN,
+    /* Digits like 0.01321323 */
+    DATAVIEW_DIGITS,
+    /* Graph like:
+        " " <= EPSILON;
+        "░" <= 0.25;
+        "▒" <= 0.5;
+        "▓" <= 0.75;
+        "█" <= 1.0
+    */
+    DATAVIEW_GRAPH
+};
+
+
+
 
 
 
@@ -374,4 +398,27 @@ Direction directionFromString
 string directionToString
 (
     Direction
+);
+
+
+
+/*
+    Convert dataview from string
+*/
+Dataview dataviewFromString
+(
+    /* String argument for conversion */
+    string,
+    /* Defaule value */
+    Dataview = DATAVIEW_UNKNOWN
+);
+
+
+
+/*
+    Convert dataview to string
+*/
+string dataviewToString
+(
+    Dataview
 );

@@ -41,7 +41,6 @@ class Loop : public Payload
 
         /* Payloads object  of roles */
         Ui*         ui              = NULL;
-//        Teacher*    teacher         = NULL;
         Processor*  processor       = NULL;
         Server*     server          = NULL;
 
@@ -107,7 +106,6 @@ class Loop : public Payload
         */
         Loop* uiControl();
         Loop* processorControl();
-//        Loop* teacherControl();
 
 
 

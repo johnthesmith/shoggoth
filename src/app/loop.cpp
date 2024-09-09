@@ -93,15 +93,23 @@ Loop* Loop::processorControl()
             /* Create server and processor payloads */
             server      = Server::create( net );
             processor   = Processor::create( net );
+
             /* Run server and processor thread */
             server -> setId( net -> getLogPath( "server_thread" )) -> loop( true );
             processor -> setId( net -> getLogPath( "processor_thread" )) -> loop( true );
         }
 
+        /* Settings of the processor */
+        processor -> getLimb() -> setLearningSpeed
+        (
+            net
+            -> getConfig()
+            -> getDouble( Path{ "processor", "learningSpeed" }, 0.001 )
+        );
+
         /* Apply config for processor */
         processor
         -> getLimb()
-        -> setLearningSpeed( taskProc -> getDouble( "learningSpeed", 0.001 ))
         -> setMinWeight( taskProc -> getDouble( "minWeight", 1.0e-5 ))
         -> setMaxWeight( taskProc -> getDouble( "maxWeight", 1.0e5 ))
         -> setMaxError( taskProc -> getDouble( "maxError", 0.01 ))
@@ -163,48 +171,6 @@ Loop* Loop::uiControl()
     }
     return this;
 }
-
-
-
-//Loop* Loop::teacherControl()
-//{
-//    auto cfg =
-//    getApplication()
-//    -> getConfig()
-//    -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
-//
-//    if( cfg != NULL && cfg -> getBool( "enabled" ))
-//    {
-//        if( teacher == NULL )
-//        {
-//            teacher = Teacher::create(( Net* ) net );
-//            teacher -> setId( net -> getLogPath( "teacher_thread" )) -> loop( true );
-//        }
-//
-//        /* Read batches list and other config */
-//        teacher -> getBatches() -> clear() -> copyFrom( cfg -> getObject( Path{ "batches" }));
-//        teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
-//        teacher -> setMode( cfg -> getString( "mode" ));
-//
-//        teacher
-//        -> setLoopTimeoutMcs
-//        (
-//            cfg
-//            -> getDouble( "loopSleepMcs", teacher -> getLoopTimeoutMcs() )
-//        )
-//        -> resume();
-//    }
-//    else
-//    {
-//        if( teacher )
-//        {
-//            teacher -> destroy();
-//            teacher = NULL;
-//        }
-//    }
-//
-//    return this;
-//}
 
 
 
@@ -294,7 +260,6 @@ void Loop::onLoop()
             /* Paused processes */
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
-//            if( teacher != NULL )   teacher -> pause();
             if( ui != NULL )        ui -> pause();
 
             getLog() -> begin( "Threads waiting begin" );
@@ -302,7 +267,6 @@ void Loop::onLoop()
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
-//            if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
 
             getLog() -> end( "" );
@@ -313,7 +277,6 @@ void Loop::onLoop()
 
             /* Reinit process */
             processorControl();
-//            teacherControl();
             uiControl();
         }
         else

@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "limb.h"
+#include "../../../../lib/core/math.h"
 
 
 
@@ -592,17 +593,19 @@ Limb* Limb::dumpValue
 Limb* Limb::dump
 (
     /* Store path */
-    string      aPath,
+    string          aPath,
     /* The layer */
-    Layer*      aLayer,
+    Layer*          aLayer,
     /* Neuron Index in the layer */
-    Point3i     aNeuronPos,
+    Point3i         aNeuronPos,
     /* Type parent or child */
-    Direction   aDirection,
+    Direction       aDirection,
     /* Data type */
-    Data        aData,
-    /* */
-    long long int aTick
+    Data            aData,
+    /* Data view*/
+    Dataview        aDataview,
+    /* Number of tick */
+    long long int   aTick
 )
 {
     if( checkPath( getPath( aPath )))
@@ -757,6 +760,8 @@ Limb* Limb::dump
     Layer*          aLayer,
     /* Data type */
     Data            aData,
+    /* Data view*/
+    Dataview        aDataview,
     /* */
     long long int   aTick
 )
@@ -790,6 +795,7 @@ Limb* Limb::dump
             for( int i = 0; i < c; i++ )
             {
                 double val = 0.0;
+
                 switch( aData )
                 {
                     default:
@@ -802,11 +808,25 @@ Limb* Limb::dump
                         val = aLayer -> getNeuronError( i );
                     break;
                 }
-                f << toString( val, 12, DF_FIXED, true );
+
+                string delimiter = "";
+
+                switch( aDataview )
+                {
+                    default:
+                    case DATAVIEW_DIGITS:
+                        f << toString( val, 12, DF_FIXED, true );
+                        delimiter = " | ";
+                    break;
+                    case DATAVIEW_GRAPH:
+                        f << valueToChar( val );
+                        delimiter = "";
+                    break;
+                }
 
                 /* Check new line or delimiter */
                 auto p = Point3i::byIndex( size, i );
-                f << (( p.x == size.x - 1 ) ? "\n" : " | ");
+                f << (( p.x == size.x - 1 ) ? "\n" : delimiter );
             }
             f.close();
         }

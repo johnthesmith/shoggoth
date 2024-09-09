@@ -341,6 +341,8 @@ class Limb : public Result
             Layer*,
             /* Data type */
             Data,
+            /* Data view*/
+            Dataview,
             /* Tick number */
             long long int
         );
@@ -362,6 +364,8 @@ class Limb : public Result
             Direction,
             /* Data type */
             Data,
+            /* Data view*/
+            Dataview,
             /* Tick number */
             long long int
         );

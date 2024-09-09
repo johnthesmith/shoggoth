@@ -816,6 +816,9 @@ LimbProcessor* LimbProcessor::setTickChart
 
 
 
+/*
+
+*/
 LimbProcessor* LimbProcessor::setDumpConf
 (
     ParamList* a
@@ -883,9 +886,15 @@ LimbProcessor* LimbProcessor::calcDebugDump
                             )
                         );
 
+                        /* Read dataview type */
+                        auto dataview = dataviewFromString( params -> getString( "dataview" ), DATAVIEW_DIGITS );
+
                         layers -> loop
                         (
-                            [ this, &params, &aStage, &stage, &file ]
+                            [
+                                this, &params, &aStage,
+                                &stage, &file, &dataview
+                            ]
                             ( Param* param )
                             {
                                 /* Get layer by index */
@@ -905,7 +914,15 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                     {
                                         datas -> loop
                                         (
-                                            [ this, &params, &aStage, &stage, &file, &layer ]
+                                            [
+                                                this,
+                                                &params,
+                                                &aStage,
+                                                &stage,
+                                                &file,
+                                                &layer,
+                                                &dataview
+                                            ]
                                             ( Param* item )
                                             {
                                                 auto data = dataFromString( item -> getString());
@@ -915,7 +932,16 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                 {
                                                     directions -> loop
                                                     (
-                                                        [ this, &params, &aStage, &stage, &file, &layer, &data ]
+                                                        [
+                                                            this,
+                                                            &params,
+                                                            &aStage,
+                                                            &stage,
+                                                            &file,
+                                                            &layer,
+                                                            &data,
+                                                            &dataview
+                                                        ]
                                                         ( Param* param )
                                                         {
                                                             /* Extract the config arguments */
@@ -930,7 +956,15 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                     {
                                                                         neurons -> objectsLoop
                                                                         (
-                                                                            [ this, &layer, &direction, &data, &file, &stage ]
+                                                                            [
+                                                                                this,
+                                                                                &layer,
+                                                                                &direction,
+                                                                                &data,
+                                                                                &file,
+                                                                                &stage,
+                                                                                &dataview
+                                                                            ]
                                                                             ( ParamList* item, string )
                                                                             {
                                                                                 auto pos = ParamPoint::point3i( item );
@@ -967,6 +1001,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                                     pos,
                                                                                     direction,
                                                                                     data,
+                                                                                    dataview,
                                                                                     tick
                                                                                 );
                                                                                 return false;
@@ -1004,7 +1039,15 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                         }
                                                                     );
                                                                     /* Dump */
-                                                                    dump( f, aStage, layer, data, tick );
+                                                                    dump
+                                                                    (
+                                                                        f,
+                                                                        aStage,
+                                                                        layer,
+                                                                        data,
+                                                                        dataview,
+                                                                        tick
+                                                                    );
                                                                 }
                                                                 break;
 

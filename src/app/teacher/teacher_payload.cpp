@@ -93,7 +93,7 @@ TeacherApplication* TeacherPayload::getApplication()
 /*
     Main loop event
 */
-void TeacherPayload::onLoop()
+void TeacherPayload::onEngineLoop()
 {
     /* Reset net state */
     net -> setOk();
