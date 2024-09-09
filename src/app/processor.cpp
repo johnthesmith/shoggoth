@@ -99,3 +99,27 @@ void Processor::onLoop()
 {
     limb -> calc();
 }
+
+
+
+/*
+    Pause processor thread
+*/
+void Processor::onPause()
+{
+    getLog() -> begin( "Processor stop" );
+    limb -> setTerminated( true );
+    getLog() -> end();
+}
+
+
+
+/*
+    Resume processor thread
+*/
+void Processor::onResume()
+{
+    getLog() -> begin( "Processor start" );
+    limb -> setTerminated( false );
+    getLog() -> end();
+}

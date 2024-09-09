@@ -14,7 +14,7 @@ LayerUi::LayerUi
     Limb* aLimb,
     string aId
 )
-:LayerDim( aLimb, aId )
+:Layer( aLimb, aId )
 {
     object = Object::create();
     getLog() -> trace( "... it was a layer ui" );
@@ -173,15 +173,16 @@ LimbUi* LayerUi::getLimb()
 /*
     Set neurons count and reallocate plans
 */
-LayerUi* LayerUi::setCount
+LayerUi* LayerUi::setSize
 (
-    int aCount = 0 /* New count */
+    /* New size of ui layer */
+    Point3i aSize
 )
 {
     getLimb() -> lock();
-    if( aCount != getCount() )
+    if( aSize != getSize() )
     {
-        Layer::setCount( aCount );
+        Layer::setSize( aSize );
 
         /* Create UI plans */
         worldCreate();

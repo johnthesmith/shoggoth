@@ -1,4 +1,7 @@
+#include <fstream>
+
 #include "limb.h"
+#include "../../../../lib/core/math.h"
 
 
 
@@ -337,6 +340,7 @@ Limb* Limb::parentsLoop
         ( void* aNerve )
         {
             auto iNerve = ( Nerve* ) aNerve;
+
             if
             (
                 iNerve -> getChild() == aLayer &&
@@ -493,9 +497,11 @@ Layer* Limb::copyLayerFrom
 {
     return
     Layer::create( this, aLayerFrom -> getId() )
+    -> setErrorCalc( aLayerFrom -> getErrorCalc() )
+    -> setWeightCalc( aLayerFrom -> getWeightCalc() )
     -> setFrontFunc( aLayerFrom -> getFrontFunc() )
     -> setBackFunc( aLayerFrom -> getBackFunc() )
-    -> setCount( aLayerFrom -> getCount() );
+    -> setSize( aLayerFrom -> getSize() );
 }
 
 
@@ -542,4 +548,289 @@ bool Limb::layerParentsExists
         }
     );
     return result;
+}
+
+
+
+/*
+    Damp data definition function
+    Uses in Limb::dump method
+*/
+Limb* Limb::dumpValue
+(
+    ofstream&   f,
+    Data&       data,
+    double      weight,
+    Layer*      layerLink,
+    int         layerLinkIndex
+)
+{
+    double val = 0.0;
+
+    switch( data )
+    {
+        default:
+        case DATA_WEIGHTS:
+            val = weight;
+        break;
+        case DATA_VALUES:
+            val = layerLink -> getNeuronValue( layerLinkIndex );
+        break;
+        case DATA_ERRORS:
+            val = layerLink -> getNeuronError( layerLinkIndex );
+        break;
+    }
+    f << toString( val, 12, DF_FIXED, true );
+
+    return this;
+};
+
+
+
+/*
+    Dump weights errors values from neuron of the layer in to the file
+*/
+Limb* Limb::dump
+(
+    /* Store path */
+    string          aPath,
+    /* The layer */
+    Layer*          aLayer,
+    /* Neuron Index in the layer */
+    Point3i         aNeuronPos,
+    /* Type parent or child */
+    Direction       aDirection,
+    /* Data type */
+    Data            aData,
+    /* Data view*/
+    Dataview        aDataview,
+    /* Number of tick */
+    long long int   aTick
+)
+{
+    if( checkPath( getPath( aPath )))
+    {
+        /* Open file stream */
+        ofstream f;
+        f.open( aPath );
+        auto neuronIndex = aLayer -> indexByPos( aNeuronPos );
+        if( f.is_open() )
+        {
+            f << "tick: " << aTick << endl;
+
+            switch( aDirection )
+            {
+                default:
+                    f << "Unknown direction" << "\n";
+                break;
+                case DIRECTION_PARENT:
+                {
+                    Layer* lastParentLayer = NULL;
+                    auto size = POINT_3I_0;
+
+                    parentsLoop
+                    (
+                        aLayer,
+                        neuronIndex,
+                        BT_ALL,
+                        [ this, &f, &aData, &size, &lastParentLayer, &aLayer, &aNeuronPos, &aDirection ]
+                        (
+                            Layer*  aParentLayer,
+                            int     aParentNeuronIndex,
+                            Nerve*  aNerve,
+                            double  aWeight,
+                            int     aWeightIndex
+                        )
+                        {
+                            if( aParentLayer != lastParentLayer )
+                            {
+                                /* Start new layer table */
+                                f
+                                << aLayer -> getId()
+                                << aNeuronPos.toString()
+                                << " "
+                                << directionToString( aDirection )
+                                << " "
+                                << dataToString( aData )
+                                << " "
+                                << aParentLayer -> getId()
+                                << endl;
+
+                                lastParentLayer = aParentLayer;
+                                size = aParentLayer -> getSize();
+                            }
+
+                            auto p = Point3i::byIndex( size, aParentNeuronIndex );
+
+                            /* Dump val */
+                            dumpValue
+                            (
+                                f,
+                                aData,
+                                aWeight,
+                                aParentLayer,
+                                aParentNeuronIndex
+                            );
+
+                            /* Check new line or delimiter */
+                            f << (( p.x == size.x - 1 ) ? "\n" : " | ");
+
+                            return false;
+                        }
+                    );
+                }
+                break;
+                case DIRECTION_CHILD:
+                {
+                    Layer* lastChildLayer = NULL;
+                    auto size = POINT_3I_0;
+
+                    childrenLoop
+                    (
+                        aLayer,
+                        neuronIndex,
+                        BT_ALL,
+                        [ this, &f, &aData, &size, &lastChildLayer, &aLayer, &aNeuronPos, &aDirection ]
+                        (
+                            Layer*  aChildLayer,
+                            int     aChildNeuronIndex,
+                            Nerve*  aNerve,
+                            double  aWeight,
+                            int     aWeightIndex
+                        )
+                        {
+                            if( aChildLayer != lastChildLayer )
+                            {
+                                /* Start new layer table */
+                                f
+                                << aLayer -> getId()
+                                << aNeuronPos.toString()
+                                << " "
+                                << directionToString( aDirection )
+                                << " "
+                                << dataToString( aData )
+                                << " "
+                                << aChildLayer -> getId()
+                                << endl;
+
+                                lastChildLayer = aChildLayer;
+                                size = aChildLayer -> getSize();
+                            }
+
+                            auto p = Point3i::byIndex( size, aChildNeuronIndex );
+
+                            /* Dump val */
+                            dumpValue
+                            (
+                                f,
+                                aData,
+                                aWeight,
+                                aChildLayer,
+                                aChildNeuronIndex
+                            );
+
+                            /* Check new line or delimiter */
+                            f << (( p.x == size.x - 1 ) ? "\n" : " | ");
+
+                            return false;
+                        }
+                    );
+                }
+                break;
+            }
+            f.close();
+        }
+    }
+
+    return this;
+}
+
+
+
+/*
+    Dump errors or values for the layer in to the file
+*/
+Limb* Limb::dump
+(
+    /* Store path */
+    string          aPath,
+    /* Calculataion stage */
+    CalcStage       aStage,
+    /* The layer */
+    Layer*          aLayer,
+    /* Data type */
+    Data            aData,
+    /* Data view*/
+    Dataview        aDataview,
+    /* */
+    long long int   aTick
+)
+{
+    if( checkPath( getPath( aPath )))
+    {
+        /* Open file stream */
+        ofstream f;
+        f.open( aPath );
+        if( f.is_open() )
+        {
+            f
+            << aLayer -> getId()
+            << " ("
+            << dataToString( aData )
+            << ")"
+            << endl
+            << neuronFuncToStr( aLayer -> getFrontFunc())
+            << "/"
+            << neuronFuncToStr( aLayer -> getBackFunc())
+            << endl
+            << calcStageToString( aStage )
+            << " #"
+            << aTick
+            << endl
+            ;
+
+            auto c = aLayer -> getCount();
+            auto size = aLayer -> getSize();
+
+            for( int i = 0; i < c; i++ )
+            {
+                double val = 0.0;
+
+                switch( aData )
+                {
+                    default:
+                        val = 0;
+                    break;
+                    case DATA_VALUES:
+                        val = aLayer -> getNeuronValue( i );
+                    break;
+                    case DATA_ERRORS:
+                        val = aLayer -> getNeuronError( i );
+                    break;
+                }
+
+                string delimiter = "";
+
+                switch( aDataview )
+                {
+                    default:
+                    case DATAVIEW_DIGITS:
+                        f << toString( val, 12, DF_FIXED, true );
+                        delimiter = " | ";
+                    break;
+                    case DATAVIEW_GRAPH:
+                        f << valueToChar( val );
+                        delimiter = "";
+                    break;
+                }
+
+                /* Check new line or delimiter */
+                auto p = Point3i::byIndex( size, i );
+                f << (( p.x == size.x - 1 ) ? "\n" : delimiter );
+            }
+            f.close();
+        }
+    }
+
+    return this;
 }

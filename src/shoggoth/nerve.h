@@ -49,7 +49,7 @@ class Nerve: public Result
         LogManager* logManager      = NULL;
 
         string      id              = "";
-        BindType    bindType        = BT_VALUE;
+        BindType    bindType        = BT_ADD;
         NerveType   nerveType       = ALL_TO_ALL;
 
         Layer*      parent          = NULL;
@@ -213,13 +213,6 @@ class Nerve: public Result
         (
             int     /* Index of weight */,
             double  /* Value for bind */
-        );
-
-
-
-        static NerveType nerveTypeFromString
-        (
-            string
         );
 
 
@@ -414,4 +407,12 @@ class Nerve: public Result
             Mon*,
             ChartList*
         );
+
+
+
+        /*
+            Calculate nerve id like
+                parent_id-(bind,nerve)-child_id
+        */
+        string calcId();
 };

@@ -2,6 +2,8 @@
     Neuron object for shoggoth
 */
 
+
+
 #pragma once
 
 #include "../../../../../lib/graph/point3.h"

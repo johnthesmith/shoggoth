@@ -2,6 +2,7 @@
 #include "cmath"
 
 #include "../../../../lib/core/rnd.h"
+#include "../../../../lib/core/math.h"
 
 #include "func.h"
 
@@ -22,14 +23,69 @@ NeuronFunc FUNC_LINE =
 
 
 
+
 /*
-    Linear learning
+    Heaviside step Function
+    |
+    |           Power = 10
+    |
+    |               ^
+    |               ************
+    |               *
+    |               *
+    |               *
+    |               *  0.5
+    |               *
+    |               *
+    |               *
+    |               *
+    |  -1***********0-----------1
 */
 
-NeuronFunc FUNC_LINE_BACK =
+NeuronFunc FUNC_STEP =
+[]( double x ) -> double
+{
+    return x < EPSILON_D ? 0.0 : 1.0;
+};
+
+
+
+/*
+    Alwayse return one
+    Heaviside step Function
+    |
+    |           Power = 10
+    |
+    |               ^
+    |   ************************
+    |               |
+    |               |
+    |               |
+    |               |  0.5
+    |               |
+    |               |
+    |               |
+    |               |
+    |  -1-----------0-----------1
+*/
+
+NeuronFunc FUNC_ONE =
 []( double x ) -> double
 {
     return 1;
+};
+
+
+
+
+/*
+    Null function
+*/
+
+NeuronFunc FUNC_NULL =
+[]( double x ) -> double
+{
+    return x;
 };
 
 
@@ -135,25 +191,6 @@ NeuronFunc FUNC_RELU =
 {
     return x < 0.0 ? 0.0 : x;
 };
-
-
-/*
-    ReLU back
-*/
-NeuronFunc FUNC_RELU_BACK =
-[]( double x ) -> double
-{
-    return x < 0.0 ? 0.0 : 1;
-};
-
-
-
-NeuronFunc FUNC_RELU_DERIVATIVE =
-[]( double x ) -> double
-{
-    return x < 0.0 ? 0.0 : 1;
-};
-
 
 
 
@@ -350,38 +387,22 @@ FUNC_ERROR =
 
 
 
-
-void strToNeuronFunc
+/*
+    Convert string to function
+*/
+NeuronFunc* strToFunc
 (
-    string      aArgument,
-    NeuronFunc* &aFront,
-    NeuronFunc* &aBack
+    string aArgument
 )
 {
-    if( aArgument == "LINE" )
-    {
-        aFront = &FUNC_LINE;
-        aBack = &FUNC_LINE_BACK;
-        return;
-    }
-
-    if( aArgument == "RELU" )
-    {
-        aFront = &FUNC_RELU;
-        aBack = &FUNC_RELU_BACK;
-        return;
-    }
-
-    if( aArgument == "SIGMOID" )
-    {
-        aFront = &FUNC_SIGMOID;
-        aBack = &FUNC_SIGMOID_BACK;
-        return;
-    }
-
-    /* Default */
-    aFront = &FUNC_LINE;
-    aBack = &FUNC_LINE_BACK;
+    if( aArgument == "NULL" )           return &FUNC_NULL;
+    if( aArgument == "LINE" )           return &FUNC_LINE;
+    if( aArgument == "ONE" )            return &FUNC_ONE;
+    if( aArgument == "STEP" )           return &FUNC_STEP;
+    if( aArgument == "RELU" )           return &FUNC_RELU;
+    if( aArgument == "SIGMOID" )        return &FUNC_SIGMOID;
+    if( aArgument == "SIGMOID_BACK" )   return &FUNC_SIGMOID_BACK;
+    return &FUNC_NULL;
 }
 
 
@@ -391,16 +412,12 @@ string neuronFuncToStr
     NeuronFunc* a
 )
 {
+    if( a == &FUNC_NULL )               return "NULL";
     if( a == &FUNC_LINE )               return "LINE";
-    if( a == &FUNC_LINE_BACK )          return "LINE_BACK";
+    if( a == &FUNC_ONE )                return "ONE";
+    if( a == &FUNC_STEP )               return "STEP";
+    if( a == &FUNC_RELU )               return "RELU";
     if( a == &FUNC_SIGMOID )            return "SIGMOID";
     if( a == &FUNC_SIGMOID_BACK )       return "SIGMOID_BACK";
-    if( a == &FUNC_SIGMOID_DERIVATIVE ) return "SIGMOID_DERIVATIVE";
-    if( a == &FUNC_RELU )               return "RELU";
-    if( a == &FUNC_RELU_BACK )          return "RELU_BACK";
-    if( a == &FUNC_RELU_DERIVATIVE )    return "RELU_DERIVATIVE";
-    return "LINE";
+    return "NULL";
 }
-
-
-

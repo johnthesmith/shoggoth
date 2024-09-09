@@ -3,6 +3,18 @@
 
     Contains the NeuronList object.
     The layer creates new neurons or removes them when resized.
+
+
+
+    Table of function using for the type of layers
+
+        layers  FrontFunc   BackFunc    CalcError  CalcWeight Example
+        --------------------------------------------------------------------------
+        in      NULL        NULL        NONE       NONE       retina, bias, sample
+        cortex  RELU        ONE         LEARNING   CALC       cortex
+        result  RELU        ONE         LEARNING   CALC       result
+        error   LINE        LINE        VALUE      NONE       error
+        command STEP        NULL        NONE       NONE       command
 */
 
 
@@ -12,6 +24,7 @@
 
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
+#include "../../../../lib/json/param_list.h"    /* For read size from params */
 
 #include "../../../../lib/core/chart_list.h"    /* TODO remove it*/
 #include "../../../../lib/core/chart_data.h"
@@ -48,7 +61,6 @@ class Layer : public Result
         /* Dimention size */
         Point3i         size                    = POINT_3I_0;
 
-
         bool            errorChange             = false;        /* True - method errorChange return true for any neuron, else false */
         bool            incomeChanged           = false;        /* True if preceptron chenged. Set in neuron->setValue*/
 
@@ -57,9 +69,6 @@ class Layer : public Result
         string          name                    = "";           /* Name of layer */
 
         string          storagePath             = "";
-
-        int             forward                 = -1;
-        int             backward                = -1;
 
         /* List of actions for layer */
         ParamList*      actions                 = NULL;
@@ -70,6 +79,12 @@ class Layer : public Result
 
         double*         values                  = NULL;
         double*         errors                  = NULL;
+
+        /*
+            Layer settings
+        */
+        ErrorCalc       errorCalc               = EC_NONE;
+        WeightCalc      weightCalc              = WC_NONE;
 
         /*
             Ticker
@@ -85,12 +100,23 @@ class Layer : public Result
         ChartData*      chartValues             = NULL;
         ChartData*      chartErrors             = NULL;
 
+
+        /*
+            Set neurons count and reallocate plans
+            Do not use this method.
+            Use the setSize
+        */
+        virtual Layer* setCount
+        (
+            const int = 0 /* New count */
+        );
+
     public:
 
         /* Function activation */
-        NeuronFunc*     frontFunc               = &FUNC_LINE;
+        NeuronFunc*     frontFunc               = &FUNC_NULL;
         /* Learning function */
-        NeuronFunc*     backFunc                = &FUNC_LINE_BACK;
+        NeuronFunc*     backFunc                = &FUNC_NULL;
 
         /*
             Constructor
@@ -129,15 +155,6 @@ class Layer : public Result
 
 
 
-        /*
-            Set neurons count and reallocate plans
-        */
-        virtual Layer* setCount
-        (
-            const int = 0 /* New count */
-        );
-
-
 
         /*
             Return count of neurons in layer
@@ -145,6 +162,41 @@ class Layer : public Result
         int getCount();
 
 
+
+        /*
+            Set dimentions size
+        */
+        Layer* setSize
+        (
+            const Point3i& = POINT_3I_0
+        );
+
+
+
+        /*
+            Set dimentions size from params
+        */
+        Layer* setSize
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Return 3d layer size at neurons for each axis
+        */
+        Point3i getSize();
+
+
+
+        /*
+            Return index by point 3i at layer
+        */
+        int indexByPos
+        (
+            const Point3i&
+        );
 
 
         /**********************************************************************
@@ -235,6 +287,13 @@ class Layer : public Result
             Calculate sum of neurons value
         */
         double calcSumValue();
+
+
+
+        /*
+            Calculate Root Main Square of neurons value
+        */
+        double calcRmsValue();
 
 
 
@@ -366,43 +425,6 @@ class Layer : public Result
 
 
 
-        /*
-            Reset calculate states
-        */
-        Layer* calcReset();
-
-
-
-        Layer* calcStartForward();
-
-
-
-        Layer* calcStartBackward();
-
-
-
-        Layer* calcCompleteForward();
-
-
-
-        Layer* calcCompleteBackward();
-
-
-
-        CalcStage getForwardStage
-        (
-            int
-        );
-
-
-
-        CalcStage getBackwardStage
-        (
-            int
-        );
-
-
-
         /**********************************************************************
             Neurons setters and getters
         */
@@ -512,16 +534,10 @@ class Layer : public Result
         );
 
 
+
         /*
-            Apply neyron functions for layer
+            Set front function for the layer
         */
-        Layer* setNeuronFunc
-        (
-            string
-        );
-
-
-
         Layer* setFrontFunc
         (
             NeuronFunc*
@@ -533,6 +549,9 @@ class Layer : public Result
 
 
 
+        /*
+            Set back function for the layer
+        */
         Layer* setBackFunc
         (
             NeuronFunc*
@@ -550,7 +569,6 @@ class Layer : public Result
 
 
 
-
         /*
             Dump to mon
         */
@@ -560,6 +578,7 @@ class Layer : public Result
             Mon*,
             ChartList* achartList
         );
+
 
 
         /*
@@ -579,4 +598,40 @@ class Layer : public Result
         ChartData* getChartTick();
         ChartData* getChartValues();
         ChartData* getChartErrors();
+
+
+
+        /*
+            Set error calc flag for the layer.
+            Layer will be calculating erors.
+        */
+        Layer* setErrorCalc
+        (
+            ErrorCalc
+        );
+
+
+
+        /*
+            Return the layer calculation flag for the layer
+        */
+        ErrorCalc getErrorCalc();
+
+
+
+        /*
+            Set weight calc flag for the layer.
+            Layer will be calculating weights.
+        */
+        Layer* setWeightCalc
+        (
+            WeightCalc
+        );
+
+
+
+        /*
+            Return the layer calculation flag for the layer
+        */
+        WeightCalc getWeightCalc();
 };

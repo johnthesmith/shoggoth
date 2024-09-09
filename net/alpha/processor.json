@@ -1,38 +1,6 @@
 {
     "loopSleepMcs"  :1000000,
 
-    "mutations":
-    [
-        {
-            "path": [ "processor", "learningSpeed" ],
-            "rnd":0.3,
-            "mul":1.1,
-            "min":0.0,
-            "max":1.0
-        },
-        {
-            "path":[ "teacher", "errorLimit" ],
-            "rnd":0.3,
-            "mul":1.5,
-            "min":0.000001,
-            "max":0.0001
-        },
-        {
-            "path":[ "layers", "cortex_1", "size", "0"],
-            "rnd":0.2,
-            "add":1,
-            "min":4,
-            "max":100
-        },
-        {
-            "path":[ "layers", "cortex_1", "size", "1" ],
-            "rnd":0.01,
-            "add":1,
-            "min":1,
-            "max":3
-        }
-    ],
-
     "tasks":
     {
         "PROC":
@@ -41,28 +9,59 @@
             "debug"             :false,
 
             "loopSleepMcs"      :100,
-            "learningSpeed"     :0.001,
             "minWeight"         :0.000001,
             "maxWeight"         :1000,
             "maxError"          :10,
             "errorNormalize"    :0.11,
-
             "processorCount"    :1,
-            "tickWrite"         :100,
+
+            "tickWrite"         :0,
+            "tickChart"         :100,
+
             "listen"            :
             {
                 "port"                  :11120,
                 "readWaitingTimeoutMcs" :1000000
             },
-
-            "dumpWeight":
+            "dump":
             [
                 {
-                    "fromId"    :"cortex_1",
-                    "fromNeuron":"10",
-                    "child"     :"cortex_2",
-                    "parent"    :"retina",
-                    "bindType"  : "VALUE"
+                    "enabled"       :false,
+                    "file"          :"dump/%stage%_%data%_%layer%%neuron%-%direction%.txt",
+                    "stages"        :[ "AFTER_LEARNING" ],
+                    "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error" ],
+                    "directions"    :[ "PARENT", "CHILD" ],
+                    "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
+                    "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+                    "dataview"      :"GRAPH",
+                    "precision"     :4
+                },
+                {
+                    "enabled"       :true,
+                    "file"          :"dump/%stage%_%layer%_%data%.txt",
+                    "stages"        :[ "AFTER_FRONT" ],
+                    "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+                    "directions"    :[ "NONE" ],
+                    "data"          :[ "VALUES" ],
+                    "dataview"      :"GRAPH",
+                    "precision"     :4
+                },
+                {
+                    "enabled"       :true,
+                    "file"          :"dump/%stage%_%layer%_%data%.txt",
+                    "stages"        :[ "AFTER_BACK" ],
+                    "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+                    "directions"    :[ "NONE" ],
+                    "data"          :[ "ERRORS" ],
+                    "dataview"      :"GRAPH",
+                    "precision"     :4
+                },
+                {
+                    "enabled"       :true,
+                    "pauseMcs"      :0,
+                    "stages"        :[ "AFTER_LEARNING" ],
+                    "lock"          :false,
+                    "precision"     :4
                 }
             ]
         }

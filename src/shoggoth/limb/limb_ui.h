@@ -385,19 +385,7 @@ class LimbUi : public Limb
 
 
 
-        LimbUi* dumpWeights
-        (
-            LayerUi*, /* layer with neuron */
-            int, /* Neuron Index */
-            LayerUi*, /* Layer link */
-            string, /* type parent or child */
-            char*, /* buffer with weights */
-            size_t /* size of buffer */
-
-        );
-
         LimbUi* dumpWeightsExchange();
-
 };
 
 

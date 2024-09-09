@@ -16,8 +16,6 @@ class ShoggothApplication : public Application
 {
     private:
 
-        bool            configUpdated       = false;
-        long int        lastConfigUpdate    = 0;
         SockManager*    sockManager         = NULL;
 
         string          netId               = "alpha";
@@ -48,21 +46,6 @@ class ShoggothApplication : public Application
 
 
         /*
-            Return the name of configuraion file
-        */
-        string getConfigFileName();
-
-
-
-        /*
-            Check update moment of the config file.
-            If file was updated, then the config object is rebuilding.
-        */
-        ShoggothApplication* checkConfigUpdate();
-
-
-
-        /*
             End of thread
         */
         ShoggothApplication* onThreadAfter();
@@ -78,13 +61,6 @@ class ShoggothApplication : public Application
         /**********************************************************************
             Setters and getters
         */
-
-
-
-        /*
-            Return true if config wile was updated
-        */
-        bool getConfigUpdated();
 
 
 

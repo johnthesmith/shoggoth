@@ -9,6 +9,7 @@
 using namespace std;
 
 
+
 /*
     Constructor
 */
@@ -30,7 +31,7 @@ Loop::Loop
 */
 Loop::~Loop()
 {
-    if( teacher != NULL)    teacher -> destroy();
+//    if( teacher != NULL)    teacher -> destroy();
     if( processor != NULL)  processor -> destroy();
     if( server != NULL)     server -> destroy();
     if( ui != NULL)         ui -> destroy();
@@ -98,65 +99,30 @@ Loop* Loop::processorControl()
             processor -> setId( net -> getLogPath( "processor_thread" )) -> loop( true );
         }
 
-        /* Apply config */
+        /* Settings of the processor */
+        processor -> getLimb() -> setLearningSpeed
+        (
+            net
+            -> getConfig()
+            -> getDouble( Path{ "processor", "learningSpeed" }, 0.001 )
+        );
+
+        /* Apply config for processor */
         processor
         -> getLimb()
-        -> setLearningSpeed
-        (
-            taskProc -> getDouble
-            (
-                "learningSpeed",
-                processor -> getLimb() -> getLearningSpeed()
-            )
-        )
-        -> setMinWeight
-        (
-            taskProc
-            -> getDouble( "minWeight", processor -> getLimb() -> getMinWeight() )
-        )
-        -> setMaxWeight
-        (
-            taskProc
-            -> getDouble
-            (
-                "maxWeight",
-                processor -> getLimb() -> getMaxWeight()
-            )
-        )
-        -> setMaxError
-        (
-            taskProc
-            -> getDouble
-            (
-                "maxError",
-                processor -> getLimb() -> getMaxError()
-            )
-        )
-        -> setTickWrite
-        (
-            taskProc
-            -> getInt
-            (
-                "tickWrite",
-                processor -> getLimb() -> getTickWrite()
-            )
-        )
-        -> setCalcDebug
-        (
-            taskProc
-            -> getBool( "debug", processor -> getLimb() -> getCalcDebug() )
-        );
+        -> setMinWeight( taskProc -> getDouble( "minWeight", 1.0e-5 ))
+        -> setMaxWeight( taskProc -> getDouble( "maxWeight", 1.0e5 ))
+        -> setMaxError( taskProc -> getDouble( "maxError", 0.01 ))
+        -> setTickWrite( taskProc -> getInt( "tickWrite", 0 ))
+        -> setTickChart( taskProc -> getInt( "tickChart", 0 ))
+        -> setDumpConf( taskProc -> getObject( "dump" ))
+//        -> setLoopTimeoutMcs( taskProc -> getInt( "loopSleepMcs", 1000000 ))
+        ;
 
-
+        /* Apply config for server */
         server -> setLoopTimeoutMcs( 1000000 );
-        server -> resume();
 
-        processor
-        -> setLoopTimeoutMcs
-        (
-            taskProc
-            -> getDouble( "loopSleepMcs", processor -> getLoopTimeoutMcs() )
-        );
+        server -> resume();
         processor -> resume();
     }
     else
@@ -208,48 +174,6 @@ Loop* Loop::uiControl()
 
 
 
-Loop* Loop::teacherControl()
-{
-    auto cfg =
-    getApplication()
-    -> getConfig()
-    -> getObject( Path{ "tasks", taskToString( TASK_TEACHER )} );
-
-    if( cfg != NULL && cfg -> getBool( "enabled" ))
-    {
-        if( teacher == NULL )
-        {
-            teacher = Teacher::create(( Net* ) net );
-            teacher -> setId( net -> getLogPath( "teacher_thread" )) -> loop( true );
-        }
-
-        /* Read batches list and other config */
-        teacher -> getBatches() -> copyFrom( cfg -> getObject( Path{ "batches" }));
-        teacher -> setIdErrorLayer( cfg -> getString( "idErrorLayer" ));
-        teacher -> setMode( cfg -> getString( "mode" ));
-
-        teacher
-        -> setLoopTimeoutMcs
-        (
-            cfg
-            -> getDouble( "loopSleepMcs", teacher -> getLoopTimeoutMcs() )
-        )
-        -> resume();
-    }
-    else
-    {
-        if( teacher )
-        {
-            teacher -> destroy();
-            teacher = NULL;
-        }
-    }
-
-    return this;
-}
-
-
-
 /******************************************************************************
     Payload events
 */
@@ -270,7 +194,6 @@ void Loop::onLoop()
 
     /* Check server net config */
     auto netConfig = ParamList::create();
-
     /* Read net config from server */
     net -> readNet( netConfig );
 
@@ -299,19 +222,27 @@ void Loop::onLoop()
         Path{ "loop", "lastNetConfig" }
     );
 
+    auto netConfigUpdated = net -> isConfigUpdate( netConfig );
+    auto netVersionChanged = net -> isVersionChanged();
+    auto appConfigUpdated = getApplication() -> getConfigUpdated();
 
-    if
-    (
-        net -> isConfigUpdate( netConfig ) ||
-        net -> isVersionChanged() ||
-        getApplication() -> getConfigUpdated()
-    )
+    if( netConfigUpdated || netVersionChanged || appConfigUpdated )
     {
         getLog()
-        -> begin( "Config updated" )
+        -> begin( "Restarting" )
+        -> info( "by reason" )
+        -> prm( "Net updated", netConfigUpdated )
+        -> prm( "Net version changed", netVersionChanged )
+        -> prm( "App config updated", appConfigUpdated)
         -> prm( "File", getApplication() -> getConfigFileName() )
-        -> dump( netConfig, "Net config" )
         -> lineEnd();
+
+        /* Dump net config if changed */
+        if( netConfigUpdated )
+        {
+            getLog() -> dump( netConfig, "Net config" );
+        }
+
 
         if( getApplication() -> getConfig() -> isOk())
         {
@@ -324,24 +255,28 @@ void Loop::onLoop()
                 -> getDouble( "loopSleepMcs", getLoopTimeoutMcs() )
             );
 
+            getLog() -> begin( "Threads stoping" );
+
             /* Paused processes */
             if( processor != NULL ) processor -> pause();
             if( server != NULL )    server -> pause();
-            if( teacher != NULL )   teacher -> pause();
             if( ui != NULL )        ui -> pause();
+
+            getLog() -> begin( "Threads waiting begin" );
 
             /* Process pause waiting */
             if( processor != NULL ) processor -> waitPause();
             if( server != NULL )    server -> waitPause();
-            if( teacher != NULL )   teacher -> waitPause();
             if( ui != NULL )        ui -> waitPause();
+
+            getLog() -> end( "" );
+            getLog() -> end( "Threads stoped" );
 
             /* Apply config */
             net -> applyNet( netConfig );
 
             /* Reinit process */
             processorControl();
-            teacherControl();
             uiControl();
         }
         else

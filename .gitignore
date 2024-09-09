@@ -9,12 +9,11 @@
 *~
 *.o
 .shab
-./shoggot
 
 # Exclude neuronet out files
 **/mon
 **/log
 **/nerves
 
-shoggoth
-evolution
+/shoggoth
+/evolution

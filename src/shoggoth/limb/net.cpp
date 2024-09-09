@@ -4,6 +4,7 @@
 #include "../shoggoth_consts.h"
 #include "../../../../../lib/json/param_list_file.h"
 #include "../../../../../lib/core/rnd.h"
+#include "../../../../../lib/graph/param_point.h"
 
 
 
@@ -556,6 +557,7 @@ Net* Net::readNet
     /* Read net */
     Io::create( this, aAnswer )
     -> call( CMD_READ_NET )
+    -> resultTo( this )
     -> destroy();
 
     getLog() -> end();
@@ -847,6 +849,7 @@ Net* Net::applyNet
         /* Set net version from config */
         setNextVersion( config -> getString( Path{ "version", "current" } ) );
 
+
         /* Set net version from config */
         setSeed( config -> getInt( Path{ "seed" } ) );
 
@@ -854,20 +857,19 @@ Net* Net::applyNet
         purgeLayers( configLayers );
 
         /* Create layers */
-        configLayers -> loop
+        configLayers -> objectsLoop
         (
             [ this ]
             (
-                Param* iParam
+                ParamList* iParam,
+                string iName
             )
             {
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
                 /* Build list of using roles from Actions */
-                auto actions = iParam
-                -> getObject()
-                -> getObject( "actions" );
+                auto actions = iParam -> getObject( "actions" );
 
                 if( actions != NULL )
                 {
@@ -894,9 +896,9 @@ Net* Net::applyNet
 
                     if( used -> isIntersect( tasks ))
                     {
-                        auto layerId = iParam -> getName();
+                        auto layerId = iName;
                         auto layer = createLayer( layerId );
-                        loadLayer( layer, iParam -> getObject() );
+                        loadLayer( layer, iParam );
                         layer -> setStoragePath( storagePath );
                     }
                 }
@@ -924,7 +926,7 @@ Net* Net::applyNet
                         auto idFrom         = jsonNerve -> getString( "idFrom" );
                         auto idTo           = jsonNerve -> getString( "idTo" );
                         auto bindType       = bindTypeFromString( jsonNerve -> getString( "bindType" ));
-                        auto nerveType      = Nerve::nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
+                        auto nerveType      = nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
                         auto nerveDelete    = jsonNerve -> getBool( "delete" );
 
                         /* Find the layers */
@@ -1245,25 +1247,35 @@ Net* Net::loadLayer
             -> copyFrom( aParams -> getObject( "actions" ) );
 
             /* Apply neuron functions for layer */
-            aLayer -> setNeuronFunc( aParams -> getString( "function", "SIGMOID" ));
+            aLayer
+            -> setFrontFunc
+            (
+                strToFunc( aParams -> getString( "functionFront", "NULL" ))
+            )
+            -> setBackFunc
+            (
+                strToFunc( aParams -> getString( "functionBack", "NULL" ))
+            )
+            -> setErrorCalc
+            (
+                errorCalcFromString( aParams -> getString( "errorCalc", "NONE" ))
+            )
+            -> setWeightCalc
+            (
+                weightCalcFromString( aParams -> getString( "weightCalc", "NONE" ))
+            );
 
             /* Set Size from params */
-            auto paramsSize = aParams -> getObject( "size" );
-            if( paramsSize != NULL )
-            {
-                auto newCount =
-                paramsSize -> getInt( 0 ) *
-                paramsSize -> getInt( 1 ) *
-                paramsSize -> getInt( 2 );
+            auto size = ParamPoint::point3i( aParams -> getObject( "size" ) );
 
-                /* Remove nerves for size changed layer */
-                if( newCount != aLayer -> getCount() )
-                {
-                    getNerveList() -> removeByLayer( aLayer );
-                }
-                /* Update layer */
-                aLayer -> setCount( newCount );
+            /* Remove nerves for size changed layer */
+            if( size.mulComponents() != aLayer -> getCount() )
+            {
+                getNerveList() -> removeByLayer( aLayer );
             }
+
+            /* Update layer */
+            aLayer -> setSize( size );
         }
     }
     return this;
@@ -1865,3 +1877,7 @@ Net* Net::setSeed
     seed = a;
     return this;
 }
+
+
+
+

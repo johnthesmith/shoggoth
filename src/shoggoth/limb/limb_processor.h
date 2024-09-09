@@ -12,6 +12,8 @@
 
 #include "../../../../../lib/core/mon.h"
 
+
+
 #include "../limb.h"
 #include "net.h"
 
@@ -20,40 +22,42 @@
 class LimbProcessor : public Limb
 {
     private:
-        /* Net object */
+        /* External Net object */
         Net*            net             = NULL;
         /* Monitor object */
         Mon*            mon             = NULL;
-        /* Layer list with forward calculation sequence */
-        LayerList*      forwardList     = NULL;
-        /* Layer list with backward calculation sequence */
-        LayerList*      backwardList    = NULL;
-
-        /* Calculation state */
-        CalcDirection   calcDirection   = CALC_FORWARD; /* Calculation direction */
-        int             calcLayerIndex  = 0;        /* Current lsyer for calculation */
-        long long int   tick            = 0;        /* Current tick */
-        int             threadCount     = 1;        /* Count of threads */
-        bool            learning        = false;    /* Automatic learning mode */
-
-        /* Settings */
-        double  learningSpeed           = 0.001;    /* 0.0 - learning disable, max 0.1 recomended */
-        double  minWeight               = 0.0001;   /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
-        double  maxWeight               = 1000;     /* Maxumum weight */
-        double  maxError                = 100;      /* Maxumum error, have to less then maxWeight */
-
-        int     tickWrite               = 10;       /* Each of finished calculation form tickWrite will be writen to file */
-
-        ParamList* dumpWeightConf       = NULL;     /**/
-        unsigned long long int  frame   = 0;
+        /* Chart list object */
+        ChartList*  weightsChart        = NULL;
 
         /*
-            Calculation debug mode
-            With calcDebug == true each calculation loop will be
-            stoped till calcTick is not true.
+            Calculation state
         */
-        bool        calcDebug           = false;
+        /* Current tick */
+        long long int   tick            = 0;
+        /* Automatic learning mode, indicates learning stage */
+        bool            learning        = false;
+        /* Terminated status, stop the calculation and dump works */
+        bool            terminated      = false;
 
+        /*
+            Settings
+        */
+        /* 0.0 - learning disable, max 0.1 recomended */
+        double  learningSpeed           = 0.001;
+        /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
+        double  minWeight               = 0.0001;
+        /* Maxumum weight */
+        double  maxWeight               = 1000;
+        /* Maxumum error, have to less then maxWeight */
+        double  maxError                = 100;
+        /* Count of threads */
+        int     threadCount             = 1;
+        /* Each tickWrite from tick all Weights will be writen to file */
+        int     tickWrite               = 10;
+        /* Each tickChart from ешсл Chartss will be writen to mon */
+        int     tickChart               = 10;
+        /* Configuration objtct for neurnos dump */
+        ParamList* dumpConf             = NULL;
     public:
 
         /*
@@ -89,28 +93,13 @@ class LimbProcessor : public Limb
 
 
 
-        /* Dump sync info to log */
-        LimbProcessor* syncToLog
-        (
-            Layer* layer
-        );
-
-
-
         /*
-            Return calc stage for layers with direction
+            Set terminated signal
         */
-        CalcStage getCalcStage
+        LimbProcessor* setTerminated
         (
-            CalcDirection CALC_ALL /* Direction */
+            bool
         );
-
-
-
-        /*
-            Reset forward and backward counts for layers
-        */
-        LimbProcessor* calcReset();
 
 
 
@@ -128,34 +117,6 @@ class LimbProcessor : public Limb
             Return processors count
         */
         int getThreadCount();
-
-
-
-        /*
-            Load parents layers and check forward calculation
-            return true if all parents layers is forward calculated
-            otherwise return false
-        */
-        bool preparedParents
-        (
-            Layer* /* Layer for parents check */
-        );
-
-
-
-        /*
-            Load children layers and check backward calculation
-            return true if all children layers is backward calculated
-            otherwise return false
-        */
-        bool preparedChildren
-        (
-            Layer* /* Layer for children check */
-        );
-
-
-        LayerList* getForwardList();
-        LayerList* getBackwardList();
 
 
 
@@ -242,6 +203,16 @@ class LimbProcessor : public Limb
 
 
         /*
+            Set tick for write charts
+        */
+        LimbProcessor* setTickChart
+        (
+            int /* Value */
+        );
+
+
+
+        /*
             Get wakeup weight k
         */
         double getMinWeight();
@@ -292,16 +263,6 @@ class LimbProcessor : public Limb
 
 
 
-        LimbProcessor* setCalcDebug
-        (
-            bool
-        );
-
-
-        bool getCalcDebug();
-
-
-
         int getCalcLayerIndex();
 
 
@@ -319,9 +280,20 @@ class LimbProcessor : public Limb
 
 
         /*
-            Calculate neuron
+            Calculate neuron error
         */
-        LimbProcessor* neuronLearning
+        LimbProcessor* neuronCalcError
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Neuron index of layer */
+        );
+
+
+
+        /*
+            Calculate neuron parent weights
+        */
+        LimbProcessor* neuronCalcWeight
         (
             Layer*, /* Layer for calculation */
             int     /* Neuron index of layer */
@@ -341,7 +313,18 @@ class LimbProcessor : public Limb
 
 
 
-        LimbProcessor* layerLearning
+        /*
+            Calculate error in the layer
+        */
+        LimbProcessor* layerCalcError
+        (
+            Layer*, /* Layer for calculation */
+            int     /* Current thread number */
+        );
+
+
+
+        LimbProcessor* layerCalcWeight
         (
             Layer*, /* Layer for calculation */
             int     /* Current thread number */
@@ -367,5 +350,32 @@ class LimbProcessor : public Limb
         (
             Layer*,
             int
+        );
+
+
+
+        /*
+            Copy configuration from argument
+        */
+        LimbProcessor* setDumpConf
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Create processor lock file and waiting it removing
+        */
+        LimbProcessor* calcDebugWait
+        (
+            CalcStage aStage
+        );
+
+
+
+        LimbProcessor* calcDebugDump
+        (
+            CalcStage aStage
         );
 };

@@ -56,51 +56,30 @@ git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
 ```
 
 
-## Deploy the project
-
-1. This is script for project upload.
-
-```
-#!/bin/bash
-# prepare directory
-mkdir ./shoggoth && cd shoggoth
- 
-# clone repositories
-git clone git@github.com:johnthesmith/lib-core.git ./lib/core
-git clone git@github.com:johnthesmith/lib-graph.git ./lib/graph
-git clone git@github.com:johnthesmith/lib-sock.git ./lib/sock
-git clone git@github.com:johnthesmith/lib-json.git ./lib/json
-git clone git@github.com:johnthesmith/shab.git ./app/shab
-git clone git@github.com:johnthesmith/shoggoth.git ./app/shoggoth
-
-# install lib
-sudo apt install libglfw3 libglfw3-dev libglu1-mesa-dev
-sudo apt install libglew-dev
-sudo apt install graphicsmagick-libmagick-dev-compat
-```
-
-
 
 ## Components
 
 1. The kernel of Shoggoth was written in c++ and requires the following projects:
     1. [lib/core](https://github.com/johnthesmith/lib-core) -  baisic c++ libraries;
     0. [lib/json](https://github.com/johnthesmith/lib-json) - object for key and values;
-    0. [lib/graph](https://github.com/johnthesmith/lib-json) - tiny opengl engine;
+    0. [lib/graph](https://github.com/johnthesmith/lib-graph) - graphic library;
     0. [lib/sock](https://github.com/johnthesmith/lib-sock) - libraries for tcp sockets;
-    0. [/shoggoth](https://github.com/johnthesmith/shoggoth) - SHoggoth ptoject;
+    0. [shoggoth](https://github.com/johnthesmith/shoggoth) - Shoggoth ptoject;
     0. [shab](#shab) - small bash maker for Shoggoth.
 
-```mermaid
-flowchart
-    graphics[graph]    
 
+```mermaid
+flowchart TB
+    graphics[graph]
+
+    proj --> app
+    proj --> lib
+    app --> shab
+    app --> shggoth
     lib --> graphics
-    graphics --> app
-    shoggoth --> app
-    lib --> shoggoth
-    lib --> app
-    shab
+    lib --> json
+    lib --> sock
+    lib --> core
 ```
 
 
@@ -180,6 +159,7 @@ Log -.-o Scene
 0. Shoggoth library located at [src/shoggoth](src/shoggoth).
 
 
+
 ## Math definition
 
 1. Each neuron have the:
@@ -243,16 +223,63 @@ Log -.-o Scene
 
 ### Net
 
+```mermaid
+flowchart TD
+    subgraph calc
+        retina
+        cortex_1
+        cortex_2
+        bias
+        result
+    end
 
+    subgraph learning
+        error_learn
+        command_learn
+        sample
+    end
 
+    subgraph work
+        error_work
+        command_work
+        test
+    end
 
+    retina --->|+ x <-r;+r>| cortex_1
+    cortex_1 -->|+ x <-r;+r>| cortex_2
+    cortex_2 -->|+ x <-r;+r>| result
+    bias -->|+ x <-r;+r>| cortex_1
+    bias -->|+ x <-r;+r>| cortex_2
+    bias -->|+ x <-r;+r>| result
 
+    result -->|+ x <1;1>| error_learn
+    sample -->|+ = <-1;-1>| error_learn
+    sample -->|+ x <1;1>| command_learn
+    command_learn -->|* x <-1;-1>| error_learn
+    
+    test --> |+ = <-1;-1>| error_work
+    test --> |+ x <1;1>| command_work
+    command_work --> | * x <-1;-1> | error_work
+    result --> |+ x 1;1| error_work
+    
+    teacher1((teacher)) .-> retina
+    teacher1((teacher)) .-> sample
+    teacher1((teacher)) .-> bias
+    error_learn .-> teacher3((teacher))
+    evolution1((evolution)) .-> test
 
-## Shoggoth scheme
+    classDef in      fill:#FF00FF50,stroke:#FF00FFFF;
+    classDef cortex  fill:#FFA50050,stroke:#FFA500FF;
+    classDef command fill:#00FF0050,stroke:#00FF00FF;
+    classDef error   fill:#FF000050,stroke:#FF0000FF;
+    classDef result  fill:#00FFFF50,stroke:#00FFFFFF;   
 
-![](shoggoth.svg)
-
-
+    class retina,bias,sample,test in;
+    class cortex_1,cortex_2 cortex;
+    class result result;
+    class command_work,command_learn command;
+    class error_work,error_learn error;
+```
 
 
 
@@ -287,3 +314,5 @@ saveNerves --> saveLayers --> stop
 
 - [@igptx](https://www.github.com/igptx)
 - [@johnthesmith](https://www.github.com/johnthesmith)
+
+

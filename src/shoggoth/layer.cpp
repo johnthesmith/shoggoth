@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "func.h"
 #include "limb.h"
 
@@ -46,7 +48,7 @@ Layer::~Layer()
     chartTick -> destroy();
 
     /* Destroy neurons */
-    setCount( 0 );
+    setSize( POINT_3I_0 );
 
     /* Destroy the list of neurons */
 
@@ -80,6 +82,68 @@ void Layer::destroy()
 }
 
 
+
+/*
+    Set dimations size
+*/
+Layer* Layer::setSize
+(
+    const Point3i& a
+)
+{
+    setCount( a.x * a.y * a.z );
+    size = a;
+    return this;
+}
+
+
+
+/*
+    Set dimentions size from ParamList object
+*/
+Layer* Layer::setSize
+(
+    ParamList* a
+)
+{
+    auto jsonSize = a -> getObject( "size" );
+    if( jsonSize != NULL )
+    {
+        setSize
+        (
+            Point3i
+            (
+                jsonSize -> getInt( 0 ),
+                jsonSize -> getInt( 1 ),
+                jsonSize -> getInt( 2 )
+            )
+        );
+    }
+    return this;
+}
+
+
+/*
+    Return 3d size of layer
+*/
+Point3i Layer::getSize()
+{
+    return size;
+}
+
+
+
+/*
+    Return linear index of neuron by position
+*/
+int Layer::indexByPos
+(
+    const Point3i& a
+)
+{
+    auto s = getSize();
+    return a.x + a.y * s.x + a.z * s.x * s.y;
+}
 
 
 
@@ -210,6 +274,9 @@ Log* Layer::getLog()
 
 /*
     Set count of neurons
+    Do not use this method.
+    Use the setSize
+
     Thes method reallocate memory fot plans
 */
 Layer* Layer::setCount
@@ -394,6 +461,25 @@ double Layer::calcSumValue()
 
 
 /*
+    Calculate Root Main Square of neurons value
+*/
+double Layer::calcRmsValue()
+{
+    double result = 0.0;
+
+    getLimb() -> lock();
+    for( int i = 0; i < count; i ++ )
+    {
+        result += values[ i ] * values[ i ];
+    }
+    getLimb() -> unlock();
+
+    return count > 0 ? sqrt( result / count ) : 0;
+}
+
+
+
+/*
     Storage path
 */
 
@@ -431,80 +517,6 @@ string Layer::getLayerPath()
 string Layer::getStorageValueName()
 {
     return storagePath == "" ? "" : ( getLayerPath() + "/value.bin" );
-}
-
-
-
-/******************************************************************************
-    Layer calculateion service
-*/
-
-
-Layer* Layer::calcReset()
-{
-    /* Reset forward and backward */
-    forward = -1;
-    backward = -1;
-
-    return this;
-}
-
-
-
-Layer* Layer::calcStartForward()
-{
-    forward = 0;
-    return this;
-}
-
-
-
-Layer* Layer::calcStartBackward()
-{
-    backward = 0;
-    return this;
-}
-
-
-
-Layer* Layer::calcCompleteForward()
-{
-    forward ++;
-    return this;
-}
-
-
-
-Layer* Layer::calcCompleteBackward()
-{
-    backward ++;
-    return this;
-}
-
-
-
-CalcStage Layer::getForwardStage
-(
-    int aThreadCount
-)
-{
-    return forward == -1 ? CALC_NOT_START :
-    (
-        forward == aThreadCount ? CALC_COMPLETE : CALC_START
-    );
-}
-
-
-
-CalcStage Layer::getBackwardStage
-(
-    int aThreadCount
-)
-{
-    return backward == -1 ? CALC_NOT_START :
-    (
-        backward == aThreadCount ? CALC_COMPLETE : CALC_START
-    );
 }
 
 
@@ -725,7 +737,10 @@ bool Layer::compare
     getCount()      == aLayer -> getCount() &&
     getName()       == aLayer -> getName() &&
     getFrontFunc()  == aLayer -> getFrontFunc() &&
-    getBackFunc()   == aLayer -> getBackFunc();
+    getBackFunc()   == aLayer -> getBackFunc() &&
+    getErrorCalc()  == aLayer -> getErrorCalc() &&
+    getWeightCalc() == aLayer -> getWeightCalc()
+    ;
 }
 
 
@@ -756,24 +771,6 @@ bool Layer::checkTasks
     isIntersect( aTasks );
 }
 
-
-
-/*
-    Apply neyron functions for layer
-*/
-Layer* Layer::setNeuronFunc
-(
-    string aFuncName
-)
-{
-    strToNeuronFunc
-    (
-        aFuncName,
-        frontFunc,
-        backFunc
-    );
-    return this;
-}
 
 
 Layer* Layer::setFrontFunc
@@ -931,4 +928,54 @@ ChartData* Layer::getChartValues()
 ChartData* Layer::getChartErrors()
 {
     return chartErrors;
+}
+
+
+
+/*
+    Set error calc flag for the layer.
+    Layer will be calculating erors.
+*/
+Layer* Layer::setErrorCalc
+(
+    ErrorCalc a
+)
+{
+    errorCalc = a;
+    return this;
+}
+
+
+
+/*
+    Return the layer calculation flag for the layer
+*/
+ErrorCalc Layer::getErrorCalc()
+{
+    return errorCalc;
+}
+
+
+
+/*
+    Set weight calc flag for the layer.
+    Layer will be calculating weights.
+*/
+Layer* Layer::setWeightCalc
+(
+    WeightCalc a
+)
+{
+    weightCalc = a;
+    return this;
+}
+
+
+
+/*
+    Return the layer calculation flag for the layer
+*/
+WeightCalc Layer::getWeightCalc()
+{
+    return weightCalc;
 }

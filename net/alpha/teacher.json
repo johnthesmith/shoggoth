@@ -1,5 +1,23 @@
 {
-    "loopSleepMcs"    :1000,
+    "engine":
+    {
+        "enabled"               :true,
+        "teacher":
+        {
+            "code":
+            {
+                "ok"                        : { "log":"TRACE",      "timeoutMcs":1000 },
+                "disabled"                  : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":1000 },
+                "batch_sections_not_found"  : { "log":"WARNING",    "timeoutMcs":5000000 },
+                "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
+                "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "*"                         : { "log":"ERROR",      "exit":true }
+            }
+        }
+    },
+
     "io":
     {
         "source"                :"SERVER",
@@ -9,245 +27,114 @@
         "readWaitingTimeoutMcs" :500000
     },
 
-    "tasks":
+    "idErrorLayer"          :"error",
+    "mode"                  :"learning",
+
+    "batches":
     {
-        "TEACHER":
+        "learning":
         {
-            "enabled"               :true,
-            "loopSleepMcs"          :10000,
-            "idErrorLayer"          :"error",
-            "errorLimit"            :0.0001,
-            "mode"                 :"learning_digits",
-            "-mode"                  :"reading_digits",
-
-            "batches":
-            {
-                "learning_small":
+            "all":
+            [
+                { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
+            ],
+            "list":
+            [
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 1.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0 ] }
-                    ],
-
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 0.0, 1.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 1.0 ] }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-                "reading_small":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 1.0, 0.0, 0.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 1.0, 1.0, 0.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ],
-
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "retina", "values":[ 0.0, 0.0, 0.0, 1.0 ] },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0 ] }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-                "learning_digits":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-                "reading_digits":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "result_b", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-
-                "work":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":0.0, "max":0.0 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "retina", "files":[ "./patterns/tree00001.png" ], "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":0.0, "max":0.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder" : "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":0.0, "max":0.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min": 0.0, "max":0.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder" : "./patterns/cat", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-                "noise":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "io":"default", "layer": "error", "min": 1.0, "max":1.0 },
-                        { "cmd":"VALUE_TO_LAYER", "io":"default", "layer": "sample", "min": 0.0, "max":0.0 },
-                        { "cmd":"VALUE_TO_LAYER", "io":"default", "layer": "retina", "min" : 0.0, "max" : 1.0 }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
-                "learning":
                 [
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "retina", "files":[ "./patterns/tree00001.png" ], "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "sample", "files":[ "./patterns/tree00001.png" ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder" : "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "sample", "files" :[ "./patterns/digit1/digit1-00001.png" ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "sample", "files":[ "./patterns/digit2/digit2-00001.png" ] }
-                    ],
-                    [
-                        { "cmd":"VALUE_TO_LAYER", "layer": "error", "min": 1.0, "max":1.0 },
-                        { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder" : "./patterns/cat", "-zoomMin":0.5, "-zoomMax": 1.0, "-rotate":0.0625, "-shift":0.1, "bright":0.1 },
-                        { "cmd":"IMAGE_TO_LAYER", "layer": "sample", "files":[ "./patterns/cat/cat00001.png" ] }
-                    ]
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
                 ]
-            }
+            ]
+        },
+        "reading":
+        {
+            "all":
+            [
+                { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
+            ],
+            "list":
+            [
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                ]
+            ]
         }
     }
 }
+
+

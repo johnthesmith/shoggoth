@@ -7,4 +7,4 @@ echo -e "\033[0;32m$(pwd)\033[0m"
 [ -z "$comment" ] && comment="Auto commit"
 
 git add -A && git commit -m "$comment"
-git pull --rebase && git push
+git pull --rebase && git push origin HEAD

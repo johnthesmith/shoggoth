@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../../../../../lib/graph/object.h"
-#include "../layer_dim.h"
+#include "../layer.h"
 #include "layer_ui_const.h"
 
 
@@ -26,7 +26,7 @@ class NeuronListUi;
 
 
 
-class LayerUi : public LayerDim
+class LayerUi : public Layer
 {
     private:
 
@@ -58,16 +58,6 @@ class LayerUi : public LayerDim
         Point3d*        screen                  = NULL;
         Point3d*        world                   = NULL;
         bool*           selected                = NULL;
-
-
-        /*
-            Change the method scope for setCount
-            This mthod must called by the setSize only
-        */
-        LayerUi* setCount
-        (
-            int
-        ) final;
 
     public:
 
@@ -344,4 +334,15 @@ class LayerUi : public LayerDim
 
 
         Object* getObject();
+
+
+
+        /*
+            Change the method scope for setCount
+            This mthod must called by the setSize only
+        */
+        LayerUi* setSize
+        (
+            Point3i  = POINT_3I_0
+        );
 };
