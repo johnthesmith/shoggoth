@@ -9,7 +9,6 @@
 /* Shoggoth libraries */
 #include "../../shoggoth/io.h"
 #include "../../../../../lib/core/str.h"
-
 /* User libraries */
 #include "teacher_application.h"
 #include "teacher_payload.h"
@@ -124,8 +123,9 @@ void TeacherPayload::onEngineLoop()
     netConfig -> destroy();
 
     /* Synchronize net from the Shoggoth server */
-    net -> syncWithServer();
-    net -> resultTo( this );
+    net
+    -> syncWithServer()
+    -> resultTo( this );
 
     if( isOk() )
     {

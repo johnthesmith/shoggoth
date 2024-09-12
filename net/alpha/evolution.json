@@ -1,5 +1,20 @@
 {
-    "loopSleepMcs"      :1000000,
+    "engine":
+    {
+        "enabled"               :true,
+        "teacher":
+        {
+            "code":
+            {
+                "ok"                        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_continue"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_rollback"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_mutate"          : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "*"                         : { "log":"ERROR",      "exit":true }
+            }
+        }
+    },
 
     "io":
     {

@@ -13,7 +13,7 @@
 
 
 /* Local libraries */
-#include "../../../../../lib/core/payload.h"
+#include "../../../../../lib/core/payload_engine.h"
 #include "../../shoggoth/limb/net.h"
 
 
@@ -22,7 +22,7 @@ using namespace std;
 
 
 
-class EvolutionPayload : public Payload
+class EvolutionPayload : public PayloadEngine
 {
     private:
 
@@ -95,18 +95,5 @@ class EvolutionPayload : public Payload
         /*
             Main loop event
         */
-        virtual void onLoop() override;
-
-
-
-        /******************************************************************************
-            Private methods
-        */
-
-        private:
-
-        /*
-            Processing of the loop
-        */
-        EvolutionPayload* processing();
+        virtual void onEngineLoop() override;
 };

@@ -45,6 +45,7 @@ OBJECT_PATH/param_point.o
 
 OBJECT_PATH/application.o
 OBJECT_PATH/payload.o
+OBJECT_PATH/payload_engine.o
 
 OBJECT_PATH/func.o
 OBJECT_PATH/net.o

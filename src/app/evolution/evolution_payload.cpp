@@ -12,6 +12,7 @@
 using namespace std;
 
 
+
 /*
     Constructor
 */
@@ -21,7 +22,7 @@ EvolutionPayload::EvolutionPayload
     string aNetId,
     string aNetVersion
 )
-: Payload( a ) /* Call parent constructor */
+: PayloadEngine( a ) /* Call parent constructor */
 {
     net = Net::create( a, a -> getSockManager(), aNetId, aNetVersion );
     net -> addTask( TASK_EVOLUTION );
@@ -84,186 +85,146 @@ EvolutionApplication* EvolutionPayload::getApplication()
 /*
     Main loop event
 */
-void EvolutionPayload::onLoop()
+void EvolutionPayload::onEngineLoop()
 {
-    getLog() -> trapOn() -> begin( "Loop" );
+    /* Reset net state */
+    net -> setOk();
 
     getMon()
-    -> startTimer( Path{ "loop", "moment" })
     -> setString( Path{ "net", "id" }, net -> getId() )
     -> setString( Path{ "net", "version" }, net -> getVersion() )
     ;
 
-    if( getApplication() -> getCli() -> getString( "config" ) == "" )
+    /* Check server net config */
+    auto netConfig = ParamList::create();
+    /* Read net config from server */
+    net -> readNet( netConfig );
+
+    if
+    (
+        net -> isConfigUpdate( netConfig ) ||
+        net -> isVersionChanged()
+    )
     {
-        getLog() -> error( "Need the --config cli argument." );
-        terminate();
+        getLog()
+        -> begin( "Net config updated" )
+        -> prm( "File", getApplication() -> getConfigFileName() )
+        -> dump( netConfig, "Net config" )
+        -> lineEnd();
+        net -> applyNet( netConfig );
+        getLog() -> end();
     }
-    else
+    netConfig -> destroy();
+
+    /* Synchronize net from the server */
+    net
+    -> syncWithServer()
+    -> resultTo( this );
+
+    if( isOk() )
     {
-        /* Check local application config */
-        getApplication() -> checkConfigUpdate();
-
-        if( getApplication() -> getConfigUpdated() )
-        {
-            auto cfg = getApplication() -> getConfig();
-
-            if( cfg != NULL )
-            {
-                setLoopTimeoutMcs( cfg -> getDouble( "loopSleepMcs", 100 ));
-            }
-        }
-
-        /* Check server net config */
-        auto netConfig = ParamList::create();
-
-        /* Read net config from server */
-        net -> readNet( netConfig );
-
-        if
-        (
-            net -> isConfigUpdate( netConfig ) ||
-            net -> isVersionChanged()
-        )
-        {
-            getLog()
-            -> begin( "Config updated" )
-            -> prm( "File", getApplication() -> getConfigFileName() )
-            -> dump( netConfig, "Net config" )
-            -> lineEnd();
-
-            net -> applyNet( netConfig );
-
-            getLog() -> end();
-        }
-
-        netConfig -> destroy();
-
-        /* Synchronize net from the server */
-        net -> syncWithServer();
+        getLog() -> begin( "Processing" );
 
         /* Processing evolution */
-        processing();
-    }
-
-    getMon() -> flush();
-    getLog() -> end( getCode() ) -> trapOff();
-}
-
-
-
-/******************************************************************************
-    Private methods
-*/
-
-
-
-/*
-    Processing of the loop
-*/
-EvolutionPayload* EvolutionPayload::processing()
-{
-    enum EvolutionResult
-    {
-        CONTINUE,   /* Learning continue */
-        ROLLBACK,   /* Kill current and paent mutate (new child) */
-        MUTATE      /* New from current (new child) */
-    };
-
-    EvolutionResult action = CONTINUE;
-
-    getLog() -> begin( "Processing" );
-
-    net -> getLayerList() -> loop
-    (
-        [ this, &action ]
-        ( void* item )
+        enum EvolutionResult
         {
-            auto layer = (Layer*) item;
+            CONTINUE,   /* Learning continue */
+            ROLLBACK,   /* Kill current and paent mutate (new child) */
+            MUTATE      /* New from current (new child) */
+        };
 
-            /* Read config */
-            auto cfg = getApplication()
-            -> getConfig()
-            -> getObject( Path{ "criterions", layer -> getId() } );
+        EvolutionResult action = CONTINUE;
 
-            if( isnan( layer -> calcSumValue()) )
+        net -> getLayerList() -> loop
+        (
+            [ this, &action ]
+            ( void* item )
             {
-                /* Checking the NAN criterion */
-                action = ROLLBACK;
-                getLog() -> info( "Result" )
-                -> prm( "layer", layer -> getId() )
-                -> prm( "reason", "is_nan" );
-            }
-            else if
-            (
-                /* Checking the tick delta criterion */
-                cfg != NULL &&
-                cfg -> exists( Path{ "tickDeltaLimit" })
-            )
-            {
-                /* Let config params */
-                auto cfgTickSmoth = cfg -> getDouble( "tickSmoth" );
-                auto cfgTickDeltaLimit = cfg -> getDouble( "tickDeltaLimit" );
-                auto cfgTickSmothCount = cfg -> getInt( "tickSmothCount" );
+                auto layer = (Layer*) item;
 
-                /* Ticks smothing */
-                auto smoth = ChartData::create() -> setMaxCount( cfgTickSmothCount );
-                layer
-                -> getChartTick()
-                -> smoth( cfgTickSmoth, smoth );
+                /* Read config */
+                auto cfg = getApplication()
+                -> getConfig()
+                -> getObject( Path{ "criterions", layer -> getId() } );
 
-                /* Monitoring */
-                getMon()
-                -> setDouble( Path{ "settings", layer -> getId(), "tickDeltaLimit" }, cfgTickDeltaLimit )
-                -> setDouble( Path{ "settings", layer -> getId(), "tickSmothCount" }, cfgTickSmothCount )
-                -> setDouble( Path{ "settings", layer -> getId(), "tickSmoth" }, cfgTickSmoth )
-                -> setString
+                if( isnan( layer -> calcSumValue()) )
+                {
+                    /* Checking the NAN criterion */
+                    action = ROLLBACK;
+                    getLog() -> info( "Result" )
+                    -> prm( "layer", layer -> getId() )
+                    -> prm( "reason", "is_nan" );
+                }
+                else if
                 (
-                    Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    layer -> getChartTick() -> toString( 40 )
-                )
-                -> setString
-                (
-                    Path{ "tickssmoth", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    smoth -> toString( 40 )
-                );
-
-                if
-                (
-                    smoth -> deltaMinMax() < cfgTickDeltaLimit &&
-                    smoth -> getCount() == cfgTickSmothCount
+                    /* Checking the tick delta criterion */
+                    cfg != NULL &&
+                    cfg -> exists( Path{ "tickDeltaLimit" })
                 )
                 {
-                    action = MUTATE;
-                    getLog() -> trace( "Result" )
-                    -> prm( "layer", layer -> getId() )
-                    -> prm( "reason", "learning_limit" );
+                    /* Let config params */
+                    auto cfgTickSmoth = cfg -> getDouble( "tickSmoth" );
+                    auto cfgTickDeltaLimit = cfg -> getDouble( "tickDeltaLimit" );
+                    auto cfgTickSmothCount = cfg -> getInt( "tickSmothCount" );
+
+                    /* Ticks smothing */
+                    auto smoth = ChartData::create() -> setMaxCount( cfgTickSmothCount );
+                    layer
+                    -> getChartTick()
+                    -> smoth( cfgTickSmoth, smoth );
+
+                    /* Monitoring */
+                    getMon()
+                    -> setDouble( Path{ "settings", layer -> getId(), "tickDeltaLimit" }, cfgTickDeltaLimit )
+                    -> setDouble( Path{ "settings", layer -> getId(), "tickSmothCount" }, cfgTickSmothCount )
+                    -> setDouble( Path{ "settings", layer -> getId(), "tickSmoth" }, cfgTickSmoth )
+                    -> setString
+                    (
+                        Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                        layer -> getChartTick() -> toString( 40 )
+                    )
+                    -> setString
+                    (
+                        Path{ "tickssmoth", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                        smoth -> toString( 40 )
+                    );
+
+                    if
+                    (
+                        smoth -> deltaMinMax() < cfgTickDeltaLimit &&
+                        smoth -> getCount() == cfgTickSmothCount
+                    )
+                    {
+                        action = MUTATE;
+                        getLog() -> trace( "Result" )
+                        -> prm( "layer", layer -> getId() )
+                        -> prm( "reason", "learning_limit" );
+                    }
+
+                    /* Destroy the smoth */
+                    smoth -> destroy();
                 }
 
-                /* Destroy the smoth */
-                smoth -> destroy();
+                return false;
             }
-
-            return false;
-        }
-    );
+        );
 
 
-
-    /* Define result */
-    auto result = Result::create();
-
-    /* Result processing */
-    switch( action )
-    {
-        default:
-        case CONTINUE:
-            /* None changes, net will be teaching */
-            getLog() -> trace( "action" ) -> prm( "state", "Continue" );
-        break;
-        case ROLLBACK:
+        /* Result processing */
+        switch( action )
+        {
+            default:
+            case CONTINUE:
+                /* None changes, net will be teaching */
+                setResult( "evolution_continue" );
+            break;
+            case ROLLBACK:
                 getLog() -> info( "action" ) -> prm( "state", "Rollback" );
-                /* Clone parent net */
+                    /* Clone parent net */
+
+
+// Поймать ошибку разрушения процеса при отсутсвии сервера
+// В тичерезаковырять limb но с оглядкой на ниже написанное...
 
 // TODO Обдумать весь цикл обучения и контроля на статичных картинках КАК?
 // Возможно понадобится коммуникая между еволюшеном и тичером??!!
@@ -271,21 +232,30 @@ EvolutionPayload* EvolutionPayload::processing()
 
                 Io::create( net )
                 -> mutateAndSwitch( 1 /*.... ? 1 : 2 */ )
-                -> resultTo( result )
+                -> resultTo( this )
                 -> destroy();
-        break;
-        case MUTATE:
-            getLog() -> info( "action" ) -> prm( "state", "Mutate" );
-            /* Clone net */
-            Io::create( net )
-            -> mutateAndSwitch( 0 )
-            -> resultTo( result )
-            -> destroy();
-        break;
+
+                if( isOk() )
+                {
+                    setResult( "evolution_rollback" );
+                }
+            break;
+            case MUTATE:
+                getLog() -> info( "action" ) -> prm( "state", "Mutate" );
+                /* Clone net */
+                Io::create( net )
+                -> mutateAndSwitch( 0 )
+                -> resultTo( this )
+                -> destroy();
+
+                if( isOk() )
+                {
+                    setResult( "evolution_mutate" );
+                }
+            break;
+        }
     }
-    getLog() -> end( result -> getCode() );
 
-    result -> destroy();
-
-    return this;
+    getLog() -> end();
 }
+
