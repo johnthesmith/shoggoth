@@ -1,10 +1,16 @@
 /* System libraries */
 #include <iostream>
 
+
+
 /* Application libraryes */
 #include "../app/shoggoth_role_application.h"
 
+
+
 using namespace std;
+
+
 
 int main
 (
