@@ -43,7 +43,7 @@ class TeacherPayload : public PayloadEngine
         */
         TeacherPayload
         (
-            TeacherApplication*,  /* Application object */
+            TeacherApplication*,    /* Application object */
             string,                 /* Net id */
             string                  /* Net version */
         );
@@ -99,7 +99,11 @@ class TeacherPayload : public PayloadEngine
         /*
             Main teacher loop event
         */
-        virtual void onEngineLoop() override;
+        virtual void onEngineLoop
+        (
+            const bool,
+            const bool
+        ) override;
 
 
 

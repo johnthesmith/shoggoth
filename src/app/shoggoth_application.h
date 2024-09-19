@@ -17,11 +17,12 @@ class ShoggothApplication : public Application
     private:
 
         SockManager*    sockManager         = NULL;
-
         string          netId               = "alpha";
         string          netVersion          = "zero";
 
     public:
+
+
 
         ShoggothApplication
         (

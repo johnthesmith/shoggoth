@@ -95,5 +95,9 @@ class EvolutionPayload : public PayloadEngine
         /*
             Main loop event
         */
-        virtual void onEngineLoop() override;
+        virtual void onEngineLoop
+        (
+            const bool,
+            const bool
+        ) override;
 };

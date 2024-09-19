@@ -525,12 +525,12 @@ class Layer : public Result
 
 
         /*
-            Return true if layer contains one of tasks
+            Return true if action exists in task for this layer
         */
-        bool checkTasks
+        bool checkTask
         (
-            ParamList*,     /* Checking tasks */
-            Action aAction  /* Checking action */
+            Task,   /* Checking task */
+            Action  /* Checking action */
         );
 
 

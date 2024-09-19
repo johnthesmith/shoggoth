@@ -13,10 +13,16 @@
 */
 Net::Net
 (
-    Application*    aApplication,  /* Application object */
-    SockManager*    aSockManager,  /* Socket manager object */
-    string          aId,            /* The net id */
-    string          aVersion        /* The net version */
+    /* Application object */
+    Application*    aApplication,
+    /* Socket manager object */
+    SockManager*    aSockManager,
+    /* The net id */
+    string          aId,
+    /* The net version */
+    string          aVersion,
+    /* The net version */
+    Task            aTask
 )
 :Limb( aApplication -> getLogManager() )
 {
@@ -25,16 +31,16 @@ Net::Net
     id          = aId;
 
     /* Set versions */
-    version         = aVersion;
-    nextVersion     = aVersion;
+    version     = aVersion;
+    nextVersion = aVersion;
+
+    task        = aTask;
 
     application -> getLog() -> trace( "Create net" );
 
-    tasks = ParamList::create();
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
 }
-
 
 
 
@@ -49,9 +55,6 @@ Net::~Net()
     /* Config object clear and destroy */
     config -> destroy();
 
-    /* Clear layers lists */
-    tasks -> destroy();
-
     getLog() -> trace( "Destroy net" );
 }
 
@@ -62,13 +65,26 @@ Net::~Net()
 */
 Net* Net::create
 (
-    Application*    aApplication,  /* Application object */
-    SockManager*    aSockManager,  /* Socket manager object */
-    string          aId,            /* The net id */
-    string          aVersion        /* The net version */
+    /* Application object */
+    Application*    aApplication,
+    /* Socket manager object */
+    SockManager*    aSockManager,
+    /* The net id */
+    string          aId,
+    /* The net version */
+    string          aVersion,
+    /* The net version */
+    Task            aTask
 )
 {
-    return new Net( aApplication, aSockManager, aId, aVersion );
+    return new Net
+    (
+        aApplication,
+        aSockManager,
+        aId,
+        aVersion,
+        aTask
+    );
 }
 
 
@@ -552,7 +568,7 @@ Net* Net::readNet
     ParamList* aAnswer
 )
 {
-    getLog() -> begin( "Read net config" );
+    getLog() -> begin( "Read net config" ) -> lineEnd();
 
     /* Read net */
     Io::create( this, aAnswer )
@@ -832,15 +848,15 @@ Net* Net::clone
 
 
 
-/**/
+/*
+    Apply net
+*/
 Net* Net::applyNet
 (
     ParamList* aConfig
 )
 {
     config -> copyFrom( aConfig );
-
-    buildTasks();
 
     auto configLayers = config -> getObject( "layers" );
 
@@ -849,12 +865,13 @@ Net* Net::applyNet
         /* Set net version from config */
         setNextVersion( config -> getString( Path{ "version", "current" } ) );
 
-
         /* Set net version from config */
         setSeed( config -> getInt( Path{ "seed" } ) );
 
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
+
+        getLog() -> begin( "Layers load" );
 
         /* Create layers */
         configLayers -> objectsLoop
@@ -865,48 +882,59 @@ Net* Net::applyNet
                 string iName
             )
             {
+                getLog() -> trace( iName );
+
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
-                /* Build list of using roles from Actions */
-                auto actions = iParam -> getObject( "actions" );
 
-                if( actions != NULL )
-                {
-                    actions -> loop
+//                    actions -> loop
+//                    (
+//                        [ &used ]
+//                        ( Param* item )
+//                        {
+//                            if( item -> isObject())
+//                            {
+//                                item -> getObject() -> loop
+//                                (
+//                                    [ &used ]
+//                                    ( Param* item )
+//                                    {
+//                                        used -> pushString( item -> getString() );
+//                                        return false;
+//                                    }
+//                                );
+//                            }
+//                            return false;
+//                        }
+
+
+                /* Layer creates */
+                if
+                (
+                    iParam -> getObject
                     (
-                        [ &used ]
-                        ( Param* item )
-                        {
-                            if( item -> isObject())
-                            {
-                                item -> getObject() -> loop
-                                (
-                                    [ &used ]
-                                    ( Param* item )
-                                    {
-                                        used -> pushString( item -> getString() );
-                                        return false;
-                                    }
-                                );
-                            }
-                            return false;
-                        }
-                    );
-
-                    if( used -> isIntersect( tasks ))
-                    {
-                        auto layerId = iName;
-                        auto layer = createLayer( layerId );
-                        loadLayer( layer, iParam );
-                        layer -> setStoragePath( storagePath );
-                    }
+                        Path{ "actions", taskToString( task ) }
+                    ) != NULL
+                )
+                {
+                    auto layerId = iName;
+                    auto layer = createLayer( layerId );
+                    loadLayer( layer, iParam );
+                    layer -> setStoragePath( storagePath );
+                }
+                else
+                {
+                    getLog() -> trace( "Layer skipd" ) -> prm( "id", iName );
                 }
 
                 used -> destroy();
                 return false;
             }
         );
+
+        getLog() -> end( "" ); /* End of layers load */
+
 
         /* Nerves */
         auto jsonNerves = config -> getObject( "nerves" );
@@ -989,7 +1017,11 @@ Net* Net::applyNet
                     return false;
                 }
             );
-        }
+        } /* End of nerves load */
+
+
+getLog() -> trace( "NERVES end " );
+
     }
 
     /* Update last update net moment */
@@ -1556,7 +1588,7 @@ Net* Net::syncToLimb
 Net* Net::syncWithServer()
 {
     /* The application does not have to be a processor */
-    if( !tasks -> valueExists( taskToString( TASK_PROC )))
+    if( task != TASK_PROC )
     {
         getLog()
         -> trapOn()
@@ -1605,8 +1637,8 @@ Net* Net::syncWithServer()
                     ) != changedValues.end()
                 )
                 {
-                    /* Check application rules for write values of the  layer */
-                    if( layer -> checkTasks( tasks, WRITE_VALUES ))
+                    /* Check application rules for write values of the layer */
+                    if( layer -> checkTask( task, WRITE_VALUES ))
                     {
                         writeValues.push_back( layerId );
                     }
@@ -1614,7 +1646,7 @@ Net* Net::syncWithServer()
                 else
                 {
                     /* Check application rules for write values of the layer */
-                    if( layer -> checkTasks( tasks, READ_VALUES ))
+                    if( layer -> checkTask( task, READ_VALUES ))
                     {
                         readValues.push_back( layerId );
                     }
@@ -1632,7 +1664,7 @@ Net* Net::syncWithServer()
                 )
                 {
                     /* Check application rules for write erros of the layer */
-                    if( layer -> checkTasks( tasks, WRITE_ERRORS ))
+                    if( layer -> checkTask( task, WRITE_ERRORS ))
                     {
                         writeErrors.push_back( layerId );
                     }
@@ -1640,24 +1672,24 @@ Net* Net::syncWithServer()
                 else
                 {
                     /* Check application rules for read errors of the layer */
-                    if( layer -> checkTasks( tasks, READ_ERRORS ))
+                    if( layer -> checkTask( task, READ_ERRORS ))
                     {
                         readErrors.push_back( layerId );
                     }
                 }
 
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_VALUE ))
+                if( layer -> checkTask( task, READ_STAT_VALUE ))
                 {
                     readStatValue.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_ERROR ))
+                if( layer -> checkTask( task, READ_STAT_ERROR ))
                 {
                     readStatError.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_TICK ))
+                if( layer -> checkTask( task, READ_STAT_TICK ))
                 {
                     readStatTick.push_back( layerId );
                 }
@@ -1707,50 +1739,6 @@ Net* Net::addChangedErrors
     return this;
 }
 
-
-
-/*
-    Create roles strung of the process
-*/
-Net* Net::buildTasks()
-{
-    auto tasksSection = getApplication()
-    -> getConfig()
-    -> getObject( "tasks" );
-
-    if( tasksSection != NULL )
-    {
-        tasks -> clear();
-
-        if( tasksSection -> getObject( taskToString( TASK_PROC )) != NULL )
-        {
-            addTask( TASK_PROC );
-        }
-        if( tasksSection -> getObject( taskToString( TASK_TEACHER )) != NULL )
-        {
-            addTask( TASK_TEACHER );
-        }
-        if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
-        {
-            addTask( TASK_UI );
-        }
-    }
-    return this;
-}
-
-
-
-/*
-    Add role for this net
-*/
-Net* Net::addTask
-(
-    Task a
-)
-{
-    tasks -> pushString( taskToString( a ));
-    return this;
-}
 
 
 

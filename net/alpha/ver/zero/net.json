@@ -68,13 +68,10 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "PROC", "UI" ],
-                "WRITE_VALUES"      :[ "TEACHER" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[ "EVOLUTION" ],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "PROC"      : [ "READ_VALUES", "WRITE_ERRORS" ],
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   : [ "WRITE_VALUES"],
+                "EVOLUTION" : [ "READ_STAT_TICK"]
             }
         },
 
@@ -94,13 +91,9 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "PROC" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "EVOLUTION" : [ "READ_VALUES" ],
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
             }
         },
 
@@ -119,13 +112,10 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "PROC", "UI", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "TEACHER" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "PROC"      : [ "READ_VALUES", "WRITE_ERRORS" ],
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   : [ "WRITE_VALUES"],
+                "EVOLUTION" : [ "READ_STAT_TICK"]
             }
         },
 
@@ -145,13 +135,9 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "PROC" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "EVOLUTION" : [ "READ_VALUES" ],
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
             }
         },
 
@@ -170,13 +156,10 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI", "TEACHER", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "PROC" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "PROC"      : [ "READ_VALUES", "WRITE_ERRORS" ],
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   : [ "READ_VALUES" ],
+                "EVOLUTION" : [ "READ_VALUES" ]
             }
         },
 
@@ -195,13 +178,10 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI", "PROC", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "TEACHER" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "EVOLUTION" : [ "READ_VALUES" ],
+                "PROC"      : [ "READ_VALUES", "WRITE_ERRORS" ],
+                "TEACHER"   : [ "WRITE_VALUES" ]
             }
         },
 
@@ -220,13 +200,8 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI" ],
-                "WRITE_VALUES"      :[ "PROC" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
             }
         },
 
@@ -245,13 +220,10 @@
 
             "actions":
             {
-                "READ_VALUES"       :[ "UI", "TEACHER", "EVOLUTION" ],
-                "WRITE_VALUES"      :[ "PROC", "TEACHER" ],
-                "READ_ERRORS"       :[ "UI" ],
-                "WRITE_ERRORS"      :[ "PROC" ],
-                "READ_STAT_TICK"    :[],
-                "READ_STAT_ERROR"   :[],
-                "READ_STAT_VALUE"   :[]
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   : [ "READ_VALUES", "WRITE_VALUES" ],
+                "EVOLUTION" : [ "READ_VALUES" ],
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
             }
         }
     },

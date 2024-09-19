@@ -757,18 +757,22 @@ size_t Layer::getValuesBufferSize()
 
 
 /*
-    Return true if layer contains one of tasks
+    Return true if action exists in task for this layer
 */
-bool Layer::checkTasks
+bool Layer::checkTask
 (
-    ParamList* aTasks,
+    Task aTask,
     Action aAction
 )
 {
-    return
-    getActions() ->
-    getObject( actionToString( aAction )) ->
-    isIntersect( aTasks );
+    return getActions() -> exists
+    (
+        Path
+        {
+            taskToString( aTask ),
+            actionToString( aAction )
+        }
+    );
 }
 
 

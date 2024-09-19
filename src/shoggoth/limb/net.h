@@ -35,8 +35,8 @@ class Net: public Limb
         /* Weights request */
         WeightsExchange* weightsExchange = NULL;
 
-        /* Events */
-        ParamList* tasks           = NULL;     /* List of participants tasks */
+        /* Net task */
+        Task task                       = TASK_UNKNOWN;
 
         /* Synchronization states */
         int             randVersion     = 0;        /* Random vesion after load */
@@ -72,7 +72,8 @@ class Net: public Limb
             Application*,   /* Application object */
             SockManager*,   /* Socket manager */
             string,         /* The net id */
-            string          /* The net version */
+            string,         /* The net version */
+            Task            /* Task of the current net */
         );
 
 
@@ -92,7 +93,8 @@ class Net: public Limb
             Application*,   /* Application object */
             SockManager*,   /* Socket manager */
             string,         /* The net id */
-            string          /* The net version */
+            string,         /* The net version */
+            Task            /* Task of the current net */
         );
 
 
@@ -490,23 +492,6 @@ class Net: public Limb
         Net* addChangedErrors
         (
             Layer*
-        );
-
-
-
-        /*
-            Create roles strung of the process
-        */
-        Net* buildTasks();
-
-
-
-        /*
-            Add role for this net
-        */
-        Net* addTask
-        (
-            Task    /* Adding task */
         );
 
 
