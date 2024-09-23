@@ -45,7 +45,7 @@
             "enabled"       :true,
             "file"          :"dump/%stage%_%layer%_%data%.txt",
             "stages"        :[ "AFTER_FRONT" ],
-            "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+            "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
             "directions"    :[ "NONE" ],
             "data"          :[ "VALUES" ],
             "dataview"      :"GRAPH",

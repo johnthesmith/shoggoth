@@ -171,7 +171,6 @@ void TeacherPayload::onEngineLoop
             -> swapValuesAndErrors
             (
                 Actions{ READ_VALUES }, /* Action */
-                TASK_TEACHER,           /* Role */
                 limb,                   /* Destination participant object */
                 false
             );
@@ -272,9 +271,10 @@ void TeacherPayload::onEngineLoop
                                 /* Upload values and errors to net */
                                 limb -> getNet() -> swapValuesAndErrors
                                 (
-                                    { WRITE_VALUES, WRITE_ERRORS }, /* Action */
-                                    TASK_TEACHER,       /* Role */
-                                    limb,               /* Participant object */
+                                    /* Action */
+                                    { WRITE_VALUES, WRITE_ERRORS },
+                                    /* Participant object */
+                                    limb,
                                     false
                                 );
                             }
@@ -532,8 +532,3 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
     limb -> unlock();
     return this;
 }
-
-
-
-TODO поменяли TASK и ACTION надо проверить работоспособность и в 
-особенности хагрухку слоев как надо по таскам

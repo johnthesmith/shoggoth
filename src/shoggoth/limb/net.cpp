@@ -1484,75 +1484,80 @@ Net* Net::loadWeightsFrom
 Net* Net::swapValuesAndErrors
 (
     Actions aActions,   /* Action for participant */
-    Task    aTask,      /* Task (role) of participant */
     Limb*   aLimb,      /* Participant */
     bool    aSkip
 )
 {
-    auto configLayers = config -> getObject( "layers" );
-    if( configLayers != NULL )
+    if( lock( aSkip ))
     {
-        if( lock( aSkip ))
+        if( aLimb -> lock( aSkip ))
         {
-            if( aLimb -> lock( aSkip ))
-            {
-                /* Loop for layers configuration */
-                configLayers -> loop
+            /* Loop for layers configuration */
+            getLayerList() -> loop
+            (
+                [ this, &aLimb, &aActions ]
                 (
-                    [ this, &aLimb, &aActions, &aTask ]
-                    (
-                        Param* iParam
-                    )
+                    void* item
+                )
+                {
+                    auto netLayer = ( Layer* ) item;
+
+                    /* For each of action */
+                    for( auto iAction : aActions )
                     {
-                        /* For each of action */
-                        for( auto iAction : aActions )
-                        {
-                            /* Find action */
-                            auto action = iParam -> getObject()
-                            -> getObject( Path{ "actions", actionToString( iAction ) });
-                            /* If action exists in a layer... */
-                            if
-                            (
-                                action != NULL &&
-                                action -> contains( taskToString( aTask ))
-                            )
+                        auto layerActions = getConfig() -> getObject
+                        (
+                            Path
                             {
-                                /* ... finds layer by id in net and participant ... */
-                                auto id = iParam -> getName();
-                                auto netLayer = getLayerList() -> getById( id );
-                                auto participantLayer = aLimb -> getLayerList() -> getById( id );
-                                /* ... if both layers fonded ... */
-                                if( netLayer != NULL && participantLayer != NULL )
+                                "layers",
+                                netLayer -> getId(),
+                                "actions",
+                                taskToString( task )
+                            }
+                        );
+
+                        if
+                        (
+                            layerActions != NULL &&
+                            layerActions -> contains( actionToString( iAction ))
+                        )
+                        {
+                            /* ... finds layer by id in net and participant ... */
+                            auto participantLayer = aLimb
+                            -> getLayerList()
+                            -> getById( netLayer -> getId() );
+
+                            /* ... if both layers fonded ... */
+                            if( participantLayer != NULL )
+                            {
+                                /* ... then swap values and errors */
+                                switch( iAction )
                                 {
-                                    /* ... then swap values and errors */
-                                    switch( iAction )
-                                    {
-                                        default: break;
-                                        case READ_VALUES:
-                                            participantLayer -> copyValuesFrom( netLayer );
-                                        break;
-                                        case WRITE_VALUES:
-                                            netLayer -> copyValuesFrom( participantLayer );
-                                            addChangedValues( netLayer );
-                                        break;
-                                        case READ_ERRORS:
-                                            participantLayer -> copyErrorsFrom( netLayer );
-                                        break;
-                                        case WRITE_ERRORS:
-                                            netLayer -> copyErrorsFrom( participantLayer );
-                                            addChangedErrors( netLayer );
-                                        break;
-                                    }
+                                    default: break;
+                                    case READ_VALUES:
+                                        participantLayer -> copyValuesFrom( netLayer );
+                                    break;
+                                    case WRITE_VALUES:
+                                        netLayer -> copyValuesFrom( participantLayer );
+                                        addChangedValues( netLayer );
+                                    break;
+                                    case READ_ERRORS:
+                                        participantLayer -> copyErrorsFrom( netLayer );
+                                    break;
+                                    case WRITE_ERRORS:
+                                        netLayer -> copyErrorsFrom( participantLayer );
+                                        addChangedErrors( netLayer );
+                                    break;
                                 }
                             }
                         }
-                        return false;
                     }
-                );
-                aLimb -> unlock();
-            }
-            unlock();
+                    return false;
+                }
+            );
+            aLimb -> unlock();
         }
+        unlock();
     }
     return this;
 }
@@ -1622,9 +1627,12 @@ Net* Net::syncWithServer()
             ]
             ( void* aLayer )
             {
-
                 auto layer = ( Layer* ) aLayer;
                 auto layerId = layer -> getId();
+
+TODO Дошли в проверках досюда.
+Не Ретина на сервере пуста. Надо проверять далее отсюда запись значений в слои
+и отправку их на сервер
 
                 /* Values were changed and must be written to the server */
                 if

@@ -448,7 +448,6 @@ class Net: public Limb
         Net* swapValuesAndErrors
         (
             Actions,    /* Action list for participant */
-            Task,       /* Task (role) of participant */
             Limb*,      /* Participant */
             bool        /* Skip action for locked */
         );

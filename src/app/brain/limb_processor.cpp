@@ -132,21 +132,18 @@ LimbProcessor* LimbProcessor::calc()
     nerveControl( seed );
 
     net
-    /* Upload start values from Net */
     -> swapValuesAndErrors
     (
-        Actions{ READ_VALUES }, /* Actions */
-        TASK_PROC,              /* Role */
-        this,                   /* Participant object */
-        false
-    )
-
-    /* Load values and errors to Net */
-    -> swapValuesAndErrors
-    (
-        { WRITE_VALUES, WRITE_ERRORS }, /* Action */
-        TASK_PROC,                      /* Role */
-        this,                           /* Participant object */
+        /* Action */
+        {
+            /* Upload start values from Net */
+            READ_VALUES,
+            /* Load values and errors to Net */
+            WRITE_VALUES,
+            WRITE_ERRORS
+        },
+        /* Participant object */
+        this,
         false
     )
 
