@@ -180,7 +180,9 @@ void EvolutionPayload::onEngineLoop
                         auto cfgTickSmothCount = cfg -> getInt( "tickSmothCount" );
 
                         /* Ticks smothing */
-                        auto smoth = ChartData::create() -> setMaxCount( cfgTickSmothCount );
+                        auto smoth = ChartData::create()
+                        -> setMaxCount( cfgTickSmothCount );
+
                         layer
                         -> getChartTick()
                         -> smoth( cfgTickSmoth, smoth );
@@ -266,9 +268,8 @@ void EvolutionPayload::onEngineLoop
                     }
                 break;
             }
+            getLog() -> end();
         }
-
-        getLog() -> end();
     }
 }
 

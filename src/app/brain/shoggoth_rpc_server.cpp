@@ -466,6 +466,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
                         if( buffer != NULL )
                         {
                             aResults
+                            -> setInt( "tick", net -> getTick() )
                             -> setPath( Path{ "values" })
                             -> setData
                             (

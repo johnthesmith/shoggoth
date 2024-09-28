@@ -11,6 +11,7 @@
 
 
 #include "../../../../../lib/core/mon.h"
+#include "../../../../../lib/core/mon.h"
 
 
 
@@ -58,6 +59,9 @@ class LimbProcessor : public Limb
         int     tickChart               = 10;
         /* Configuration objtct for neurnos dump */
         ParamList* dumpConf             = NULL;
+
+        /* Fps */
+        ChartData* fps = NULL;
     public:
 
         /*

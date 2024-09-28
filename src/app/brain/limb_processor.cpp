@@ -9,6 +9,7 @@
 #include "../../shoggoth/shoggoth_consts.h"
 
 #include "../../../../../lib/core/math.h"
+#include "../../../../../lib/core/moment.h"
 #include "../../../../../lib/core/str.h"
 #include "../../../../../lib/graph/param_point.h"
 
@@ -32,6 +33,8 @@ LimbProcessor::LimbProcessor
 
     weightsChart = ChartList::create();
     dumpConf = ParamList::create();
+
+    fps = ChartData::create() -> setMaxCount( 100 );
 }
 
 
@@ -41,6 +44,8 @@ LimbProcessor::LimbProcessor
 */
 LimbProcessor::~LimbProcessor()
 {
+    fps -> destroy();
+
     dumpConf -> destroy();
     weightsChart -> destroy();
 
@@ -105,6 +110,8 @@ int LimbProcessor::getThreadCount()
 */
 LimbProcessor* LimbProcessor::calc()
 {
+    auto fpsBegin = now();
+
     /* Increase the tick */
     tick ++;
 
@@ -114,6 +121,7 @@ LimbProcessor* LimbProcessor::calc()
     mon
     -> addInt( Path{ "count" })
     -> now( Path{ "last" } )
+    -> setDouble( Path{ "fps" }, fps -> avg() )
     -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
     -> setDouble( Path{ "config", "minWeight" }, minWeight )
     -> setDouble( Path{ "config", "maxWeight" }, maxWeight )
@@ -131,6 +139,9 @@ LimbProcessor* LimbProcessor::calc()
     /*   */
     nerveControl( seed );
 
+    auto netLastChangeValues = net -> getLastChangeValues();
+
+    /* Swap values and errors */
     net
     -> swapValuesAndErrors
     (
@@ -138,21 +149,11 @@ LimbProcessor* LimbProcessor::calc()
         {
             /* Upload start values from Net */
             READ_VALUES,
-            /* Load values and errors to Net */
-            WRITE_VALUES,
-            WRITE_ERRORS
         },
         /* Participant object */
         this,
         false
-    )
-
-    /* Load weights to Net from this limb */
-    -> loadWeightsFrom( this )
-
-    /* Write stat for Net */
-    -> stat()
-    ;
+    );
 
     /* Drop learing mode flag */
     learning = false;
@@ -165,7 +166,7 @@ LimbProcessor* LimbProcessor::calc()
     CalcTable::create( this )
     -> loop
     (
-        [ this ]
+        [ this, &netLastChangeValues ]
         ( CalcTable* table, Layer* layer )
         {
             if( table -> isParentsCalculated( layer ))
@@ -178,7 +179,7 @@ LimbProcessor* LimbProcessor::calc()
 //                mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
                 return true;
             }
-            return terminated;
+            return terminated || net -> getLastChangeValues() != netLastChangeValues;
         }
     )
     -> destroy();
@@ -191,7 +192,7 @@ LimbProcessor* LimbProcessor::calc()
     CalcTable::create( this )
     -> loop
     (
-        [ this ]
+        [ this, &netLastChangeValues ]
         ( CalcTable* table, Layer* layer )
         {
             if( table -> isChildrenCalculated( layer ) )
@@ -205,7 +206,7 @@ LimbProcessor* LimbProcessor::calc()
 //                mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
                 return true;
             }
-            return terminated;
+            return terminated || net -> getLastChangeValues() != netLastChangeValues;
         }
     )
     -> destroy();
@@ -218,7 +219,7 @@ LimbProcessor* LimbProcessor::calc()
     CalcTable::create( this )
     -> loop
     (
-        [ this ]
+        [ this, &netLastChangeValues ]
         ( CalcTable* table, Layer* layer )
         {
             /* Let elapsed begin */
@@ -228,7 +229,7 @@ LimbProcessor* LimbProcessor::calc()
             /* Calculate weights in nervs of layers */
             layerCalcWeight( layer, idThread );
 //            mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
-            return true;
+            return terminated || net -> getLastChangeValues() != netLastChangeValues;
         }
     )
     -> destroy();
@@ -243,6 +244,7 @@ LimbProcessor* LimbProcessor::calc()
     if
     (
         !terminated &&
+        net -> getLastChangeValues() == netLastChangeValues &&
         tickWrite != 0 &&
         tick % tickWrite == 0
     )
@@ -270,10 +272,45 @@ LimbProcessor* LimbProcessor::calc()
         );
     }
 
+
+
+    /* Move calculated data to net */
+    if
+    (
+        !terminated  &&
+        net -> getLastChangeValues() == netLastChangeValues
+    )
+    {
+        net
+        /* Let the net tick number from the processor tick */
+        -> setTick( tick )
+        /* Swap values and errors */
+        -> swapValuesAndErrors
+        (
+            /* Action */
+            {
+                /* Load values and errors to Net */
+                WRITE_VALUES,
+                WRITE_ERRORS
+            },
+            /* Participant object */
+            this,
+            false
+        )
+        /* Load weights to Net from this limb */
+        -> loadWeightsFrom( this )
+        /* Write stat for Net */
+        -> stat()
+        ;
+    }
+
+
+
     /* Write charts in to monitoring */
     if
     (
         !terminated &&
+        net -> getLastChangeValues() == netLastChangeValues &&
         tickChart != 0 &&
         tick % tickChart == 0
     )
@@ -315,6 +352,9 @@ LimbProcessor* LimbProcessor::calc()
     mon
     -> setBool( Path{ "current", "learning" }, learning )
     -> flush();
+
+    auto fpsEnd = now();
+    fps -> createLast( (double) SECOND / ( fpsEnd - fpsBegin ));
 
     return this;
 }
@@ -694,6 +734,7 @@ LimbProcessor* LimbProcessor::layerCalcValue
     {
         neuronCalcValue( aLayer, i, aLearning );
     }
+    onChangeValues();
     return this;
 }
 
@@ -1111,3 +1152,4 @@ LimbProcessor* LimbProcessor::calcDebugDump
 
     return this;
 }
+

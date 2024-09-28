@@ -103,7 +103,7 @@ Layer* Limb::createLayer
         result = Layer::create( this, aId );
         layers -> push( result );
 
-        lastChange = now();
+        lastChangeStructure = now();
     }
 
     unlock();
@@ -138,7 +138,7 @@ Limb* Limb::deleteLayer
         /* Destroy layer */
         layer -> destroy();
 
-        lastChange = now();
+        lastChangeStructure = now();
     }
     return this;
 }
@@ -165,7 +165,7 @@ Nerve* Limb::createNerve
         aBindType
     );
     nerves -> push( result );
-    lastChange = now();
+    lastChangeStructure = now();
     return result;
 }
 
@@ -187,7 +187,7 @@ Limb* Limb::deleteNerve
         /* Destroy the nerve */
         aNerve -> destroy();
 
-        lastChange = now();
+        lastChangeStructure = now();
     }
     return this;
 }
@@ -504,12 +504,6 @@ Layer* Limb::copyLayerFrom
     -> setSize( aLayerFrom -> getSize() );
 }
 
-
-
-long long Limb::getLastChange()
-{
-    return lastChange;
-}
 
 
 
@@ -834,3 +828,36 @@ Limb* Limb::dump
 
     return this;
 }
+
+
+
+/*
+    On cahnge event for limb
+*/
+Limb* Limb::onChangeValues()
+{
+    lastChangeValues = now();
+    return this;
+}
+
+
+
+/*
+    Return last moment of change structure of the limb
+*/
+long long int Limb::getLastChangeStructure()
+{
+    return lastChangeStructure;
+}
+
+
+
+/*
+    Return last moment change values
+*/
+long long Limb::getLastChangeValues()
+{
+    return lastChangeValues;
+}
+
+

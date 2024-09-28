@@ -74,7 +74,9 @@ class Limb : public Result
         /* Moment of reconfuguration */
         long long       lastUpdate = 0;
         /* Moment last chenged (insert delete layer and nerve)*/
-        long long       lastChange = 0;
+        long long       lastChangeStructure = 0;
+        /* Moment last values changed */
+        long long       lastChangeValues = 0;
 
     public:
 
@@ -293,9 +295,6 @@ class Limb : public Result
 
 
 
-        long long getLastChange();
-
-
         /*
             Configuration postprocessing
         */
@@ -372,4 +371,22 @@ class Limb : public Result
 
 
 
+        /*
+            On cahnge event for limb
+        */
+        Limb* onChangeValues();
+
+
+
+        /*
+            Return last moment of change structure of the limb
+        */
+        long long int getLastChangeStructure();
+
+
+
+        /*
+            Return last moment change values
+        */
+        long long int getLastChangeValues();
 };

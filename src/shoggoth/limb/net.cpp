@@ -275,6 +275,9 @@ Net* Net::readLayers
         {
             lock();
 
+            /* Set tick from server net */
+            setTick( io -> getAnswer() -> getInt( "tick" ));
+
             /* Loop for values */
             for( auto id : aValues )
             {
@@ -284,7 +287,8 @@ Net* Net::readLayers
                     char* buffer = NULL;
                     size_t size = 0;
 
-                    io -> getAnswer()
+                    io
+                    -> getAnswer()
                     -> getData
                     (
                         Path{ "values", layer -> getId() },
@@ -887,28 +891,6 @@ Net* Net::applyNet
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
-
-//                    actions -> loop
-//                    (
-//                        [ &used ]
-//                        ( Param* item )
-//                        {
-//                            if( item -> isObject())
-//                            {
-//                                item -> getObject() -> loop
-//                                (
-//                                    [ &used ]
-//                                    ( Param* item )
-//                                    {
-//                                        used -> pushString( item -> getString() );
-//                                        return false;
-//                                    }
-//                                );
-//                            }
-//                            return false;
-//                        }
-
-
                 /* Layer creates */
                 if
                 (
@@ -1018,10 +1000,6 @@ Net* Net::applyNet
                 }
             );
         } /* End of nerves load */
-
-
-getLog() -> trace( "NERVES end " );
-
     }
 
     /* Update last update net moment */
@@ -1273,10 +1251,10 @@ Net* Net::loadLayer
         }
         else
         {
-            /* Set event actions */
-            aLayer
-            -> getActions()
-            -> copyFrom( aParams -> getObject( "actions" ) );
+//            /* Set event actions */
+//            aLayer
+//            -> getActions()
+//            -> copyFrom( aParams -> getObject( "actions" ) );
 
             /* Apply neuron functions for layer */
             aLayer
@@ -1505,22 +1483,7 @@ Net* Net::swapValuesAndErrors
                     /* For each of action */
                     for( auto iAction : aActions )
                     {
-                        auto layerActions = getConfig() -> getObject
-                        (
-                            Path
-                            {
-                                "layers",
-                                netLayer -> getId(),
-                                "actions",
-                                taskToString( task )
-                            }
-                        );
-
-                        if
-                        (
-                            layerActions != NULL &&
-                            layerActions -> contains( actionToString( iAction ))
-                        )
+                        if( checkLayerAction( netLayer, iAction ))
                         {
                             /* ... finds layer by id in net and participant ... */
                             auto participantLayer = aLimb
@@ -1559,6 +1522,7 @@ Net* Net::swapValuesAndErrors
         }
         unlock();
     }
+
     return this;
 }
 
@@ -1630,10 +1594,6 @@ Net* Net::syncWithServer()
                 auto layer = ( Layer* ) aLayer;
                 auto layerId = layer -> getId();
 
-TODO Дошли в проверках досюда.
-Не Ретина на сервере пуста. Надо проверять далее отсюда запись значений в слои
-и отправку их на сервер
-
                 /* Values were changed and must be written to the server */
                 if
                 (
@@ -1646,7 +1606,7 @@ TODO Дошли в проверках досюда.
                 )
                 {
                     /* Check application rules for write values of the layer */
-                    if( layer -> checkTask( task, WRITE_VALUES ))
+                    if( checkLayerAction( layer, WRITE_VALUES ))
                     {
                         writeValues.push_back( layerId );
                     }
@@ -1654,7 +1614,7 @@ TODO Дошли в проверках досюда.
                 else
                 {
                     /* Check application rules for write values of the layer */
-                    if( layer -> checkTask( task, READ_VALUES ))
+                    if( checkLayerAction( layer, READ_VALUES ))
                     {
                         readValues.push_back( layerId );
                     }
@@ -1672,7 +1632,7 @@ TODO Дошли в проверках досюда.
                 )
                 {
                     /* Check application rules for write erros of the layer */
-                    if( layer -> checkTask( task, WRITE_ERRORS ))
+                    if( checkLayerAction( layer, WRITE_ERRORS ))
                     {
                         writeErrors.push_back( layerId );
                     }
@@ -1680,24 +1640,24 @@ TODO Дошли в проверках досюда.
                 else
                 {
                     /* Check application rules for read errors of the layer */
-                    if( layer -> checkTask( task, READ_ERRORS ))
+                    if( checkLayerAction( layer, READ_ERRORS ))
                     {
                         readErrors.push_back( layerId );
                     }
                 }
 
                 /* Check application rules stat requests */
-                if( layer -> checkTask( task, READ_STAT_VALUE ))
+                if( checkLayerAction( layer, READ_STAT_VALUE ))
                 {
                     readStatValue.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTask( task, READ_STAT_ERROR ))
+                if( checkLayerAction( layer, READ_STAT_ERROR ))
                 {
                     readStatError.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTask( task, READ_STAT_TICK ))
+                if( checkLayerAction( layer, READ_STAT_TICK ))
                 {
                     readStatTick.push_back( layerId );
                 }
@@ -1876,4 +1836,52 @@ Net* Net::setSeed
 
 
 
+/*
+    Return true value if layer contains action for current net task
+*/
+bool Net::checkLayerAction
+(
+    Layer* aLayer,
+    Action aAction
+)
+{
+    auto layerActions = getConfig() -> getObject
+    (
+        Path
+        {
+            "layers",
+            aLayer -> getId(),
+            "actions",
+            taskToString( task )
+        }
+    );
 
+    return
+    layerActions != NULL &&
+    layerActions -> contains( actionToString( aAction ));
+}
+
+
+
+/*
+    Return the tick of the net
+*/
+long long int Net::getTick()
+{
+    return tick;
+}
+
+
+
+/*
+    Return the tick of the net
+*/
+Net* Net::setTick
+(
+    /* Tick number */
+    long long int a
+)
+{
+    tick = a;
+    return this;
+}

@@ -61,6 +61,8 @@ class Net: public Limb
         string          nextVersion     = "";
         /* Random seed for Net */
         unsigned long long seed         = 0;
+        /* Tick of the net. Settings by processor */
+        unsigned long long tick         = 0;
 
     public:
 
@@ -571,4 +573,32 @@ class Net: public Limb
             unsigned long long
         );
 
+
+
+        /*
+            Return true value if layer contains action for current net task
+        */
+        bool checkLayerAction
+        (
+            Layer*,
+            Action
+        );
+
+
+
+        /*
+            Return the tick of the net
+        */
+        long long int getTick();
+
+
+
+        /*
+            Return the tick of the net
+        */
+        Net* setTick
+        (
+            /* Tick number */
+            long long int
+        );
 };

@@ -143,6 +143,8 @@ void TeacherPayload::onEngineLoop
             -> resultTo( this );
         }
 
+        getLog() -> trace( "Server tick" ) -> prm( "number", net -> getTick() );
+
         if( isOk() )
         {
             /* Processing Teacher */
@@ -198,10 +200,10 @@ void TeacherPayload::onEngineLoop
                 if
                 (
                     error <= errorLimit ||
-                    lastChange < limb -> getLastChange()
+                    lastChange < limb -> getLastChangeStructure()
                 )
                 {
-                    lastChange = limb -> getLastChange();
+                    lastChange = limb -> getLastChangeStructure();
 
                     /* Check new batch */
                     getLog() -> begin( "New batch" );
@@ -532,3 +534,4 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
     limb -> unlock();
     return this;
 }
+

@@ -1,12 +1,14 @@
 {
     "caption": "Alpha net",
     "id":"alpha",
+
     "version":
     {
         "current":"zero",
         "parent":"zero"
     },
     "seed":13,
+
     "mutations":
     [
         {
@@ -46,7 +48,7 @@
 
     "processor":
     {
-        "learningSpeed"     :0.00001
+        "learningSpeed"     :0.0001
     },
 
     "layers":
@@ -91,9 +93,9 @@
 
             "actions":
             {
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ],
                 "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
-                "EVOLUTION" : [ "READ_VALUES" ],
-                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
+                "EVOLUTION" : [ "READ_VALUES" ]
             }
         },
 
@@ -135,9 +137,9 @@
 
             "actions":
             {
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ],
                 "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
-                "EVOLUTION" : [ "READ_VALUES" ],
-                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ]
+                "EVOLUTION" : [ "READ_VALUES" ]
             }
         },
 
@@ -169,7 +171,7 @@
             "type"              :"in",
 
             "functionFront"     :"NULL",
-            "functionBack"      :"NULL",
+            "functionBack"      :"NULLwatch?v=Oscwrtso5YI",
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 

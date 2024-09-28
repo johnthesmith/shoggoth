@@ -20,8 +20,8 @@ Layer::Layer
 
     id = aId == "" ? Rnd::getUuid() : aId;
 
-    /* Actions */
-    actions         = ParamList::create();
+//    /* Actions */
+//    actions         = ParamList::create();
 
     /* Statistics */
     chartValues      = ChartData::create();
@@ -39,8 +39,8 @@ Layer::Layer
 */
 Layer::~Layer()
 {
-    /* Actions destroy */
-    actions -> destroy();
+//    /* Actions destroy */
+//    actions -> destroy();
 
     /* Statistics destroy */
     chartValues -> destroy();
@@ -93,6 +93,7 @@ Layer* Layer::setSize
 {
     setCount( a.x * a.y * a.z );
     size = a;
+    limb -> onChangeValues();
     return this;
 }
 
@@ -159,6 +160,7 @@ Layer* Layer::clearValues()
 {
     getLimb() -> lock();
     memset( values, 0, getValuesBufferSize() );
+    getLimb() -> onChangeValues();
     getLimb() -> unlock();
     return this;
 }
@@ -172,6 +174,7 @@ Layer* Layer::clearErrors()
 {
     getLimb() -> lock();
     memset( errors, 0, getValuesBufferSize() );
+    getLimb() -> onChangeValues();
     getLimb() -> unlock();
     return this;
 }
@@ -191,6 +194,7 @@ Layer* Layer::setValuesFromBuffer
     if( aBuffer != NULL && aSize == getValuesBufferSize() )
     {
         memcpy( values, aBuffer, aSize );
+        getLimb() -> onChangeValues();
     }
     getLimb() -> unlock();
     return this;
@@ -632,13 +636,13 @@ double Layer::getNeuronError
 
 
 
-/*
-    Return event actions
-*/
-ParamList* Layer::getActions()
-{
-    return actions;
-}
+///*
+//    Return event actions
+//*/
+//ParamList* Layer::getActions()
+//{
+//    return actions;
+//}
 
 
 
@@ -756,24 +760,24 @@ size_t Layer::getValuesBufferSize()
 
 
 
-/*
-    Return true if action exists in task for this layer
-*/
-bool Layer::checkTask
-(
-    Task aTask,
-    Action aAction
-)
-{
-    return getActions() -> exists
-    (
-        Path
-        {
-            taskToString( aTask ),
-            actionToString( aAction )
-        }
-    );
-}
+///*
+//    Return true if action exists in task for this layer
+//*/
+//bool Layer::checkTask
+//(
+//    Task aTask,
+//    Action aAction
+//)
+//{
+//    return getActions() -> exists
+//    (
+//        Path
+//        {
+//            taskToString( aTask ),
+//            actionToString( aAction )
+//        }
+//    );
+//}
 
 
 
