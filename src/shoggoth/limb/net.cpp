@@ -1251,11 +1251,6 @@ Net* Net::loadLayer
         }
         else
         {
-//            /* Set event actions */
-//            aLayer
-//            -> getActions()
-//            -> copyFrom( aParams -> getObject( "actions" ) );
-
             /* Apply neuron functions for layer */
             aLayer
             -> setFrontFunc

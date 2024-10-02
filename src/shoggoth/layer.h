@@ -261,6 +261,20 @@ class Layer : public Result
         /*
             Resize values plan
         */
+        Layer* valuesDestroy();
+
+
+
+        /*
+            Resize errors plan
+        */
+        Layer* errorsDestroy();
+
+
+
+        /*
+            Resize values plan
+        */
         Layer* valuesCreate();
 
 

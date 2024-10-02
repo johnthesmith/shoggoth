@@ -40,16 +40,17 @@ $shab build "src/app/brain/*.cpp"
 
 ## Make executable file
 # $shab header "make shoggoth"
-# $shab execute "COMPILER -O3 -o shoggoth $(grep -v '^#' shoggoth.objs) -lGL -lGLU -lX11 -lXrandr -lpthread -lm -lglfw -lMagick++"
+# Enable sanitizer memory
+# -fsanitize=address
 
 $shab header "make evolution"
-$shab execute "COMPILER -O3 -o evolution $(grep -v '^#' evolution.objs) -lpthread"
+$shab execute "COMPILER -g -O3 -o evolution $(grep -v '^#' evolution.objs) -lpthread"
 
 $shab header "make teacher"
-$shab execute "COMPILER -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread  -lMagick++"
+$shab execute "COMPILER -g -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread  -lMagick++"
 
 $shab header "make brain"
-$shab execute "COMPILER -O3 -o brain $(grep -v '^#' brain.objs) -lpthread"
+$shab execute "COMPILER -g -O3 -o brain $(grep -v '^#' brain.objs) -lpthread"
 
 #$shab header "compress"
 #$shab execute "upx -9 shoggoth"

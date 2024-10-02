@@ -41,6 +41,8 @@ Server::Server
 */
 Server::~Server()
 {
+    stopAndFree();
+
     /* Destroy server monitor */
     mon -> destroy();
 
@@ -80,6 +82,23 @@ BrainApplication* Server::getApplication()
 
 
 
+
+Server* Server::stopAndFree()
+{
+    if( srv != NULL )
+    {
+        getLog() -> begin( "Server stop" ) -> lineEnd();
+        /* Stop socket and destroy server */
+        srv -> down();
+        /* Finalize and destroy server thread */
+        serverThread -> join();
+        delete serverThread;
+        serverThread = NULL;
+        getLog() -> end();
+    }
+    return this;
+}
+
 /******************************************************************************
     Events
 */
@@ -98,8 +117,8 @@ void Server::onLoop()
     -> interval( Path{ "resume", "uptime" }, Path{ "current", "moment" }, Path{ "resume", "moment" })
     -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
-    -> dumpResult( Path{ "result" }, this )
-    -> flush();
+    -> dumpResult( Path{ "result" }, this );
+    mon -> flush();
 }
 
 
@@ -112,49 +131,52 @@ void Server::onResume()
 {
     getLog() -> begin( "Server start" );
 
-    auto config = getApplication() -> getConfig();
+    if( serverThread != NULL )
+    {
+        auto config = getApplication() -> getConfig();
 
-    /* Read port */
-    auto listenPort = config -> getInt
-    (
-        Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
-        11120
-    );
+        /* Read port */
+        auto listenPort = config -> getInt
+        (
+            Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
+            11120
+        );
 
-    auto  readWaitingTimeoutMcs = config -> getInt
-    (
-        Path{ "tasks",  taskToString( TASK_PROC ), "listen", "readWaitingTimeoutMcs" },
-        READ_WAITING_TIMEOUT_MCS
-    );
+        auto  readWaitingTimeoutMcs = config -> getInt
+        (
+            Path{ "tasks",  taskToString( TASK_PROC ), "listen", "readWaitingTimeoutMcs" },
+            READ_WAITING_TIMEOUT_MCS
+        );
 
-    getLog() -> prm( "Listenen port", listenPort );
+        getLog() -> prm( "Listenen port", listenPort );
 
-    srv = ShoggothRpcServer::create( net, listenPort );
-    srv -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
+        srv = ShoggothRpcServer::create( net, listenPort );
+        srv -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
 
-    mon
-    -> startTimer( Path{ "resume", "moment" })
-    -> setInt( Path{ "resume", "port" }, listenPort )
-    -> setString( Path{ "resume", "result", "code" }, "" )
-    -> flush();
+        mon
+        -> startTimer( Path{ "resume", "moment" })
+        -> setInt( Path{ "resume", "port" }, listenPort )
+        -> setString( Path{ "resume", "result", "code" }, "" )
+        -> flush();
 
-    serverThread = new thread
-    (
-        [ this ]
-        ()
-        {
-            /* Thread Log create */
-            getApplication() -> createThreadLog( net -> getLogPath( "server_listener" ));
-            getLog() -> begin( "Listen thread" ) -> lineEnd();
-            /* Up the server lisener and destroy it after close */
-            srv -> up();
-            srv -> destroy();
-            srv = NULL;
-            getLog() -> end() -> lineEnd();
-            /* Thread log destroy */
-            getApplication() -> destroyThreadLog();
-        }
-    );
+        serverThread = new thread
+        (
+            [ this ]
+            ()
+            {
+                /* Thread Log create */
+                getApplication() -> createThreadLog( net -> getLogPath( "server_listener" ));
+                getLog() -> begin( "Listen thread" ) -> lineEnd();
+                /* Up the server lisener and destroy it after close */
+                srv -> up();
+                srv -> destroy();
+                srv = NULL;
+                getLog() -> end() -> lineEnd();
+                /* Thread log destroy */
+                getApplication() -> destroyThreadLog();
+            }
+        );
+    }
 
     getLog() -> end();
 }
@@ -166,15 +188,5 @@ void Server::onResume()
 */
 void Server::onPause()
 {
-    getLog() -> begin( "Server stop" ) -> lineEnd();
-    if( srv != NULL )
-    {
-        /* Stop socket and destroy server */
-        srv -> down();
-        /* Finalize and destroy server thread */
-        serverThread -> join();
-        delete serverThread;
-        serverThread = NULL;
-    }
-    getLog() -> end();
+    stopAndFree();
 }

@@ -71,6 +71,9 @@ class Server : public PayloadEngine
 
 
 
+        Server* stopAndFree();
+
+
         /******************************************************************************
             Events
         */

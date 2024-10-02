@@ -48,7 +48,7 @@
 
     "processor":
     {
-        "learningSpeed"     :0.0001
+        "learningSpeed"     :0.00008
     },
 
     "layers":

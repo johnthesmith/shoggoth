@@ -39,9 +39,6 @@ Layer::Layer
 */
 Layer::~Layer()
 {
-//    /* Actions destroy */
-//    actions -> destroy();
-
     /* Statistics destroy */
     chartValues -> destroy();
     chartErrors -> destroy();
@@ -325,17 +322,48 @@ int Layer::getCount()
 
 
 
-Layer* Layer::valuesCreate()
+
+Layer* Layer::valuesDestroy()
 {
     getLimb() -> lock();
     /* Delete old plan */
     if( values != NULL )
     {
         delete [] values;
+        values = NULL;
     }
+    getLimb() -> unlock();
+    return this;
+}
+
+
+
+Layer* Layer::errorsDestroy()
+{
+    getLimb() -> lock();
+    /* Delete old plan */
+    if( errors != NULL )
+    {
+        delete [] errors;
+        errors = NULL;
+    }
+    getLimb() -> unlock();
+    return this;
+}
+
+
+
+Layer* Layer::valuesCreate()
+{
+    getLimb() -> lock();
+    valuesDestroy();
 
     /*Create new plan */
-    values = new double[ count ];
+    if( count != 0 )
+    {
+        values = new double[ count ];
+    }
+
     getLimb() -> unlock();
 
     clearValues();
@@ -348,14 +376,14 @@ Layer* Layer::valuesCreate()
 Layer* Layer::errorsCreate()
 {
     getLimb() -> lock();
-    /* Delete old plan */
-    if( errors != NULL )
-    {
-        delete [] errors;
-    }
+    errorsDestroy();
 
     /*Create new plan */
-    errors = new double[ count ];
+    if( count != 0 )
+    {
+        errors = new double[ count ];
+    }
+
     getLimb() -> unlock();
 
     clearErrors();

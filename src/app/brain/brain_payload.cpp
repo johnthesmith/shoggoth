@@ -195,7 +195,10 @@ void BrainPayload::onEngineLoop
                 processor -> setId
                 (
                     net -> getLogPath( "processor_thread" )
-                ) -> loop( true );
+                )
+// TODO LEAK 2
+//                -> loop( true )
+                ;
 
                 /* Settings of the processor */
                 processor -> getLimb() -> setLearningSpeed
@@ -216,19 +219,18 @@ void BrainPayload::onEngineLoop
                 -> setTickChart( appConfig -> getInt( "tickChart", 0 ))
                 -> setDumpConf( appConfig -> getObject( "dump" ))
                 ;
-
                 /* Apply config for server */
                 server -> setLoopTimeoutMcs( 1000000 );
 
+// TODO LEAK 3
                 server -> resume();
-                processor -> resume();
+// TODO LEAK 4
+//                processor -> resume();
             }
 
             getLog() -> end();
         }
-
         netConfig -> destroy();
-
         getLog() -> end();
     }
     else
@@ -247,8 +249,3 @@ void BrainPayload::onEngineLoop
     -> setString( Path{ "current", "processor" }, stateToString( processor -> getState()))
     -> setString( Path{ "current", "server" }, stateToString( server -> getState()));
 }
-
-
-
-//TODO найти причину кривого вывода NetConfigUpdate
-//сделать мониторинг процессора и проверить что он работает
