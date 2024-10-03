@@ -51,8 +51,7 @@ EvolutionApplication* EvolutionApplication::run()
     prepareConfiguration();
 
     EvolutionPayload::create( this,  getNetId(), getNetVersion() )
-    -> resume()
-    -> loop()
+    -> start()
     -> destroy();
 
     getLog() -> end( "Application stop" );

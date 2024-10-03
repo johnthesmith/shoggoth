@@ -51,8 +51,7 @@ BrainApplication* BrainApplication::run()
     prepareConfiguration();
 
     BrainPayload::create( this,  getNetId(), getNetVersion() )
-    -> resume()
-    -> loop()
+    -> start()
     -> destroy();
 
     getLog() -> end( "Application stop" );

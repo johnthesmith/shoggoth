@@ -282,46 +282,6 @@ NerveList* Limb::getNerveList()
 
 
 
-/**********************************************************************
-    Limb synchronization
-*/
-
-
-
-/*
-    Lock Limb for operations with layers
-*/
-bool Limb::lock
-(
-    bool aSkip
-)
-{
-    /* Let default result */
-    bool result = true;
-    if( aSkip )
-    {
-        result = sync.try_lock();
-    }
-    else
-    {
-        sync.lock();
-    }
-    return result;
-}
-
-
-
-/*
-    Unlock Limb after lock method
-*/
-Limb* Limb::unlock()
-{
-    sync.unlock();
-    return this;
-}
-
-
-
 /*
     Loop for each parents neuron of this neuron
 */

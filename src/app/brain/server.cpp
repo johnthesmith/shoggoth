@@ -41,7 +41,7 @@ Server::Server
 */
 Server::~Server()
 {
-    stopAndFree();
+    onStopBefore();
 
     /* Destroy server monitor */
     mon -> destroy();
@@ -83,22 +83,6 @@ BrainApplication* Server::getApplication()
 
 
 
-Server* Server::stopAndFree()
-{
-    if( srv != NULL )
-    {
-        getLog() -> begin( "Server stop" ) -> lineEnd();
-        /* Stop socket and destroy server */
-        srv -> down();
-        /* Finalize and destroy server thread */
-        serverThread -> join();
-        delete serverThread;
-        serverThread = NULL;
-        getLog() -> end();
-    }
-    return this;
-}
-
 /******************************************************************************
     Events
 */
@@ -127,12 +111,12 @@ void Server::onLoop()
     Server resume action
     Main app thread
 */
-void Server::onResume()
+void Server::onStartAfter()
 {
-    getLog() -> begin( "Server start" );
-
-    if( serverThread != NULL )
+    if( serverThread == NULL )
     {
+        getLog() -> begin( "Server start" );
+
         auto config = getApplication() -> getConfig();
 
         /* Read port */
@@ -171,14 +155,15 @@ void Server::onResume()
                 srv -> up();
                 srv -> destroy();
                 srv = NULL;
+
                 getLog() -> end() -> lineEnd();
                 /* Thread log destroy */
                 getApplication() -> destroyThreadLog();
             }
         );
-    }
 
-    getLog() -> end();
+        getLog() -> end();
+    }
 }
 
 
@@ -186,7 +171,20 @@ void Server::onResume()
 /*
     Server pause action
 */
-void Server::onPause()
+void Server::onStopBefore()
 {
-    stopAndFree();
+    if( serverThread != NULL )
+    {
+        getLog() -> begin( "Server stop" ) -> lineEnd();
+
+        /* Stop socket and destroy server */
+        srv -> down();
+
+        /* Finalize and destroy server thread */
+        serverThread -> join();
+        delete serverThread;
+        serverThread = NULL;
+
+        getLog() -> end();
+    }
 }

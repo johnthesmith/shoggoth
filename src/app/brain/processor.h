@@ -92,12 +92,12 @@ class Processor : public PayloadEngine
         /*
             Shoggoth resume action
         */
-        virtual void onResume() override;
+        virtual void onStartBefore() override;
 
 
 
         /*
             Shoggoth pause action
         */
-        virtual void onPause() override;
+        virtual void onStopBefore() override;
 };

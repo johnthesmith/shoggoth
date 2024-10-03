@@ -71,9 +71,6 @@ class Server : public PayloadEngine
 
 
 
-        Server* stopAndFree();
-
-
         /******************************************************************************
             Events
         */
@@ -90,12 +87,12 @@ class Server : public PayloadEngine
         /*
             Server resume action
         */
-        virtual void onResume() override;
+        virtual void onStartAfter() override;
 
 
 
         /*
             Server pause action
         */
-        virtual void onPause() override;
+        virtual void onStopBefore() override;
 };

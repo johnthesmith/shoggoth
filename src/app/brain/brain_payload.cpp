@@ -31,7 +31,6 @@ BrainPayload::BrainPayload
         aNetVersion,
         TASK_PROC
     );
-//    limb = LimbBrain::create( net );
 
     /* Create server and Brain payloads */
     server      = Server::create( net );
@@ -49,8 +48,6 @@ BrainPayload::~BrainPayload()
 {
     processor -> destroy();
     server -> destroy();
-
-//    limb -> destroy();
 
     net -> destroy();
 }
@@ -176,8 +173,10 @@ void BrainPayload::onEngineLoop
             {
                 getLog() -> begin( "Threads stoping" );
                     /* Paused processes */
-                    processor -> pause() -> waitPause();
-                    server -> pause() -> waitPause();
+                    processor -> stop();
+                    server -> stop();
+                    processor -> waitStop();
+                    server -> waitStop();
                 getLog() -> end( "" );
 
                 if( netConfigUpdated || netVersionChanged )
@@ -190,15 +189,12 @@ void BrainPayload::onEngineLoop
                 server -> setId
                 (
                     net -> getLogPath( "server_thread" )
-                ) -> loop( true );
+                );
 
                 processor -> setId
                 (
                     net -> getLogPath( "processor_thread" )
-                )
-// TODO LEAK 2
-//                -> loop( true )
-                ;
+                );
 
                 /* Settings of the processor */
                 processor -> getLimb() -> setLearningSpeed
@@ -210,6 +206,7 @@ void BrainPayload::onEngineLoop
 
                 /* Apply config for processor */
                 auto appConfig = getApplication() -> getConfig();
+
                 processor
                 -> getLimb()
                 -> setMinWeight( appConfig -> getDouble( "minWeight", 1.0e-5 ))
@@ -219,13 +216,19 @@ void BrainPayload::onEngineLoop
                 -> setTickChart( appConfig -> getInt( "tickChart", 0 ))
                 -> setDumpConf( appConfig -> getObject( "dump" ))
                 ;
+
                 /* Apply config for server */
                 server -> setLoopTimeoutMcs( 1000000 );
 
+РАзремливаем эти строки.
+Делаем 100 циклов
+Останавливаем приклад
+Смотрим утечки
+
 // TODO LEAK 3
-                server -> resume();
+//                server -> start( true );
 // TODO LEAK 4
-//                processor -> resume();
+//                processor -> start( true );
             }
 
             getLog() -> end();
@@ -235,13 +238,13 @@ void BrainPayload::onEngineLoop
     }
     else
     {
-        if( processor -> getState() == THREAD_STATE_WORK )
+        if( processor -> getState() == STATE_LOOP )
         {
-            processor -> pause() -> waitPause();
+            processor -> stop() -> waitStop();
         }
-        if( server -> getState() == THREAD_STATE_WORK )
+        if( server -> getState() == STATE_LOOP )
         {
-            server -> pause() -> waitPause();
+            server -> stop() -> waitStop();
         }
     }
 

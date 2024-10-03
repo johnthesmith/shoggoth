@@ -123,9 +123,9 @@ void Processor::onLoop()
     Processor resume action
     Main app thread
 */
-void Processor::onResume()
+void Processor::onStartBefore()
 {
-    getLog() -> trace( "Processor start" );
+    getLog() -> trace( "Processor started" );
 }
 
 
@@ -133,7 +133,7 @@ void Processor::onResume()
 /*
     Processor pause action
 */
-void Processor::onPause()
+void Processor::onStopBefore()
 {
-    getLog() -> trace( "Processor pause" ) -> lineEnd();
+    getLog() -> trace( "Processor stoped" ) -> lineEnd();
 }

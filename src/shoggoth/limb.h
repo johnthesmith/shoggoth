@@ -69,8 +69,6 @@ class Limb : public Result
         /*
             Synchronization states
         */
-        /* Net synchronization mutex */
-        recursive_mutex sync;
         /* Moment of reconfuguration */
         long long       lastUpdate = 0;
         /* Moment last chenged (insert delete layer and nerve)*/
@@ -207,28 +205,6 @@ class Limb : public Result
         */
         NerveList* getNerveList();
 
-
-
-        /**********************************************************************
-            Net synchronization
-        */
-
-
-
-        /*
-            Lock net for operations with layers
-        */
-        bool lock
-        (
-            bool = false /* Skip this action for locked mutex */
-        );
-
-
-
-        /*
-            Unlock net after lock method
-        */
-        Limb* unlock();
 
 
 
