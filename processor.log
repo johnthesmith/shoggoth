@@ -3418,3 +3418,49 @@
 [90m      17 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
 [90m      23 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
 [90m      19 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      20 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m95187206 [94m~ [37m[94mProcessor stoped
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mprocessor[90m][94m[90m[string [37mthread id [95m128473295226560[90m][94m
+[90m     103 [94m~ [37m[94mProcessor starting
+[90m     262 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      70 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      59 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      73 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      19 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      24 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      22 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      23 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      24 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      56 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m      26 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      18 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      13 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      14 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      14 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      13 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      16 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      15 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m 1000826 [94m~ [37m[94mProcessor stoped
+[90m       0 [94m~ [37m[94mThread log started[90m[string [37mlog id [95mprocessor[90m][94m[90m[string [37mthread id [95m128473305712320[90m][94m
+[90m      89 [94m~ [37m[94mProcessor starting
+[90m     319 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mretina[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      74 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_1[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      55 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_1[90m][94m
+[90m      73 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mcortex_2[90m][94m
+[90m      76 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcortex_2[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      91 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mbias[90m][94m[90m[string [37mto [95mresult[90m][94m
+[90m      76 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mresult[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      61 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95mcommand[90m][94m
+[90m      63 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95mcommand[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m      73 [94m~ [37m[94mLayer connecting[90m[string [37mfrom [95msample[90m][94m[90m[string [37mto [95merror[90m][94m
+[90m     293 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m12544[90m][94m
+[90m      63 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m256[90m][94m
+[90m      37 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      37 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m16[90m][94m
+[90m      49 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m160[90m][94m
+[90m      33 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      64 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      52 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
+[90m      33 [94m~ [37m[94mMemory allocated[90m[int [37mBinds count [95m10[90m][94m
