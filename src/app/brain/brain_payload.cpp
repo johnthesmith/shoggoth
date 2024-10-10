@@ -18,10 +18,11 @@ using namespace std;
 BrainPayload::BrainPayload
 (
     BrainApplication* a,
+    string aPayloadId,
     string aNetId,
     string aNetVersion
 )
-: PayloadEngine( a ) /* Call parent constructor */
+: PayloadEngine( a, aPayloadId ) /* Call parent constructor */
 {
     net = Net::create
     (
@@ -33,8 +34,8 @@ BrainPayload::BrainPayload
     );
 
     /* Create server and Brain payloads */
-    server      = Server::create( net );
-    processor   = Processor::create( net );
+    server = Server::create( net );
+    processor = Processor::create( net );
 }
 
 
@@ -60,11 +61,12 @@ BrainPayload::~BrainPayload()
 BrainPayload* BrainPayload::create
 (
     BrainApplication* a,
+    string aPayloadId,
     string aNetId,
     string aNetVersion
 )
 {
-    return new BrainPayload( a, aNetId, aNetVersion );
+    return new BrainPayload( a, aPayloadId, aNetId, aNetVersion );
 }
 
 
@@ -119,8 +121,10 @@ void BrainPayload::onEngineLoop
         /* Check server net config */
         auto netConfig = ParamList::create();
 
+        string file = net -> getNetConfigFile( net -> getNextVersion() );
+
         /* Read net config from server */
-        net -> readNet( netConfig );
+        net -> readNetFromFile( netConfig );
 
         /* Monitoring */
         getMon()
@@ -185,17 +189,6 @@ void BrainPayload::onEngineLoop
                     net -> applyNet( netConfig );
                 }
 
-                /* Run server and processor thread */
-                server -> setId
-                (
-                    net -> getLogPath( "server_thread" )
-                );
-
-                processor -> setId
-                (
-                    net -> getLogPath( "processor_thread" )
-                );
-
                 /* Settings of the processor */
                 processor -> getLimb() -> setLearningSpeed
                 (
@@ -220,19 +213,13 @@ void BrainPayload::onEngineLoop
                 /* Apply config for server */
                 server -> setLoopTimeoutMcs( 1000000 );
 
-РАзремливаем эти строки.
-Делаем 100 циклов
-Останавливаем приклад
-Смотрим утечки
-
-// TODO LEAK 3
-//                server -> start( true );
-// TODO LEAK 4
-//                processor -> start( true );
+                server -> start( true );
+                processor -> start( true );
             }
 
             getLog() -> end();
         }
+
         netConfig -> destroy();
         getLog() -> end();
     }
@@ -251,4 +238,5 @@ void BrainPayload::onEngineLoop
     getMon()
     -> setString( Path{ "current", "processor" }, stateToString( processor -> getState()))
     -> setString( Path{ "current", "server" }, stateToString( server -> getState()));
+
 }

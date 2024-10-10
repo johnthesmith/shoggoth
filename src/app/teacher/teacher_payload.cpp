@@ -24,16 +24,17 @@ using namespace std;
 */
 TeacherPayload::TeacherPayload
 (
-    TeacherApplication* a,
+    TeacherApplication* aApplication,
+    string aPayloadId,
     string aNetId,
     string aNetVersion
 )
-: PayloadEngine( a ) /* Call parent constructor */
+: PayloadEngine( aApplication, aPayloadId ) /* Call parent constructor */
 {
     net = Net::create
     (
-        a,
-        a -> getSockManager(),
+        aApplication,
+        aApplication -> getSockManager(),
         aNetId,
         aNetVersion,
         TASK_TEACHER
@@ -60,11 +61,12 @@ TeacherPayload::~TeacherPayload()
 TeacherPayload* TeacherPayload::create
 (
     TeacherApplication* a,
+    string aPayloadId,
     string aNetId,
     string aNetVersion
 )
 {
-    return new TeacherPayload( a, aNetId, aNetVersion );
+    return new TeacherPayload( a, aPayloadId, aNetId, aNetVersion );
 }
 
 

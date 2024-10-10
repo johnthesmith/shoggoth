@@ -587,6 +587,48 @@ Net* Net::readNet
 
 
 
+Net* Net::readNetFromFile
+(
+    ParamList* aAnswer
+)
+{
+    /* Buid file for next version */
+    string file = getNetConfigFile( getNextVersion() );
+
+    if( fileExists( file ))
+    {
+        auto lastUpdate = (long) getConfig() -> getInt( "lastUpdate", 0 );
+        auto aUpdated = checkFileUpdate( file, lastUpdate );
+
+        if( aUpdated )
+        {
+            getLog()
+            -> begin( "Read net config" )
+            -> prm( "file", file )
+            -> lineEnd();
+
+            Json::create()
+            -> fromFile( file )
+            -> copyTo( aAnswer )
+            -> resultTo( this )
+            -> destroy();
+
+            if( isOk() )
+            {
+                aAnswer -> setInt( "lastUpdate", lastUpdate );
+            }
+
+            getLog() -> end();
+        }
+    }
+
+    return this;
+
+}
+
+
+
+
 bool Net::isConfigUpdate
 (
     ParamList* aConfig

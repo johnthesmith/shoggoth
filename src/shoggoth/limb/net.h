@@ -63,7 +63,6 @@ class Net: public Limb
         unsigned long long seed         = 0;
         /* Tick of the net. Settings by processor */
         unsigned long long tick         = 0;
-
     public:
 
         /*
@@ -376,6 +375,13 @@ class Net: public Limb
         Net* readNet
         (
             ParamList*  /* Answer */
+        );
+
+
+
+        Net* readNetFromFile
+        (
+            ParamList* /* Answer */
         );
 
 

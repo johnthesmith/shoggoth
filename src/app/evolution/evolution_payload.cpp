@@ -18,11 +18,16 @@ using namespace std;
 */
 EvolutionPayload::EvolutionPayload
 (
+    /* Application object */
     EvolutionApplication* a,
+    /* Payload id */
+    string aPayloadId,
+    /* Net id */
     string aNetId,
+    /* Net version */
     string aNetVersion
 )
-: PayloadEngine( a ) /* Call parent constructor */
+: PayloadEngine( a, aPayloadId ) /* Call parent constructor */
 {
     net = Net::create
     (
@@ -52,11 +57,12 @@ EvolutionPayload::~EvolutionPayload()
 EvolutionPayload* EvolutionPayload::create
 (
     EvolutionApplication* a,
+    string aPayloadId,
     string aNetId,
     string aNetVersion
 )
 {
-    return new EvolutionPayload( a, aNetId, aNetVersion );
+    return new EvolutionPayload( a, aPayloadId, aNetId, aNetVersion );
 }
 
 

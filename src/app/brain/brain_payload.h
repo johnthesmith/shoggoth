@@ -46,6 +46,8 @@ class BrainPayload : public PayloadEngine
         BrainPayload
         (
             BrainApplication*,
+            /* Payloda id*/
+            string,
             /* Net id */
             string,
             /* Net version */
@@ -67,8 +69,12 @@ class BrainPayload : public PayloadEngine
         static BrainPayload* create
         (
             BrainApplication*,
-            string,                 /* Net id */
-            string                  /* Net version */
+            /* Payloda id*/
+            string,
+            /* Net id */
+            string,
+            /* Net version */
+            string
         );
 
 

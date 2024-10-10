@@ -6,9 +6,9 @@
         {
             "code":
             {
-                "ok"                        : { "log":"TRACE",      "timeoutMcs":1000 },
+                "ok"                        : { "log":"TRACE",      "timeoutMcs":100000 },
                 "disabled"                  : { "log":"TRACE",      "timeoutMcs":1000000 },
-                "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":1000 },
+                "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":10000 },
                 "batch_sections_not_found"  : { "log":"WARNING",    "timeoutMcs":5000000 },
                 "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },

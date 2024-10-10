@@ -229,22 +229,7 @@ ParamList* Io::getRequest()
 */
 Io* Io::fileReadNet()
 {
-    /* Buid file for next version */
-    string file = net -> getNetConfigFile( net -> getNextVersion() );
-
-    getLog() -> trace( "Read net config" ) -> prm( "file", file );
-
-    Json::create()
-    -> fromFile( file )
-    -> copyTo( answer )
-    -> resultTo( this )
-    -> destroy();
-
-    if( isOk() )
-    {
-        answer -> setInt( "lastUpdate", fileLastUpdate( file ));
-    }
-
+    net -> readNetFromFile( answer );
     return this;
 }
 

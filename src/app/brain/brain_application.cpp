@@ -50,7 +50,7 @@ BrainApplication* BrainApplication::run()
 
     prepareConfiguration();
 
-    BrainPayload::create( this,  getNetId(), getNetVersion() )
+    BrainPayload::create( this, "brain", getNetId(), getNetVersion() )
     -> start()
     -> destroy();
 

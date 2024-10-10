@@ -61,9 +61,9 @@ OBJECT_PATH/shoggoth_application.o
 # Teacher
 OBJECT_PATH/brain.o
 OBJECT_PATH/brain_application.o
-OBJECT_PATH/brain_payload.o
 OBJECT_PATH/server.o
 OBJECT_PATH/processor.o
 OBJECT_PATH/limb_processor.o
 OBJECT_PATH/calc_table.o
 OBJECT_PATH/shoggoth_rpc_server.o
+OBJECT_PATH/brain_payload.o

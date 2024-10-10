@@ -50,7 +50,7 @@ EvolutionApplication* EvolutionApplication::run()
 
     prepareConfiguration();
 
-    EvolutionPayload::create( this,  getNetId(), getNetVersion() )
+    EvolutionPayload::create( this, "evolution", getNetId(), getNetVersion() )
     -> start()
     -> destroy();
 

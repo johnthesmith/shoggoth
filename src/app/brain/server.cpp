@@ -21,7 +21,7 @@ Server::Server
     Net* aNet
 )
 /* Call parent constructor */
-: PayloadEngine( aNet -> getApplication() )
+: PayloadEngine( aNet -> getApplication(), "server" )
 {
     net = aNet;
 
@@ -41,6 +41,9 @@ Server::Server
 */
 Server::~Server()
 {
+    stop();
+    waitStop();
+
     onStopBefore();
 
     /* Destroy server monitor */

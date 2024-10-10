@@ -21,18 +21,17 @@ Processor::Processor
     Net* aNet
 )
 /* Call parent constructor */
-: PayloadEngine( aNet -> getApplication() )
+: PayloadEngine( aNet -> getApplication(), "processor" )
 {
     net = aNet;
+    net -> getApplication() -> getLog() -> trace( "Create Processor" );
 
     /* Create Processor monitor */
     mon = Mon::create( aNet -> getMonPath( "brain_processor.json" ))
     -> setString( Path{ "start", "source" }, "Processor payload" )
     -> startTimer( Path{ "start", "moment" });
 
-    /* Log report */
-    net -> getApplication() -> getLog() -> trace( "Create Processor" );
-
+    /* Create the limb */
     limb = LimbProcessor::create( net );
 }
 
@@ -43,10 +42,14 @@ Processor::Processor
 */
 Processor::~Processor()
 {
-    limb -> destroy();
+    stop();
+    waitStop();
 
     /* Destroy Processor monitor */
     mon -> destroy();
+
+    /* Destroy limb */
+    limb -> destroy();
 
     /* Log report */
     getLog() -> trace( "Processor destroyd" );
@@ -110,7 +113,6 @@ void Processor::onLoop()
     -> now( Path{ "current", "now" } )
     -> startTimer( Path{ "current", "moment" } )
     -> interval( Path{ "current", "uptime" }, Path{ "current", "moment" }, Path{ "start", "moment" })
-    -> interval( Path{ "resume", "uptime" }, Path{ "current", "moment" }, Path{ "resume", "moment" })
     -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
     -> dumpResult( Path{ "result" }, this )
@@ -125,7 +127,7 @@ void Processor::onLoop()
 */
 void Processor::onStartBefore()
 {
-    getLog() -> trace( "Processor started" );
+    getLog() -> trace( "Processor starting" );
 }
 
 
@@ -133,7 +135,7 @@ void Processor::onStartBefore()
 /*
     Processor pause action
 */
-void Processor::onStopBefore()
+void Processor::onStopAfter()
 {
     getLog() -> trace( "Processor stoped" ) -> lineEnd();
 }
