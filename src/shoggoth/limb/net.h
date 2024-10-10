@@ -35,8 +35,8 @@ class Net: public Limb
         /* Weights request */
         WeightsExchange* weightsExchange = NULL;
 
-        /* Events */
-        ParamList* tasks           = NULL;     /* List of participants tasks */
+        /* Net task */
+        Task task                       = TASK_UNKNOWN;
 
         /* Synchronization states */
         int             randVersion     = 0;        /* Random vesion after load */
@@ -61,7 +61,8 @@ class Net: public Limb
         string          nextVersion     = "";
         /* Random seed for Net */
         unsigned long long seed         = 0;
-
+        /* Tick of the net. Settings by processor */
+        unsigned long long tick         = 0;
     public:
 
         /*
@@ -72,7 +73,8 @@ class Net: public Limb
             Application*,   /* Application object */
             SockManager*,   /* Socket manager */
             string,         /* The net id */
-            string          /* The net version */
+            string,         /* The net version */
+            Task            /* Task of the current net */
         );
 
 
@@ -92,7 +94,8 @@ class Net: public Limb
             Application*,   /* Application object */
             SockManager*,   /* Socket manager */
             string,         /* The net id */
-            string          /* The net version */
+            string,         /* The net version */
+            Task            /* Task of the current net */
         );
 
 
@@ -376,6 +379,13 @@ class Net: public Limb
 
 
 
+        Net* readNetFromFile
+        (
+            ParamList* /* Answer */
+        );
+
+
+
         bool isConfigUpdate
         (
             ParamList*  /* Config */
@@ -446,7 +456,6 @@ class Net: public Limb
         Net* swapValuesAndErrors
         (
             Actions,    /* Action list for participant */
-            Task,       /* Task (role) of participant */
             Limb*,      /* Participant */
             bool        /* Skip action for locked */
         );
@@ -490,23 +499,6 @@ class Net: public Limb
         Net* addChangedErrors
         (
             Layer*
-        );
-
-
-
-        /*
-            Create roles strung of the process
-        */
-        Net* buildTasks();
-
-
-
-        /*
-            Add role for this net
-        */
-        Net* addTask
-        (
-            Task    /* Adding task */
         );
 
 
@@ -587,4 +579,32 @@ class Net: public Limb
             unsigned long long
         );
 
+
+
+        /*
+            Return true value if layer contains action for current net task
+        */
+        bool checkLayerAction
+        (
+            Layer*,
+            Action
+        );
+
+
+
+        /*
+            Return the tick of the net
+        */
+        long long int getTick();
+
+
+
+        /*
+            Return the tick of the net
+        */
+        Net* setTick
+        (
+            /* Tick number */
+            long long int
+        );
 };

@@ -43,7 +43,8 @@ class TeacherPayload : public PayloadEngine
         */
         TeacherPayload
         (
-            TeacherApplication*,  /* Application object */
+            TeacherApplication*,    /* Application object */
+            string,                 /* Payload Id */
             string,                 /* Net id */
             string                  /* Net version */
         );
@@ -63,8 +64,9 @@ class TeacherPayload : public PayloadEngine
         static TeacherPayload* create
         (
             TeacherApplication*,
-            string aNetId,
-            string aNetVersion
+            string,
+            string,
+            string
         );
 
 
@@ -99,7 +101,11 @@ class TeacherPayload : public PayloadEngine
         /*
             Main teacher loop event
         */
-        virtual void onEngineLoop() override;
+        virtual void onEngineLoop
+        (
+            const bool,
+            const bool
+        ) override;
 
 
 

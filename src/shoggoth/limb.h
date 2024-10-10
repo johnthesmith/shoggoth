@@ -69,12 +69,12 @@ class Limb : public Result
         /*
             Synchronization states
         */
-        /* Net synchronization mutex */
-        recursive_mutex sync;
         /* Moment of reconfuguration */
         long long       lastUpdate = 0;
         /* Moment last chenged (insert delete layer and nerve)*/
-        long long       lastChange = 0;
+        long long       lastChangeStructure = 0;
+        /* Moment last values changed */
+        long long       lastChangeValues = 0;
 
     public:
 
@@ -207,28 +207,6 @@ class Limb : public Result
 
 
 
-        /**********************************************************************
-            Net synchronization
-        */
-
-
-
-        /*
-            Lock net for operations with layers
-        */
-        bool lock
-        (
-            bool = false /* Skip this action for locked mutex */
-        );
-
-
-
-        /*
-            Unlock net after lock method
-        */
-        Limb* unlock();
-
-
 
         /*
             Loop for each parents neuron of this neuron
@@ -291,9 +269,6 @@ class Limb : public Result
             Layer* /* Source layer */
         );
 
-
-
-        long long getLastChange();
 
 
         /*
@@ -372,4 +347,22 @@ class Limb : public Result
 
 
 
+        /*
+            On cahnge event for limb
+        */
+        Limb* onChangeValues();
+
+
+
+        /*
+            Return last moment of change structure of the limb
+        */
+        long long int getLastChangeStructure();
+
+
+
+        /*
+            Return last moment change values
+        */
+        long long int getLastChangeValues();
 };

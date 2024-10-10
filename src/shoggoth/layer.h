@@ -70,8 +70,8 @@ class Layer : public Result
 
         string          storagePath             = "";
 
-        /* List of actions for layer */
-        ParamList*      actions                 = NULL;
+//        /* List of actions for layer */
+//        ParamList*      actions                 = NULL;
 
         /*
             Plans of neurons data
@@ -255,6 +255,20 @@ class Layer : public Result
             Return Name of ID if Name not exists
         */
         string getNameOrId();
+
+
+
+        /*
+            Resize values plan
+        */
+        Layer* valuesDestroy();
+
+
+
+        /*
+            Resize errors plan
+        */
+        Layer* errorsDestroy();
 
 
 
@@ -476,10 +490,10 @@ class Layer : public Result
 
 
 
-        /*
-            Return event actions
-        */
-        ParamList* getActions();
+//        /*
+//            Return event actions
+//        */
+//        ParamList* getActions();
 
 
 
@@ -524,15 +538,15 @@ class Layer : public Result
 
 
 
-        /*
-            Return true if layer contains one of tasks
-        */
-        bool checkTasks
-        (
-            ParamList*,     /* Checking tasks */
-            Action aAction  /* Checking action */
-        );
-
+//        /*
+//            Return true if action exists in task for this layer
+//        */
+//        bool checkTask
+//        (
+//            Task,   /* Checking task */
+//            Action  /* Checking action */
+//        );
+//
 
 
         /*

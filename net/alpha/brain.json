@@ -1,0 +1,73 @@
+{
+    "engine":
+    {
+        "enabled": true,
+        "trap"   : true,
+        "brain":
+        {
+            "code":
+            {
+                "ok"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "disabled"  : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "*"         : { "log":"ERROR",      "exit":true }
+            }
+        }
+    },
+
+    "listen":
+    {
+        "port"                  :11120,
+        "readWaitingTimeoutMcs" :1000000
+    },
+
+    "minWeight"         :0.000001,
+    "maxWeight"         :1000,
+    "maxError"          :10,
+    "errorNormalize"    :0.11,
+    "processorCount"    :1,
+
+    "tickWrite"         :0,
+    "tickChart"         :100,
+
+    "dump":
+    [
+        {
+            "enabled"       :false,
+            "file"          :"dump/%stage%_%data%_%layer%%neuron%-%direction%.txt",
+            "stages"        :[ "AFTER_LEARNING" ],
+            "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error" ],
+            "directions"    :[ "PARENT", "CHILD" ],
+            "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
+            "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+            "dataview"      :"GRAPH",
+            "precision"     :4
+        },
+        {
+            "enabled"       :true,
+            "file"          :"dump/%stage%_%layer%_%data%.txt",
+            "stages"        :[ "AFTER_FRONT" ],
+            "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+            "directions"    :[ "NONE" ],
+            "data"          :[ "VALUES" ],
+            "dataview"      :"GRAPH",
+            "precision"     :4
+        },
+        {
+            "enabled"       :true,
+            "file"          :"dump/%stage%_%layer%_%data%.txt",
+            "stages"        :[ "AFTER_BACK" ],
+            "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command" ],
+            "directions"    :[ "NONE" ],
+            "data"          :[ "ERRORS" ],
+            "dataview"      :"GRAPH",
+            "precision"     :4
+        },
+        {
+            "enabled"       :true,
+            "pauseMcs"      :0,
+            "stages"        :[ "AFTER_LEARNING" ],
+            "lock"          :false,
+            "precision"     :4
+        }
+    ]
+}

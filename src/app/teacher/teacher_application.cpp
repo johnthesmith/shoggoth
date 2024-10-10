@@ -52,9 +52,8 @@ TeacherApplication* TeacherApplication::run()
 
     prepareConfiguration();
 
-    TeacherPayload::create( this,  getNetId(), getNetVersion() )
-    -> resume()
-    -> loop()
+    TeacherPayload::create( this, "teacher", getNetId(), getNetVersion() )
+    -> start()
     -> destroy();
 
     getLog() -> end( "Application stop" );

@@ -39,9 +39,14 @@ class EvolutionPayload : public PayloadEngine
         */
         EvolutionPayload
         (
-            EvolutionApplication*,   /* Application object */
-            string,                 /* Net id */
-            string                  /* Net version */
+            /* Application object */
+            EvolutionApplication*,
+            /* Payload id */
+            string,
+            /* Net id */
+            string,
+            /* Net version */
+            string
         );
 
 
@@ -58,9 +63,14 @@ class EvolutionPayload : public PayloadEngine
         */
         static EvolutionPayload* create
         (
+            /* Application object */
             EvolutionApplication*,
-            string aNetId,
-            string aNetVersion
+            /* Payload id */
+            string,
+            /* Net id */
+            string,
+            /* Net version */
+            string
         );
 
 
@@ -95,5 +105,9 @@ class EvolutionPayload : public PayloadEngine
         /*
             Main loop event
         */
-        virtual void onEngineLoop() override;
+        virtual void onEngineLoop
+        (
+            const bool,
+            const bool
+        ) override;
 };

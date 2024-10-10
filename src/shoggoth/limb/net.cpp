@@ -13,10 +13,16 @@
 */
 Net::Net
 (
-    Application*    aApplication,  /* Application object */
-    SockManager*    aSockManager,  /* Socket manager object */
-    string          aId,            /* The net id */
-    string          aVersion        /* The net version */
+    /* Application object */
+    Application*    aApplication,
+    /* Socket manager object */
+    SockManager*    aSockManager,
+    /* The net id */
+    string          aId,
+    /* The net version */
+    string          aVersion,
+    /* The net version */
+    Task            aTask
 )
 :Limb( aApplication -> getLogManager() )
 {
@@ -25,16 +31,16 @@ Net::Net
     id          = aId;
 
     /* Set versions */
-    version         = aVersion;
-    nextVersion     = aVersion;
+    version     = aVersion;
+    nextVersion = aVersion;
+
+    task        = aTask;
 
     application -> getLog() -> trace( "Create net" );
 
-    tasks = ParamList::create();
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
 }
-
 
 
 
@@ -49,9 +55,6 @@ Net::~Net()
     /* Config object clear and destroy */
     config -> destroy();
 
-    /* Clear layers lists */
-    tasks -> destroy();
-
     getLog() -> trace( "Destroy net" );
 }
 
@@ -62,13 +65,26 @@ Net::~Net()
 */
 Net* Net::create
 (
-    Application*    aApplication,  /* Application object */
-    SockManager*    aSockManager,  /* Socket manager object */
-    string          aId,            /* The net id */
-    string          aVersion        /* The net version */
+    /* Application object */
+    Application*    aApplication,
+    /* Socket manager object */
+    SockManager*    aSockManager,
+    /* The net id */
+    string          aId,
+    /* The net version */
+    string          aVersion,
+    /* The net version */
+    Task            aTask
 )
 {
-    return new Net( aApplication, aSockManager, aId, aVersion );
+    return new Net
+    (
+        aApplication,
+        aSockManager,
+        aId,
+        aVersion,
+        aTask
+    );
 }
 
 
@@ -259,6 +275,9 @@ Net* Net::readLayers
         {
             lock();
 
+            /* Set tick from server net */
+            setTick( io -> getAnswer() -> getInt( "tick" ));
+
             /* Loop for values */
             for( auto id : aValues )
             {
@@ -268,7 +287,8 @@ Net* Net::readLayers
                     char* buffer = NULL;
                     size_t size = 0;
 
-                    io -> getAnswer()
+                    io
+                    -> getAnswer()
                     -> getData
                     (
                         Path{ "values", layer -> getId() },
@@ -552,7 +572,7 @@ Net* Net::readNet
     ParamList* aAnswer
 )
 {
-    getLog() -> begin( "Read net config" );
+    getLog() -> begin( "Read net config" ) -> lineEnd();
 
     /* Read net */
     Io::create( this, aAnswer )
@@ -564,6 +584,48 @@ Net* Net::readNet
 
     return this;
 }
+
+
+
+Net* Net::readNetFromFile
+(
+    ParamList* aAnswer
+)
+{
+    /* Buid file for next version */
+    string file = getNetConfigFile( getNextVersion() );
+
+    if( fileExists( file ))
+    {
+        auto lastUpdate = (long) getConfig() -> getInt( "lastUpdate", 0 );
+        auto aUpdated = checkFileUpdate( file, lastUpdate );
+
+        if( aUpdated )
+        {
+            getLog()
+            -> begin( "Read net config" )
+            -> prm( "file", file )
+            -> lineEnd();
+
+            Json::create()
+            -> fromFile( file )
+            -> copyTo( aAnswer )
+            -> resultTo( this )
+            -> destroy();
+
+            if( isOk() )
+            {
+                aAnswer -> setInt( "lastUpdate", lastUpdate );
+            }
+
+            getLog() -> end();
+        }
+    }
+
+    return this;
+
+}
+
 
 
 
@@ -832,15 +894,15 @@ Net* Net::clone
 
 
 
-/**/
+/*
+    Apply net
+*/
 Net* Net::applyNet
 (
     ParamList* aConfig
 )
 {
     config -> copyFrom( aConfig );
-
-    buildTasks();
 
     auto configLayers = config -> getObject( "layers" );
 
@@ -849,12 +911,13 @@ Net* Net::applyNet
         /* Set net version from config */
         setNextVersion( config -> getString( Path{ "version", "current" } ) );
 
-
         /* Set net version from config */
         setSeed( config -> getInt( Path{ "seed" } ) );
 
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
+
+        getLog() -> begin( "Layers load" );
 
         /* Create layers */
         configLayers -> objectsLoop
@@ -865,48 +928,37 @@ Net* Net::applyNet
                 string iName
             )
             {
+                getLog() -> trace( iName );
+
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
-                /* Build list of using roles from Actions */
-                auto actions = iParam -> getObject( "actions" );
-
-                if( actions != NULL )
-                {
-                    actions -> loop
+                /* Layer creates */
+                if
+                (
+                    iParam -> getObject
                     (
-                        [ &used ]
-                        ( Param* item )
-                        {
-                            if( item -> isObject())
-                            {
-                                item -> getObject() -> loop
-                                (
-                                    [ &used ]
-                                    ( Param* item )
-                                    {
-                                        used -> pushString( item -> getString() );
-                                        return false;
-                                    }
-                                );
-                            }
-                            return false;
-                        }
-                    );
-
-                    if( used -> isIntersect( tasks ))
-                    {
-                        auto layerId = iName;
-                        auto layer = createLayer( layerId );
-                        loadLayer( layer, iParam );
-                        layer -> setStoragePath( storagePath );
-                    }
+                        Path{ "actions", taskToString( task ) }
+                    ) != NULL
+                )
+                {
+                    auto layerId = iName;
+                    auto layer = createLayer( layerId );
+                    loadLayer( layer, iParam );
+                    layer -> setStoragePath( storagePath );
+                }
+                else
+                {
+                    getLog() -> trace( "Layer skipd" ) -> prm( "id", iName );
                 }
 
                 used -> destroy();
                 return false;
             }
         );
+
+        getLog() -> end( "" ); /* End of layers load */
+
 
         /* Nerves */
         auto jsonNerves = config -> getObject( "nerves" );
@@ -989,7 +1041,7 @@ Net* Net::applyNet
                     return false;
                 }
             );
-        }
+        } /* End of nerves load */
     }
 
     /* Update last update net moment */
@@ -1241,11 +1293,6 @@ Net* Net::loadLayer
         }
         else
         {
-            /* Set event actions */
-            aLayer
-            -> getActions()
-            -> copyFrom( aParams -> getObject( "actions" ) );
-
             /* Apply neuron functions for layer */
             aLayer
             -> setFrontFunc
@@ -1452,76 +1499,67 @@ Net* Net::loadWeightsFrom
 Net* Net::swapValuesAndErrors
 (
     Actions aActions,   /* Action for participant */
-    Task    aTask,      /* Task (role) of participant */
     Limb*   aLimb,      /* Participant */
     bool    aSkip
 )
 {
-    auto configLayers = config -> getObject( "layers" );
-    if( configLayers != NULL )
+    if( lock( aSkip ))
     {
-        if( lock( aSkip ))
+        if( aLimb -> lock( aSkip ))
         {
-            if( aLimb -> lock( aSkip ))
-            {
-                /* Loop for layers configuration */
-                configLayers -> loop
+            /* Loop for layers configuration */
+            getLayerList() -> loop
+            (
+                [ this, &aLimb, &aActions ]
                 (
-                    [ this, &aLimb, &aActions, &aTask ]
-                    (
-                        Param* iParam
-                    )
+                    void* item
+                )
+                {
+                    auto netLayer = ( Layer* ) item;
+
+                    /* For each of action */
+                    for( auto iAction : aActions )
                     {
-                        /* For each of action */
-                        for( auto iAction : aActions )
+                        if( checkLayerAction( netLayer, iAction ))
                         {
-                            /* Find action */
-                            auto action = iParam -> getObject()
-                            -> getObject( Path{ "actions", actionToString( iAction ) });
-                            /* If action exists in a layer... */
-                            if
-                            (
-                                action != NULL &&
-                                action -> contains( taskToString( aTask ))
-                            )
+                            /* ... finds layer by id in net and participant ... */
+                            auto participantLayer = aLimb
+                            -> getLayerList()
+                            -> getById( netLayer -> getId() );
+
+                            /* ... if both layers fonded ... */
+                            if( participantLayer != NULL )
                             {
-                                /* ... finds layer by id in net and participant ... */
-                                auto id = iParam -> getName();
-                                auto netLayer = getLayerList() -> getById( id );
-                                auto participantLayer = aLimb -> getLayerList() -> getById( id );
-                                /* ... if both layers fonded ... */
-                                if( netLayer != NULL && participantLayer != NULL )
+                                /* ... then swap values and errors */
+                                switch( iAction )
                                 {
-                                    /* ... then swap values and errors */
-                                    switch( iAction )
-                                    {
-                                        default: break;
-                                        case READ_VALUES:
-                                            participantLayer -> copyValuesFrom( netLayer );
-                                        break;
-                                        case WRITE_VALUES:
-                                            netLayer -> copyValuesFrom( participantLayer );
-                                            addChangedValues( netLayer );
-                                        break;
-                                        case READ_ERRORS:
-                                            participantLayer -> copyErrorsFrom( netLayer );
-                                        break;
-                                        case WRITE_ERRORS:
-                                            netLayer -> copyErrorsFrom( participantLayer );
-                                            addChangedErrors( netLayer );
-                                        break;
-                                    }
+                                    default: break;
+                                    case READ_VALUES:
+                                        participantLayer -> copyValuesFrom( netLayer );
+                                    break;
+                                    case WRITE_VALUES:
+                                        netLayer -> copyValuesFrom( participantLayer );
+                                        addChangedValues( netLayer );
+                                    break;
+                                    case READ_ERRORS:
+                                        participantLayer -> copyErrorsFrom( netLayer );
+                                    break;
+                                    case WRITE_ERRORS:
+                                        netLayer -> copyErrorsFrom( participantLayer );
+                                        addChangedErrors( netLayer );
+                                    break;
                                 }
                             }
                         }
-                        return false;
                     }
-                );
-                aLimb -> unlock();
-            }
-            unlock();
+                    return false;
+                }
+            );
+            aLimb -> unlock();
         }
+        unlock();
     }
+
     return this;
 }
 
@@ -1556,7 +1594,7 @@ Net* Net::syncToLimb
 Net* Net::syncWithServer()
 {
     /* The application does not have to be a processor */
-    if( !tasks -> valueExists( taskToString( TASK_PROC )))
+    if( task != TASK_PROC )
     {
         getLog()
         -> trapOn()
@@ -1590,7 +1628,6 @@ Net* Net::syncWithServer()
             ]
             ( void* aLayer )
             {
-
                 auto layer = ( Layer* ) aLayer;
                 auto layerId = layer -> getId();
 
@@ -1605,8 +1642,8 @@ Net* Net::syncWithServer()
                     ) != changedValues.end()
                 )
                 {
-                    /* Check application rules for write values of the  layer */
-                    if( layer -> checkTasks( tasks, WRITE_VALUES ))
+                    /* Check application rules for write values of the layer */
+                    if( checkLayerAction( layer, WRITE_VALUES ))
                     {
                         writeValues.push_back( layerId );
                     }
@@ -1614,7 +1651,7 @@ Net* Net::syncWithServer()
                 else
                 {
                     /* Check application rules for write values of the layer */
-                    if( layer -> checkTasks( tasks, READ_VALUES ))
+                    if( checkLayerAction( layer, READ_VALUES ))
                     {
                         readValues.push_back( layerId );
                     }
@@ -1632,7 +1669,7 @@ Net* Net::syncWithServer()
                 )
                 {
                     /* Check application rules for write erros of the layer */
-                    if( layer -> checkTasks( tasks, WRITE_ERRORS ))
+                    if( checkLayerAction( layer, WRITE_ERRORS ))
                     {
                         writeErrors.push_back( layerId );
                     }
@@ -1640,24 +1677,24 @@ Net* Net::syncWithServer()
                 else
                 {
                     /* Check application rules for read errors of the layer */
-                    if( layer -> checkTasks( tasks, READ_ERRORS ))
+                    if( checkLayerAction( layer, READ_ERRORS ))
                     {
                         readErrors.push_back( layerId );
                     }
                 }
 
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_VALUE ))
+                if( checkLayerAction( layer, READ_STAT_VALUE ))
                 {
                     readStatValue.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_ERROR ))
+                if( checkLayerAction( layer, READ_STAT_ERROR ))
                 {
                     readStatError.push_back( layerId );
                 }
                 /* Check application rules stat requests */
-                if( layer -> checkTasks( tasks, READ_STAT_TICK ))
+                if( checkLayerAction( layer, READ_STAT_TICK ))
                 {
                     readStatTick.push_back( layerId );
                 }
@@ -1707,50 +1744,6 @@ Net* Net::addChangedErrors
     return this;
 }
 
-
-
-/*
-    Create roles strung of the process
-*/
-Net* Net::buildTasks()
-{
-    auto tasksSection = getApplication()
-    -> getConfig()
-    -> getObject( "tasks" );
-
-    if( tasksSection != NULL )
-    {
-        tasks -> clear();
-
-        if( tasksSection -> getObject( taskToString( TASK_PROC )) != NULL )
-        {
-            addTask( TASK_PROC );
-        }
-        if( tasksSection -> getObject( taskToString( TASK_TEACHER )) != NULL )
-        {
-            addTask( TASK_TEACHER );
-        }
-        if( tasksSection -> getObject( taskToString( TASK_UI )) != NULL )
-        {
-            addTask( TASK_UI );
-        }
-    }
-    return this;
-}
-
-
-
-/*
-    Add role for this net
-*/
-Net* Net::addTask
-(
-    Task a
-)
-{
-    tasks -> pushString( taskToString( a ));
-    return this;
-}
 
 
 
@@ -1880,4 +1873,52 @@ Net* Net::setSeed
 
 
 
+/*
+    Return true value if layer contains action for current net task
+*/
+bool Net::checkLayerAction
+(
+    Layer* aLayer,
+    Action aAction
+)
+{
+    auto layerActions = getConfig() -> getObject
+    (
+        Path
+        {
+            "layers",
+            aLayer -> getId(),
+            "actions",
+            taskToString( task )
+        }
+    );
 
+    return
+    layerActions != NULL &&
+    layerActions -> contains( actionToString( aAction ));
+}
+
+
+
+/*
+    Return the tick of the net
+*/
+long long int Net::getTick()
+{
+    return tick;
+}
+
+
+
+/*
+    Return the tick of the net
+*/
+Net* Net::setTick
+(
+    /* Tick number */
+    long long int a
+)
+{
+    tick = a;
+    return this;
+}

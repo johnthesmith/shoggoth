@@ -20,8 +20,8 @@ Layer::Layer
 
     id = aId == "" ? Rnd::getUuid() : aId;
 
-    /* Actions */
-    actions         = ParamList::create();
+//    /* Actions */
+//    actions         = ParamList::create();
 
     /* Statistics */
     chartValues      = ChartData::create();
@@ -39,9 +39,6 @@ Layer::Layer
 */
 Layer::~Layer()
 {
-    /* Actions destroy */
-    actions -> destroy();
-
     /* Statistics destroy */
     chartValues -> destroy();
     chartErrors -> destroy();
@@ -93,6 +90,7 @@ Layer* Layer::setSize
 {
     setCount( a.x * a.y * a.z );
     size = a;
+    limb -> onChangeValues();
     return this;
 }
 
@@ -159,6 +157,7 @@ Layer* Layer::clearValues()
 {
     getLimb() -> lock();
     memset( values, 0, getValuesBufferSize() );
+    getLimb() -> onChangeValues();
     getLimb() -> unlock();
     return this;
 }
@@ -172,6 +171,7 @@ Layer* Layer::clearErrors()
 {
     getLimb() -> lock();
     memset( errors, 0, getValuesBufferSize() );
+    getLimb() -> onChangeValues();
     getLimb() -> unlock();
     return this;
 }
@@ -191,6 +191,7 @@ Layer* Layer::setValuesFromBuffer
     if( aBuffer != NULL && aSize == getValuesBufferSize() )
     {
         memcpy( values, aBuffer, aSize );
+        getLimb() -> onChangeValues();
     }
     getLimb() -> unlock();
     return this;
@@ -321,17 +322,48 @@ int Layer::getCount()
 
 
 
-Layer* Layer::valuesCreate()
+
+Layer* Layer::valuesDestroy()
 {
     getLimb() -> lock();
     /* Delete old plan */
     if( values != NULL )
     {
         delete [] values;
+        values = NULL;
     }
+    getLimb() -> unlock();
+    return this;
+}
+
+
+
+Layer* Layer::errorsDestroy()
+{
+    getLimb() -> lock();
+    /* Delete old plan */
+    if( errors != NULL )
+    {
+        delete [] errors;
+        errors = NULL;
+    }
+    getLimb() -> unlock();
+    return this;
+}
+
+
+
+Layer* Layer::valuesCreate()
+{
+    getLimb() -> lock();
+    valuesDestroy();
 
     /*Create new plan */
-    values = new double[ count ];
+    if( count != 0 )
+    {
+        values = new double[ count ];
+    }
+
     getLimb() -> unlock();
 
     clearValues();
@@ -344,14 +376,14 @@ Layer* Layer::valuesCreate()
 Layer* Layer::errorsCreate()
 {
     getLimb() -> lock();
-    /* Delete old plan */
-    if( errors != NULL )
-    {
-        delete [] errors;
-    }
+    errorsDestroy();
 
     /*Create new plan */
-    errors = new double[ count ];
+    if( count != 0 )
+    {
+        errors = new double[ count ];
+    }
+
     getLimb() -> unlock();
 
     clearErrors();
@@ -632,13 +664,13 @@ double Layer::getNeuronError
 
 
 
-/*
-    Return event actions
-*/
-ParamList* Layer::getActions()
-{
-    return actions;
-}
+///*
+//    Return event actions
+//*/
+//ParamList* Layer::getActions()
+//{
+//    return actions;
+//}
 
 
 
@@ -756,20 +788,24 @@ size_t Layer::getValuesBufferSize()
 
 
 
-/*
-    Return true if layer contains one of tasks
-*/
-bool Layer::checkTasks
-(
-    ParamList* aTasks,
-    Action aAction
-)
-{
-    return
-    getActions() ->
-    getObject( actionToString( aAction )) ->
-    isIntersect( aTasks );
-}
+///*
+//    Return true if action exists in task for this layer
+//*/
+//bool Layer::checkTask
+//(
+//    Task aTask,
+//    Action aAction
+//)
+//{
+//    return getActions() -> exists
+//    (
+//        Path
+//        {
+//            taskToString( aTask ),
+//            actionToString( aAction )
+//        }
+//    );
+//}
 
 
 
