@@ -37,6 +37,7 @@ $shab build "src/app/*.cpp"
 $shab build "src/app/teacher/*.cpp"
 $shab build "src/app/evolution/*.cpp"
 $shab build "src/app/brain/*.cpp"
+#$shab build "src/app/ui/*.cpp"
 
 ## Make executable file
 # $shab header "make shoggoth"
@@ -52,7 +53,11 @@ $shab execute "COMPILER -g -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread
 $shab header "make brain"
 $shab execute "COMPILER -g -O3 -o brain $(grep -v '^#' brain.objs) -lpthread"
 
+#$shab header "make ui"
+#$shab execute "COMPILER -g -O3 -o ui $(grep -v '^#' ui.objs) -lpthread"
+
 #$shab header "compress"
 #$shab execute "upx -9 shoggoth"
 #$shab execute "upx -9 evolution"
 #$shab execute "upx -9 teacher"
+#$shab execute "upx -9 ui"

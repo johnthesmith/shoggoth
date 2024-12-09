@@ -544,6 +544,7 @@ class Net: public Limb
         (
             vector<string>,
             vector<string>,
+            vector<string>,
             vector<string>
         );
 
@@ -607,4 +608,11 @@ class Net: public Limb
             /* Tick number */
             long long int
         );
+
+
+
+        /*
+            Tick increment
+        */
+        Net* incTick();
 };

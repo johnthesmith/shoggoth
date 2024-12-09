@@ -418,6 +418,7 @@ NerveList* NerveList::dump
             auto iNerve = (Nerve*) p;
             getLog()
             -> trace()
+            -> prm( "nerve address", iNerve )
             -> prm( "parent", iNerve -> getParent() -> getId() )
             -> prm( "address", (void*) ( iNerve -> getParent()) )
             -> prm( "child", iNerve -> getChild() -> getId() )

@@ -348,16 +348,18 @@ Net* Net::readLayers
 */
 Net* Net::requestStat
 (
-    vector<string> aStatValue,    /* Layer list for stat request */
-    vector<string> aStatError,    /* Layer list for stat request */
-    vector<string> aStatTick      /* Layer list for stat request */
+    vector<string> aStatValue,              /* Layer list for stat request */
+    vector<string> aStatError,              /* Layer list for stat request */
+    vector<string> aStatTick,               /* Layer list for stat request */
+    vector<string> aStatErrorsBeforeChange  /* Layer list for stat request */
 )
 {
     if
     (
         aStatValue.size() > 0 ||
         aStatError.size() > 0 ||
-        aStatTick.size() > 0
+        aStatTick.size() > 0 ||
+        aStatErrorsBeforeChange.size() > 0
     )
     {
         getLog() -> begin( "Read stat" );
@@ -369,6 +371,7 @@ Net* Net::requestStat
         request -> setPath( Path{ "value" }) -> pushVector( aStatValue );
         request -> setPath( Path{ "error" }) -> pushVector( aStatError );
         request -> setPath( Path{ "tick" }) -> pushVector( aStatTick );
+        request -> setPath( Path{ "errorsBeforeChange" }) -> pushVector( aStatErrorsBeforeChange );
 
         /* Call server and apply the answer */
         if( io -> call( CMD_READ_LAYER_STAT ) -> isOk() )
@@ -420,6 +423,31 @@ Net* Net::requestStat
                     {
                         layer
                         -> getChartErrors()
+                        -> fromBuffer( buffer, size );
+                    }
+                }
+            }
+
+            /* Loop for errors */
+            for( auto id : aStatErrorsBeforeChange )
+            {
+                auto layer = getLayerList() -> getById( id );
+                if( layer != NULL )
+                {
+                    char* buffer = NULL;
+                    size_t size = 0;
+
+                    io -> getAnswer() -> getData
+                    (
+                        Path{ "errorsBeforeChange", layer -> getId() },
+                        buffer,
+                        size
+                    );
+
+                    if( buffer != NULL )
+                    {
+                        layer
+                        -> getChartErrorsBeforeChange()
                         -> fromBuffer( buffer, size );
                     }
                 }
@@ -917,12 +945,16 @@ Net* Net::applyNet
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
 
-        getLog() -> begin( "Layers load" );
+        auto taskName = taskToString( task );
+
+        getLog()
+        -> begin( "Layers load for task" )
+        -> prm( "task", taskName );
 
         /* Create layers */
         configLayers -> objectsLoop
         (
-            [ this ]
+            [ this, &taskName ]
             (
                 ParamList* iParam,
                 string iName
@@ -938,7 +970,7 @@ Net* Net::applyNet
                 (
                     iParam -> getObject
                     (
-                        Path{ "actions", taskToString( task ) }
+                        Path{ "actions", taskName }
                     ) != NULL
                 )
                 {
@@ -959,20 +991,26 @@ Net* Net::applyNet
 
         getLog() -> end( "" ); /* End of layers load */
 
-
         /* Nerves */
         auto jsonNerves = config -> getObject( "nerves" );
+
         if( jsonNerves != NULL )
         {
             auto layers = getLayerList();
             auto nerves = getNerveList();
+
+
+            getLog()
+            -> begin( "Nerves load for task" )
+            -> prm( "task", taskName );
+
             jsonNerves -> loop
             (
-                [ this, &layers, &nerves ]
+                [ this, &layers, &nerves, &taskName ]
                 ( Param* aItem )
                 {
                     /* Check the json layer */
-                    if( aItem -> getType() == KT_OBJECT )
+                    if( aItem -> isObject() )
                     {
                         auto jsonNerve      = aItem -> getObject();
                         auto idFrom         = jsonNerve -> getString( "idFrom" );
@@ -981,66 +1019,98 @@ Net* Net::applyNet
                         auto nerveType      = nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
                         auto nerveDelete    = jsonNerve -> getBool( "delete" );
 
-                        /* Find the layers */
-                        auto from = layers -> getById( idFrom );
-                        auto to = layers -> getById( idTo );
-
-                        if( from != NULL && to != NULL )
+                        if
+                        (
+                            ! aItem
+                            -> getObject()
+                            -> valueExists( Path{ "uses" }, taskName )
+                        )
                         {
-                            auto nerve = nerves -> find
-                            (
-                                idFrom,
-                                idTo,
-                                bindType
-                            );
-                            if
-                            (
-                                nerve != NULL &&
-                                (
-                                    nerve -> getParent() != from ||
-                                    nerve -> getChild() != to ||
-                                    nerve -> getBindType() != bindType ||
-                                    nerve -> getNerveType() != nerveType ||
-                                    nerveDelete
-                                )
-                            )
-                            {
-                                deleteNerve( nerve );
-                                nerve = NULL;
-                            }
-
-                            if( nerve == NULL && !nerveDelete )
-                            {
-                                createNerve
-                                (
-                                    from,
-                                    to,
-                                    nerveType,
-                                    bindType
-                                )
-                                -> setMinWeight
-                                (
-                                    jsonNerve -> getDouble( "minWeight" , 0 )
-                                )
-                                -> setMaxWeight
-                                (
-                                    jsonNerve -> getDouble( "maxWeight", 0 )
-                                )
-                                ;
-                            }
+                            getLog()
+                            -> trace( "Nerve skiped for the task" )
+                            -> prm( "idFrom", idFrom )
+                            -> prm( "idTo", idTo )
+                            -> lineEnd()
+                            ;
                         }
                         else
                         {
-                            getLog()
-                            -> info( "Layers not found for nerve" )
-                            -> prm( "idFrom", idFrom )
-                            -> prm( "idTo", idTo )
-                            ;
+                            /* Find the layers */
+                            auto from = layers -> getById( idFrom );
+                            auto to = layers -> getById( idTo );
+
+                            if( from != NULL && to != NULL )
+                            {
+                                auto nerve = nerves -> find
+                                (
+                                    idFrom,
+                                    idTo,
+                                    bindType
+                                );
+
+                                if( nerve != NULL )
+                                {
+                                    if
+                                    (
+                                        nerve -> getParent() != from ||
+                                        nerve -> getChild() != to ||
+                                        nerve -> getBindType() != bindType ||
+                                        nerve -> getNerveType() != nerveType ||
+                                        nerveDelete
+                                    )
+                                    {
+                                        deleteNerve( nerve );
+                                        nerve = NULL;
+                                    }
+                                    else
+                                    {
+                                        getLog()
+                                        -> trace( "Nerve exists and stay" )
+                                        -> prm( "idFrom", idFrom )
+                                        -> prm( "idTo", idTo )
+                                        -> lineEnd()
+                                        ;
+                                    }
+                                }
+
+                                if( nerve == NULL && !nerveDelete )
+                                {
+                                    createNerve
+                                    (
+                                        from,
+                                        to,
+                                        nerveType,
+                                        bindType
+                                    )
+                                    -> setMinWeight
+                                    (
+                                        jsonNerve -> getDouble( "minWeight" , 0 )
+                                    )
+                                    -> setMaxWeight
+                                    (
+                                        jsonNerve -> getDouble( "maxWeight", 0 )
+                                    )
+                                    ;
+                                }
+                            }
+                            else
+                            {
+                                getLog()
+                                -> info( "Layers not found for nerve" )
+                                -> prm( "idFrom", idFrom )
+                                -> prm( "idTo", idTo )
+                                -> lineEnd()
+                                ;
+                            }
                         }
                     }
                     return false;
                 }
             );
+
+            getLog()
+            -> end();
+
         } /* End of nerves load */
     }
 
@@ -1052,7 +1122,10 @@ Net* Net::applyNet
         /* Set nextVersion in to version */
         version = nextVersion;
 
-        /* Clear tick */
+        /* Drop tick */
+        tick = 0;
+
+        /* Clear tick stat for each layer */
         getLayerList() -> loop
         (
             []
@@ -1303,6 +1376,10 @@ Net* Net::loadLayer
             (
                 strToFunc( aParams -> getString( "functionBack", "NULL" ))
             )
+            -> setBackFuncOut
+            (
+                strToFunc( aParams -> getString( "functionBackOut", "NULL" ))
+            )
             -> setErrorCalc
             (
                 errorCalcFromString( aParams -> getString( "errorCalc", "NONE" ))
@@ -1539,14 +1616,20 @@ Net* Net::swapValuesAndErrors
                                     break;
                                     case WRITE_VALUES:
                                         netLayer -> copyValuesFrom( participantLayer );
-                                        addChangedValues( netLayer );
+                                        if( task != TASK_PROC )
+                                        {
+                                            addChangedValues( netLayer );
+                                        }
                                     break;
                                     case READ_ERRORS:
                                         participantLayer -> copyErrorsFrom( netLayer );
                                     break;
                                     case WRITE_ERRORS:
                                         netLayer -> copyErrorsFrom( participantLayer );
-                                        addChangedErrors( netLayer );
+                                        if( task != TASK_PROC )
+                                        {
+                                            addChangedErrors( netLayer );
+                                        }
                                     break;
                                 }
                             }
@@ -1594,130 +1677,153 @@ Net* Net::syncToLimb
 Net* Net::syncWithServer()
 {
     /* The application does not have to be a processor */
-    if( task != TASK_PROC )
-    {
-        getLog()
-        -> trapOn()
-        -> begin( "Synchronize layers with server" );
+    getLog()
+    -> trapOn()
+    -> begin( "Synchronize layers with server" );
 
-        /* Create lists of layers */
-        vector<string> readValues;
-        vector<string> readErrors;
-        vector<string> writeValues;
-        vector<string> writeErrors;
+    /* Create lists of layers */
+    vector<string> readValues;
+    vector<string> readErrors;
+    vector<string> writeValues;
+    vector<string> writeErrors;
 
-        vector<string> readStatValue;
-        vector<string> readStatError;
-        vector<string> readStatTick;
+    vector<string> readStatValue;
+    vector<string> readStatError;
+    vector<string> readStatTick;
+    vector<string> readStatErrorsBeforeChange;
 
-        lock();
+    lock();
 
-        /* */
-        getLayerList() -> loop
-        (
-            [
-                this,
-                &readValues,
-                &readErrors,
-                &writeValues,
-                &writeErrors,
+    /* */
+    getLayerList() -> loop
+    (
+        [
+            this,
+            &readValues,
+            &readErrors,
+            &writeValues,
+            &writeErrors,
 
-                &readStatValue,
-                &readStatError,
-                &readStatTick
-            ]
-            ( void* aLayer )
+            &readStatValue,
+            &readStatError,
+            &readStatErrorsBeforeChange,
+            &readStatTick
+        ]
+        ( void* aLayer )
+        {
+            auto layer = ( Layer* ) aLayer;
+            auto layerId = layer -> getId();
+
+            /* Values were changed and must be written to the server */
+            if
+            (
+                find
+                (
+                    changedValues.begin(),
+                    changedValues.end(),
+                    layerId
+                ) != changedValues.end()
+            )
             {
-                auto layer = ( Layer* ) aLayer;
-                auto layerId = layer -> getId();
-
-                /* Values were changed and must be written to the server */
-                if
-                (
-                    find
-                    (
-                        changedValues.begin(),
-                        changedValues.end(),
-                        layerId
-                    ) != changedValues.end()
-                )
+                /* Check application rules for write values of the layer */
+                if( checkLayerAction( layer, WRITE_VALUES ))
                 {
-                    /* Check application rules for write values of the layer */
-                    if( checkLayerAction( layer, WRITE_VALUES ))
-                    {
-                        writeValues.push_back( layerId );
-                    }
+                    writeValues.push_back( layerId );
                 }
-                else
-                {
-                    /* Check application rules for write values of the layer */
-                    if( checkLayerAction( layer, READ_VALUES ))
-                    {
-                        readValues.push_back( layerId );
-                    }
-                }
-
-                /* Errors was changed and must be write to server */
-                if
-                (
-                    find
-                    (
-                        changedErrors.begin(),
-                        changedErrors.end(),
-                        layerId
-                    ) != changedErrors.end()
-                )
-                {
-                    /* Check application rules for write erros of the layer */
-                    if( checkLayerAction( layer, WRITE_ERRORS ))
-                    {
-                        writeErrors.push_back( layerId );
-                    }
-                }
-                else
-                {
-                    /* Check application rules for read errors of the layer */
-                    if( checkLayerAction( layer, READ_ERRORS ))
-                    {
-                        readErrors.push_back( layerId );
-                    }
-                }
-
-                /* Check application rules stat requests */
-                if( checkLayerAction( layer, READ_STAT_VALUE ))
-                {
-                    readStatValue.push_back( layerId );
-                }
-                /* Check application rules stat requests */
-                if( checkLayerAction( layer, READ_STAT_ERROR ))
-                {
-                    readStatError.push_back( layerId );
-                }
-                /* Check application rules stat requests */
-                if( checkLayerAction( layer, READ_STAT_TICK ))
-                {
-                    readStatTick.push_back( layerId );
-                }
-
-                return false;
             }
-        );
-        changedValues.clear();
-        changedErrors.clear();
+            else
+            {
+                /* Check application rules for write values of the layer */
+                if( checkLayerAction( layer, READ_VALUES ))
+                {
+                    readValues.push_back( layerId );
+                }
+            }
 
+            /* Errors was changed and must be write to server */
+            if
+            (
+                find
+                (
+                    changedErrors.begin(),
+                    changedErrors.end(),
+                    layerId
+                ) != changedErrors.end()
+            )
+            {
+                /* Check application rules for write erros of the layer */
+                if( checkLayerAction( layer, WRITE_ERRORS ))
+                {
+                    writeErrors.push_back( layerId );
+                }
+            }
+            else
+            {
+                /* Check application rules for read errors of the layer */
+                if( checkLayerAction( layer, READ_ERRORS ))
+                {
+                    readErrors.push_back( layerId );
+                }
+            }
+
+            /* Check application rules stat requests */
+            if( checkLayerAction( layer, READ_STAT_VALUE ))
+            {
+                readStatValue.push_back( layerId );
+            }
+            /* Check application rules stat requests */
+            if( checkLayerAction( layer, READ_STAT_ERROR ))
+            {
+                readStatError.push_back( layerId );
+            }
+            /* Check application rules stat requests */
+            if( checkLayerAction( layer, READ_STAT_ERRORS_BEFORE_CHANGE ))
+            {
+                readStatErrorsBeforeChange.push_back( layerId );
+            }
+            /* Check application rules stat requests */
+            if( checkLayerAction( layer, READ_STAT_TICK ))
+            {
+                readStatTick.push_back( layerId );
+            }
+
+            return false;
+        }
+    );
+    changedValues.clear();
+    changedErrors.clear();
+
+    unlock();
+
+    /* Exchange with server */
+    writeLayers( writeValues, writeErrors );
+    readLayers( readValues, readErrors );
+    requestWeights();
+
+    requestStat
+    (
+        readStatValue,
+        readStatError,
+        readStatTick,
+        readStatErrorsBeforeChange
+    );
+
+
+    /* Read net stat */
+    auto io = Io::create( this ) -> call( CMD_READ_NET_INFO );
+
+    if( io -> isOk() )
+    {
+        lock();
+        setTick( io -> getAnswer() -> getInt( "tick" ));
         unlock();
-
-        /* Exchange with server */
-        writeLayers( writeValues, writeErrors );
-        readLayers( readValues, readErrors );
-        requestWeights();
-
-        requestStat( readStatValue, readStatError, readStatTick );
-
-        getLog()
-        -> end()
-        -> trapOff();
     }
+    io -> destroy();
+
+    /* Finalize */
+    getLog()
+    -> end()
+    -> trapOff();
 
     return this;
 }
@@ -1905,7 +2011,11 @@ bool Net::checkLayerAction
 */
 long long int Net::getTick()
 {
-    return tick;
+    lock();
+    auto result = tick;
+    unlock();
+
+    return result;
 }
 
 
@@ -1919,6 +2029,21 @@ Net* Net::setTick
     long long int a
 )
 {
+    lock();
     tick = a;
+    unlock();
+    return this;
+}
+
+
+
+/*
+    Return the tick of the net
+*/
+Net* Net::incTick()
+{
+    lock();
+    tick++;
+    unlock();
     return this;
 }

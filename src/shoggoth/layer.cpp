@@ -24,9 +24,10 @@ Layer::Layer
 //    actions         = ParamList::create();
 
     /* Statistics */
-    chartValues      = ChartData::create();
-    chartErrors      = ChartData::create();
-    chartTick        = ChartData::create() -> setMaxCount( 1000 );
+    chartValues             = ChartData::create();
+    chartErrors             = ChartData::create();
+    chartTick               = ChartData::create() -> setMaxCount( 1000 );
+    chartErrorsBeforeChange = ChartData::create() -> setMaxCount( 1000 );
 
     /* Log */
     getLog() -> trace( "Create layer" ) -> prm( "id", id );
@@ -43,6 +44,7 @@ Layer::~Layer()
     chartValues -> destroy();
     chartErrors -> destroy();
     chartTick -> destroy();
+    chartErrorsBeforeChange -> destroy();
 
     /* Destroy neurons */
     setSize( POINT_3I_0 );
@@ -463,10 +465,12 @@ double Layer::calcSumError()
 {
     double result = 0.0;
 
+    getLimb() -> lock();
     for( int i = 0; i < count; i ++ )
     {
         result += abs( errors[ i ] );
     }
+    getLimb() -> unlock();
 
     return result;
 }
@@ -765,13 +769,14 @@ bool Layer::compare
 )
 {
     return
-    getId()         == aLayer -> getId() &&
-    getCount()      == aLayer -> getCount() &&
-    getName()       == aLayer -> getName() &&
-    getFrontFunc()  == aLayer -> getFrontFunc() &&
-    getBackFunc()   == aLayer -> getBackFunc() &&
-    getErrorCalc()  == aLayer -> getErrorCalc() &&
-    getWeightCalc() == aLayer -> getWeightCalc()
+    getId()             == aLayer -> getId() &&
+    getCount()          == aLayer -> getCount() &&
+    getName()           == aLayer -> getName() &&
+    getFrontFunc()      == aLayer -> getFrontFunc() &&
+    getBackFunc()       == aLayer -> getBackFunc() &&
+    getBackFuncOut()    == aLayer -> getBackFuncOut() &&
+    getErrorCalc()      == aLayer -> getErrorCalc() &&
+    getWeightCalc()     == aLayer -> getWeightCalc()
     ;
 }
 
@@ -841,6 +846,24 @@ Layer* Layer::setBackFunc
 NeuronFunc* Layer::getBackFunc()
 {
     return backFunc;
+}
+
+
+
+Layer* Layer::setBackFuncOut
+(
+    NeuronFunc* a
+)
+{
+    backFuncOut = a;
+    return this;
+}
+
+
+
+NeuronFunc* Layer::getBackFuncOut()
+{
+    return backFuncOut;
 }
 
 
@@ -947,6 +970,22 @@ Layer* Layer::dropTickCount()
 
 
 
+/*
+    Write error before change
+*/
+Layer* Layer::writeErrorsBeforeChange()
+{
+    /* Push error in to the stat chart */
+    if( tickCount >= 0 )
+    {
+        chartErrorsBeforeChange -> createLast( ( double ) calcSumError() );
+    }
+
+    return this;
+}
+
+
+
 ChartData* Layer::getChartTick()
 {
     return chartTick;
@@ -964,6 +1003,13 @@ ChartData* Layer::getChartValues()
 ChartData* Layer::getChartErrors()
 {
     return chartErrors;
+}
+
+
+
+ChartData* Layer::getChartErrorsBeforeChange()
+{
+    return chartErrorsBeforeChange;
 }
 
 

@@ -5,7 +5,7 @@ PROJECT="~/code/c/app/shoggoth/"
 PROJECT_LIB="~/code/c/lib/"
 
 # Переключаемся на 5-е рабочее место
-i3-msg workspace 5
+i3-msg workspace 9
 
 sleep $SLEEP
 
@@ -64,6 +64,7 @@ terminator -e "watch -n 0.1 jq -C . $PROJECT/net/alpha/mon/brain_server.json" &&
 terminator -e "watch -n 0.1 jq -C . $PROJECT/net/alpha/mon/brain_processor.json" && sleep $SLEEP
 terminator -e "watch -n 0.1 jq -C . $PROJECT/net/alpha/mon/teacher_app.json" && sleep $SLEEP
 terminator -e "watch -n 0.1 jq -C . $PROJECT/net/alpha/mon/procesor.json" && sleep $SLEEP
+terminator -e "watch -n 0.1 jq -C . $PROJECT/net/alpha/mon/evolution_main.json" && sleep $SLEEP
 terminator -e "cd $PROJECT/net/alpha/; ./values.sh" && sleep $SLEEP
 i3-msg split h
 terminator -e "cd $PROJECT/net/alpha/; ./errors.sh" && sleep $SLEEP

@@ -1,2 +1,4 @@
 #!/bin/bash
-./shoggoth --config=net/alpha/ui.json --mon=./mon/ui_main.txt
+./ui \
+--config=./net/alpha/ui.json \
+--mon=./net/alpha/mon/ui_app.json

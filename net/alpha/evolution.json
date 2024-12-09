@@ -1,7 +1,8 @@
 {
     "engine":
     {
-        "enabled"               :true,
+        "enabled"   :true,
+        "trap"      :true,
         "evolution":
         {
             "code":
@@ -13,6 +14,40 @@
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "*"                         : { "log":"ERROR",      "exit":true }
+            },
+
+            "netMode":
+            {
+                "direct":"MODE_UNKNOWN",
+                "config":
+                {
+                    "MODE_UNKNOWN":{},
+                    "MODE_LEARN":
+                    {
+
+                        "maxTick":10000000,
+                        "layers":
+                        {
+                            "retina":
+                            {
+                                "tickSmoth"         : 0.5,
+                                "tickDeltaLimit"    : 2.0,
+                                "tickSmothCount"    : 100
+                            }
+                        }
+                    },
+                    "MODE_TEST":
+                    {
+                        "layers":
+                        {
+                            "test_error":
+                            {
+                                "testTickCount"     : 100,
+                                "testErrorLimit"    : 0.1
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -22,16 +57,10 @@
         "source"                : "SERVER",
         "host"                  : "127.0.0.1",
         "port"                  : 11120,
-        "readWaitingTimeoutMcs" : 500000
-    },
-
-    "criterions":
-    {
-        "retina":
-        {
-            "tickSmoth": 0.5,
-            "tickDeltaLimit": 2.0,
-            "tickSmothCount": 100
-        }
+        "readWaitingTimeoutMcs" : 500000,
+        "methodDump":
+        [
+            "!READ_LAYER_STAT"
+        ]
     }
 }

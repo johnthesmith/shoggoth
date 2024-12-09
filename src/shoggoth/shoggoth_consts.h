@@ -30,15 +30,16 @@ enum NerveType
 */
 enum Action
 {
-    ACTION_UNKNOWN  = 10,
-    READ_VALUES     = 11,
-    WRITE_VALUES    = 12,
-    READ_ERRORS     = 13,
-    WRITE_ERRORS    = 14,
-    SYNC_RESET      = 17,
-    READ_STAT_VALUE = 18,
-    READ_STAT_ERROR = 19,
-    READ_STAT_TICK  = 20
+    ACTION_UNKNOWN                  = 10,
+    READ_VALUES                     = 11,
+    WRITE_VALUES                    = 12,
+    READ_ERRORS                     = 13,
+    WRITE_ERRORS                    = 14,
+    SYNC_RESET                      = 17,
+    READ_STAT_VALUE                 = 18,
+    READ_STAT_ERROR                 = 19,
+    READ_STAT_ERRORS_BEFORE_CHANGE  = 20,
+    READ_STAT_TICK                  = 21
 };
 
 
@@ -146,14 +147,36 @@ enum CalcStage
 
 
 /*
+    Net mode
+    using at command
+        CMD_GET_NET_MODE
+        CMD_SET_NET_MODE
+*/
+enum NetMode
+{
+    /* Unknown mode */
+    NET_MODE_UNKNOWN,
+    /* Learning */
+    NET_MODE_LEARN,
+    /* Test */
+    NET_MODE_TEST,
+    /* Work (calculate) */
+    NET_MODE_WORK
+};
+
+
+
+/*
     Shoggoth protocol commands
 */
 enum Command
 {
     /* Unknown command */
     CMD_UNKNOWN,
-    /* Server return full Net configuration */
+    /* Server returns full Net configuration */
     CMD_READ_NET,
+    /* Server returns current information about net */
+    CMD_READ_NET_INFO,
     /* Server clone net */
     CMD_CLONE_NET,
     /* Server switch to specified net */
@@ -171,7 +194,11 @@ enum Command
     /* Server receive  */
     CMD_WRITE_WEIGHTS,
     /* Server return the layer  */
-    CMD_READ_WEIGHTS
+    CMD_READ_WEIGHTS,
+    /* Request and return net mode from server */
+    CMD_GET_NET_MODE,
+    /* Set net mode for server */
+    CMD_SET_NET_MODE
 };
 
 
@@ -265,6 +292,17 @@ std::string taskToString
 std::string commandToString
 (
     Command
+);
+
+
+
+
+/*
+    Convert command fromstring
+*/
+Command commandFromString
+(
+    std::string
 );
 
 
@@ -421,4 +459,27 @@ Dataview dataviewFromString
 string dataviewToString
 (
     Dataview
+);
+
+
+
+/*
+    Convert Dataview from string
+*/
+NetMode netModeFromString
+(
+    /* String argument for conversion */
+    string,
+    /* Defaule value */
+    NetMode = NET_MODE_UNKNOWN
+);
+
+
+
+/*
+    Convert Dataview to string
+*/
+string netModeToString
+(
+    NetMode
 );

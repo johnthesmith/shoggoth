@@ -11,6 +11,7 @@
 
 #include "../../../../lib/core/application.h"
 #include "../../../../lib/core/result.h"
+#include "../../../../lib/sock/rpc_client.h"
 
 #include "limb/net.h"
 #include "shoggoth_consts.h"
@@ -33,6 +34,20 @@ class Io: public Result
 
         /* For true IO is an owner of the Answer and must destroy it */
         bool        answerOwner = false;
+
+
+        /*
+            Event handlers
+        */
+        void handleBeforeCall
+        (
+            RpcClient*
+        );
+
+        void handleAfterCall
+        (
+            RpcClient*
+        );
 
     public:
 
@@ -216,6 +231,26 @@ class Io: public Result
                 3 - ...
             */
             int
+        );
+
+
+
+        /*
+            Return server net mode
+        */
+        Io* getNetMode
+        (
+            NetMode &
+        );
+
+
+
+        /*
+            Set server net mode
+        */
+        Io* setNetMode
+        (
+            NetMode
         );
 };
 

@@ -21,6 +21,7 @@ std::string actionToString
         case WRITE_ERRORS       : return "WRITE_ERRORS";
         case SYNC_RESET         : return "SYNC_RESET";
         case READ_STAT_ERROR    : return "READ_STAT_ERROR";
+        case READ_STAT_ERRORS_BEFORE_CHANGE    : return "READ_STAT_ERRORS_BEFORE_CHANGE";
         case READ_STAT_VALUE    : return "READ_STAT_VALUE";
         case READ_STAT_TICK     : return "READ_STAT_TICK";
     }
@@ -62,6 +63,7 @@ std::string commandToString
         default:
         case CMD_UNKNOWN        : return "UNKNOWN";
         case CMD_READ_NET       : return "READ_NET";
+        case CMD_READ_NET_INFO  : return "READ_NET_INFO";
         case CMD_CLONE_NET      : return "CLONE_NET";
         case CMD_SWITCH_NET     : return "SWITCH_NET";
         case CMD_WRITE_LAYERS   : return "WRITE_LAYERS";
@@ -71,8 +73,38 @@ std::string commandToString
         case CMD_READ_WEIGHTS   : return "READ_WEIGHTS";
         case CMD_DROP_LAYER_TICK: return "DROP_LAYER_TICK";
         case CMD_READ_LAYER_STAT: return "READ_LAYER_STAT";
+        case CMD_GET_NET_MODE   : return "GET_NET_MODE";
+        case CMD_SET_NET_MODE   : return "SET_NET_MODE";
     }
 }
+
+
+
+/*
+    Convert calculation stage from string
+*/
+Command commandFromString
+(
+    std::string a
+)
+{
+    if( a == "READ_NET" )            return CMD_READ_NET;
+    if( a == "READ_NET_INFO" )       return CMD_READ_NET_INFO;
+    if( a == "CLONE_NET" )           return CMD_CLONE_NET;
+    if( a == "SWITCH_NET" )          return CMD_SWITCH_NET;
+    if( a == "WRITE_LAYERS" )        return CMD_WRITE_LAYERS;
+    if( a == "READ_LAYERS" )         return CMD_READ_LAYERS;
+    if( a == "REQUEST_WEIGHTS" )     return CMD_REQUEST_WEIGHTS;
+    if( a == "WRITE_WEIGHTS" )       return CMD_WRITE_WEIGHTS;
+    if( a == "READ_WEIGHTS" )        return CMD_READ_WEIGHTS;
+    if( a == "DROP_LAYER_TICK" )     return CMD_DROP_LAYER_TICK;
+    if( a == "READ_LAYER_STAT" )     return CMD_READ_LAYER_STAT;
+    if( a == "GET_NET_MODE" )        return CMD_GET_NET_MODE;
+    if( a == "SET_NET_MODE" )        return CMD_SET_NET_MODE;
+
+    return CMD_UNKNOWN;
+}
+
 
 
 
@@ -351,5 +383,46 @@ string dataviewToString
         case DATAVIEW_UNKNOWN   : return "UNKNOWN";
         case DATAVIEW_GRAPH     : return "GRAPH";
         case DATAVIEW_DIGITS    : return "DIGITS";
+    };
+}
+
+
+
+/*
+    Convert Dataview from string
+*/
+NetMode netModeFromString
+(
+    /* String argument for conversion */
+    string aValue,
+    /* Defaule value */
+    NetMode aDefault
+)
+{
+    if( aValue == "MODE_UNKNOWN" )  return NET_MODE_UNKNOWN;
+    if( aValue == "MODE_LEARN" )    return NET_MODE_LEARN;
+    if( aValue == "MODE_TEST" )     return NET_MODE_TEST;
+    if( aValue == "MODE_WORK" )     return NET_MODE_WORK;
+
+    return aDefault;
+}
+
+
+
+/*
+    Convert Dataview to string
+*/
+string netModeToString
+(
+    NetMode a
+)
+{
+    switch( a )
+    {
+        default:
+        case NET_MODE_UNKNOWN   : return "MODE_UNKNOWN";
+        case NET_MODE_LEARN     : return "MODE_LEARN";
+        case NET_MODE_TEST      : return "MODE_TEST";
+        case NET_MODE_WORK      : return "MODE_WORK";
     };
 }

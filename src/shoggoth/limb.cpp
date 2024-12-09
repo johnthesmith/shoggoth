@@ -28,8 +28,8 @@ Limb::Limb
 */
 Limb::~Limb()
 {
-    layers -> clear() -> destroy();
     nerves -> clear() -> destroy();
+    layers -> clear() -> destroy();
 }
 
 
@@ -208,12 +208,12 @@ Limb* Limb::copyTo
 {
     if( aLimb != this )
     {
-        if( lock( aSkipLockThis ))
+        if( lock( /* aSkipLockThis */ ))
         {
-            if( aLimb -> lock( aSkipLockLimb ))
+            if( aLimb -> lock( /* aSkipLockLimb */ ))
             {
                 auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
-                auto nervesIsEqual = nerves -> compare( aLimb -> getNerveList() );
+                auto nervesIsEqual = layersIsEqual && nerves -> compare( aLimb -> getNerveList() );
 
                 if( aStrictSync )
                 {
@@ -252,6 +252,7 @@ Limb* Limb::copyTo
     {
         getLog() -> warning( "UnableLimbItselfCopyTo" );
     }
+
     return this;
 }
 
@@ -426,6 +427,7 @@ Limb* Limb::copyStructureFrom
     LayerList* aSource
 )
 {
+    nerves -> clear();
     layers -> clear();
 
     aSource -> loop
@@ -461,6 +463,7 @@ Layer* Limb::copyLayerFrom
     -> setWeightCalc( aLayerFrom -> getWeightCalc() )
     -> setFrontFunc( aLayerFrom -> getFrontFunc() )
     -> setBackFunc( aLayerFrom -> getBackFunc() )
+    -> setBackFuncOut( aLayerFrom -> getBackFuncOut() )
     -> setSize( aLayerFrom -> getSize() );
 }
 
@@ -731,11 +734,12 @@ Limb* Limb::dump
             << aLayer -> getId()
             << " ("
             << dataToString( aData )
-            << ")"
-            << endl
+            << ") "
             << neuronFuncToStr( aLayer -> getFrontFunc())
             << "/"
             << neuronFuncToStr( aLayer -> getBackFunc())
+            << "/"
+            << neuronFuncToStr( aLayer -> getBackFuncOut())
             << endl
             << calcStageToString( aStage )
             << " #"

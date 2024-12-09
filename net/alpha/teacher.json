@@ -6,15 +6,29 @@
         {
             "code":
             {
-                "ok"                        : { "log":"TRACE",      "timeoutMcs":100000 },
+                "new_batch_learn"           : { "log":"TRACE",      "timeoutMcs":100000 },
+                "new_batch_test"            : { "log":"TRACE",      "timeoutMcs":10000 },
+                "new_batch_work"            : { "log":"TRACE",      "timeoutMcs":10000 },
                 "disabled"                  : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":10000 },
                 "batch_sections_not_found"  : { "log":"WARNING",    "timeoutMcs":5000000 },
+                "batch_is_not_a_object"     : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "*"                         : { "log":"ERROR",      "exit":true }
+            },
+
+            "idErrorLayer"      :"error",
+
+            "netMode":
+            {
+                "MODE_LEARN"    :"learning",
+                "MODE_TEST"     :"testing",
+                "MODE_WORK"     :"reading",
+                "MODE_UNKNOWN"  :"learning"
             }
+
         }
     },
 
@@ -27,9 +41,6 @@
         "readWaitingTimeoutMcs" :500000
     },
 
-    "idErrorLayer"          :"error",
-    "mode"                  :"learning",
-
     "batches":
     {
         "learning":
@@ -37,7 +48,8 @@
             "all":
             [
                 { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
-                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
+                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "test", "min":0.0, "max":0.0 }
             ],
             "list":
             [
@@ -82,6 +94,64 @@
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
                 ]
             ]
+        },
+        "testing":
+        {
+            "all":
+            [
+                { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "test_error", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
+            ],
+            "list":
+            [
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
+                ],
+                [
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+                ]
+            ]
+        },
+        "null":
+        {
+            "all":[],
+            "list":[]
         },
         "reading":
         {

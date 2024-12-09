@@ -86,8 +86,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     ParamList* aResults
 )
 {
-    auto method = aArguments -> getInt( "method" );
-    auto methodStr = commandToString( ( Command ) method );
+    auto methodStr = aArguments -> getString( "method" );
+    auto method = commandFromString( methodStr );
 
     mon
     -> now( Path{ "last", "momentStr" } )
@@ -104,6 +104,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     switch( method )
     {
         case CMD_READ_NET           :readNet( aArguments, aResults); break;
+        case CMD_READ_NET_INFO      :readNetInfo( aArguments, aResults); break;
         case CMD_CLONE_NET          :cloneNet( aArguments, aResults); break;
         case CMD_SWITCH_NET         :switchNet( aArguments, aResults); break;
         case CMD_WRITE_LAYERS       :writeLayers( aArguments, aResults); break;
@@ -113,7 +114,11 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_READ_LAYER_STAT    :readLayerStat( aArguments, aResults); break;
 //        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
 //        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
-        default                 :unknownMethod( aArguments, aResults); break;
+
+        case CMD_GET_NET_MODE       :getNetMode( aArguments, aResults); break;
+        case CMD_SET_NET_MODE       :setNetMode( aArguments, aResults); break;
+
+        default                     :unknownMethod( aArguments, aResults); break;
     }
 
     return this;
@@ -208,6 +213,25 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
 )
 {
     aResults -> copyFrom( net -> getConfig() );
+    setAnswerResult( aResults, RESULT_OK );
+
+    return this;
+}
+
+
+
+/*
+    Request net information
+*/
+ShoggothRpcServer* ShoggothRpcServer::readNetInfo
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    net -> lock();
+    aResults -> setInt( "tick", net -> getTick() );
+    net -> unlock();
     setAnswerResult( aResults, RESULT_OK );
 
     return this;
@@ -336,6 +360,8 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
                         if( validate( buffer != NULL, "DataIsEmpty", aResults ))
                         {
                             layer
+                            /* Write error stat */
+                            -> writeErrorsBeforeChange()
                             -> setValuesFromBuffer( buffer, size )
                             -> dropTickCount();
                         }
@@ -655,6 +681,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayerStat
     buildLayerStatAnswer( aArguments, aResults, "value" );
     buildLayerStatAnswer( aArguments, aResults, "error" );
     buildLayerStatAnswer( aArguments, aResults, "tick" );
+    buildLayerStatAnswer( aArguments, aResults, "errorsBeforeChange" );
 
     return this;
 }
@@ -703,6 +730,9 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
 
                         if( aType == "tick")
                             layer -> getChartTick() -> toBuffer( buffer );
+
+                        if( aType == "errorsBeforeChange")
+                            layer -> getChartErrorsBeforeChange() -> toBuffer( buffer );
 
                         if( buffer != NULL )
                         {
@@ -804,5 +834,59 @@ ShoggothRpcServer* ShoggothRpcServer::readWeights
 //        setAnswerResult( aResults, "NerveWeightDataNotFound" );
 //    }
     setAnswerResult( aResults, "MethodNotEmplimented" );
+    return this;
+}
+
+
+
+
+/*
+    Remote host request net mode
+*/
+ShoggothRpcServer* ShoggothRpcServer::getNetMode
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    /* Reflect arguments */
+    aResults -> copyFrom( aArguments );
+
+    /* Return result */
+    aResults -> setString( "mode", netModeToString( mode ));
+
+    setAnswerResult( aResults, RESULT_OK );
+
+    return this;
+}
+
+
+
+/*
+    Remote host set net mode
+*/
+ShoggothRpcServer* ShoggothRpcServer::setNetMode
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    /* Reflect arguments */
+    aResults -> copyFrom( aArguments );
+
+    /* Change mode */
+    mode = netModeFromString( aResults -> getString( "mode" ));
+
+    /* Reset statistics for new mode */
+    net -> getLayerList() -> loop
+    (
+        []
+        ( void* item )
+        {
+            auto layer = ( Layer* ) item;
+            layer -> getChartErrorsBeforeChange() -> clear();
+            return false;
+        }
+    );
     return this;
 }

@@ -12,9 +12,19 @@ using namespace std;
 
 
 /*
+    Zero function
+*/
+NeuronFunc FUNC_ZERO =
+[]( double x ) -> double
+{
+    return 0;
+};
+
+
+
+/*
     Linear function
 */
-
 NeuronFunc FUNC_LINE =
 []( double x ) -> double
 {
@@ -396,6 +406,7 @@ NeuronFunc* strToFunc
 )
 {
     if( aArgument == "NULL" )           return &FUNC_NULL;
+    if( aArgument == "ZERO" )           return &FUNC_ZERO;
     if( aArgument == "LINE" )           return &FUNC_LINE;
     if( aArgument == "ONE" )            return &FUNC_ONE;
     if( aArgument == "STEP" )           return &FUNC_STEP;
@@ -413,6 +424,7 @@ string neuronFuncToStr
 )
 {
     if( a == &FUNC_NULL )               return "NULL";
+    if( a == &FUNC_ZERO )               return "ZERO";
     if( a == &FUNC_LINE )               return "LINE";
     if( a == &FUNC_ONE )                return "ONE";
     if( a == &FUNC_STEP )               return "STEP";

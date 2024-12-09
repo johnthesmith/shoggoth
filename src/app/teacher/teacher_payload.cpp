@@ -154,8 +154,12 @@ void TeacherPayload::onEngineLoop
 
             auto errorLimit     = getErrorLimit();
             auto idErrorLayer   = getIdErrorLayer();
-            auto mode           = getMode();
             auto batches        = getBatches();
+            auto netMode        = getNetMode(); /* From server */
+            auto mode           = getApplication() -> getConfig() -> getString
+            (
+                Path{ "engine", "teacher", "netMode", netModeToString( netMode )}
+            );
 
             getMon()
             -> startTimer( Path{ "currentMks" })
@@ -164,9 +168,11 @@ void TeacherPayload::onEngineLoop
             -> setString( Path{ "config", "errorLayer" }, idErrorLayer )
             -> setDouble( Path{ "config", "errorLimit" }, errorLimit )
             -> setString( Path{ "config", "mode" }, mode )
+            -> setString( Path{ "config", "netMode" }, netModeToString( netMode ))
             ;
 
             getLog() -> trace( "Check error level" );
+
 
             /* Prepare Limb */
             limb
@@ -198,13 +204,18 @@ void TeacherPayload::onEngineLoop
                 -> setDouble( Path{ "last", "error" }, error )
                 -> setDouble( Path{ "last", "errorDelta" }, error - errorLimit );
 
-                /* Check error limit */
+                /* Select new batch */
                 if
                 (
+                    /* Check error limit */
                     error <= errorLimit ||
+                    /* Change net mode on server */
+                    lastNetMode != netMode ||
+                    /* Change net structure on server */
                     lastChange < limb -> getLastChangeStructure()
                 )
                 {
+                    lastNetMode = netMode;
                     lastChange = limb -> getLastChangeStructure();
 
                     /* Check new batch */
@@ -216,76 +227,90 @@ void TeacherPayload::onEngineLoop
                     if( list != NULL && all != NULL )
                     {
                         auto item = list -> getRnd();
-                        if( item != NULL && item -> isObject() )
+                        if( item != NULL )
                         {
-                            auto batch = ParamList::create()
-                            -> copyFrom( all )
-                            -> copyFrom( item -> getObject() );
-
-                            /* Batch precessing */
-                            batch -> loop
-                            (
-                                [ this ]
-                                ( Param* aParam )
-                                {
-                                    auto obj = aParam -> getObject();
-                                    if( obj != NULL )
-                                    {
-                                        auto command = obj -> getString( "cmd" );
-                                        getLog()
-                                        -> begin( "Command" )
-                                        -> prm( "cmd", command )
-                                        -> dump( obj, "Arguments" );
-
-                                        switch( stringToTeacherTask( command ))
-                                        {
-                                            case TEACHER_CMD_VALUE_TO_LAYER:
-                                                cmdValueToLayer( obj );
-                                            break;
-                                            case TEACHER_CMD_VALUES_TO_LAYER:
-                                                cmdValuesToLayer( obj );
-                                            break;
-                                            case TEACHER_CMD_IMAGE_TO_LAYER:
-                                                cmdImageToLayer( obj );
-                                            break;
-                                            case TEACHER_CMD_FOLDER_TO_LAYER:
-                                                cmdFolderToLayer( obj );
-                                            break;
-                                            case TEACHER_CMD_GUID_TO_LAYER:
-                                            break;
-                                            case TEACHER_CMD_HID_TO_LAYER:
-                                            break;
-                                            default:
-                                                setResult( "Unknown command" )
-                                                -> getDetails()
-                                                -> setString( "command", command );
-                                            break;
-                                        }
-                                        getLog() -> end();
-                                    }
-                                    return false;
-                                }
-                            );
-
-                            /* Destroy the batch */
-                            batch -> destroy();
-
-                            if( isOk() )
+                            if( item -> isObject() )
                             {
-                                /* Upload values and errors to net */
-                                limb -> getNet() -> swapValuesAndErrors
+                                auto batch = ParamList::create()
+                                -> copyFrom( all )
+                                -> copyFrom( item -> getObject() );
+
+                                /* Batch precessing */
+                                batch -> loop
                                 (
-                                    /* Action */
-                                    { WRITE_VALUES, WRITE_ERRORS },
-                                    /* Participant object */
-                                    limb,
-                                    false
+                                    [ this ]
+                                    ( Param* aParam )
+                                    {
+                                        auto obj = aParam -> getObject();
+                                        if( obj != NULL )
+                                        {
+                                            auto command = obj -> getString( "cmd" );
+                                            getLog()
+                                            -> begin( "Command" )
+                                            -> prm( "cmd", command )
+                                            -> dump( obj, "Arguments" );
+
+                                            switch( stringToTeacherTask( command ))
+                                            {
+                                                case TEACHER_CMD_VALUE_TO_LAYER:
+                                                    cmdValueToLayer( obj );
+                                                break;
+                                                case TEACHER_CMD_VALUES_TO_LAYER:
+                                                    cmdValuesToLayer( obj );
+                                                break;
+                                                case TEACHER_CMD_IMAGE_TO_LAYER:
+                                                    cmdImageToLayer( obj );
+                                                break;
+                                                case TEACHER_CMD_FOLDER_TO_LAYER:
+                                                    cmdFolderToLayer( obj );
+                                                break;
+                                                case TEACHER_CMD_GUID_TO_LAYER:
+                                                break;
+                                                case TEACHER_CMD_HID_TO_LAYER:
+                                                break;
+                                                default:
+                                                    setResult( "Unknown command" )
+                                                    -> getDetails()
+                                                    -> setString( "command", command );
+                                                break;
+                                            }
+                                            getLog() -> end();
+                                        }
+                                        return false;
+                                    }
                                 );
+
+                                /* Destroy the batch */
+                                batch -> destroy();
+
+                                if( isOk() )
+                                {
+                                    /* Upload values and errors to net */
+                                    limb -> getNet() -> swapValuesAndErrors
+                                    (
+                                        /* Action */
+                                        { WRITE_VALUES, WRITE_ERRORS },
+                                        /* Participant object */
+                                        limb,
+                                        false
+                                    );
+                                    switch( netMode )
+                                    {
+                                        case NET_MODE_UNKNOWN :
+                                        case NET_MODE_LEARN :setCode("new_batch_learn"); break;
+                                        case NET_MODE_TEST  :setCode("new_batch_test"); break;
+                                        case NET_MODE_WORK  :setCode("new_batch_work"); break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                setCode( "batch_is_not_a_object" );
                             }
                         }
                         else
                         {
-                            setCode( "batch_is_not_a_object" );
+                            setCode( "batch_not_found" );
                         }
                     }
                     else
@@ -302,6 +327,7 @@ void TeacherPayload::onEngineLoop
             else
             {
                 setCode( "error_layer_not_found" );
+                getDetails() -> setString( "layer_id", idErrorLayer );
             }
 
             limb -> unlock();
@@ -339,15 +365,26 @@ double TeacherPayload::getErrorLimit()
 */
 string TeacherPayload::getIdErrorLayer()
 {
-    return getApplication() -> getConfig() -> getString( "idErrorLayer" );
+    return getApplication() -> getConfig() -> getString
+    (
+        Path{ "engine", "teacher", "idErrorLayer" }
+    );
 }
 
 
 
-string TeacherPayload::getMode()
+NetMode TeacherPayload::getNetMode()
 {
-    return getApplication() -> getConfig() -> getString( "mode" );
+    NetMode result;
+
+    Io::create( net )
+    -> getNetMode( result )
+    -> resultTo( this )
+    -> destroy();
+
+    return result;
 }
+
 
 
 
@@ -390,7 +427,7 @@ TeacherPayload* TeacherPayload::cmdValueToLayer
     {
         setResult( "layer_not_found" )
         -> getDetails()
-        -> setString( "id", layerId );
+        -> setString( "layer id", layerId );
     }
 
     limb -> unlock();

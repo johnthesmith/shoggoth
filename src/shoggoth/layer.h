@@ -8,13 +8,14 @@
 
     Table of function using for the type of layers
 
-        layers  FrontFunc   BackFunc    CalcError  CalcWeight Example
+        layers      FrontFuncIn BackFuncIn  BackFuncOut CalcError  CalcWeight Example
         --------------------------------------------------------------------------
-        in      NULL        NULL        NONE       NONE       retina, bias, sample
-        cortex  RELU        ONE         LEARNING   CALC       cortex
-        result  RELU        ONE         LEARNING   CALC       result
-        error   LINE        LINE        VALUE      NONE       error
-        command STEP        NULL        NONE       NONE       command
+        in          NULL        NULL        NULL        NONE       NONE         retina, bias, sample
+        cortex      RELU        ONE         NULL        LEARNING   CALC         cortex
+        result      RELU        ONE         NULL        LEARNING   CALC         result
+        error       LINE        LINE        NULL        VALUE      NONE         error
+        command     STEP        NULL        NULL        NONE       NONE         command
+        errorTest   LINE        LINE        ZERO        VALUE      NONE         errorTest
 */
 
 
@@ -97,6 +98,8 @@ class Layer : public Result
             Statistics block
         */
         ChartData*      chartTick               = NULL;
+        /* List of layer errors before layer uploaded by other participants */
+        ChartData*      chartErrorsBeforeChange = NULL;
         ChartData*      chartValues             = NULL;
         ChartData*      chartErrors             = NULL;
 
@@ -113,10 +116,12 @@ class Layer : public Result
 
     public:
 
-        /* Function activation */
+        /* Forward in function (activation) */
         NeuronFunc*     frontFunc               = &FUNC_NULL;
-        /* Learning function */
+        /* Backward in function */
         NeuronFunc*     backFunc                = &FUNC_NULL;
+        /* Learning function */
+        NeuronFunc*     backFuncOut             = &FUNC_NULL;
 
         /*
             Constructor
@@ -550,7 +555,7 @@ class Layer : public Result
 
 
         /*
-            Set front function for the layer
+            Set front in function for the layer
         */
         Layer* setFrontFunc
         (
@@ -564,7 +569,7 @@ class Layer : public Result
 
 
         /*
-            Set back function for the layer
+            Set back in function for the layer
         */
         Layer* setBackFunc
         (
@@ -572,7 +577,22 @@ class Layer : public Result
         );
 
 
+
         NeuronFunc* getBackFunc();
+
+
+
+        /*
+            Set back out function for the layer
+        */
+        Layer* setBackFuncOut
+        (
+            NeuronFunc*
+        );
+
+
+
+        NeuronFunc* getBackFuncOut();
 
 
 
@@ -609,9 +629,17 @@ class Layer : public Result
 
 
 
+        /*
+            Drop tick count
+        */
+        Layer* writeErrorsBeforeChange();
+
+
+
         ChartData* getChartTick();
         ChartData* getChartValues();
         ChartData* getChartErrors();
+        ChartData* getChartErrorsBeforeChange();
 
 
 

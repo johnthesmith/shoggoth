@@ -213,7 +213,7 @@ class NerveList :  public Heap
         */
         NerveList* dump
         (
-            string aComment
+            string aComment = ""
         );
 
 

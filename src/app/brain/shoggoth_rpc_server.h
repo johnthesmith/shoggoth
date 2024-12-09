@@ -18,6 +18,9 @@ class ShoggothRpcServer : public RpcServer
         /* Monitor object */
         Mon*    mon = NULL;
 
+        /* Servers net mode */
+        NetMode mode = NET_MODE_UNKNOWN;
+
     public:
 
         /*
@@ -115,10 +118,22 @@ class ShoggothRpcServer : public RpcServer
 
 
 
+
         /*
-            Remote host send net configuration
+            Remote host requests net configuration
         */
         ShoggothRpcServer* readNet
+        (
+            ParamList* aArguments,
+            ParamList* aResults
+        );
+
+
+
+        /*
+            Remote host requests net information
+        */
+        ShoggothRpcServer* readNetInfo
         (
             ParamList* aArguments,
             ParamList* aResults
@@ -222,6 +237,28 @@ class ShoggothRpcServer : public RpcServer
             Remote host request statistics for the layer
         */
         ShoggothRpcServer* readLayerStat
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
+        /*
+            Remote host request net mode
+        */
+        ShoggothRpcServer* getNetMode
+        (
+            ParamList*, /* Arguments */
+            ParamList*  /* Results */
+        );
+
+
+
+        /*
+            Remote host set net mode
+        */
+        ShoggothRpcServer* setNetMode
         (
             ParamList*, /* Arguments */
             ParamList*  /* Results */

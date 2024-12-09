@@ -11,6 +11,7 @@ typedef function <double ( double )> NeuronFunc;
 /* Neural net functions */
 
 extern NeuronFunc FUNC_NULL;
+extern NeuronFunc FUNC_ZERO;
 extern NeuronFunc FUNC_LINE;
 extern NeuronFunc FUNC_IDENTITY;
 extern NeuronFunc FUNC_STEP;

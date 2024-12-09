@@ -9,6 +9,7 @@
 *~
 *.o
 .shab
+*.log
 
 # Exclude neuronet out files
 **/mon

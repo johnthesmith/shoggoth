@@ -116,7 +116,8 @@ void Processor::onLoop()
     -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
     -> dumpResult( Path{ "result" }, this )
-    -> flush();
+    -> flush()
+    ;
 }
 
 

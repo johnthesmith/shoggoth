@@ -60,6 +60,7 @@
 
             "functionFront"     :"NULL",
             "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
@@ -84,6 +85,7 @@
 
             "functionFront"     :"RELU",
             "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
@@ -106,6 +108,7 @@
 
             "functionFront"     :"NULL",
             "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
@@ -117,7 +120,7 @@
                 "PROC"      : [ "READ_VALUES" ],
                 "UI"        : [ "READ_VALUES" ],
                 "TEACHER"   : [ "WRITE_VALUES"],
-                "EVOLUTION" : [ "READ_STAT_TICK"]
+                "EVOLUTION" : []
             }
         },
 
@@ -128,6 +131,7 @@
 
             "functionFront"     :"RELU",
             "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
@@ -150,6 +154,7 @@
 
             "functionFront"     :"RELU",
             "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"LEARNING",
             "weightCalc"        :"CALC",
 
@@ -171,7 +176,8 @@
             "type"              :"in",
 
             "functionFront"     :"NULL",
-            "functionBack"      :"NULLwatch?v=Oscwrtso5YI",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
@@ -194,6 +200,7 @@
 
             "functionFront"     :"STEP",
             "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"NONE",
             "weightCalc"        :"NONE",
 
@@ -214,6 +221,7 @@
 
             "functionFront"     :"LINE",
             "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
             "errorCalc"         :"VALUE",
             "weightCalc"        :"NONE",
 
@@ -227,13 +235,80 @@
                 "TEACHER"   : [ "READ_VALUES", "WRITE_VALUES" ],
                 "EVOLUTION" : [ "READ_VALUES" ]
             }
+        },
+
+        "test_error":
+        {
+            "name"              :"Error of Test",
+            "type"              :"test_error",
+
+            "functionFront"     :"LINE",
+            "functionBack"      :"ONE",
+            "functionBackOut"   :"ZERO",
+            "errorCalc"         :"VALUE",
+            "weightCalc"        :"NONE",
+
+            "size"              :[ 10, 1, 1],
+            "position"          :[ 0.0, -1.0, 3.0 ],
+
+            "actions":
+            {
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   : [ "WRITE_VALUES" ],
+                "EVOLUTION" : [ "READ_VALUES", "READ_STAT_TICK", "READ_STAT_ERRORS_BEFORE_CHANGE" ]
+            }
+        },
+
+        "test":
+        {
+            "name"              :"Test",
+            "type"              :"in",
+
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
+            "size"              :[ 10, 1, 1 ],
+            "position"          :[ 0.0, 0.0, 4.0 ],
+
+            "actions":
+            {
+                "PROC"      : [ "READ_VALUES" ],
+                "UI"        : [ "READ_VALUES" ],
+                "EVOLUTION" : [ "READ_VALUES" ],
+                "TEACHER"   : [ "WRITE_VALUES" ]
+            }
+        },
+
+        "test_command":
+        {
+            "name"              :"Command test",
+            "type"              :"command",
+
+            "functionFront"     :"STEP",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+
+            "size"              :[ 1, 1, 1 ],
+            "position"          :[ 0.0, -2.0, 3.5 ],
+
+            "actions":
+            {
+                "PROC"      : [ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        : [ "READ_VALUES", "READ_ERRORS" ]
+            }
         }
     },
 
     "nerves":
     [
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"retina",
             "idTo"              :"cortex_1",
             "nerveType"         :"ALL_TO_ALL",
@@ -243,7 +318,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"cortex_1",
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
@@ -253,7 +328,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"bias",
             "idTo"              :"cortex_1",
             "nerveType"         :"ALL_TO_ALL",
@@ -263,7 +338,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"bias",
             "idTo"              :"cortex_2",
             "nerveType"         :"ALL_TO_ALL",
@@ -273,7 +348,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"cortex_2",
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
@@ -283,7 +358,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"bias",
             "idTo"              :"result",
             "nerveType"         :"ALL_TO_ALL",
@@ -293,7 +368,7 @@
         },
 
         {
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"result",
             "idTo"              :"error",
             "nerveType"         :"ONE_TO_ONE",
@@ -304,7 +379,7 @@
 
         {
             "description"       :"Formering the command signal",
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"sample",
             "idTo"              :"command",
             "nerveType"         :"ALL_TO_ALL",
@@ -315,7 +390,7 @@
 
         {
             "desciption"        :"Turn on/off the error layer",
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"command",
             "idTo"              :"error",
             "nerveType"         :"ALL_TO_ALL",
@@ -326,13 +401,59 @@
 
         {
             "description"       :"Calculate error for sample",
-            "uses"              :[ "proc", "ui" ],
+            "uses"              :[ "PROC", "UI" ],
             "idFrom"            :"sample",
             "idTo"              :"error",
             "nerveType"         :"ONE_TO_ONE",
             "bindType"          :"ADD",
             "minWeight"         :-1.0,
             "maxWeight"         :-1.0
+        },
+
+        {
+            "description"       :"Conducts the result values in to test block",
+            "uses"              :[ "PROC", "UI" ],
+            "idFrom"            :"result",
+            "idTo"              :"test_error",
+            "nerveType"         :"ONE_TO_ONE",
+            "bindType"          :"ADD",
+            "minWeight"         :1.0,
+            "maxWeight"         :1.0
+        },
+
+        {
+            "description"       :"Calculate error for test",
+            "uses"              :[ "PROC", "UI" ],
+            "idFrom"            :"test",
+            "idTo"              :"test_error",
+            "nerveType"         :"ONE_TO_ONE",
+            "bindType"          :"ADD",
+            "minWeight"         :-1.0,
+            "maxWeight"         :-1.0
+        },
+
+
+        {
+            "description"       :"Formering the test command signal",
+            "uses"              :[ "PROC", "UI" ],
+            "idFrom"            :"test",
+            "idTo"              :"test_command",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"ADD",
+            "minWeight"         :1.0,
+            "maxWeight"         :1.0
+        },
+
+        {
+            "desciption"        :"Turn on/off the test error layer",
+            "uses"              :[ "PROC", "UI" ],
+            "idFrom"            :"test_command",
+            "idTo"              :"test_error",
+            "nerveType"         :"ALL_TO_ALL",
+            "bindType"          :"MUL",
+            "minWeight"         :1.0,
+            "maxWeight"         :1.0
         }
+
     ]
 }

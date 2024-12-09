@@ -32,6 +32,11 @@ class EvolutionPayload : public PayloadEngine
         /* State */
         long int    lastConfigCheck = 0;
 
+        double      lastTestError = 0.0;
+
+        /* Count of last test tryes */
+//        int         lastTestCount = 0;
+
     public:
 
         /*
@@ -110,4 +115,36 @@ class EvolutionPayload : public PayloadEngine
             const bool,
             const bool
         ) override;
+
+
+
+        /******************************************************************************
+            Actions methods
+        */
+
+        /*
+            Switch server net in to Learn mode
+        */
+        EvolutionPayload* netSwitchToLearn();
+
+
+
+        /*
+            Switch server net in to Learn mode
+        */
+        EvolutionPayload* netSwitchToTest();
+
+
+
+        /*
+            Rollback net
+        */
+        EvolutionPayload* netRollback();
+
+
+
+        /*
+            Mutate net
+        */
+        EvolutionPayload* netMutate();
 };

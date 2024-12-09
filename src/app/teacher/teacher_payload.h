@@ -7,14 +7,16 @@
         still@itserv.ru
         igor_ptx@gmail.com
 */
-
 #pragma once
+
 
 
 /* Local libraries */
 #include "../../../../../lib/json/json.h"
 #include "../../../../../lib/core/payload_engine.h"
 #include "../../shoggoth/limb/net.h"
+
+
 
 /* Local libraries */
 #include "./limb_teacher.h"
@@ -34,7 +36,7 @@ class TeacherPayload : public PayloadEngine
         LimbTeacher*    limb            = NULL;
 
         long long       lastChange      = 0;
-
+        NetMode         lastNetMode     = NET_MODE_UNKNOWN;
 
     public:
 
@@ -131,7 +133,7 @@ class TeacherPayload : public PayloadEngine
         /*
             Return name of mode for batches from application config
         */
-        string getMode();
+        NetMode getNetMode();
 
 
 
@@ -181,3 +183,7 @@ class TeacherPayload : public PayloadEngine
             ParamList*
         );
 };
+
+
+
+

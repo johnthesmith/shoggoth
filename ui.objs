@@ -1,0 +1,67 @@
+# Core libraries
+OBJECT_PATH/utils.o
+OBJECT_PATH/result.o
+OBJECT_PATH/log_manager.o
+OBJECT_PATH/log.o
+OBJECT_PATH/heap.o
+OBJECT_PATH/mon.o
+OBJECT_PATH/moment.o
+OBJECT_PATH/math.o
+OBJECT_PATH/rnd.o
+OBJECT_PATH/rnd_obj.o
+OBJECT_PATH/str.o
+OBJECT_PATH/text.o
+OBJECT_PATH/buffer_to_hex.o
+OBJECT_PATH/chain_d1.o
+OBJECT_PATH/buffer_d1.o
+OBJECT_PATH/chain_item_d1.o
+OBJECT_PATH/chain_item.o
+OBJECT_PATH/chain.o
+OBJECT_PATH/chart_data.o
+OBJECT_PATH/chart_list.o
+
+# Json
+OBJECT_PATH/json.o
+OBJECT_PATH/param.o
+OBJECT_PATH/param_list.o
+OBJECT_PATH/param_list_file.o
+
+#Sock libraries
+OBJECT_PATH/sock.o
+OBJECT_PATH/sock_manager.o
+OBJECT_PATH/sock_buffer_item.o
+OBJECT_PATH/sock_buffer.o
+OBJECT_PATH/sock_rpc.o
+OBJECT_PATH/rpc_client.o
+OBJECT_PATH/rpc_server.o
+
+# Graph and math
+OBJECT_PATH/point3i.o
+OBJECT_PATH/gauss.o
+OBJECT_PATH/param_point.o
+
+##############################################################################
+# Application
+
+OBJECT_PATH/application.o
+OBJECT_PATH/payload.o
+OBJECT_PATH/payload_engine.o
+
+OBJECT_PATH/func.o
+OBJECT_PATH/net.o
+OBJECT_PATH/nerve_list.o
+OBJECT_PATH/nerve.o
+OBJECT_PATH/limb.o
+OBJECT_PATH/weights_exchange.o
+OBJECT_PATH/io.o
+OBJECT_PATH/layer_list.o
+OBJECT_PATH/layer.o
+OBJECT_PATH/shoggoth_consts.o
+OBJECT_PATH/shoggoth_application.o
+
+
+##############################################################################
+
+OBJECT_PATH/ui_application.o
+#OBJECT_PATH/evolution_payload.o
+OBJECT_PATH/ui.o

@@ -1,6 +1,4 @@
 #include "io.h"
-#include "../../../../lib/sock/rpc_client.h"
-
 
 using namespace std;
 
@@ -79,10 +77,6 @@ Io* Io::call
 {
     if( this -> isOk() )
     {
-        getLog()
-        -> begin( "Call RPC" )
-        -> prm( "command", commandToString( aCommand ));
-
         auto config = getApplication()
         -> getConfig()
         -> selectObject( Path { "io" });
@@ -113,12 +107,16 @@ Io* Io::call
                 net -> getSockManager(),
                 host,
                 port
-            );
+            )
+            -> setOnBeforeCall( [ this ]( RpcClient* a ){ handleBeforeCall( a ); } )
+            -> setOnAfterCall( [ this ]( RpcClient* a ){ handleAfterCall( a ); } )
+            ;
+
             client -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
             client
             -> setRequest( request )
             -> setAnswer( answer )
-            -> call( aCommand )
+            -> call( commandToString( aCommand ))
             -> resultTo( this )
             -> destroy();
         }
@@ -136,8 +134,6 @@ Io* Io::call
             -> dump( request, "request" )
             -> lineEnd();
         }
-
-        getLog() -> end();
     }
 
     return this;
@@ -452,5 +448,97 @@ Io* Io::mutateAndSwitch
     }
     return this;
 }
+
+
+
+
+/*
+    Return server net mode
+*/
+Io* Io::getNetMode
+(
+    NetMode &a
+)
+{
+    if( this -> isOk() )
+    {
+        call( CMD_GET_NET_MODE );
+        a = netModeFromString( answer -> getString( "mode" ));
+    }
+    return this;
+}
+
+
+
+/*
+    Set server net mode
+*/
+Io* Io::setNetMode
+(
+    NetMode a
+)
+{
+    if( this -> isOk() )
+    {
+        request -> setString( "mode", netModeToString( a ));
+        call( CMD_SET_NET_MODE );
+    }
+    return this;
+}
+
+
+/*
+    Event handlers
+*/
+
+
+void Io::handleBeforeCall
+(
+    RpcClient* a
+)
+{
+
+    if
+    (
+        getApplication()
+        -> getConfig()
+        -> valueExists
+        (
+            Path{ "io", "methodDump" },
+            a -> getRequest() -> getString( "method")
+        )
+    )
+    {
+        getLog()
+        -> begin( "Call RPC" ) /* End of log in the Io::handleAfterCall */
+        -> dump( a -> getRequest(), "Request" )
+        ;
+    }
+}
+
+
+
+void Io::handleAfterCall
+(
+    RpcClient* a
+)
+{
+    if
+    (
+        getApplication()
+        -> getConfig()
+        -> valueExists
+        (
+            Path{ "io", "methodDump" },
+            a -> getRequest() -> getString( "method")
+        )
+    )
+    {
+        getLog()
+        -> dump( a -> getAnswer(), "Response" )
+        -> end();
+    }
+}
+
 
 

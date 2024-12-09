@@ -113,7 +113,10 @@ LimbProcessor* LimbProcessor::calc()
     auto fpsBegin = now();
 
     /* Increase the tick */
-    tick ++;
+    net -> incTick();
+
+    /* Check structure with net */
+    net -> syncToLimb( this, false );
 
     /*
         Calculation begin
@@ -126,11 +129,8 @@ LimbProcessor* LimbProcessor::calc()
     -> setDouble( Path{ "config", "minWeight" }, minWeight )
     -> setDouble( Path{ "config", "maxWeight" }, maxWeight )
     -> setDouble( Path{ "config", "maxError" }, maxError )
-    -> setInt( Path{ "current", "tick" }, tick )
+    -> setInt( Path{ "current", "tick" }, net -> getTick() )
     ;
-
-    /* Check structure with net */
-    net -> syncToLimb( this, false );
 
     net -> lock();
     auto seed = net -> getSeed();
@@ -246,7 +246,7 @@ LimbProcessor* LimbProcessor::calc()
         !terminated &&
         net -> getLastChangeValues() == netLastChangeValues &&
         tickWrite != 0 &&
-        tick % tickWrite == 0
+        net -> getTick() % tickWrite == 0
     )
     {
         getNerveList() -> loop
@@ -272,8 +272,6 @@ LimbProcessor* LimbProcessor::calc()
         );
     }
 
-
-
     /* Move calculated data to net */
     if
     (
@@ -282,8 +280,6 @@ LimbProcessor* LimbProcessor::calc()
     )
     {
         net
-        /* Let the net tick number from the processor tick */
-        -> setTick( tick )
         /* Swap values and errors */
         -> swapValuesAndErrors
         (
@@ -340,6 +336,12 @@ LimbProcessor* LimbProcessor::calc()
                 (
                     Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
                     layer -> getChartTick() -> toString( 40 )
+                )
+
+                -> setString
+                (
+                    Path{ "errorsBeforeChange", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    layer -> getChartErrorsBeforeChange() -> toString( 40 )
                 )
                 ;
 
@@ -628,8 +630,11 @@ LimbProcessor* LimbProcessor::neuronCalcError
                     int aWeightIndex    /* Not use */
                 ) -> bool
                 {
-
-                    error += aChild -> getNeuronError( aChildIndex ) * aWeight;
+                    /* Use the back func out for outgoing error */
+                    error += (*( aChild -> backFuncOut ))
+                    (
+                         aChild -> getNeuronError( aChildIndex )
+                    ) * aWeight;
                     return terminated;
                 }
             );
