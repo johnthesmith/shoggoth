@@ -25,7 +25,7 @@
                     "MODE_LEARN":
                     {
 
-                        "maxTick":10000000,
+                        "maxTick":1000,
                         "layers":
                         {
                             "retina":
@@ -42,8 +42,9 @@
                         {
                             "test_error":
                             {
-                                "testTickCount"     : 100,
-                                "testErrorLimit"    : 0.1
+                                "testTickCount"         : 100,
+                                "testErrorLimit"        : 0.1,
+                                "testSuccessCoeffitient": 0.99
                             }
                         }
                     }
@@ -60,6 +61,7 @@
         "readWaitingTimeoutMcs" : 500000,
         "methodDump":
         [
+            "!SET_NET_MODE",
             "!READ_LAYER_STAT"
         ]
     }

@@ -167,8 +167,14 @@ void EvolutionPayload::onEngineLoop
             );
 
             getMon()
-            -> setString( Path{ "config", "netMode", "server" }, netModeToString( netMode ) )
-            -> setString( Path{ "config", "netMode", "direct" }, netModeToString( directNetMode ) );
+            -> setString
+            (
+                Path{ "config", "netMode", "server" }, netModeToString( netMode )
+            )
+            -> setString
+            (
+                Path{ "config", "netMode", "direct" }, netModeToString( directNetMode )
+            );
 
             if( directNetMode != NET_MODE_UNKNOWN && directNetMode != netMode )
             {
@@ -176,15 +182,31 @@ void EvolutionPayload::onEngineLoop
                 {
                     case NET_MODE_UNKNOWN: break;
                     case NET_MODE_WORK: break;
-                    case NET_MODE_LEARN: netSwitchToLearn(); break;
-                    case NET_MODE_TEST: netSwitchToTest(); break;
+                    case NET_MODE_LEARN:
+                        netSwitchToLearn
+                        (
+                            ParamList::shared().get()
+                            -> setString( "type", "EVOLUTION_CONFIG" )
+                        );
+                    break;
+                    case NET_MODE_TEST:
+                        netSwitchToLearn
+                        (
+                            ParamList::shared().get()
+                            -> setString( "type", "EVOLUTION_CONFIG" )
+                        );
+                    break;
                 }
             }
             else
             {
                 if( netMode == NET_MODE_UNKNOWN )
                 {
-                    netSwitchToLearn();
+                    netSwitchToLearn
+                    (
+                        ParamList::shared().get()
+                        -> setString( "type", "EVOLUTION_START" )
+                    );
                 }
                 else
                 {
@@ -234,14 +256,18 @@ void EvolutionPayload::onEngineLoop
                                         case NET_MODE_WORK:
                                         case NET_MODE_UNKNOWN:
                                         break;
-
                                         case NET_MODE_LEARN:
                                         {
                                             if( isnan( layer -> calcSumValue()) )
                                             {
                                                 /* Checking the NAN criterion */
-                                                netRollback();
-                                                netSwitchToLearn();
+                                                commitNet
+                                                (
+                                                    false,
+                                                    ParamList::shared().get()
+                                                    -> setString( "type", "EVOLUTION_NAN" )
+                                                );
+
                                                 getLog() -> info( "Result" )
                                                 -> prm( "layer", layer -> getId() )
                                                 -> prm( "reason", "is_nan" );
@@ -274,19 +300,6 @@ void EvolutionPayload::onEngineLoop
                                                     smoth -> toString( 40 )
                                                 );
 
-/*
-TODO 
-Эволюшен должен собрать статистику и информаировать сервер который меняетсеть
-указать причину завершения обучения сети
-указать результат тестирования сети
-сервер должен это все бережно собрать и сохранить в конфигурацию сети как отчет
-те для мутации и для переключения моды должно быть пояснение со стороны того кто это делает
-почему выполняется мутация
-почему переключается режим
-почему выполняется ролбек
-с какими параметрами.
-*/
-
                                                 if
                                                 (
                                                     cfgMaxTick < net -> getTick() ||
@@ -296,10 +309,17 @@ TODO
                                                     )
                                                 )
                                                 {
-                                                    netSwitchToTest();
+                                                    netSwitchToTest
+                                                    (
+                                                        ParamList::shared().get()
+                                                        -> setString( "type", "LEARNING_LIMIT" )
+                                                        -> setInt( "cfgMaxTick", cfgMaxTick )
+                                                        -> setString( "layer", layer -> getId() )
+                                                    );
+
                                                     getLog() -> trace( "Result" )
                                                     -> prm( "layer", layer -> getId() )
-                                                    -> prm( "reason", "learning_limit" );
+                                                    -> prm( "reason", "LEARNINT_LIMIT" );
                                                 }
 
                                                 /* Destroy the smoth */
@@ -308,26 +328,7 @@ TODO
                                         }
                                         break;
 
-                                        case NET_MODE_TEST:
-                                        {
-                                            /* Read config */
-                                            auto configTestTickCount = cfg -> getInt( "testTickCount" );
-                                            auto configTestErrorLimit = cfg -> getInt( "testErrorLimit" );
-                                            auto chart = layer -> getChartErrorsBeforeChange();
-
-                                            if( chart -> getMaxY() > configTestErrorLimit )
-                                            {
-                                                netRollback();
-                                                netSwitchToLearn();
-                                            }
-
-                                            if( chart -> getCount() > configTestTickCount )
-                                            {
-                                                netMutate();
-                                                netSwitchToLearn();
-                                            }
-                                        }
-                                        break;
+                                        case NET_MODE_TEST: testStage( layer, cfg ); break;
                                     }   /*  End of net mode case */
                                 } /* Unknown layer */
                                 return false;
@@ -382,6 +383,51 @@ TODO
 
 
 
+/*
+    Test stage of the evolutio loop
+*/
+EvolutionPayload* EvolutionPayload::testStage
+(
+    Layer* aLayer,
+    ParamList* aConfig
+)
+{
+    if(  net -> getTick() != lastNetTick )
+    {
+        /* Change last tick */
+        lastNetTick = net -> getTick();
+
+        /* Read config */
+        auto configTestTickCount = aConfig -> getInt( "testTickCount" );
+        auto configTestErrorLimit = aConfig -> getInt( "testErrorLimit" );
+        auto chart = aLayer -> getChartErrorsBeforeChange();
+        auto configTestSuccessCoefficient = aConfig -> getDouble( "testSuccessCoefficient", 1.0 );
+
+
+        /* Calc current quality */
+        testSuccessCount += chart -> getMaxY() > configTestErrorLimit ? 0 : 1;
+
+        /* Quantity check */
+        if( chart -> getCount() > configTestTickCount )
+        {
+            /* Quality test */
+            auto testSuccessCoefficient = testSuccessCount / configTestTickCount;
+            auto success = testSuccessCoefficient >= configTestSuccessCoefficient;
+            commitNet
+            (
+                success,
+                ParamList::shared().get()
+                -> setDouble( "testCount", chart -> getCount() )
+                -> setDouble( "testSuccessCount", testSuccessCount )
+                -> setDouble( "testSuccessCoeffitient", testSuccessCoefficient )
+                -> setDouble( "configTestSuccessCoeffitient", configTestSuccessCoefficient )
+            );
+        }
+    }
+    return this;
+}
+
+
 
 /******************************************************************************
     Actions methods
@@ -392,10 +438,13 @@ TODO
 /*
     Switch server net in to Learn mode
 */
-EvolutionPayload* EvolutionPayload::netSwitchToLearn()
+EvolutionPayload* EvolutionPayload::netSwitchToLearn
+(
+    ParamList* aReason
+)
 {
     Io::create( net )
-    -> setNetMode( NET_MODE_LEARN )
+    -> setNetMode( NET_MODE_LEARN, aReason )
     -> resultTo( this )
     -> destroy();
 
@@ -407,12 +456,22 @@ EvolutionPayload* EvolutionPayload::netSwitchToLearn()
 /*
     Switch server net in to Learn mode
 */
-EvolutionPayload* EvolutionPayload::netSwitchToTest()
+EvolutionPayload* EvolutionPayload::netSwitchToTest
+(
+    ParamList* aReason
+)
 {
+    //
     Io::create( net )
-    -> setNetMode( NET_MODE_TEST )
+    -> setNetMode( NET_MODE_TEST, aReason )
     -> resultTo( this )
     -> destroy();
+
+    if( this -> isOk() )
+    {
+        /* Reset test success */
+        testSuccessCount = 0;
+    }
 
     return this;
 }
@@ -420,21 +479,35 @@ EvolutionPayload* EvolutionPayload::netSwitchToTest()
 
 
 /*
-    Rollback net
+    Commit net
 */
-EvolutionPayload* EvolutionPayload::netRollback()
+EvolutionPayload* EvolutionPayload::commitNet
+(
+    bool aSuccess,
+    ParamList* aReason
+)
 {
-    getLog() -> info( "action" ) -> prm( "state", "Rollback" );
+    getLog()
+    -> info( "net commit" )
+    -> prm( "success", aSuccess )
+    -> dump( aReason );
 
     /* Clone parent net */
-    Io::create( net )
-    -> mutateAndSwitch( 1 /*.... ? 1 : 2 */ )
+    auto io = Io::create( net );
+    io -> getRequest()
+    -> setBool( "success", aSuccess )
+    -> copyFrom( "reason", aReason )
+    -> setString( "id", net -> getId())
+    -> setString( "version", net -> getVersion());
+
+    io
+    -> call( CMD_COMMIT_NET )
     -> resultTo( this )
     -> destroy();
 
     if( isOk() )
     {
-        setResult( "evolution_rollback" );
+        setResult( aSuccess ? "evolution_commit" : "evolution_rollback" );
     }
 
     return this;
@@ -442,22 +515,3 @@ EvolutionPayload* EvolutionPayload::netRollback()
 
 
 
-/*
-    Mutate net
-*/
-EvolutionPayload* EvolutionPayload::netMutate()
-{
-    getLog() -> info( "action" ) -> prm( "state", "Mutate" );
-    /* Clone net */
-    Io::create( net )
-    -> mutateAndSwitch( 0 )
-    -> resultTo( this )
-    -> destroy();
-
-    if( isOk() )
-    {
-        setResult( "evolution_mutate" );
-    }
-
-    return this;
-}

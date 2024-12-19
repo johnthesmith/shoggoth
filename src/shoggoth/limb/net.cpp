@@ -38,6 +38,8 @@ Net::Net
 
     application -> getLog() -> trace( "Create net" );
 
+    mon = Mon::create( getMonFile() );
+
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
 }
@@ -49,6 +51,9 @@ Net::Net
 */
 Net::~Net()
 {
+    /* Destroy monitoring */
+    mon -> destroy();
+
     /* Weights exchanger destoy */
     weightsExchange -> destroy();
 
@@ -1136,6 +1141,13 @@ Net* Net::applyNet
                 return false;
             }
         );
+
+        mon
+        -> setFile( getMonFile() )
+        -> now( Path{ "created" })
+        -> setString( Path{ "id" }, id )
+        -> setString( Path{ "version" }, version )
+        -> flush();
     }
 
     return this;
@@ -1194,7 +1206,11 @@ string Net::getNetVersionPath
 )
 {
     aVersion = aVersion == "" ? version : aVersion;
-    return getNetPath( "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ));
+    return getNetPath
+    (
+        "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ),
+        aId
+    );
 }
 
 
@@ -1309,6 +1325,24 @@ string Net::getWeightsPath
     );
 }
 
+
+
+/*
+    Return net monitoring file
+*/
+string Net::getMonFile
+(
+    string aVersion,    /* Specific version */
+    string aId          /* Net id */
+)
+{
+    return getNetVersionPath
+    (
+        "/mon/" + taskToString( task ) + ".json",
+        aVersion,
+        aId
+    );
+}
 
 
 /******************************************************************************
@@ -2046,4 +2080,11 @@ Net* Net::incTick()
     tick++;
     unlock();
     return this;
+}
+
+
+
+Mon* Net::getMon()
+{
+    return mon;
 }

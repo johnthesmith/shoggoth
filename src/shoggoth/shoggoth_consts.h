@@ -177,6 +177,8 @@ enum Command
     CMD_READ_NET,
     /* Server returns current information about net */
     CMD_READ_NET_INFO,
+    /* Commit net*/
+    CMD_COMMIT_NET,
     /* Server clone net */
     CMD_CLONE_NET,
     /* Server switch to specified net */

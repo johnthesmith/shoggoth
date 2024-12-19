@@ -105,6 +105,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     {
         case CMD_READ_NET           :readNet( aArguments, aResults); break;
         case CMD_READ_NET_INFO      :readNetInfo( aArguments, aResults); break;
+        case CMD_COMMIT_NET         :commitNet( aArguments, aResults); break;
         case CMD_CLONE_NET          :cloneNet( aArguments, aResults); break;
         case CMD_SWITCH_NET         :switchNet( aArguments, aResults); break;
         case CMD_WRITE_LAYERS       :writeLayers( aArguments, aResults); break;
@@ -112,12 +113,10 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_REQUEST_WEIGHTS    :requestWeights( aArguments, aResults); break;
         case CMD_DROP_LAYER_TICK    :dropLayerTick( aArguments, aResults); break;
         case CMD_READ_LAYER_STAT    :readLayerStat( aArguments, aResults); break;
-//        case CMD_WRITE_WEIGHTS  :writeWeights( aArguments, aResults); break;
-//        case CMD_READ_WEIGHTS   :readWeights( aArguments, aResults); break;
-
+//        case CMD_WRITE_WEIGHTS      :writeWeights( aArguments, aResults); break;
+//        case CMD_READ_WEIGHTS       :readWeights( aArguments, aResults); break;
         case CMD_GET_NET_MODE       :getNetMode( aArguments, aResults); break;
         case CMD_SET_NET_MODE       :setNetMode( aArguments, aResults); break;
-
         default                     :unknownMethod( aArguments, aResults); break;
     }
 
@@ -304,6 +303,94 @@ ShoggothRpcServer* ShoggothRpcServer::switchNet
 
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
+
+    return this;
+}
+
+
+
+/*
+    Commit net
+        generation
+            0 - commit success
+            1 - commit with rollback net rollback to previous generation
+*/
+ShoggothRpcServer* ShoggothRpcServer::commitNet
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    /* Dump arguments */
+    getLog() -> info( "Commit net argument" ) -> dump( aArguments );
+
+    /* Read arguments */
+    auto id = aArguments -> getString( "id", "" );
+    auto version = aArguments -> getString( "version", "" );
+    auto reason = aArguments -> getByName( Path{ "reason" });
+    auto success = aArguments -> getBool( Path{ "success" });
+
+    if
+    (
+        /* Arguments validation */
+        validate( id != "", "IdNetIsEmpty", aResults ) &&
+        validate( version != "", "VersionNetIsEmpty", aResults ) &&
+        validate( reason != NULL, "ReasonNotFound", aResults ) &&
+        validate( reason -> isObject(), "ReasonIsNotObject", aResults )
+    )
+    {
+        /* Write reason to mon */
+        Mon::create
+        (
+            net -> getNetVersionPath
+            (
+                "/mon/commit.json",
+                version,
+                id
+            )
+        )
+        -> setString( Path{ "result" }, success ? "SUCCESS" : "ROLLBACK" )
+        -> now( Path{ "moment" })
+        -> setInt( Path{ "tick" },  net -> getTick())
+        -> copyObject( Path{ "reason" }, reason -> getObject())
+        -> flush()
+        -> destroy();
+
+/*
+TODO 
+
+Надо сделать именование сетией какое то другое
+например или
+        Zaaaabcka - наследуемая сеть
+надо писать мутации в сеть что бы можно было явно получить инфу как она мутировала
+*/
+
+        /* Version of cloned child */
+        string newVersion = "";
+
+        /* Clone network */
+        net -> clone
+        (
+            id,
+            net -> getParentVersion( id, version, success ? 0 : 1 ),
+            newVersion,
+            true    /* Mutate */
+        );
+
+        /* Switch to new version */
+        net -> setNextVersion( newVersion );
+
+        /* Change net mode */
+        changeNetMode( NET_MODE_LEARN );
+
+        /* Return result */
+        aResults
+        -> setString( "id", id )
+        -> setString( "version", newVersion );
+
+        /* Return positive answer */
+        setAnswerResult( aResults, RESULT_OK );
+    }
 
     return this;
 }
@@ -875,7 +962,39 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
     aResults -> copyFrom( aArguments );
 
     /* Change mode */
-    mode = netModeFromString( aResults -> getString( "mode" ));
+    auto strMode = aResults -> getString( "mode" );
+    changeNetMode( netModeFromString( strMode ) );
+
+    /* Extract reason of net mode changing */
+    auto reason = aArguments -> getByName( Path{ "reason" });
+    if( reason != NULL && reason -> isObject() )
+    {
+        net -> getMon()
+        -> now( Path{ "lastMode", strMode, "moment" })
+        -> setInt( Path{ "lastMode", strMode, "tick" },  net -> getTick() )
+        -> copyObject
+        (
+            Path{ "lastMode", strMode, "reason" },
+            reason -> getObject()
+        )
+        -> flush();
+    }
+
+    return this;
+}
+
+
+
+/*
+    Change net mode and reset layers charts
+*/
+ShoggothRpcServer* ShoggothRpcServer::changeNetMode
+(
+    NetMode aMode
+)
+{
+    net -> lock();
+    mode = aMode;
 
     /* Reset statistics for new mode */
     net -> getLayerList() -> loop
@@ -888,5 +1007,6 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
             return false;
         }
     );
+    net -> unlock();
     return this;
 }

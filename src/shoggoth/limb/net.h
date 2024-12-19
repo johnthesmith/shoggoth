@@ -27,6 +27,7 @@ class Net: public Limb
         Application*    application     = NULL;     /* The application object */
         SockManager*    sockManager     = NULL;     /* Socket manager object */
         ParamList*      config          = NULL;     /* Last net config after IO */
+        Mon*            mon             = NULL;     /* Monitoring object */
 
         /* Lists of layers id after update by swap operations */
         vector<string>  changedValues;
@@ -340,6 +341,17 @@ class Net: public Limb
 
 
 
+        /*
+            Return net monitoring file
+        */
+        string getMonFile
+        (
+            string = "",    /* Specific version */
+            string = ""     /* Specific net id */
+        );
+
+
+
         /******************************************************************************
             Layers
         */
@@ -615,4 +627,11 @@ class Net: public Limb
             Tick increment
         */
         Net* incTick();
+
+
+
+        /*
+            Return net mon object
+        */
+        Mon* getMon();
 };

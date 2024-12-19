@@ -167,6 +167,28 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
+            Commit current net
+                alhorithm
+                    clone current net with mutation in to the new net
+                    switch to the new net
+                    switch mode to learn
+                arguments
+                    currentId
+                    currentVersion
+                    reason
+                    generation
+                        0 - commit success
+                        1 - commit with rollback net rollback to previous generation
+        */
+        ShoggothRpcServer* commitNet
+        (
+            ParamList* aArguments,
+            ParamList* aResults
+        );
+
+
+
+        /*
             Remote host send layers errors data
         */
         ShoggothRpcServer* writeLayers
@@ -264,6 +286,15 @@ class ShoggothRpcServer : public RpcServer
             ParamList*  /* Results */
         );
 
+
+
+        /*
+            Change net mode and reset layers charts
+        */
+        ShoggothRpcServer* changeNetMode
+        (
+            NetMode
+        );
 
 
     private:

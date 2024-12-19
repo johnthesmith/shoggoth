@@ -32,10 +32,20 @@ class EvolutionPayload : public PayloadEngine
         /* State */
         long int    lastConfigCheck = 0;
 
+        /* Last tick of the net for test stage*/
+        long long int lastNetTick   = 0;
+
         double      lastTestError = 0.0;
 
-        /* Count of last test tryes */
-//        int         lastTestCount = 0;
+        /* Quantity successful tests */
+        int         testSuccessCount = 0;
+
+
+        EvolutionPayload* testStage
+        (
+            Layer*,
+            ParamList*
+        );
 
     public:
 
@@ -125,26 +135,29 @@ class EvolutionPayload : public PayloadEngine
         /*
             Switch server net in to Learn mode
         */
-        EvolutionPayload* netSwitchToLearn();
+        EvolutionPayload* netSwitchToLearn
+        (
+            ParamList* /* Reason */
+        );
 
 
 
         /*
             Switch server net in to Learn mode
         */
-        EvolutionPayload* netSwitchToTest();
-
-
-
-        /*
-            Rollback net
-        */
-        EvolutionPayload* netRollback();
+        EvolutionPayload* netSwitchToTest
+        (
+            ParamList* /* Reason */
+        );
 
 
 
         /*
             Mutate net
         */
-        EvolutionPayload* netMutate();
+        EvolutionPayload* commitNet
+        (
+            bool, /* Success */
+            ParamList* /* Reason */
+        );
 };

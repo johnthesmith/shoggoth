@@ -218,22 +218,6 @@ class Io: public Result
 
 
 
-        /*
-            Mutate from the parent and switch to a new net
-        */
-        Io* mutateAndSwitch
-        (
-            /*
-                The generation
-                0 - the current net
-                1 - parent of the current net
-                2 - parent of parrent of the curent net
-                3 - ...
-            */
-            int
-        );
-
-
 
         /*
             Return server net mode
@@ -250,7 +234,8 @@ class Io: public Result
         */
         Io* setNetMode
         (
-            NetMode
+            NetMode,
+            ParamList*
         );
 };
 

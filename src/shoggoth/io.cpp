@@ -416,43 +416,6 @@ Io* Io::switchNet
 
 
 /*
-    Mutate from the parent and switch to a new net
-*/
-Io* Io::mutateAndSwitch
-(
-    /*
-        The generation
-        0 - the current net
-        1 - parent of the current net
-        2 - parent of parrent of the curent net
-        3 - ...
-    */
-    int aGeneration
-)
-{
-    if( isOk() )
-    {
-        cloneNet
-        (
-            net -> getId(),
-            net -> getVersion(),
-            aGeneration,
-            true /* Mutate */
-        );
-
-        switchNet
-        (
-            net -> getId(),
-            answer -> getString( "version" )
-        );
-    }
-    return this;
-}
-
-
-
-
-/*
     Return server net mode
 */
 Io* Io::getNetMode
@@ -475,12 +438,16 @@ Io* Io::getNetMode
 */
 Io* Io::setNetMode
 (
-    NetMode a
+    NetMode aMode,
+    ParamList* aReason
 )
 {
     if( this -> isOk() )
     {
-        request -> setString( "mode", netModeToString( a ));
+        request
+        -> setString( "mode", netModeToString( aMode ))
+        -> copyFrom( "reason", aReason );
+
         call( CMD_SET_NET_MODE );
     }
     return this;

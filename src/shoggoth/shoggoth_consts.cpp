@@ -62,6 +62,7 @@ std::string commandToString
     {
         default:
         case CMD_UNKNOWN        : return "UNKNOWN";
+        case CMD_COMMIT_NET     : return "COMMIT_NET";
         case CMD_READ_NET       : return "READ_NET";
         case CMD_READ_NET_INFO  : return "READ_NET_INFO";
         case CMD_CLONE_NET      : return "CLONE_NET";
@@ -90,6 +91,7 @@ Command commandFromString
 {
     if( a == "READ_NET" )            return CMD_READ_NET;
     if( a == "READ_NET_INFO" )       return CMD_READ_NET_INFO;
+    if( a == "COMMIT_NET" )          return CMD_COMMIT_NET;
     if( a == "CLONE_NET" )           return CMD_CLONE_NET;
     if( a == "SWITCH_NET" )          return CMD_SWITCH_NET;
     if( a == "WRITE_LAYERS" )        return CMD_WRITE_LAYERS;
