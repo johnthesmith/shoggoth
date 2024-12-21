@@ -717,7 +717,7 @@ Net* Net::clone
 (
     string aParentNetId,
     string aParentNetVersion,
-    string& aChildVersion,
+    string aChildVersion,
     bool aMutation
 )
 {
@@ -893,9 +893,6 @@ Net* Net::clone
             );
         }
     }
-
-    /* Create children version */
-    aChildVersion = Rnd::getUuid() + "-" + implode( path, "." );
 
     getLog()
     -> info( "Copy net files" )
@@ -1929,6 +1926,73 @@ string Net::getParentVersion()
     return config -> getString( Path{ "version", "parent" });
 }
 
+
+
+/*
+    Return new next version by argument version and
+    list of names from ./net_names.json file.
+*/
+string Net::generateRollbackVersion
+(
+    /* Id of the net */
+    string aId,
+    /* Version of the net */
+    string aVersion
+)
+{
+    auto result = Rnd::getUuid();
+
+    auto netNames = Json::shared(); //shared().get();
+    netNames -> fromFile( getNetPath( "net_names.json", aId ));
+    if( netNames -> isOk() )
+    {
+        auto param =  netNames -> getParamList() -> getByIndex( 0 );
+        if( param != NULL )
+        {
+            result = param -> getString();
+        }
+    }
+
+    return aVersion + "." + result;
+}
+
+
+
+
+/*
+    Return new next version by argument version and
+    list of names from ./net_names.json file.
+*/
+string Net::generateNewVersion
+(
+    /* Id of the net */
+    string aId,
+    /* Version of the net */
+    string aVersion
+)
+{
+    auto result = Rnd::getUuid();
+
+    auto words = explode( aVersion, "." );
+
+    if( words.size() > 0 )
+    {
+        auto lastWord = words.back();
+        auto netNames = Json::shared(); //shared().get();
+        netNames -> fromFile( getNetPath( "net_names.json", aId ));
+        if( netNames -> isOk() )
+        {
+            auto names = netNames -> getParamList();
+            auto index =  names -> getIndexByValue( lastWord );
+            auto param = names -> getByIndex( index + 1 );
+            words[ words.size() - 1 ] = param == NULL ? result : param -> getString();
+            result = implode( words, "." );
+        }
+        /* netNames selfdestruction */
+    }
+
+    return result;
+}
 
 
 

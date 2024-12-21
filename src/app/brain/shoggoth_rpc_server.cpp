@@ -357,22 +357,28 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
         -> destroy();
 
 /*
-TODO 
+TODO
 
-Надо сделать именование сетией какое то другое
-например или
-        Zaaaabcka - наследуемая сеть
+Сделали версионность по модели z.a.a.a.b.k.a
+Работает криво. Нвдо разобраться с первым уровнем когда стартует сеть.
+Первая сеть zero
+Вторая сеть zero.a
+третья zero.b
+удачная b.a
+
 надо писать мутации в сеть что бы можно было явно получить инфу как она мутировала
 */
 
-        /* Version of cloned child */
-        string newVersion = "";
+        auto sourceVersion = net -> getParentVersion( id, version, success ? 0 : 1 );
+        auto newVersion = success
+        ? net -> generateNewVersion( id, sourceVersion )
+        : net -> generateRollbackVersion( id, sourceVersion );
 
         /* Clone network */
         net -> clone
         (
             id,
-            net -> getParentVersion( id, version, success ? 0 : 1 ),
+            sourceVersion,
             newVersion,
             true    /* Mutate */
         );

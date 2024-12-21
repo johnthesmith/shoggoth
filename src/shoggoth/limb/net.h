@@ -412,7 +412,7 @@ class Net: public Limb
         (
             string,         /* Parent Net Id */
             string,         /* Parent Net Version */
-            string&,        /* result child version */
+            string,         /* New net version */
             bool = false    /* true for mutation */
         );
 
@@ -544,6 +544,33 @@ class Net: public Limb
             Return parent net version
         */
         string getParentVersion();
+
+
+
+        /*
+            Return next version
+        */
+        string generateRollbackVersion
+        (
+            /* Id of the net */
+            string,
+            /* Version of the net */
+            string
+        );
+
+
+
+        /*
+            Return next version
+        */
+        string generateNewVersion
+        (
+            /* Id of the net */
+            string,
+            /* Version of the net */
+            string
+        );
+
 
 
         /*
