@@ -300,18 +300,20 @@ LimbProcessor* LimbProcessor::calc()
         ;
     }
 
-
-
     /* Write charts in to monitoring */
     if
     (
         !terminated &&
         net -> getLastChangeValues() == netLastChangeValues &&
         tickChart != 0 &&
-        tick % tickChart == 0
+        net -> getTick() % tickChart == 0
     )
     {
-        net -> getLayerList() -> loop
+        net -> lock();
+
+        net
+        -> getLayerList()
+        -> loop
         (
             [ this ]
             (
@@ -348,6 +350,8 @@ LimbProcessor* LimbProcessor::calc()
                 return false;
             }
         );
+
+        net -> unlock();
     }
 
     /* Write final monitoring */
@@ -1027,7 +1031,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                                     },
                                                                                     vector <string>
                                                                                     {
-                                                                                        toString( tick ),
+                                                                                        toString( net -> getTick() ),
                                                                                         stage,
                                                                                         layer -> getId(),
                                                                                         directionToString( direction ),
@@ -1045,7 +1049,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                                     direction,
                                                                                     data,
                                                                                     dataview,
-                                                                                    tick
+                                                                                    net -> getTick()
                                                                                 );
                                                                                 return false;
                                                                             } /* Neuron list and data exists */
@@ -1073,7 +1077,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                         },
                                                                         vector <string>
                                                                         {
-                                                                            toString( tick ),
+                                                                            toString( net -> getTick() ),
                                                                             stage,
                                                                             layer -> getId(),
                                                                             directionToString( direction ),
@@ -1089,7 +1093,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                         layer,
                                                                         data,
                                                                         dataview,
-                                                                        tick
+                                                                        net -> getTick()
                                                                     );
                                                                 }
                                                                 break;
@@ -1126,7 +1130,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                 {
                     params = ParamList::create();
                     params
-                    -> setInt( "tick", tick )
+                    -> setInt( "tick", net -> getTick() )
                     -> setString( "stage", calcStageToString( aStage ) );
 
                     auto file = net -> getMonPath( "processor_thread_calc_lock.json" );

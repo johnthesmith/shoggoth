@@ -25,7 +25,7 @@
                     "MODE_LEARN":
                     {
 
-                        "maxTick":1000,
+                        "maxTick":100000000,
                         "layers":
                         {
                             "retina":

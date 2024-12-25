@@ -550,25 +550,14 @@ class Net: public Limb
         /*
             Return next version
         */
-        string generateRollbackVersion
+        string generateVersion
         (
             /* Id of the net */
             string,
-            /* Version of the net */
-            string
-        );
-
-
-
-        /*
-            Return next version
-        */
-        string generateNewVersion
-        (
-            /* Id of the net */
+            /* Current version of the net */
             string,
-            /* Version of the net */
-            string
+            /* Parent succes */
+            bool
         );
 
 

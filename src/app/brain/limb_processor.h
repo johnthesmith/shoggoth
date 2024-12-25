@@ -33,8 +33,6 @@ class LimbProcessor : public Limb
         /*
             Calculation state
         */
-        /* Current tick */
-        long long int   tick            = 0;
         /* Automatic learning mode, indicates learning stage */
         bool            learning        = false;
         /* Terminated status, stop the calculation and dump works */
@@ -56,7 +54,7 @@ class LimbProcessor : public Limb
         /* Each tickWrite from tick all Weights will be writen to file */
         int     tickWrite               = 10;
         /* Each tickChart from ешсл Chartss will be writen to mon */
-        int     tickChart               = 10;
+        int     tickChart               = 1000;
         /* Configuration objtct for neurnos dump */
         ParamList* dumpConf             = NULL;
 

@@ -1932,67 +1932,39 @@ string Net::getParentVersion()
     Return new next version by argument version and
     list of names from ./net_names.json file.
 */
-string Net::generateRollbackVersion
+string Net::generateVersion
 (
     /* Id of the net */
     string aId,
     /* Version of the net */
-    string aVersion
+    string aVersion,
+    /* Success */
+    bool aParentSuccess
 )
 {
-    auto result = Rnd::getUuid();
+    auto lexems = explode( aVersion, "." );
+    auto lexemsSize = lexems.size();
 
-    auto netNames = Json::shared(); //shared().get();
-    netNames -> fromFile( getNetPath( "net_names.json", aId ));
-    if( netNames -> isOk() )
+    auto generation = toInt( lexemsSize > 0 ? lexems[ 0 ] : "0" );
+    auto parent = toInt( lexemsSize > 1 ? lexems[ 1 ] : "0" );
+    auto name = toInt( lexemsSize > 2 ? lexems[ 2 ] : "0" );
+
+    if( aParentSuccess )
     {
-        auto param =  netNames -> getParamList() -> getByIndex( 0 );
-        if( param != NULL )
-        {
-            result = param -> getString();
-        }
+        generation ++;
+        parent = name;
+        name = 0;
+    }
+    else
+    {
+        name ++;
     }
 
-    return aVersion + "." + result;
+    char buffer[21];
+    std::snprintf(buffer, sizeof(buffer), "%06lld.%06lld.%06lld", generation, parent, name);
+    return std::string(buffer);
 }
 
-
-
-
-/*
-    Return new next version by argument version and
-    list of names from ./net_names.json file.
-*/
-string Net::generateNewVersion
-(
-    /* Id of the net */
-    string aId,
-    /* Version of the net */
-    string aVersion
-)
-{
-    auto result = Rnd::getUuid();
-
-    auto words = explode( aVersion, "." );
-
-    if( words.size() > 0 )
-    {
-        auto lastWord = words.back();
-        auto netNames = Json::shared(); //shared().get();
-        netNames -> fromFile( getNetPath( "net_names.json", aId ));
-        if( netNames -> isOk() )
-        {
-            auto names = netNames -> getParamList();
-            auto index =  names -> getIndexByValue( lastWord );
-            auto param = names -> getByIndex( index + 1 );
-            words[ words.size() - 1 ] = param == NULL ? result : param -> getString();
-            result = implode( words, "." );
-        }
-        /* netNames selfdestruction */
-    }
-
-    return result;
-}
 
 
 

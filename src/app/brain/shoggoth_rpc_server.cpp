@@ -101,6 +101,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     -> prm( "Code", method )
     -> lineEnd();
 
+    net -> lock();
+
     switch( method )
     {
         case CMD_READ_NET           :readNet( aArguments, aResults); break;
@@ -119,6 +121,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_SET_NET_MODE       :setNetMode( aArguments, aResults); break;
         default                     :unknownMethod( aArguments, aResults); break;
     }
+
+    net -> unlock();
 
     return this;
 }
@@ -356,29 +360,14 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
         -> flush()
         -> destroy();
 
-/*
-TODO
-
-Сделали версионность по модели z.a.a.a.b.k.a
-Работает криво. Нвдо разобраться с первым уровнем когда стартует сеть.
-Первая сеть zero
-Вторая сеть zero.a
-третья zero.b
-удачная b.a
-
-надо писать мутации в сеть что бы можно было явно получить инфу как она мутировала
-*/
-
-        auto sourceVersion = net -> getParentVersion( id, version, success ? 0 : 1 );
-        auto newVersion = success
-        ? net -> generateNewVersion( id, sourceVersion )
-        : net -> generateRollbackVersion( id, sourceVersion );
+        auto parentVersion = net -> getParentVersion( id, version, success ? 0 : 1 );
+        auto newVersion = net -> generateVersion( id, version, success );
 
         /* Clone network */
         net -> clone
         (
             id,
-            sourceVersion,
+            parentVersion,
             newVersion,
             true    /* Mutate */
         );
