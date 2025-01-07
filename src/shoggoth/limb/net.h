@@ -413,7 +413,8 @@ class Net: public Limb
             string,         /* Parent Net Id */
             string,         /* Parent Net Version */
             string,         /* New net version */
-            bool = false    /* true for mutation */
+            double,         /* survivalErrorAvg */
+            bool            /* true for mutation */
         );
 
 

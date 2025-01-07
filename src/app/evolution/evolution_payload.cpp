@@ -264,6 +264,7 @@ void EvolutionPayload::onEngineLoop
                                                 commitNet
                                                 (
                                                     false,
+                                                    1e10,
                                                     ParamList::shared().get()
                                                     -> setString( "type", "EVOLUTION_NAN" )
                                                 );
@@ -328,7 +329,9 @@ void EvolutionPayload::onEngineLoop
                                         }
                                         break;
 
-                                        case NET_MODE_TEST: testStage( layer, cfg ); break;
+                                        case NET_MODE_TEST:
+                                            testStage( layer, cfg );
+                                        break;
                                     }   /*  End of net mode case */
                                 } /* Unknown layer */
                                 return false;
@@ -399,28 +402,35 @@ EvolutionPayload* EvolutionPayload::testStage
 
         /* Read config */
         auto configTestTickCount = aConfig -> getInt( "testTickCount" );
-        auto configTestErrorLimit = aConfig -> getInt( "testErrorLimit" );
         auto chart = aLayer -> getChartErrorsBeforeChange();
-        auto configTestSuccessCoefficient = aConfig -> getDouble( "testSuccessCoefficient", 1.0 );
-
-
-        /* Calc current quality */
-        testSuccessCount += chart -> getMaxY() > configTestErrorLimit ? 0 : 1;
 
         /* Quantity check */
         if( chart -> getCount() > configTestTickCount )
         {
+            auto parentSurvivalErrorAvg = net -> getConfig() -> getDouble
+            (
+                Path{ "survival", "error", "avg" }
+            );
+
+            double currentSurvivalErrorAvg = chart -> calcAvgY();
+            double success = parentSurvivalErrorAvg > currentSurvivalErrorAvg;
+
             /* Quality test */
-            auto testSuccessCoefficient = testSuccessCount / configTestTickCount;
-            auto success = testSuccessCoefficient >= configTestSuccessCoefficient;
             commitNet
             (
+                /* Success or fail */
                 success,
+                success ? currentSurvivalErrorAvg : parentSurvivalErrorAvg ,
+                /* Build reason */
                 ParamList::shared().get()
                 -> setDouble( "testCount", chart -> getCount() )
-                -> setDouble( "testSuccessCount", testSuccessCount )
-                -> setDouble( "testSuccessCoeffitient", testSuccessCoefficient )
-                -> setDouble( "configTestSuccessCoeffitient", configTestSuccessCoefficient )
+                -> setDouble( "parentSurvivalErrorAvg", parentSurvivalErrorAvg )
+                -> setDouble( "currentSurvivalErrorAvg", currentSurvivalErrorAvg )
+                -> setString
+                (
+                    Path{ aLayer -> getId(), "errorsBeforeChange" },
+                    chart -> toString( 40 )
+                )
             );
         }
     }
@@ -480,9 +490,12 @@ EvolutionPayload* EvolutionPayload::netSwitchToTest
 /*
 TODO
 
+сети считаются по 10 лямов раз. это много - надо подправить коэффиуиенты.
+
 Во вторых надо убедиться что ребенок не хуже родителя. Он должен быть лучше.
 Если хуже новая сеть не проходит критерий отбора и родитель снова мутирует.
 Мутации прикращаются мосле Н количества неуспешных итераций.
+
 */
 
 /*
@@ -491,6 +504,7 @@ TODO
 EvolutionPayload* EvolutionPayload::commitNet
 (
     bool aSuccess,
+    double aSurvivalErrorAvg,
     ParamList* aReason
 )
 {
@@ -503,6 +517,7 @@ EvolutionPayload* EvolutionPayload::commitNet
     auto io = Io::create( net );
     io -> getRequest()
     -> setBool( "success", aSuccess )
+    -> setDouble( "survivalErrorAvg", aSurvivalErrorAvg )
     -> copyFrom( "reason", aReason )
     -> setString( "id", net -> getId())
     -> setString( "version", net -> getVersion());

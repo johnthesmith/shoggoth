@@ -115,8 +115,12 @@ LimbProcessor* LimbProcessor::calc()
     /* Increase the tick */
     net -> incTick();
 
+    mon -> now( Path{ "trace", "start" }, true );
+
     /* Check structure with net */
     net -> syncToLimb( this, false );
+
+    mon -> now( Path{ "trace", "syncToLimb" }, true );
 
     /*
         Calculation begin
@@ -132,12 +136,16 @@ LimbProcessor* LimbProcessor::calc()
     -> setInt( Path{ "current", "tick" }, net -> getTick() )
     ;
 
+    mon -> now( Path{ "trace", "mon" }, true);
+
     net -> lock();
     auto seed = net -> getSeed();
     net -> unlock();
 
     /*   */
     nerveControl( seed );
+
+    mon -> now( Path{ "trace", "nerveControl" }, true );
 
     auto netLastChangeValues = net -> getLastChangeValues();
 
@@ -155,10 +163,13 @@ LimbProcessor* LimbProcessor::calc()
         false
     );
 
+    mon -> now( Path{ "trace" , "swap" }, true );
+
     /* Drop learing mode flag */
     learning = false;
-
     calcDebugDump( CALC_STAGE_START );
+
+    mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
 
     /*
         Forward calculation (neuron values)
@@ -171,12 +182,9 @@ LimbProcessor* LimbProcessor::calc()
         {
             if( table -> isParentsCalculated( layer ))
             {
-                /* Let elapsed begin */
-//                mon -> startTimer( Path{ "duration", "values", layer -> getId() });
                 /* Set default thread id */
                 int idThread = 0;
                 layerCalcValue( layer, idThread, learning );
-//                mon -> stopTimer( Path{ "duration", "values", layer -> getId() });
                 return true;
             }
             return terminated || net -> getLastChangeValues() != netLastChangeValues;
@@ -184,7 +192,11 @@ LimbProcessor* LimbProcessor::calc()
     )
     -> destroy();
 
+    mon -> now( Path{ "trace" , "calcFront" }, true );
+
     calcDebugDump( CALC_STAGE_AFTER_FRONT );
+
+    mon -> now( Path{ "trace", "debugDumpStageAfterFront" }, true);
 
     /*
         Backward calculation (neuron errors)
@@ -198,12 +210,10 @@ LimbProcessor* LimbProcessor::calc()
             if( table -> isChildrenCalculated( layer ) )
             {
                 /* Let elapsed begin */
-//                mon -> startTimer( Path{ "duration", "errors", layer -> getId() });
                 /* Set default thread id */
                 int idThread = 0;
                 /* Calculate errors for layers with parents */
                 layerCalcError( layer, idThread );
-//                mon -> stopTimer( Path{ "duration", "errors", layer -> getId() });
                 return true;
             }
             return terminated || net -> getLastChangeValues() != netLastChangeValues;
@@ -211,7 +221,11 @@ LimbProcessor* LimbProcessor::calc()
     )
     -> destroy();
 
+    mon -> now( Path{ "trace", "calc_back" }, true );
+
     calcDebugDump( CALC_STAGE_AFTER_BACK );
+
+    mon -> now( Path{ "trace", "debug_dump_stage_after_back" }, true);
 
     /*
         Learning calculation (nerve weights)
@@ -223,18 +237,20 @@ LimbProcessor* LimbProcessor::calc()
         ( CalcTable* table, Layer* layer )
         {
             /* Let elapsed begin */
-//            mon -> startTimer( Path{ "duration", "weights", layer -> getId() });
             /* Set default thread id */
             int idThread = 0;
             /* Calculate weights in nervs of layers */
             layerCalcWeight( layer, idThread );
-//            mon -> stopTimer( Path{ "duration", "weights", layer -> getId() });
             return terminated || net -> getLastChangeValues() != netLastChangeValues;
         }
     )
     -> destroy();
 
+    mon -> now( Path{ "trace", "calc_learning" }, true );
+
     calcDebugDump( CALC_STAGE_AFTER_LEARNING );
+
+    mon -> now( Path{ "trace", "debug_dump_stage_after_learning" }, true );
 
     /*
         End of calculation
@@ -272,6 +288,8 @@ LimbProcessor* LimbProcessor::calc()
         );
     }
 
+    mon -> now( Path{ "trace", "write_nerves" }, true);
+
     /* Move calculated data to net */
     if
     (
@@ -299,6 +317,8 @@ LimbProcessor* LimbProcessor::calc()
         -> stat()
         ;
     }
+
+    mon -> now( Path{ "trace", "move_data_to_net" }, true );
 
     /* Write charts in to monitoring */
     if
@@ -353,6 +373,10 @@ LimbProcessor* LimbProcessor::calc()
 
         net -> unlock();
     }
+
+    mon
+    -> now( Path{ "trace", "write_charts" }, true )
+    -> trace( Path{ "trace" } );
 
     /* Write final monitoring */
     mon
@@ -608,7 +632,6 @@ LimbProcessor* LimbProcessor::neuronCalcError
 {
     /* Define variables */
     double error    = 0.0;
-
     switch( aLayer -> getErrorCalc() )
     {
         default:
@@ -617,6 +640,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
             /* Error not changing */
         break;
         case EC_LEARNING:
+        {
             /*
                 caclulate error form all children for the current neuron
             */
@@ -642,6 +666,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
                     return terminated;
                 }
             );
+        }
         break;
         case EC_VALUE:
             error = - aLayer -> getNeuronValue( aIndex );
@@ -739,10 +764,12 @@ LimbProcessor* LimbProcessor::layerCalcValue
 {
     int b = calcNeuronFrom( aLayer, aThread );
     int e = calcNeuronTo( aLayer, aThread );
+
     for( int i = b; i < e && !terminated; i ++ )
     {
         neuronCalcValue( aLayer, i, aLearning );
     }
+
     onChangeValues();
     return this;
 }

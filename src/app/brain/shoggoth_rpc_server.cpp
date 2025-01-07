@@ -255,6 +255,7 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
     auto parentNetVersion = aArguments -> getString( "parentNetVersion", "" );
     auto parentGeneration = aArguments -> getInt( "parentGeneration", 0 );
     auto mutation = aArguments -> getBool( "mutation", false );
+    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
 
     getLog() -> info( "Clone net argument" ) -> dump( aArguments );
 
@@ -275,6 +276,7 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
             parentGeneration
         ),
         childVersion,
+        survivalErrorAvg,
         mutation
     );
 
@@ -333,6 +335,7 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     auto version = aArguments -> getString( "version", "" );
     auto reason = aArguments -> getByName( Path{ "reason" });
     auto success = aArguments -> getBool( Path{ "success" });
+    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
 
     if
     (
@@ -369,6 +372,7 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
             id,
             parentVersion,
             newVersion,
+            survivalErrorAvg,
             true    /* Mutate */
         );
 
@@ -389,7 +393,6 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
 
     return this;
 }
-
 
 
 

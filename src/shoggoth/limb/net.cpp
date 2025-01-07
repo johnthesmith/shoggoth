@@ -718,6 +718,7 @@ Net* Net::clone
     string aParentNetId,
     string aParentNetVersion,
     string aChildVersion,
+    double aSurvivalErrorAvg,
     bool aMutation
 )
 {
@@ -729,6 +730,8 @@ Net* Net::clone
 
     /* Set default mutation path */
     Path path = { "pure" };
+    double mutationValue = 0.0;
+    double mutationValueParent = 0.0;
 
     /* Define net files */
     string parentNetFile = getNetConfigFile( aParentNetVersion );
@@ -755,7 +758,15 @@ Net* Net::clone
             /* Loop for each mutation */
             mutations -> loop
             (
-                [ &json, this, &dice, &prevDice, &path ]
+                [
+                    &json,
+                    this,
+                    &dice,
+                    &prevDice,
+                    &path,
+                    &mutationValue,
+                    &mutationValueParent
+                ]
                 ( Param* iParam )
                 {
                     if( iParam -> isObject() )
@@ -792,6 +803,8 @@ Net* Net::clone
                                         auto vMax = mutation -> getDouble( "max", val );
                                         auto vMin = mutation -> getDouble( "min", val );
 
+                                        mutationValueParent = val;
+
                                         getLog()
                                         -> prm( "val", val )
                                         -> prm( "mul", mul )
@@ -813,14 +826,13 @@ Net* Net::clone
                                         }
                                         else
                                         {
-                                            mutated -> setDouble
+                                            mutationValue =
+                                            min
                                             (
-                                                min
-                                                (
-                                                    vMax,
-                                                    max( vMin, val * rMul + rAdd )
-                                                )
+                                                vMax,
+                                                max( vMin, val * rMul + rAdd )
                                             );
+                                            mutated -> setDouble( mutationValue );
                                         }
 
                                         getLog() -> prm( "result", mutated -> getDouble() );
@@ -836,6 +848,8 @@ Net* Net::clone
                                         auto rAdd = Rnd::get( -add, +add );
                                         auto vMax = mutation -> getDouble( "max", val );
                                         auto vMin = mutation -> getDouble( "min", val );
+
+                                        mutationValueParent = val;
 
                                         getLog()
                                         -> prm( "val", val )
@@ -858,14 +872,13 @@ Net* Net::clone
                                         }
                                         else
                                         {
-                                            mutated -> setInt
+                                            mutationValue = min
                                             (
-                                                min
-                                                (
-                                                    vMax,
-                                                    max( vMin, val * rMul + rAdd )
-                                                )
+                                                vMax,
+                                                max( vMin, val * rMul + rAdd )
                                             );
+
+                                            mutated -> setInt( ( int ) mutationValue );
                                         }
 
                                         getLog() -> prm( "result", mutated -> getInt() );
@@ -904,7 +917,10 @@ Net* Net::clone
     -> getParamList()
     -> setString( Path{ "id" }, aParentNetId )
     -> setString( Path{ "version", "current" }, aChildVersion )
-    -> setString( Path{ "version", "parent" }, aParentNetVersion );
+    -> setString( Path{ "version", "parent" }, aParentNetVersion )
+    -> setDouble( Path{ "version", "mutation", implode( path, "." ), "from"}, mutationValueParent )
+    -> setDouble( Path{ "version", "mutation", implode( path, "." ), "to"}, mutationValue )
+    -> setDouble( Path{ "survival", "error", "avg" }, aSurvivalErrorAvg );
 
     string childNetFile = getNetConfigFile( aChildVersion );
 
@@ -1931,6 +1947,10 @@ string Net::getParentVersion()
 /*
     Return new next version by argument version and
     list of names from ./net_names.json file.
+    Format:
+        generation number
+        parent name
+        person name
 */
 string Net::generateVersion
 (
@@ -1945,6 +1965,7 @@ string Net::generateVersion
     auto lexems = explode( aVersion, "." );
     auto lexemsSize = lexems.size();
 
+    /* Read version of current net */
     auto generation = toInt( lexemsSize > 0 ? lexems[ 0 ] : "0" );
     auto parent = toInt( lexemsSize > 1 ? lexems[ 1 ] : "0" );
     auto name = toInt( lexemsSize > 2 ? lexems[ 2 ] : "0" );

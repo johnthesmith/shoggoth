@@ -201,6 +201,9 @@ void BrainPayload::onEngineLoop
                 auto appConfig = getApplication() -> getConfig();
 
                 processor
+                -> setLoopTimeoutMcs( 0 );
+
+                processor
                 -> getLimb()
                 -> setMinWeight( appConfig -> getDouble( "minWeight", 1.0e-5 ))
                 -> setMaxWeight( appConfig -> getDouble( "maxWeight", 1.0e5 ))

@@ -32,7 +32,7 @@ Perhaps it will be *Shoggoth*.
 1. You need to install the following components:
 
 ```
-sudo apt install -y 
+sudo apt install -y \
     clang \
     libglfw3 libglfw3-dev libglu1-mesa-dev \
     libglew-dev \

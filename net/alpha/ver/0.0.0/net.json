@@ -7,6 +7,15 @@
         "current":"0.0.0",
         "parent":"0.0.0"
     },
+
+    "survival":
+    {
+        "error":
+        {
+            "avg":1e10
+        }
+    },
+
     "seed":13,
 
     "mutations":

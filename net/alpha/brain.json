@@ -53,7 +53,7 @@
             "precision"     :4
         },
         {
-            "enabled"       :true,
+            "enabled"       :false,
             "file"          :"dump/%stage%_%layer%_%data%.txt",
             "stages"        :[ "AFTER_FRONT" ],
             "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command", "test", "test_error", "test_command" ],
@@ -63,7 +63,7 @@
             "precision"     :4
         },
         {
-            "enabled"       :true,
+            "enabled"       :false,
             "file"          :"dump/%stage%_%layer%_%data%.txt",
             "stages"        :[ "AFTER_BACK" ],
             "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command", "test", "test_error", "test_command" ],
@@ -73,7 +73,7 @@
             "precision"     :4
         },
         {
-            "enabled"       :true,
+            "enabled"       :false,
             "pauseMcs"      :0,
             "stages"        :[ "AFTER_LEARNING" ],
             "lock"          :false,

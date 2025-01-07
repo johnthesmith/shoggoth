@@ -9,6 +9,7 @@
             {
                 "ok"                        : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "evolution_continue"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_commit"          : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "evolution_rollback"        : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "evolution_mutate"          : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
@@ -25,14 +26,14 @@
                     "MODE_LEARN":
                     {
 
-                        "maxTick":100000000,
+                        "maxTick":4000000,
                         "layers":
                         {
                             "retina":
                             {
                                 "tickSmoth"         : 0.5,
-                                "tickDeltaLimit"    : 2.0,
-                                "tickSmothCount"    : 100
+                                "tickSmothCount"    : 100,
+                                "tickDeltaLimit"    : 100.0
                             }
                         }
                     },
@@ -42,9 +43,7 @@
                         {
                             "test_error":
                             {
-                                "testTickCount"         : 100,
-                                "testErrorLimit"        : 0.1,
-                                "testSuccessCoeffitient": 0.99
+                                "testTickCount"         : 100
                             }
                         }
                     }

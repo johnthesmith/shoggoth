@@ -13,7 +13,8 @@ find . -type f -path "./ver/*/mon/commit.json" -exec sh -c '
             (.reason.testCount | tonumber),
             (.reason.testSuccessCount | tonumber),
             (.reason.testSuccessCoeffitient | tonumber),
-            (.reason.configTestSuccessCoeffitient | tonumber)
+            (.reason.configTestSuccessCoeffitient | tonumber),
+            (.reason.test_error.errorsBeforeChange )
         ] | @tsv'\'' "$file"
     done
 ' sh {} + | column -t

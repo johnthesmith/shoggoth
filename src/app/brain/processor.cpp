@@ -3,6 +3,7 @@
 
 /* Core libraryes */
 #include "../../../../../lib/core/mon.h"
+#include "../../../../../lib/core/moment.h"
 
 /* Local libraries */
 #include "processor.h"
@@ -104,6 +105,7 @@ LimbProcessor* Processor::getLimb()
 
 /*
     Processor main loop event
+    TODO Its need to analize. We must use onEngineLoop !!!
 */
 void Processor::onLoop()
 {
@@ -115,6 +117,8 @@ void Processor::onLoop()
     -> interval( Path{ "current", "uptime" }, Path{ "current", "moment" }, Path{ "start", "moment" })
     -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
+    -> intervalScale( Path{ "current", "uptimeSec" }, Path{ "current", "moment" }, Path{ "start", "moment" }, SECOND )
+    -> div( Path{ "current", "loopAvg" }, Path{ "current", "loop" }, Path{ "current", "uptimeSec" } )
     -> dumpResult( Path{ "result" }, this )
     -> flush()
     ;

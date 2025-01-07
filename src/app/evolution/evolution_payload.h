@@ -158,6 +158,7 @@ class EvolutionPayload : public PayloadEngine
         EvolutionPayload* commitNet
         (
             bool, /* Success */
+            double,
             ParamList* /* Reason */
         );
 };
