@@ -38,6 +38,8 @@ class TeacherPayload : public PayloadEngine
         long long       lastChange      = 0;
         NetMode         lastNetMode     = NET_MODE_UNKNOWN;
 
+        long long       testId          = 0;
+
     public:
 
         /*

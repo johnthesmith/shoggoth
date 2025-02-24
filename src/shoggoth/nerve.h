@@ -5,29 +5,29 @@
 
 # pragma once
 
-#include <functional>   /* for allocate lyambda */
+//#include <functional>   /* for allocate lyambda */
 
 
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/core/log_manager.h"
 #include "../../../../lib/core/mon.h"
-#include "../../../../lib/core/rnd_obj.h"
+#include "../../../../lib/core/rnd.h"
 
 
 #include "../../../../lib/core/chart_list.h"
 
 
 #include "shoggoth_consts.h"
+#include "layer.h"
 
 
-class Layer;
 class Limb;
+//class Layer;
 
 
 
 typedef double NeuronWeight;
 const size_t NEURON_WEIGHT_SIZE = sizeof( NeuronWeight );
-
 
 
 class Nerve: public Result
@@ -56,6 +56,8 @@ class Nerve: public Result
         Layer*      child           = NULL;
 
     public:
+
+
 
         /*
             Constructor
@@ -109,10 +111,15 @@ class Nerve: public Result
         /*
             Allocate memomry buffer for weights
         */
+        template <typename Func>
         Nerve* allocate
         (
-            /* On Allocate callback */
-            function <void ( Nerve* )>
+            /*
+                Callback function
+                void
+                    Nerve*
+            */
+            Func aOnAllocate
         );
 
 
@@ -134,7 +141,7 @@ class Nerve: public Result
                 for using configuration properties
             */
             /* Random seed */
-            RndObj*,
+            Rnd*,
             /* Default MinWeight */
             double = 1.0,
             /* Default MaxWeight */
@@ -195,7 +202,6 @@ class Nerve: public Result
 
 
 
-
         /*
             Return weights pointer
         */
@@ -232,7 +238,8 @@ class Nerve: public Result
         */
         int getChildByWeightIndex
         (
-            int        /* Index */
+            /* Index */
+            int
         );
 
 
@@ -242,7 +249,8 @@ class Nerve: public Result
         */
         double getWeight
         (
-            int /* Index in weights */
+            /* Index in weights */
+            int
         );
 
 
@@ -252,9 +260,12 @@ class Nerve: public Result
         */
         Nerve* getWeightsRangeByChildIndex
         (
-            int,   /* index of neuron */
-            int&,  /* index of weights begin for neurn */
-            int&   /* index of weights eend for neuron */
+            /* index of neuron */
+            int,
+            /* index of weights begin for neurn */
+            int&,
+            /* index of weights eend for neuron */
+            int&
         );
 
 
@@ -264,10 +275,14 @@ class Nerve: public Result
         */
         Nerve* getWeightsRangeByParentIndex
         (
-            int aIndex, /* index of parent neuron */
-            int &aFrom, /* index of weights begin for neurn */
-            int &aTo,   /* index of weights eend for neuron */
-            int &aStep  /* step for shift between from and to */
+            /* index of parent neuron */
+            int aIndex,
+            /* index of weights begin for neurn */
+            int &aFrom,
+            /* index of weights eend for neuron */
+            int &aTo,
+            /* step for shift between from and to */
+            int &aStep
         );
 
 
@@ -277,8 +292,10 @@ class Nerve: public Result
         */
         Nerve* readFromBuffer
         (
-            char *, /* buffer */
-            size_t  /* size of buffer */
+            /* buffer */
+            char *,
+            /* size of buffer */
+            size_t
         );
 
 
@@ -302,6 +319,7 @@ class Nerve: public Result
             int,    /* index From */
             int     /* index To */
         );
+
 
 
         /*
@@ -353,7 +371,8 @@ class Nerve: public Result
         */
         Nerve* loadWeight
         (
-            string /* Path */
+            /* Path */
+            string
         );
 
 
@@ -363,7 +382,8 @@ class Nerve: public Result
         */
         Nerve* saveWeight
         (
-            string /* Path */
+            /* Path */
+            string
         );
 
 
@@ -373,9 +393,12 @@ class Nerve: public Result
         */
         Nerve* extractChildWeightsBuffer
         (
-            int,        /* Neuron index */
-            char*&,     /* Bufer */
-            size_t&     /* Size of buffer */
+            /* Neuron index */
+            int,
+            /* Bufer */
+            char*&,
+            /* Size of buffer */
+            size_t&
         );
 
 
@@ -416,3 +439,68 @@ class Nerve: public Result
         */
         string calcId();
 };
+
+
+
+/******************************************************************************
+    Template emplementations
+*/
+
+
+/*
+    Allocate memomry buffer for weights
+*/
+template <typename Func>
+Nerve* Nerve::allocate
+(
+    /*
+        Callback function
+        void
+            Nerve*
+    */
+    Func aOnAllocate
+)
+{
+    auto newCount = 0;
+
+    int cFrom   = parent -> getCount();
+    int cTo     = child -> getCount();
+
+    /* Calculate new buffer size */
+    switch( nerveType )
+    {
+        case ALL_TO_ALL:
+        {
+            newCount = cFrom * cTo;
+        }
+        break;
+        case ONE_TO_ONE:
+            newCount = max( cFrom, cTo );
+        break;
+    }
+
+    if( weightsCount != newCount )
+    {
+        /*
+            Count has been changed,
+            and the weights array must be reallocated
+        */
+        purge();
+
+        weightsCount = newCount;
+
+        /* Create buffer */
+        weights = new double[ weightsCount ];
+
+        /* Create delta buffer */
+        deltaWeights = new double[ weightsCount ];
+
+        getLog()
+        -> trace( "Memory allocated" )
+        -> prm( "Binds count", weightsCount );
+
+        aOnAllocate( this );
+    }
+
+    return this;
+}

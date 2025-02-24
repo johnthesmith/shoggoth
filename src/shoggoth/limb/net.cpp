@@ -3,7 +3,6 @@
 #include "../io.h"
 #include "../shoggoth_consts.h"
 #include "../../../../../lib/json/param_list_file.h"
-#include "../../../../../lib/core/rnd.h"
 #include "../../../../../lib/graph/param_point.h"
 
 
@@ -38,6 +37,8 @@ Net::Net
 
     application -> getLog() -> trace( "Create net" );
 
+    rnd = Rnd::create();
+
     mon = Mon::create( getMonFile() );
 
     config = ParamList::create();
@@ -59,6 +60,9 @@ Net::~Net()
 
     /* Config object clear and destroy */
     config -> destroy();
+
+    /* Destroy rnd object */
+    rnd -> destroy();
 
     getLog() -> trace( "Destroy net" );
 }
@@ -719,7 +723,7 @@ Net* Net::clone
     string aParentNetVersion,
     string aChildVersion,
     double aSurvivalErrorAvg,
-    bool aMutation
+    Rnd* aMutationRnd
 )
 {
     getLog() -> begin( "Net clone" );
@@ -739,15 +743,16 @@ Net* Net::clone
     /* Create JSON structure */
     auto json = Json::create() -> fromFile( parentNetFile );
 
-    if( aMutation )
+    if( aMutationRnd != NULL )
     {
         /* Mutation */
         auto mutations = json -> getParamList() -> getObject( "mutations" );
+
         if( mutations != NULL )
         {
             /* calculate sum of rnd of all mutation */
             double sumRnd = mutations -> calcSum( Path{ "rnd" } );
-            double dice = Rnd::get( 0.0, sumRnd );
+            double dice = aMutationRnd -> get( 0.0, sumRnd );
             double prevDice = 0.0;
 
             getLog()
@@ -765,7 +770,8 @@ Net* Net::clone
                     &prevDice,
                     &path,
                     &mutationValue,
-                    &mutationValueParent
+                    &mutationValueParent,
+                    &aMutationRnd
                 ]
                 ( Param* iParam )
                 {
@@ -798,8 +804,8 @@ Net* Net::clone
                                         auto mul = mutation -> getDouble( "mul", 1.0 );
                                         auto add = mutation -> getDouble( "add", 0.0 );
                                         auto val = mutated -> getDouble();
-                                        auto rMul = Rnd::get( 1.0 / mul, mul );
-                                        auto rAdd = Rnd::get( -add, +add );
+                                        auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
+                                        auto rAdd = aMutationRnd -> get( -add, +add );
                                         auto vMax = mutation -> getDouble( "max", val );
                                         auto vMin = mutation -> getDouble( "min", val );
 
@@ -844,8 +850,8 @@ Net* Net::clone
                                         auto mul = mutation -> getDouble( "mul", 1.0 );
                                         int add = mutation -> getInt( "add", 0 );
                                         auto val = mutated -> getInt();
-                                        auto rMul = Rnd::get( 1.0 / mul, mul );
-                                        auto rAdd = Rnd::get( -add, +add );
+                                        auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
+                                        auto rAdd = aMutationRnd -> get( -add, +add );
                                         auto vMax = mutation -> getDouble( "max", val );
                                         auto vMin = mutation -> getDouble( "min", val );
 
@@ -957,8 +963,8 @@ Net* Net::applyNet
         /* Set net version from config */
         setNextVersion( config -> getString( Path{ "version", "current" } ) );
 
-        /* Set net version from config */
-        setSeed( config -> getInt( Path{ "seed" } ) );
+        /* Set rnd seed version from config */
+        setRndSeedFromConfig();
 
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
@@ -1093,6 +1099,10 @@ Net* Net::applyNet
 
                                 if( nerve == NULL && !nerveDelete )
                                 {
+                                    auto minW = jsonNerve -> getDouble( "minWeight" , 0 );
+                                    auto maxW = jsonNerve -> getDouble( "maxWeight" , 0 );
+                                    auto mulW = config -> getDouble( "weightMul", 1 );
+
                                     createNerve
                                     (
                                         from,
@@ -1102,11 +1112,11 @@ Net* Net::applyNet
                                     )
                                     -> setMinWeight
                                     (
-                                        jsonNerve -> getDouble( "minWeight" , 0 )
+                                        minW * ( minW == maxW ? 1 : mulW )
                                     )
                                     -> setMaxWeight
                                     (
-                                        jsonNerve -> getDouble( "maxWeight", 0 )
+                                        maxW * ( minW == maxW ? 1 : mulW )
                                     )
                                     ;
                                 }
@@ -1640,7 +1650,6 @@ Net* Net::swapValuesAndErrors
                 )
                 {
                     auto netLayer = ( Layer* ) item;
-
                     /* For each of action */
                     for( auto iAction : aActions )
                     {
@@ -1696,13 +1705,14 @@ Net* Net::swapValuesAndErrors
 
 
 
-Net* Net::syncToLimb
+bool Net::syncToLimb
 (
     Limb* targetLimb,
     bool aSkip
 )
 {
-    if( targetLimb -> getLastUpdate() != getLastUpdate() )
+    auto result = targetLimb -> getLastUpdate() != getLastUpdate();
+    if( result )
     {
         /* Rebuild structure layers and nervs */
         copyTo( targetLimb, true, aSkip, false );
@@ -1711,7 +1721,7 @@ Net* Net::syncToLimb
         /* Commit last  update */
         targetLimb -> setLastUpdate( getLastUpdate() );
     }
-    return this;
+    return result;
 }
 
 
@@ -2047,30 +2057,6 @@ Net* Net::stat()
 
 
 /*
-    Return net random seed
-*/
-unsigned long long Net::getSeed()
-{
-    return seed;
-}
-
-
-
-/*
-    Set net random seed
-*/
-Net* Net::setSeed
-(
-    unsigned long long a
-)
-{
-    seed = a;
-    return this;
-}
-
-
-
-/*
     Return true value if layer contains action for current net task
 */
 bool Net::checkLayerAction
@@ -2144,4 +2130,20 @@ Net* Net::incTick()
 Mon* Net::getMon()
 {
     return mon;
+}
+
+
+
+
+Rnd* Net::getRnd()
+{
+    return rnd;
+}
+
+
+
+Net* Net::setRndSeedFromConfig()
+{
+    getRnd() -> setSeed( config -> getInt( Path{ "seed" } ) );
+    return this;
 }

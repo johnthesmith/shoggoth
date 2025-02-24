@@ -1,9 +1,9 @@
 #include <cmath>
 #include <fstream>
+#include <thread>
 #include <unistd.h> /* usleep */
 
 #include "limb_processor.h"
-#include "calc_table.h"
 
 #include "../../shoggoth/func.h"
 #include "../../shoggoth/shoggoth_consts.h"
@@ -35,6 +35,12 @@ LimbProcessor::LimbProcessor
     dumpConf = ParamList::create();
 
     fps = ChartData::create() -> setMaxCount( 100 );
+
+    threadManager = ThreadManager::create( aNet -> getLogManager() );
+
+
+    calcTableValues = CalcTable::create();
+    calcTableErrors = CalcTable::create();
 }
 
 
@@ -44,6 +50,11 @@ LimbProcessor::LimbProcessor
 */
 LimbProcessor::~LimbProcessor()
 {
+    calcTableValues -> destroy();
+    calcTableErrors -> destroy();
+
+    threadManager -> destroy();
+
     fps -> destroy();
 
     dumpConf -> destroy();
@@ -87,20 +98,38 @@ LimbProcessor* LimbProcessor::setTerminated
 
 
 
-LimbProcessor* LimbProcessor::setThreadCount
+LimbProcessor* LimbProcessor::setMaxThreadCount
 (
     int a
 )
 {
-    threadCount = a;
+    maxThreadCount = a;
     return this;
 }
 
 
 
-int LimbProcessor::getThreadCount()
+int LimbProcessor::getMaxThreadCount()
 {
-    return threadCount;
+    return maxThreadCount;
+}
+
+
+
+LimbProcessor* LimbProcessor::setMinNeuronPerThread
+(
+    int a
+)
+{
+    minNeuronPerThread = a;
+    return this;
+}
+
+
+
+int LimbProcessor::getMinNeuronPerThread()
+{
+    return minNeuronPerThread;
 }
 
 
@@ -118,7 +147,11 @@ LimbProcessor* LimbProcessor::calc()
     mon -> now( Path{ "trace", "start" }, true );
 
     /* Check structure with net */
-    net -> syncToLimb( this, false );
+    if( net -> syncToLimb( this, false ))
+    {
+        /* Updated */
+        buildCalcTables();
+    }
 
     mon -> now( Path{ "trace", "syncToLimb" }, true );
 
@@ -126,9 +159,7 @@ LimbProcessor* LimbProcessor::calc()
         Calculation begin
     */
     mon
-    -> addInt( Path{ "count" })
-    -> now( Path{ "last" } )
-    -> setDouble( Path{ "fps" }, fps -> avg() )
+    -> setInt( Path{ "net", "seed" }, net -> getRnd() -> getSeed() )
     -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
     -> setDouble( Path{ "config", "minWeight" }, minWeight )
     -> setDouble( Path{ "config", "maxWeight" }, maxWeight )
@@ -138,12 +169,8 @@ LimbProcessor* LimbProcessor::calc()
 
     mon -> now( Path{ "trace", "mon" }, true);
 
-    net -> lock();
-    auto seed = net -> getSeed();
-    net -> unlock();
-
     /*   */
-    nerveControl( seed );
+    nerveControl();
 
     mon -> now( Path{ "trace", "nerveControl" }, true );
 
@@ -174,23 +201,34 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Forward calculation (neuron values)
     */
-    CalcTable::create( this )
+    calcTableValues
+    -> reset()
     -> loop
     (
         [ this, &netLastChangeValues ]
-        ( CalcTable* table, Layer* layer )
+        ( CalcTable* table, Layer* layer, bool &terminate )
         {
-            if( table -> isParentsCalculated( layer ))
+            terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
+
+            if( !terminate )
             {
-                /* Set default thread id */
-                int idThread = 0;
-                layerCalcValue( layer, idThread, learning );
-                return true;
+                /* Exclude calculation for layers without parents */
+                if( ! getNerveList() -> parentsExists( layer ))
+                {
+                    return true;
+                }
+                /* Calculate all layers with parents calculating */
+                if( table -> isParentsCalculated( layer, getNerveList() ))
+                {
+                    /* Set default thread id */
+                    layerCalc( layer, DATA_VALUES );
+                    return true;
+                }
             }
-            return terminated || net -> getLastChangeValues() != netLastChangeValues;
+
+            return false;
         }
-    )
-    -> destroy();
+    );
 
     mon -> now( Path{ "trace" , "calcFront" }, true );
 
@@ -201,25 +239,28 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Backward calculation (neuron errors)
     */
-    CalcTable::create( this )
+    calcTableErrors
+    -> reset()
     -> loop
     (
         [ this, &netLastChangeValues ]
-        ( CalcTable* table, Layer* layer )
+        ( CalcTable* table, Layer* layer, bool& terminate )
         {
-            if( table -> isChildrenCalculated( layer ) )
+            terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
+
+            if( !terminate )
             {
-                /* Let elapsed begin */
-                /* Set default thread id */
-                int idThread = 0;
-                /* Calculate errors for layers with parents */
-                layerCalcError( layer, idThread );
-                return true;
+                if( table -> isChildrenCalculated( layer, getNerveList() ))
+                {
+                    /* Calculate errors for layers with parents */
+                    layerCalc( layer, DATA_ERRORS );
+                    return true;
+                }
             }
-            return terminated || net -> getLastChangeValues() != netLastChangeValues;
+
+            return false;
         }
-    )
-    -> destroy();
+    );
 
     mon -> now( Path{ "trace", "calc_back" }, true );
 
@@ -230,21 +271,22 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Learning calculation (nerve weights)
     */
-    CalcTable::create( this )
+
+    getLayerList()
     -> loop
     (
         [ this, &netLastChangeValues ]
-        ( CalcTable* table, Layer* layer )
+        ( void* item )
         {
-            /* Let elapsed begin */
-            /* Set default thread id */
-            int idThread = 0;
-            /* Calculate weights in nervs of layers */
-            layerCalcWeight( layer, idThread );
-            return terminated || net -> getLastChangeValues() != netLastChangeValues;
+            auto layer = (Layer*) item;
+            auto terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
+            if( !terminate )
+            {
+                layerCalc( layer, DATA_WEIGHTS );
+            }
+            return terminate;
         }
-    )
-    -> destroy();
+    );
 
     mon -> now( Path{ "trace", "calc_learning" }, true );
 
@@ -380,7 +422,10 @@ LimbProcessor* LimbProcessor::calc()
 
     /* Write final monitoring */
     mon
+    -> now( Path{ "current", "last" } )
+    -> setDouble( Path{ "current", "fps" }, fps -> avg() )
     -> setBool( Path{ "current", "learning" }, learning )
+    -> setInt( Path{ "current", "thread_count" }, threadManager -> getCount() )
     -> flush();
 
     auto fpsEnd = now();
@@ -394,10 +439,7 @@ LimbProcessor* LimbProcessor::calc()
 /*
     Controling the nerve list
 */
-LimbProcessor* LimbProcessor::nerveControl
-(
-    unsigned long long int aSeed
-)
+LimbProcessor* LimbProcessor::nerveControl()
 {
     bool reallocated = false;
 
@@ -431,19 +473,17 @@ LimbProcessor* LimbProcessor::nerveControl
         /* Generage weights */
         if( loadingError )
         {
-            auto rnd = RndObj::create( aSeed );
             getNerveList() -> loop
             (
-                [ &rnd ]
+                [ this ]
                 ( void* item )
                 {
                     auto nerve = ( Nerve* ) item;
                     nerve -> setOk();
-                    nerve -> fill( rnd );
+                    nerve -> fill( net -> getRnd() );
                     return false;
                 }
             );
-            rnd -> destroy();
         }
     }
     return this;
@@ -559,8 +599,7 @@ double LimbProcessor::getLearningSpeed()
 LimbProcessor* LimbProcessor::neuronCalcValue
 (
     Layer* aLayer,
-    int aIndex,
-    bool &aLearning
+    int aIndex
 )
 {
     /* Additive accum */
@@ -753,66 +792,89 @@ LimbProcessor* LimbProcessor::neuronCalcWeight
 
 
 /*
-    Calculate neurons in the layer
+    Method return count of thread using following property
+        maxThreadCount
+        minNeuronPerThread
+
 */
-LimbProcessor* LimbProcessor::layerCalcValue
+int LimbProcessor::calcThreadCount
 (
-    Layer*  aLayer,     /* Layer for calculation */
-    int     aThread,    /* Current thread number */
-    bool&   aLearning   /* Need learning */
+    Layer*  aLayer /* Layer for calculation */
 )
 {
-    int b = calcNeuronFrom( aLayer, aThread );
-    int e = calcNeuronTo( aLayer, aThread );
-
-    for( int i = b; i < e && !terminated; i ++ )
-    {
-        neuronCalcValue( aLayer, i, aLearning );
-    }
-
-    onChangeValues();
-    return this;
+    return min
+    (
+        maxThreadCount,
+        max
+        (
+            1,
+            aLayer -> getCount() / minNeuronPerThread
+        )
+    );
 }
 
 
 
 /*
-    Calculate neurons error
+    Calculate neurons in the layer using threads
 */
-LimbProcessor* LimbProcessor::layerCalcError
+LimbProcessor* LimbProcessor::layerCalc
 (
-    Layer*  aLayer, /* Layer for calculation */
-    int     aThread /* Current thread */
+    /* Layer for calculation */
+    Layer*  aLayer,
+    /* Type of calculation */
+    Data    aData
 )
 {
-    int b = calcNeuronFrom( aLayer, aThread );
-    int e = calcNeuronTo( aLayer, aThread );
+    /* Calculate thread count */
+    int threadCount = calcThreadCount( aLayer );
 
-    for( int i = b; i < e && !terminated; i ++ )
+    /* Check thread count */
+    if( threadManager -> prepare( threadCount ))
     {
-        neuronCalcError( aLayer, i );
+        /* Set handlers for thread */
+        for
+        (
+            size_t threadNumber = 0;
+            threadNumber < threadCount && !threadManager -> isTerminating();
+            threadNumber++
+        )
+        {
+            int b = calcNeuronFrom( aLayer, threadCount, threadNumber );
+            int e = calcNeuronTo( aLayer, threadCount, threadNumber );
+
+            threadManager -> setHandler
+            (
+                threadNumber,
+                [ this, aLayer, b, e, aData ]()
+                {
+                    /* Thread body */
+                    for( size_t n = b; n < e; n++ )
+                    {
+                        switch( aData )
+                        {
+                            /* Unknown data */
+                            default:
+                            case DATA_UNKNOWN:break;
+                            case DATA_WEIGHTS:neuronCalcWeight( aLayer, n );break;
+                            case DATA_VALUES:neuronCalcValue( aLayer, n );break;
+                            case DATA_ERRORS:neuronCalcError( aLayer, n );break;
+                        }
+                    }
+                }
+            );
+
+        }
+
+        /* Run calculation and wait */
+        threadManager
+        -> run()
+        -> wait();
     }
 
-    return this;
-}
-
-
-
-/*
-    Calculate nerves weights for learning
-*/
-LimbProcessor* LimbProcessor::layerCalcWeight
-(
-    Layer*  aLayer, /* Layer for calculation */
-    int     aThread /* Current thread */
-)
-{
-    int b = calcNeuronFrom( aLayer, aThread );
-    int e = calcNeuronTo( aLayer, aThread );
-
-    for( int i = b; i < e && !terminated; i ++ )
+    if( aData == DATA_VALUES )
     {
-        neuronCalcWeight( aLayer, i );
+        onChangeValues();
     }
 
     return this;
@@ -827,15 +889,15 @@ LimbProcessor* LimbProcessor::layerCalcWeight
 int LimbProcessor::calcNeuronFrom
 (
     Layer* aLayer,
-    int aNumber
+    int aThreadCount,
+    int aThreadNumber
 )
 {
     return floor
     (
-        (double) aLayer -> getCount() * (double) aNumber / (double) threadCount
+        (double) aLayer -> getCount() * (double) aThreadNumber / (double) aThreadCount
     );
 }
-
 
 
 /*
@@ -844,10 +906,11 @@ int LimbProcessor::calcNeuronFrom
 int LimbProcessor::calcNeuronTo
 (
     Layer* aLayer,
-    int aNumber
+    int aThreadCount,
+    int aThreadNumber
 )
 {
-    return calcNeuronFrom( aLayer, aNumber + 1 );
+    return calcNeuronFrom( aLayer, aThreadCount, aThreadNumber + 1 );
 }
 
 
@@ -902,6 +965,60 @@ LimbProcessor* LimbProcessor::setDumpConf
     {
         dumpConf -> clear() -> copyFrom( a );
     }
+    return this;
+}
+
+
+
+LimbProcessor* LimbProcessor::down()
+{
+    threadManager -> terminate();
+    return this;
+}
+
+
+
+LimbProcessor* LimbProcessor::up()
+{
+    terminated = false;
+    return this;
+}
+
+
+
+LimbProcessor* LimbProcessor::buildCalcTables()
+{
+    calcTableValues -> clear();
+    calcTableErrors -> clear();
+
+    getLayerList() -> loop
+    (
+        [ this ]
+        ( void* item )
+        {
+            calcTableValues
+            -> addLayer( (Layer*) item )
+            ;
+
+            calcTableErrors
+            -> addLayer( (Layer*) item )
+            ;
+            return false;
+        }
+    );
+
+    calcTableValues
+    -> dump( getLog(), "Layers before forward sort" )
+    -> sortForward( getNerveList() )
+    -> dump( getLog(), "Layers after forward sort" )
+    ;
+
+    calcTableErrors
+    -> dump( getLog(), "Layers before backward sort" )
+    -> sortBackward( getNerveList() )
+    -> dump( getLog(), "Layers after backward sort" )
+    ;
+
     return this;
 }
 
@@ -1188,4 +1305,6 @@ LimbProcessor* LimbProcessor::calcDebugDump
 
     return this;
 }
+
+
 

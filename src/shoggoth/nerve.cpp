@@ -2,7 +2,6 @@
 
 #include "nerve.h"
 
-#include "../../../../lib/core/rnd_obj.h"
 #include "../../../../lib/sock/rpc_client.h"
 
 #include "limb.h"
@@ -94,58 +93,6 @@ Log* Nerve::getLog()
 
 
 
-/*
-    Allocate memomry buffer for weights
-*/
-Nerve* Nerve::allocate
-(
-    function <void ( Nerve* )> aOnAllocate
-)
-{
-    auto newCount = 0;
-
-    int cFrom   = parent -> getCount();
-    int cTo     = child -> getCount();
-
-    /* Calculate new buffer size */
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-        {
-            newCount = cFrom * cTo;
-        }
-        break;
-        case ONE_TO_ONE:
-            newCount = max( cFrom, cTo );
-        break;
-    }
-
-    if( weightsCount != newCount )
-    {
-        /*
-            Count has been changed,
-            and the weights array must be reallocated
-        */
-        purge();
-
-        weightsCount = newCount;
-
-        /* Create buffer */
-        weights = new double[ weightsCount ];
-
-        /* Create delta buffer */
-        deltaWeights = new double[ weightsCount ];
-
-        getLog()
-        -> trace( "Memory allocated" )
-        -> prm( "Binds count", weightsCount );
-
-        aOnAllocate( this );
-    }
-
-    return this;
-}
-
 
 
 
@@ -171,11 +118,11 @@ Nerve* Nerve::purge()
 Nerve* Nerve::fill
 (
     /* Rnd seed */
-    RndObj* aSeed,
+    Rnd*    aSeed,
     /* MinWeight */
-    double aMinWeight,
+    double  aMinWeight,
     /* MaxWeight */
-    double aMaxWeight
+    double  aMaxWeight
 )
 {
     if( aMinWeight > aMaxWeight )

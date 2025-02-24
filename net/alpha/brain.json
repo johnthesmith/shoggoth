@@ -34,7 +34,8 @@
     "maxWeight"         :1000,
     "maxError"          :10,
     "errorNormalize"    :0.11,
-    "processorCount"    :1,
+    "minNeuronPerThread":10,
+    "maxThreadCount"    :12,
 
     "tickWrite"         :0,
     "tickChart"         :100,

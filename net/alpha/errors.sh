@@ -1,7 +1,5 @@
 watch -n 0.1 \
 " \
-cat ./mon/dump/AFTER_BACK_retina_ERRORS.txt;\
-echo ; \
 cat ./mon/dump/AFTER_BACK_cortex_1_ERRORS.txt; \
 echo ; \
 cat ./mon/dump/AFTER_BACK_cortex_2_ERRORS.txt; \
@@ -22,3 +20,7 @@ cat ./mon/dump/AFTER_BACK_test_error_ERRORS.txt; \
 echo ; \
 cat ./mon/dump/AFTER_BACK_test_command_ERRORS.txt \
 "
+
+
+#cat ./mon/dump/AFTER_BACK_retina_ERRORS.txt;\
+#echo ; \

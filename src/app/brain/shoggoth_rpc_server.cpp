@@ -2,7 +2,6 @@
 #include "../../shoggoth/io.h"
 
 
-
 /*
     Constructor
 */
@@ -254,7 +253,6 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
     auto parentNetId = aArguments -> getString( "parentNetId", "" );
     auto parentNetVersion = aArguments -> getString( "parentNetVersion", "" );
     auto parentGeneration = aArguments -> getInt( "parentGeneration", 0 );
-    auto mutation = aArguments -> getBool( "mutation", false );
     auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
 
     getLog() -> info( "Clone net argument" ) -> dump( aArguments );
@@ -277,7 +275,8 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
         ),
         childVersion,
         survivalErrorAvg,
-        mutation
+        /* No clone */
+        NULL
     );
 
     /* Return result */
@@ -336,6 +335,7 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     auto reason = aArguments -> getByName( Path{ "reason" });
     auto success = aArguments -> getBool( Path{ "success" });
     auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
+    auto mutationSeed = aArguments -> getInt( Path{ "mutationSeed" });
 
     if
     (
@@ -366,6 +366,8 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
         auto parentVersion = net -> getParentVersion( id, version, success ? 0 : 1 );
         auto newVersion = net -> generateVersion( id, version, success );
 
+        auto mutationRnd = Rnd::create() -> setSeed( mutationSeed );
+
         /* Clone network */
         net -> clone
         (
@@ -373,8 +375,10 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
             parentVersion,
             newVersion,
             survivalErrorAvg,
-            true    /* Mutate */
+            mutationRnd
         );
+
+        mutationRnd -> destroy();
 
         /* Switch to new version */
         net -> setNextVersion( newVersion );

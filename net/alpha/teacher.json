@@ -2,6 +2,7 @@
     "engine":
     {
         "enabled":true,
+        "trap":true,
         "teacher":
         {
             "code":
@@ -97,6 +98,10 @@
         },
         "testing":
         {
+            "controlDump":
+            [
+                "result", "test"
+            ],
             "all":
             [
                 { "cmd":"VALUE_TO_LAYER", "layer": "bias", "min":1.0, "max":1.0 },

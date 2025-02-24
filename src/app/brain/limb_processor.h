@@ -11,12 +11,13 @@
 
 
 #include "../../../../../lib/core/mon.h"
-#include "../../../../../lib/core/mon.h"
-
+#include "../../../../../lib/core/thread_manager.h"
 
 
 #include "../../shoggoth/limb.h"
 #include "../../shoggoth/limb/net.h"
+
+#include "calc_table.h"
 
 
 
@@ -29,6 +30,11 @@ class LimbProcessor : public Limb
         Mon*            mon             = NULL;
         /* Chart list object */
         ChartList*  weightsChart        = NULL;
+        /* Create thread manager */
+        ThreadManager* threadManager    = NULL;
+
+        CalcTable*      calcTableValues = NULL;
+        CalcTable*      calcTableErrors = NULL;
 
         /*
             Calculation state
@@ -49,8 +55,11 @@ class LimbProcessor : public Limb
         double  maxWeight               = 1000;
         /* Maxumum error, have to less then maxWeight */
         double  maxError                = 100;
+
         /* Count of threads */
-        int     threadCount             = 1;
+        int     maxThreadCount          = 1;
+        int     minNeuronPerThread      = 0;
+
         /* Each tickWrite from tick all Weights will be writen to file */
         int     tickWrite               = 10;
         /* Each tickChart from ешсл Chartss will be writen to mon */
@@ -108,7 +117,7 @@ class LimbProcessor : public Limb
         /*
             Set processors count for calculation
         */
-        LimbProcessor* setThreadCount
+        LimbProcessor* setMaxThreadCount
         (
             int
         );
@@ -118,7 +127,18 @@ class LimbProcessor : public Limb
         /*
             Return processors count
         */
-        int getThreadCount();
+        int getMaxThreadCount();
+
+
+
+        LimbProcessor* setMinNeuronPerThread
+        (
+            int a
+        );
+
+
+
+        int getMinNeuronPerThread();
 
 
 
@@ -133,10 +153,7 @@ class LimbProcessor : public Limb
         /*
             The nerve list controlling
         */
-        LimbProcessor* nerveControl
-        (
-            unsigned long long
-        );
+        LimbProcessor* nerveControl();
 
 
 
@@ -275,8 +292,7 @@ class LimbProcessor : public Limb
         LimbProcessor* neuronCalcValue
         (
             Layer*, /* Layer for calculation */
-            int,    /* Neuron index of layer */
-            bool&
+            int     /* Neuron index of layer */
         );
 
 
@@ -304,32 +320,28 @@ class LimbProcessor : public Limb
 
 
         /*
-            Calculate neurons in the layer
+            Method return count of thread using following property
+                maxThreadCount
+                minNeuronPerThread
+
         */
-        LimbProcessor* layerCalcValue
+        int calcThreadCount
         (
-            Layer*, /* Layer for calculation */
-            int,    /* Current thread number */
-            bool&
+            Layer* /* Layer for calculation */
         );
 
 
 
         /*
-            Calculate error in the layer
+            Calculate neurons in the layer
+                values
+                errors
+                weights
         */
-        LimbProcessor* layerCalcError
+        LimbProcessor* layerCalc
         (
             Layer*, /* Layer for calculation */
-            int     /* Current thread number */
-        );
-
-
-
-        LimbProcessor* layerCalcWeight
-        (
-            Layer*, /* Layer for calculation */
-            int     /* Current thread number */
+            Data
         );
 
 
@@ -340,7 +352,8 @@ class LimbProcessor : public Limb
         int calcNeuronFrom
         (
             Layer*,
-            int
+            int,    /* Thread count */
+            int     /* Thread number */
         );
 
 
@@ -351,7 +364,8 @@ class LimbProcessor : public Limb
         int calcNeuronTo
         (
             Layer*,
-            int
+            int,    /* Thread count */
+            int     /* Thread number */
         );
 
 
@@ -373,6 +387,25 @@ class LimbProcessor : public Limb
         (
             CalcStage aStage
         );
+
+
+
+
+        /*
+            Stop the thread manager
+        */
+        LimbProcessor* down();
+
+
+
+        /*
+            Stop the thread manager
+        */
+        LimbProcessor* up();
+
+
+
+        LimbProcessor* buildCalcTables();
 
 
 

@@ -2,8 +2,9 @@
     Ui appliction definitions
     Called from ui.h
 */
-
 #pragma once
+
+
 
 /* Local libraries */
 #include "../shoggoth_application.h"

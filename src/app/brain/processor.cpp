@@ -133,6 +133,19 @@ void Processor::onLoop()
 void Processor::onStartBefore()
 {
     getLog() -> trace( "Processor starting" );
+    limb -> up();
+}
+
+
+
+/*
+    Server pause action
+*/
+void Processor::onStopBefore()
+{
+    getLog() -> begin( "Processor stoping" ) -> lineEnd();
+    limb -> down();
+    getLog() -> end() -> lineEnd();;
 }
 
 
@@ -144,3 +157,7 @@ void Processor::onStopAfter()
 {
     getLog() -> trace( "Processor stoped" ) -> lineEnd();
 }
+
+
+
+

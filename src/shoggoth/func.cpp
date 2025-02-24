@@ -224,15 +224,7 @@ NeuronFunc FUNC_RELU =
         -s       |        +s
 */
 
-function
-<
-    double  /* Result */
-    (
-        double, /* Argiment [-oo; +oo] */
-        double  /* Sensiviti [ 0; +oo]*/
-    )
->
-FUNC_SIGMOID_LINE_MINUS_PLUS =
+NeuronFunc2 FUNC_SIGMOID_LINE_MINUS_PLUS =
 []( double x, double s ) -> double
 {
     return x < -s ? -1.0 : ( x > s ? 1.0 :  x / s );
@@ -258,15 +250,7 @@ FUNC_SIGMOID_LINE_MINUS_PLUS =
         -s                +s
 */
 
-function
-<
-    double  /* Result */
-    (
-        double, /* Argiment [-oo; +oo] */
-        double  /* Sensiviti [ 0; +oo]*/
-    )
->
-FUNC_V_LINE =
+NeuronFunc2 FUNC_V_LINE =
 []( double x, double s ) -> double
 {
     return abs( x < -s ? -1.0 : ( x > s ? 1.0 : x / s ));
@@ -293,15 +277,7 @@ FUNC_V_LINE =
     |   ***** - - - | - - - - -
 
 */
-function
-<
-    double  /* Result */
-    (
-        double, /* Argiment [-oo; +oo] */
-        double  /* Sensiviti [ 0; +oo]*/
-    )
->
-FUNC_SIGMOID_PLUS_MINUS =
+NeuronFunc2 FUNC_SIGMOID_PLUS_MINUS =
 []( double x, double sensivity ) -> double
 {
     return  2.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) ) - 1;
@@ -332,16 +308,7 @@ FUNC_SIGMOID_PLUS_MINUS =
 
 */
 
-function
-<
-    double  /* Result */
-    (
-        double,     /* Argiment [-oo; +oo] */
-        double,     /* Min [ 0; +oo] */
-        double      /* Max [ 0; +oo] */
-    )
->
-FUNC_WEIGHT =
+NeuronFunc3 FUNC_WEIGHT =
 []( double x, double min, double max ) -> double
 {
     return x > max ? max :
@@ -377,16 +344,7 @@ FUNC_WEIGHT =
     **** - - - - o - - - - -    -max
         -s       |        +s
 */
-
-function
-<
-    double  /* Result */
-    (
-        double,     /* Argiment [-inf; +inf] */
-        double      /* Max      [ 0; +inf] */
-    )
->
-FUNC_ERROR =
+NeuronFunc2 FUNC_ERROR =
 []( double x, double max ) -> double
 {
     return x > max ? max :

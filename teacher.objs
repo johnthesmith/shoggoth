@@ -9,7 +9,6 @@ OBJECT_PATH/mon.o
 OBJECT_PATH/moment.o
 OBJECT_PATH/math.o
 OBJECT_PATH/rnd.o
-OBJECT_PATH/rnd_obj.o
 OBJECT_PATH/str.o
 OBJECT_PATH/text.o
 OBJECT_PATH/buffer_to_hex.o

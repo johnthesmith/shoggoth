@@ -2,6 +2,7 @@
 
 #include "../../../../lib/core/log_manager.h"
 
+#include <functional>
 #include "layer.h"
 #include "nerve.h"
 #include "layer_list.h"
@@ -145,6 +146,31 @@ class NerveList :  public Heap
 
 
 
+        /*
+            Return true for layer parents exists
+        */
+        bool parentsExists
+        (
+            /* Layer object */
+            Layer*
+        );
+
+
+
+        /*
+            Return true for layer children exists
+        */
+        bool childrenExists
+        (
+            /* Layer object */
+            Layer*
+        );
+
+
+
+        /*
+            Return parents layers by child layer from nerves
+        */
         NerveList* getParentsByLayer
         (
             Layer*,     /* Layer for parents search */
@@ -218,13 +244,34 @@ class NerveList :  public Heap
 
 
 
+//        /*
+//            Allocate nerves weights
+//        */
+//        NerveList* weightsAllocate
+//        (
+//            function <void ( Nerve* )> /* On allocate callback */
+//        );
+
+
         /*
             Allocate nerves weights
         */
+        template <typename Func>
         NerveList* weightsAllocate
         (
-            function <void ( Nerve* )> /* On allocate callback */
-        );
+            Func aOnAllocate
+        )
+        {
+            loop
+            (
+                [ &aOnAllocate ]( void* p )
+                {
+                    (( Nerve*) p ) -> allocate( aOnAllocate );
+                    return false;
+                }
+            );
+            return this;
+        }
 
 };
 

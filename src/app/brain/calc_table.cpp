@@ -14,6 +14,18 @@ CalcRecord* CalcRecord::setCalculated()
 
 
 
+
+/*
+    Reset layer calcilated
+*/
+CalcRecord* CalcRecord::resetCalculated()
+{
+    calculated = false;
+    return this;
+}
+
+
+
 /*
     Return the calculated flag
 */
@@ -56,21 +68,8 @@ Layer* CalcRecord::getLayer()
     Calculation table
 */
 
-CalcTable::CalcTable
-(
-    /* The LimbProcessor object */
-    LimbProcessor* aLimb
-)
-:
-    limb( aLimb ),
-    table( aLimb -> getLayerList() -> getCount() )
+CalcTable::CalcTable()
 {
-    auto layers = limb -> getLayerList();
-    /* Load Calc records */
-    for( int i = 0; i < layers -> getCount(); i++ )
-    {
-        table[ i ].setLayer(( Layer* )( layers -> getByIndex( i )));
-    }
 }
 
 
@@ -78,13 +77,9 @@ CalcTable::CalcTable
 /*
     Create calc table
 */
-CalcTable* CalcTable::create
-(
-    /* The limb object */
-    LimbProcessor* aLimb
-)
+CalcTable* CalcTable::create()
 {
-    return new CalcTable( aLimb );
+    return new CalcTable();
 }
 
 
@@ -120,22 +115,42 @@ bool CalcTable::isCalculated
 
 
 
+CalcTable* CalcTable::addLayer
+(
+    Layer* aLayer
+)
+{
+    table.push_back( (CalcRecord){false, aLayer} );
+    return this;
+}
+
+
+
+
+CalcTable* CalcTable::reset()
+{
+    for( auto& item : table )
+    {
+        item.resetCalculated();
+    }
+    return this;
+}
+
+
 
 /*
     Return true if all parents of the layer has a calculated flag
 */
 bool CalcTable::isParentsCalculated
 (
-    Layer* aLayer
+    Layer* aLayer,
+    NerveList* aNerveList
 )
 {
     bool result = true;
 
-    /* Get nerve list */
-    NerveList* nerveList = limb -> getNerveList();
-
-    auto parents = LayerList::create( limb );
-    nerveList -> getParentsByLayer( aLayer , parents );
+    auto parents = LayerList::create( NULL );
+    aNerveList -> getParentsByLayer( aLayer, parents );
 
     parents -> loop
     (
@@ -160,16 +175,13 @@ bool CalcTable::isParentsCalculated
 */
 bool CalcTable::isChildrenCalculated
 (
-    Layer* aLayer
+    Layer* aLayer,
+    NerveList* aNerveList
 )
 {
     bool result = true;
-
-    /* Get nerve list */
-    NerveList* nerveList = limb-> getNerveList();
-
-    auto children = LayerList::create( limb );
-    nerveList -> getChildrenByLayer( aLayer , children );
+    auto children = LayerList::create( NULL );
+    aNerveList -> getChildrenByLayer( aLayer, children );
 
     children -> loop
     (
@@ -189,43 +201,121 @@ bool CalcTable::isChildrenCalculated
 
 
 
+/*
+    Sort for forward calculation (neuron values)
+*/
+CalcTable* CalcTable::sortForward
+(
+    NerveList* aNerveList
+)
+{
+    vector <CalcRecord> sorted;
 
+    /*
+        Drop calculated flags
+        This flag is using for sorting.
+    */
+    reset();
+
+    /* Sort */
+    loop
+    (
+        [ &aNerveList, &sorted ]
+        ( CalcTable* table, Layer* layer, bool &terminate )
+        {
+            /* Exclude calculation for layers without parents */
+            if
+            (
+                ( !aNerveList -> parentsExists( layer )) ||
+                ( table -> isParentsCalculated( layer, aNerveList ))
+            )
+            {
+                sorted.push_back( (CalcRecord){false, layer} );
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    );
+
+    /* Refresh the table */
+    table = sorted;
+
+    return this;
+}
 
 
 
 /*
-    Loop for all notcalculated layers
-    Fills a CalcRecord vector with data from alimb and calls
-    aCallback for each unprocessed layer until all layers are processed.
+    Sort for forward calculation (neuron values)
 */
-CalcTable* CalcTable::loop
+CalcTable* CalcTable::sortBackward
 (
-    /* Callback function */
-    CalcTableLoopCallback aCallback
+    NerveList* aNerveList
 )
 {
-    /* Count of layer calculated */
-    int calculatedCount = 0;
-    auto layers = limb -> getLayerList();
-    auto layersCount = layers -> getCount();
+    vector <CalcRecord> sorted;
 
-    /* Main loop */
-    do
-    {
-        calculatedCount = 0;
-        for( int i = 0; i < layersCount; i++ )
+    /*
+        Drop calculated flags
+        This flag is using for sorting.
+    */
+    reset();
+
+    /* Sort */
+    loop
+    (
+        [ &aNerveList, &sorted ]
+        ( CalcTable* table, Layer* layer, bool &terminate )
         {
+            /* Exclude calculation for layers without parents */
             if
             (
-                ! table[ i ].getCalculated() &&
-                aCallback( this, table[ i ].getLayer() )
+                ( table -> isChildrenCalculated( layer, aNerveList ))
             )
             {
-                table[ i ].setCalculated();
-                calculatedCount ++;
+                sorted.push_back( (CalcRecord){false, layer} );
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
+    );
+
+    /* Refresh the table */
+    table = sorted;
+
+    return this;
+}
+
+
+
+
+CalcTable* CalcTable::dump
+(
+    Log* aLog,
+    string aHeader
+)
+{
+    aLog -> begin( aHeader );
+    for( auto record:table )
+    {
+        aLog -> info( record.layer -> getId());
     }
-    while( calculatedCount > 0 );
+    aLog -> end();
+
+    return this;
+}
+
+
+
+
+CalcTable* CalcTable::clear()
+{
+    table.clear();
     return this;
 }

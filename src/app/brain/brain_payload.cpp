@@ -49,7 +49,6 @@ BrainPayload::~BrainPayload()
 {
     processor -> destroy();
     server -> destroy();
-
     net -> destroy();
 }
 
@@ -177,10 +176,10 @@ void BrainPayload::onEngineLoop
             {
                 getLog() -> begin( "Threads stoping" );
                     /* Paused processes */
-                    processor -> stop();
                     server -> stop();
-                    processor -> waitStop();
+                    processor -> stop();
                     server -> waitStop();
+                    processor -> waitStop();
                 getLog() -> end( "" );
 
                 if( netConfigUpdated || netVersionChanged )
@@ -211,6 +210,8 @@ void BrainPayload::onEngineLoop
                 -> setTickWrite( appConfig -> getInt( "tickWrite", 0 ))
                 -> setTickChart( appConfig -> getInt( "tickChart", 0 ))
                 -> setDumpConf( appConfig -> getObject( "dump" ))
+                -> setMinNeuronPerThread( appConfig -> getInt( "minNeuronPerThread" ))
+                -> setMaxThreadCount( appConfig -> getInt( "maxThreadCount" ))
                 ;
 
                 /* Apply config for server */

@@ -197,6 +197,54 @@ NerveList* NerveList::removeByLayer
 
 
 /*
+    Return true for layer parents exists
+*/
+bool NerveList::parentsExists
+(
+    /* Layer object */
+    Layer* aLayer
+)
+{
+    bool result = false;
+    loop
+    (
+        [ &aLayer, &result ]
+        ( void* aNerve )
+        {
+            result = (( Nerve* ) aNerve ) -> getChild() == aLayer;
+            return result;
+        }
+    );
+    return result;
+}
+
+
+
+/*
+    Return true for layer children exists
+*/
+bool NerveList::childrenExists
+(
+    /* Layer object */
+    Layer* aLayer
+)
+{
+    bool result = false;
+    loop
+    (
+        [ &aLayer, &result ]
+        ( void* aNerve )
+        {
+            result = (( Nerve* ) aNerve ) -> getParent() == aLayer;
+            return result;
+        }
+    );
+    return result;
+}
+
+
+
+/*
     Return parents layers by child layer from nerves
 */
 NerveList* NerveList::getParentsByLayer
@@ -431,23 +479,4 @@ NerveList* NerveList::dump
 }
 
 
-
-/*
-    Allocate nerves weights
-*/
-NerveList* NerveList::weightsAllocate
-(
-    function <void ( Nerve* )> aOnAllocate
-)
-{
-    loop
-    (
-        [ &aOnAllocate ]( void* p )
-        {
-            (( Nerve*) p ) -> allocate( aOnAllocate );
-            return false;
-        }
-    );
-    return this;
-}
 

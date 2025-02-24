@@ -9,7 +9,6 @@ OBJECT_PATH/mon.o
 OBJECT_PATH/moment.o
 OBJECT_PATH/math.o
 OBJECT_PATH/rnd.o
-OBJECT_PATH/rnd_obj.o
 OBJECT_PATH/str.o
 OBJECT_PATH/text.o
 OBJECT_PATH/buffer_to_hex.o
@@ -20,6 +19,7 @@ OBJECT_PATH/chain_item.o
 OBJECT_PATH/chain.o
 OBJECT_PATH/chart_data.o
 OBJECT_PATH/chart_list.o
+OBJECT_PATH/thread_manager.o
 
 # Application libraries
 OBJECT_PATH/application.o

@@ -24,6 +24,7 @@
 #include <string>
 
 #include "../../../../lib/core/result.h"
+#include "../../../../lib/core/log.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 #include "../../../../lib/json/param_list.h"    /* For read size from params */
 
@@ -32,7 +33,6 @@
 #include "../../../../lib/core/mon.h"
 
 #include "func.h"
-#include "nerve_list.h"
 #include "shoggoth_consts.h"
 
 using namespace std;
@@ -44,7 +44,6 @@ using namespace std;
 */
 
 class Limb;
-class Nerve;
 
 
 
@@ -57,7 +56,7 @@ class Layer : public Result
         */
         /* Limb object */
         Limb*           limb                    = NULL;
-        /* Count fo neurons */
+        /* Count of neurons */
         int             count                   = 0;
         /* Dimention size */
         Point3i         size                    = POINT_3I_0;
@@ -128,8 +127,10 @@ class Layer : public Result
         */
         Layer
         (
-            Limb*,          /* Limb object */
-            string = ""     /* id */
+            /* Limb object */
+            Limb*,
+            /* Layers id */
+            string
         );
 
 

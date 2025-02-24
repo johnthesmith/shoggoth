@@ -9,7 +9,7 @@
 #include <string>
 
 #include "../../../../../lib/core/application.h"
-#include "../../../../../lib/core/rnd_obj.h"
+#include "../../../../../lib/core/rnd.h"
 #include "../../../../../lib/sock/sock_manager.h"
 
 #include "../limb.h"
@@ -24,10 +24,20 @@ class Net: public Limb
 
         /* Objects */
 
-        Application*    application     = NULL;     /* The application object */
-        SockManager*    sockManager     = NULL;     /* Socket manager object */
-        ParamList*      config          = NULL;     /* Last net config after IO */
-        Mon*            mon             = NULL;     /* Monitoring object */
+        /* The application object */
+        Application*    application     = NULL;
+
+        /* Socket manager object */
+        SockManager*    sockManager     = NULL;
+
+        /* Last net config after IO */
+        ParamList*      config          = NULL;
+
+        /* Monitoring object */
+        Mon*            mon             = NULL;
+
+        /* Rnd object */
+        Rnd*            rnd             = NULL;
 
         /* Lists of layers id after update by swap operations */
         vector<string>  changedValues;
@@ -60,8 +70,6 @@ class Net: public Limb
         string          version         = "";
         /* Net version, for switching at next turn of calculation */
         string          nextVersion     = "";
-        /* Random seed for Net */
-        unsigned long long seed         = 0;
         /* Tick of the net. Settings by processor */
         unsigned long long tick         = 0;
     public:
@@ -414,7 +422,7 @@ class Net: public Limb
             string,         /* Parent Net Version */
             string,         /* New net version */
             double,         /* survivalErrorAvg */
-            bool            /* true for mutation */
+            Rnd*            /* rnd stream object for mutation */
         );
 
 
@@ -478,7 +486,7 @@ class Net: public Limb
         /*
             Send changes from net in to other limb
         */
-        Net* syncToLimb
+        bool syncToLimb
         (
             Limb*   /* targetLimb */,
             bool    /* Skip synchronization for Net is lock */
@@ -593,23 +601,6 @@ class Net: public Limb
         );
 
 
-        /*
-            Return net random seed
-        */
-        unsigned long long getSeed();
-
-
-
-
-        /*
-            Set net random seed
-        */
-        Net* setSeed
-        (
-            unsigned long long
-        );
-
-
 
         /*
             Return true value if layer contains action for current net task
@@ -651,4 +642,12 @@ class Net: public Limb
             Return net mon object
         */
         Mon* getMon();
+
+
+
+        Rnd* getRnd();
+
+
+
+        Net* setRndSeedFromConfig();
 };

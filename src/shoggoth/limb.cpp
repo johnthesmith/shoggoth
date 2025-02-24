@@ -286,112 +286,113 @@ NerveList* Limb::getNerveList()
 /*
     Loop for each parents neuron of this neuron
 */
-Limb* Limb::parentsLoop
-(
-    Layer*          aLayer,     /* Layer */
-    int             aIndex,     /* Neuron index */
-    BindType        aBindType,
-    parentsLambda   aCallback   /* Callback method */
-)
-{
-    /* Loop by nerves */
-    getNerveList() -> loop
-    (
-        [ &aLayer, &aCallback, &aIndex, &aBindType ]
-        ( void* aNerve )
-        {
-            auto iNerve = ( Nerve* ) aNerve;
-
-            if
-            (
-                iNerve -> getChild() == aLayer &&
-                (
-                    aBindType == BT_ALL ||
-                    iNerve -> getBindType() == aBindType
-                )
-            )
-            {
-                int from = 0;
-                int to = 0;
-                iNerve -> getWeightsRangeByChildIndex
-                (
-                    aIndex, from, to
-                );
-                /* Loop by weights */
-                for( int i = from; i < to;  i++ )
-                {
-                    aCallback
-                    (
-                        iNerve -> getParent(),
-                        iNerve -> getParentByWeightIndex( i ),
-                        iNerve,
-                        iNerve -> getWeight( i ),
-                        i
-                    );
-                }
-            }
-            return false;
-        }
-    );
-    return this;
-}
+//Limb* Limb::parentsLoop
+//(
+//    Layer*          aLayer,     /* Layer */
+//    int             aIndex,     /* Neuron index */
+//    BindType        aBindType,
+//    Func            aCallback
+////    parentsLambda   aCallback   /* Callback method */
+//)
+//{
+//    /* Loop by nerves */
+//    getNerveList() -> loop
+//    (
+//        [ &aLayer, &aCallback, &aIndex, &aBindType ]
+//        ( void* aNerve )
+//        {
+//            auto iNerve = ( Nerve* ) aNerve;
+//
+//            if
+//            (
+//                iNerve -> getChild() == aLayer &&
+//                (
+//                    aBindType == BT_ALL ||
+//                    iNerve -> getBindType() == aBindType
+//                )
+//            )
+//            {
+//                int from = 0;
+//                int to = 0;
+//                iNerve -> getWeightsRangeByChildIndex
+//                (
+//                    aIndex, from, to
+//                );
+//                /* Loop by weights */
+//                for( int i = from; i < to;  i++ )
+//                {
+//                    aCallback
+//                    (
+//                        iNerve -> getParent(),
+//                        iNerve -> getParentByWeightIndex( i ),
+//                        iNerve,
+//                        iNerve -> getWeight( i ),
+//                        i
+//                    );
+//                }
+//            }
+//            return false;
+//        }
+//    );
+//    return this;
+//}
 
 
 
 /*
     Loop for each child of i neuron for Layer
 */
-Limb* Limb::childrenLoop
-(
-    Layer*          aLayer,
-    int             aIndex,
-    BindType        aBindType,
-    childrenLambda  aCallback
-)
-{
-    /* Loop by nerves */
-    getNerveList() -> loop
-    (
-        [ &aLayer, &aCallback, &aIndex, &aBindType ]
-        ( void* aNerve )
-        {
-            auto iNerve = ( Nerve* ) aNerve;
-            if
-            (
-                iNerve -> getParent() == aLayer &&
-                (
-                    aBindType == BT_ALL ||
-                    iNerve -> getBindType() == aBindType
-                )
-            )
-            {
-                int from = 0;
-                int to = 0;
-                int step = 0;
-
-                iNerve -> getWeightsRangeByParentIndex
-                (
-                    aIndex, from, to, step
-                );
-
-                /* Loop by weights */
-                for( int i = from; i < to;  i += step )
-                {
-                    aCallback
-                    (
-                        iNerve -> getChild(),
-                        iNerve -> getChildByWeightIndex( i ),
-                        iNerve,
-                        iNerve -> getWeight( i ),
-                        i
-                    );
-                }
-            }
-            return false;
-        }
-    );
-    return this;
-}
+//Limb* Limb::childrenLoop
+//(
+//    Layer*          aLayer,
+//    int             aIndex,
+//    BindType        aBindType,
+//    Func            aCallback
+//)
+//{
+//    /* Loop by nerves */
+//    getNerveList() -> loop
+//    (
+//        [ &aLayer, &aCallback, &aIndex, &aBindType ]
+//        ( void* aNerve )
+//        {
+//            auto iNerve = ( Nerve* ) aNerve;
+//            if
+//            (
+//                iNerve -> getParent() == aLayer &&
+//                (
+//                    aBindType == BT_ALL ||
+//                    iNerve -> getBindType() == aBindType
+//                )
+//            )
+//            {
+//                int from = 0;
+//                int to = 0;
+//                int step = 0;
+//
+//                iNerve -> getWeightsRangeByParentIndex
+//                (
+//                    aIndex, from, to, step
+//                );
+//
+//                /* Loop by weights */
+//                for( int i = from; i < to;  i += step )
+//                {
+//                    aCallback
+//                    (
+//                        iNerve -> getChild(),
+//                        iNerve -> getChildByWeightIndex( i ),
+//                        iNerve,
+//                        iNerve -> getWeight( i ),
+//                        i
+//                    );
+//                }
+//            }
+//            return false;
+//        }
+//    );
+//    return this;
+//}
 
 
 
@@ -590,7 +591,16 @@ Limb* Limb::dump
                         aLayer,
                         neuronIndex,
                         BT_ALL,
-                        [ this, &f, &aData, &size, &lastParentLayer, &aLayer, &aNeuronPos, &aDirection ]
+                        [
+                            this,
+                            &f,
+                            &aData,
+                            &size,
+                            &lastParentLayer,
+                            &aLayer,
+                            &aNeuronPos,
+                            &aDirection
+                        ]
                         (
                             Layer*  aParentLayer,
                             int     aParentNeuronIndex,
@@ -720,7 +730,9 @@ Limb* Limb::dump
     /* Data view*/
     Dataview        aDataview,
     /* */
-    long long int   aTick
+    long long int   aTick,
+    /* Colored */
+    bool            aColored
 )
 {
     if( checkPath( getPath( aPath )))
@@ -773,7 +785,7 @@ Limb* Limb::dump
                 {
                     default:
                     case DATAVIEW_DIGITS:
-                        f << toString( val, 12, DF_FIXED, true );
+                        f << toString( val, 12, DF_FIXED, aColored );
                         delimiter = " | ";
                     break;
                     case DATAVIEW_GRAPH:

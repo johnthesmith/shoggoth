@@ -3,8 +3,6 @@
 #include "func.h"
 #include "limb.h"
 
-#include "../../../../lib/core/rnd.h"
-
 
 
 /*
@@ -17,11 +15,7 @@ Layer::Layer
 )
 {
     limb = aLimb;
-
-    id = aId == "" ? Rnd::getUuid() : aId;
-
-//    /* Actions */
-//    actions         = ParamList::create();
+    id = aId;
 
     /* Statistics */
     chartValues             = ChartData::create();

@@ -1,0 +1,3 @@
+result (VALUES) RELU/ONE/NULL
+ALL #492980
+[90m0[39m[90m0[39m[90m0[39m[90m0[39m[90m0[39m[32md[39m[90m0[39m[32md[39m[90m0[39m[32md[39m

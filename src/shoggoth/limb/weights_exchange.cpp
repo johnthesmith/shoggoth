@@ -6,9 +6,12 @@
 /*
     Constructor
 */
-WeightsExchange::WeightsExchange()
+WeightsExchange::WeightsExchange
+()
 {
-    clientId = Rnd::getUuid();
+    auto rnd = Rnd::create();
+    clientId = rnd -> randomize() -> getUuid();
+    rnd -> destroy();
 }
 
 

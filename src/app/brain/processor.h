@@ -97,6 +97,12 @@ class Processor : public PayloadEngine
 
 
         /*
+        */
+        virtual void onStopBefore() override;
+
+
+
+        /*
             Shoggoth pause action
         */
         virtual void onStopAfter() override;

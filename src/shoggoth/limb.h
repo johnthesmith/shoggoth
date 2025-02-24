@@ -10,49 +10,48 @@
 
 #include <iostream>
 #include <cstring>
-#include <functional> /* for function */
 #include <mutex>    /* For net sinchronization */
 
 #include "../../../../lib/core/log_manager.h"
 #include "layer_list.h"
+#include "nerve_list.h"
 
 
-
-/*
-    Lambda function for return parents neurons of child
-*/
-typedef
-function
-<
-    bool
-    (
-        Layer*, /* Layer with parent neurons */
-        int,    /* Neuron index*/
-        Nerve*, /* Nerve */
-        double, /* Weight of bind */
-        int     /* return weight index */
-    )
->
-parentsLambda;
-
-
-
-/*
-    Lambda function for return children neurons for parent
-*/
-typedef
-function
-<
-    bool
-    (
-        Layer*, /* return layer with children neurons */
-        int,    /* return child neuron index*/
-        Nerve*, /* return nerve */
-        double, /* return weight of bind */
-        int     /* return weight index */
-    )
->
-childrenLambda;
+///*
+//    Lambda function for return parents neurons of child
+//*/
+//typedef
+//function
+//<
+//    bool
+//    (
+//        Layer*, /* Layer with parent neurons */
+//        int,    /* Neuron index*/
+//        Nerve*, /* Nerve */
+//        double, /* Weight of bind */
+//        int     /* return weight index */
+//    )
+//>
+//parentsLambda;
+//
+//
+//
+///*
+//    Lambda function for return children neurons for parent
+//*/
+//typedef
+//function
+//<
+//    bool
+//    (
+//        Layer*, /* return layer with children neurons */
+//        int,    /* return child neuron index*/
+//        Nerve*, /* return nerve */
+//        double, /* return weight of bind */
+//        int     /* return weight index */
+//    )
+//>
+//childrenLambda;
 
 
 
@@ -83,7 +82,7 @@ class Limb : public Result
         */
         Limb
         (
-            LogManager* /* Log object*/
+            LogManager*
         );
 
 
@@ -207,30 +206,115 @@ class Limb : public Result
 
 
 
-
         /*
             Loop for each parents neuron of this neuron
         */
-        Limb* parentsLoop
+        template <typename Func> Limb* parentsLoop
         (
-            Layer*,         /* Layer */
-            int,            /* Neuron index */
-            BindType,       /* BindType for loop or BT_ALL */
-            parentsLambda   /* Callback method */
-        );
+            Layer*          aLayer,     /* Layer */
+            int             aIndex,     /* Neuron index */
+            BindType        aBindType,
+            Func            aCallback
+        )
+        {
+            /* Loop by nerves */
+            getNerveList() -> loop
+            (
+                [ &aLayer, &aCallback, &aIndex, &aBindType ]
+                ( void* aNerve )
+                {
+                    auto iNerve = ( Nerve* ) aNerve;
+
+                    if
+                    (
+                        iNerve -> getChild() == aLayer &&
+                        (
+                            aBindType == BT_ALL ||
+                            iNerve -> getBindType() == aBindType
+                        )
+                    )
+                    {
+                        int from = 0;
+                        int to = 0;
+                        iNerve -> getWeightsRangeByChildIndex
+                        (
+                            aIndex, from, to
+                        );
+                        /* Loop by weights */
+                        for( int i = from; i < to;  i++ )
+                        {
+                            aCallback
+                            (
+                                iNerve -> getParent(),
+                                iNerve -> getParentByWeightIndex( i ),
+                                iNerve,
+                                iNerve -> getWeight( i ),
+                                i
+                            );
+                        }
+                    }
+                    return false;
+                }
+            );
+            return this;
+        };
 
 
 
         /*
             Loop for each child of i neuron for Layer
         */
-        Limb* childrenLoop
+        template <typename Func> Limb* childrenLoop
         (
-            Layer*,         /* Layer */
-            int,            /* Neuron index */
-            BindType,       /* BindType for loop or BT_ALL */
-            childrenLambda  /* Callback method */
-        );
+            Layer*          aLayer,
+            int             aIndex,
+            BindType        aBindType,
+            Func            aCallback
+        )
+        {
+            /* Loop by nerves */
+            getNerveList() -> loop
+            (
+                [ &aLayer, &aCallback, &aIndex, &aBindType ]
+                ( void* aNerve )
+                {
+                    auto iNerve = ( Nerve* ) aNerve;
+                    if
+                    (
+                        iNerve -> getParent() == aLayer &&
+                        (
+                            aBindType == BT_ALL ||
+                            iNerve -> getBindType() == aBindType
+                        )
+                    )
+                    {
+                        int from = 0;
+                        int to = 0;
+                        int step = 0;
+
+                        iNerve -> getWeightsRangeByParentIndex
+                        (
+                            aIndex, from, to, step
+                        );
+
+                        /* Loop by weights */
+                        for( int i = from; i < to;  i += step )
+                        {
+                            aCallback
+                            (
+                                iNerve -> getChild(),
+                                iNerve -> getChildByWeightIndex( i ),
+                                iNerve,
+                                iNerve -> getWeight( i ),
+                                i
+                            );
+                        }
+                    }
+                    return false;
+                }
+            );
+            return this;
+        };
 
 
         /**********************************************************************
@@ -310,10 +394,12 @@ class Limb : public Result
         (
             /* Store path */
             string,
-            /* Data type */
-            CalcStage,
             /* The layer */
             Layer*,
+            /* Neuron Index in the layer */
+            Point3i,
+            /* Type parent or child */
+            Direction,
             /* Data type */
             Data,
             /* Data view*/
@@ -331,18 +417,18 @@ class Limb : public Result
         (
             /* Store path */
             string,
+            /* Data type */
+            CalcStage,
             /* The layer */
             Layer*,
-            /* Neuron Index in the layer */
-            Point3i,
-            /* Type parent or child */
-            Direction,
             /* Data type */
             Data,
             /* Data view*/
             Dataview,
             /* Tick number */
-            long long int
+            long long int,
+            /* Colored */
+            bool = true
         );
 
 

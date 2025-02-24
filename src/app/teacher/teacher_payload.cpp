@@ -177,7 +177,10 @@ void TeacherPayload::onEngineLoop
             /* Prepare Limb */
             limb
             -> getNet()
-            -> syncToLimb( limb, false )
+            -> syncToLimb( limb, false );
+
+            limb
+            -> getNet()
             -> swapValuesAndErrors
             (
                 Actions{ READ_VALUES }, /* Action */
@@ -204,6 +207,53 @@ void TeacherPayload::onEngineLoop
                 -> setDouble( Path{ "last", "error" }, error )
                 -> setDouble( Path{ "last", "errorDelta" }, error - errorLimit );
 
+                /*
+                    Write layers values from config:batches.*.controlDump
+                */
+                if
+                (
+                    error <= errorLimit &&
+                    lastNetMode == NET_MODE_TEST
+                )
+                {
+                    auto layers = batches -> getObject( Path{ mode, "controlDump" } );
+                    if( layers != NULL )
+                    {
+                        layers -> loop
+                        (
+                            [ this ]
+                            ( Param* item )
+                            {
+                                auto layerId = item -> getString();
+                                auto layer = net -> getLayerList() -> getById( layerId );
+                                if( layer != NULL )
+                                {
+                                    /* Dump */
+                                    net -> dump
+                                    (
+                                        net -> getNetVersionPath
+                                        (
+                                            "control_dump/" +
+                                            toString( testId, false, 10 ) +
+                                            "-" +
+                                            layerId +
+                                            ".txt"
+                                        ),
+                                        CALC_STAGE_ALL,
+                                        layer,
+                                        DATA_VALUES,
+                                        DATAVIEW_GRAPH,
+                                        net -> getTick(),
+                                        false
+                                    );
+                                }
+                                return false;
+                            }
+                        );
+                    }
+                    testId++;
+                }
+
                 /* Select new batch */
                 if
                 (
@@ -215,6 +265,14 @@ void TeacherPayload::onEngineLoop
                     lastChange < limb -> getLastChangeStructure()
                 )
                 {
+                    /* Net mode changed */
+
+                    /* Restore Rnd seed */
+                    if( lastNetMode != netMode )
+                    {
+                        net -> setRndSeedFromConfig();
+                    }
+
                     lastNetMode = netMode;
                     lastChange = limb -> getLastChangeStructure();
 
@@ -226,7 +284,7 @@ void TeacherPayload::onEngineLoop
 
                     if( list != NULL && all != NULL )
                     {
-                        auto item = list -> getRnd();
+                        auto item = list -> getRndItem( net -> getRnd() );
                         if( item != NULL )
                         {
                             if( item -> isObject() )
@@ -418,7 +476,7 @@ TeacherPayload* TeacherPayload::cmdValueToLayer
     {
         layer -> noiseValue
         (
-            a -> getInt( "seed", 0 ),
+            net -> getRnd(),
             a -> getDouble( "min", 0.0 ),
             a -> getDouble( "max", 1.0 )
         );
@@ -486,7 +544,7 @@ TeacherPayload* TeacherPayload::cmdImageToLayer
         auto files = a -> getObject( "files" );
         if( files != NULL )
         {
-            auto file = files -> getRnd() -> getString();
+            auto file = files -> getRndItem( net -> getRnd() ) -> getString();
             if( file != "" )
             {
                 layer -> imageToValue
@@ -496,7 +554,8 @@ TeacherPayload* TeacherPayload::cmdImageToLayer
                     a -> getDouble( "zoomMin" ),
                     a -> getDouble( "zoomMax" ),
                     a -> getDouble( "shift" ),
-                    this
+                    this,
+                    net -> getRnd()
                 );
             }
             else
@@ -540,7 +599,7 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
         if( folder != "" )
         {
             auto files = ParamList::create() -> filesFromPath( folder );
-            auto file = files -> getRnd();
+            auto file = files -> getRndItem( net -> getRnd() );
             if( file != NULL )
             {
                 layer -> imageToValue
@@ -550,7 +609,8 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
                     a -> getDouble( "zoomMin" ),
                     a -> getDouble( "zoomMax" ),
                     a -> getDouble( "shift" ),
-                    this
+                    this,
+                    net -> getRnd()
                 );
             }
             else

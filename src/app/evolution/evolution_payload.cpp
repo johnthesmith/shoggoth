@@ -27,7 +27,8 @@ EvolutionPayload::EvolutionPayload
     /* Net version */
     string aNetVersion
 )
-: PayloadEngine( a, aPayloadId ) /* Call parent constructor */
+/* Call parent constructor */
+: PayloadEngine( a, aPayloadId )
 {
     net = Net::create
     (
@@ -518,6 +519,7 @@ EvolutionPayload* EvolutionPayload::commitNet
     io -> getRequest()
     -> setBool( "success", aSuccess )
     -> setDouble( "survivalErrorAvg", aSurvivalErrorAvg )
+    -> setInt( "mutationSeed", ++mutationSeed )
     -> copyFrom( "reason", aReason )
     -> setString( "id", net -> getId())
     -> setString( "version", net -> getVersion());

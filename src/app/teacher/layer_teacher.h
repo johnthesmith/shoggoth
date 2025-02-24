@@ -89,7 +89,8 @@ class LayerTeacher : public Layer
             double,     /* ZoomMin */
             double,     /* ZoomMax */
             double,     /* Shift */
-            Result*
+            Result*,
+            Rnd*
         );
 
 
@@ -107,9 +108,12 @@ class LayerTeacher : public Layer
         */
         LayerTeacher* noiseValue
         (
-            int,        /* Random seed */
-            double,     /* Min value */
-            double      /* Max value */
+            /* Random seed */
+            Rnd*,
+            /* Min value */
+            double,
+            /* Max value */
+            double
         );
 
 

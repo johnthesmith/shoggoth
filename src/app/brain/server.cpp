@@ -112,7 +112,6 @@ void Server::onLoop()
 
 /*
     Server resume action
-    Main app thread
 */
 void Server::onStartAfter()
 {

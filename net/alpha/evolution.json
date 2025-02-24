@@ -33,7 +33,7 @@
                             {
                                 "tickSmoth"         : 0.5,
                                 "tickSmothCount"    : 100,
-                                "tickDeltaLimit"    : 100.0
+                                "tickDeltaLimit"    : 50.0
                             }
                         }
                     },
@@ -60,6 +60,7 @@
         "readWaitingTimeoutMcs" : 500000,
         "methodDump":
         [
+            "!CMD_COMMIT_NET",
             "!SET_NET_MODE",
             "!READ_LAYER_STAT"
         ]

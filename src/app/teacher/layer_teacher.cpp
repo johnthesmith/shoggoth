@@ -63,22 +63,18 @@ void LayerTeacher::destroy()
 */
 LayerTeacher* LayerTeacher::noiseValue
 (
-    int     aSeed,
+    Rnd*    aRnd,
     double  aMin,
     double  aMax
 )
 {
-    Rnd::storeSeed( aSeed );
-
     getLimb() -> lock();
     auto c = getCount();
     for( int i = 0; i < c; i ++ )
     {
-        setNeuronValue( i, Rnd::get( aMin, aMax ) );
+        setNeuronValue( i, aRnd -> get( aMin, aMax ) );
     }
     getLimb() -> unlock();
-
-    Rnd::restoreSeed();
 
     return this;
 }
@@ -102,8 +98,6 @@ LayerTeacher* LayerTeacher::fillValue
         setNeuronValue( i, aValues -> getByIndex( i % cv ) -> getDouble() ) ;
     }
     getLimb() -> unlock();
-
-    Rnd::restoreSeed();
 
     return this;
 }
@@ -171,7 +165,8 @@ LayerTeacher* LayerTeacher::imageToValue
     double aZoomMin,
     double aZoomMax,
     double aShift,
-    Result* result
+    Result* result,
+    Rnd*    aRnd
 )
 {
     if( isOk() )
@@ -184,9 +179,9 @@ LayerTeacher* LayerTeacher::imageToValue
             if( bitmap -> isOk() )
             {
                 bitmap
-                -> rotate( Rnd::get( -aRotate, aRotate ), true )
-                -> zoom( Rnd::get( aZoomMin, aZoomMax ), true )
-                -> shift( Rnd::get( -aShift, aShift ), Rnd::get( -aShift, aShift ));
+                -> rotate( aRnd -> get( -aRotate, aRotate ), true )
+                -> zoom( aRnd -> get( aZoomMin, aZoomMax ), true )
+                -> shift( aRnd -> get( -aShift, aShift ), aRnd -> get( -aShift, aShift ));
 
                 getLog()
                 -> trace( "Image loaded" )

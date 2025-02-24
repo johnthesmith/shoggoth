@@ -50,7 +50,7 @@ void LayerList::destroy()
 */
 Log* LayerList::getLog()
 {
-    return limb -> getLog();
+    return limb != NULL ? limb -> getLog() : NULL;
 }
 
 
@@ -288,21 +288,25 @@ LayerList* LayerList::dump
     string aComment
 )
 {
-    getLog() -> begin( "Layer list dump" ) -> prm( "coment", aComment );
-    loop
-    (
-        [ this ]
-        ( void* p )
-        {
-            auto iLayer = (Layer*) p;
-            getLog()
-            -> trace()
-            -> prm( "id", iLayer -> getId() )
-            -> prm( "address", (void*) iLayer )
-            -> prm( "size", iLayer -> getCount() );
-            return false;
-        }
-    );
-    getLog() -> end();
+    if( limb != NULL )
+    {
+        getLog() -> begin( "Layer list dump" ) -> prm( "coment", aComment );
+        loop
+        (
+            [ this ]
+            ( void* p )
+            {
+                auto iLayer = (Layer*) p;
+                getLog()
+                -> trace()
+                -> prm( "id", iLayer -> getId() )
+                -> prm( "address", (void*) iLayer )
+                -> prm( "size", iLayer -> getCount() );
+                return false;
+            }
+        );
+        getLog() -> end();
+    }
+
     return this;
 }

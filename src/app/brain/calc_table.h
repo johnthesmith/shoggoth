@@ -3,13 +3,9 @@
 */
 # pragma once
 
-#include <functional>   /* for lyambda */
-
-#include "./limb_processor.h"
 #include "../../shoggoth/layer.h"
-
-
-
+#include "../../shoggoth/nerve_list.h"
+#include "../../../../../lib/core/log.h"
 
 
 
@@ -19,12 +15,6 @@
 class CalcTable;
 
 
-/*
-    Events callback
-*/
-typedef function <bool ( CalcTable*, Layer* )> CalcTableLoopCallback;
-
-
 
 
 /*
@@ -32,18 +22,24 @@ typedef function <bool ( CalcTable*, Layer* )> CalcTableLoopCallback;
 */
 class CalcRecord
 {
-    private:
+    public:
 
         bool calculated = false;
         Layer* layer    = NULL;
 
-    public:
 
 
         /*
             Confirm layer calcilated
         */
         CalcRecord* setCalculated();
+
+
+
+        /*
+            Reset layer calcilated
+        */
+        CalcRecord* resetCalculated();
 
 
 
@@ -79,27 +75,18 @@ class CalcTable
 {
     private:
 
-        LimbProcessor* limb = NULL;
         vector <CalcRecord> table;
 
     public:
 
-        CalcTable
-        (
-            /* The Net object */
-            LimbProcessor*
-        );
+        CalcTable();
 
 
 
         /*
             Create calc table
         */
-        static CalcTable* create
-        (
-            /* The Net object */
-            LimbProcessor*
-        );
+        static CalcTable* create();
 
 
 
@@ -110,14 +97,57 @@ class CalcTable
 
 
 
+        CalcTable* addLayer
+        (
+            Layer*
+        );
+
+
+
+        CalcTable* reset();
+
+
+
         /*
             Loop for all notcalculated layers
+            Fills a CalcRecord vector with data from alimb and calls
+            aCallback for each unprocessed layer until all layers are processed.
         */
+        template <typename Func>
         CalcTable* loop
         (
-            /* Calback function */
-            CalcTableLoopCallback
-        );
+            /*
+                Callback function
+                bool ( CalcTable*, Layer*, bool& )
+            */
+            Func aCallback
+        )
+        {
+            /* Count of layer calculated */
+            int calculatedCount = 0;
+            auto layersCount = table.size();
+            auto terminate = false;
+
+            /* Main loop */
+            do
+            {
+                calculatedCount = 0;
+                for( int i = 0; i < layersCount && !terminate; i++ )
+                {
+                    if
+                    (
+                        ! table[ i ].getCalculated() &&
+                        aCallback( this, table[ i ].getLayer(), terminate )
+                    )
+                    {
+                        table[ i ].setCalculated();
+                        calculatedCount ++;
+                    }
+                }
+            }
+            while( calculatedCount > 0 && !terminate );
+            return this;
+        }
 
 
 
@@ -126,7 +156,8 @@ class CalcTable
         */
         bool isParentsCalculated
         (
-            Layer*
+            Layer*,
+            NerveList*
         );
 
 
@@ -136,7 +167,8 @@ class CalcTable
         */
         bool isChildrenCalculated
         (
-            Layer*
+            Layer*,
+            NerveList*
         );
 
 
@@ -148,4 +180,32 @@ class CalcTable
         (
             Layer* aLayer
         );
+
+
+
+        CalcTable* sortForward
+        (
+            NerveList*
+        );
+
+
+
+        CalcTable* sortBackward
+        (
+            NerveList*
+        );
+
+
+
+
+        CalcTable* dump
+        (
+            Log*,
+            /* Dump header */
+            string
+        );
+
+
+
+        CalcTable* clear();
 };

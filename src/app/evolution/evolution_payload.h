@@ -41,6 +41,8 @@ class EvolutionPayload : public PayloadEngine
         int         testSuccessCount = 0;
 
 
+        size_t      mutationSeed = 0;
+
         EvolutionPayload* testStage
         (
             Layer*,
