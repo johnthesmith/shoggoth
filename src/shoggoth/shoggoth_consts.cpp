@@ -1,4 +1,6 @@
 #include <string>
+#include <unordered_map>
+
 #include "shoggoth_consts.h"
 
 
@@ -357,17 +359,23 @@ string directionToString
 */
 Dataview dataviewFromString
 (
-    /* String argument for conversion */
-    string aValue,
-    /* Defaule value */
+    const string aValue,
     Dataview aDefault
 )
 {
-    if( aValue == "UNKNOWN" )   return DATAVIEW_UNKNOWN;
-    if( aValue == "GRAPH" )     return DATAVIEW_GRAPH;
-    if( aValue == "DIGITS" )    return DATAVIEW_DIGITS;
-    return aDefault;
+    static const unordered_map<string, Dataview> lookup =
+    {
+        { "UNKNOWN", DATAVIEW_UNKNOWN },
+        { "GRAPH",   DATAVIEW_GRAPH },
+        { "CHAR",    DATAVIEW_CHAR },
+        { "FLOAT",   DATAVIEW_FLOAT }
+    };
+
+    auto it = lookup.find( aValue );
+    return (it != lookup.end()) ? it -> second : aDefault;
 }
+
+
 
 
 
@@ -384,7 +392,8 @@ string dataviewToString
         default:
         case DATAVIEW_UNKNOWN   : return "UNKNOWN";
         case DATAVIEW_GRAPH     : return "GRAPH";
-        case DATAVIEW_DIGITS    : return "DIGITS";
+        case DATAVIEW_CHAR      : return "CHAR";
+        case DATAVIEW_FLOAT     : return "FLOAT";
     };
 }
 

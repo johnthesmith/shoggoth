@@ -130,7 +130,7 @@ void BrainPayload::onEngineLoop
         -> setInt
         (
             Path{ "loop", "netConfigUpdate" },
-            netConfig -> getInt( "lastUpdate" ) * SECOND
+            netConfig -> getInt( Path{ "lastUpdate" }) * SECOND
         )
         -> setInt
         (
@@ -204,14 +204,14 @@ void BrainPayload::onEngineLoop
 
                 processor
                 -> getLimb()
-                -> setMinWeight( appConfig -> getDouble( "minWeight", 1.0e-5 ))
-                -> setMaxWeight( appConfig -> getDouble( "maxWeight", 1.0e5 ))
-                -> setMaxError( appConfig -> getDouble( "maxError", 0.01 ))
-                -> setTickWrite( appConfig -> getInt( "tickWrite", 0 ))
-                -> setTickChart( appConfig -> getInt( "tickChart", 0 ))
-                -> setDumpConf( appConfig -> getObject( "dump" ))
-                -> setMinNeuronPerThread( appConfig -> getInt( "minNeuronPerThread" ))
-                -> setMaxThreadCount( appConfig -> getInt( "maxThreadCount" ))
+                -> setMinWeight( appConfig -> getDouble( Path{ "minWeight" }, 1.0e-5 ))
+                -> setMaxWeight( appConfig -> getDouble( Path{ "maxWeight" }, 1.0e5 ))
+                -> setMaxError( appConfig -> getDouble( Path{ "maxError" }, 0.01 ))
+                -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
+                -> setTickChart( appConfig -> getInt( Path{ "tickChart" }, 0 ))
+                -> setDumpConf( appConfig -> getObject( Path{ "dump" }))
+                -> setMinNeuronPerThread( appConfig -> getInt( Path{ "minNeuronPerThread" }))
+                -> setMaxThreadCount( appConfig -> getInt( Path{ "maxThreadCount" }))
                 ;
 
                 /* Apply config for server */

@@ -263,25 +263,6 @@ Limb* Limb::copyTo
 */
 
 
-/*
-    Return LayerList
-*/
-LayerList* Limb::getLayerList()
-{
-    return layers;
-}
-
-
-
-/*
-    Return list of nerves
-*/
-NerveList* Limb::getNerveList()
-{
-    return nerves;
-}
-
-
 
 /*
     Loop for each parents neuron of this neuron
@@ -784,12 +765,16 @@ Limb* Limb::dump
                 switch( aDataview )
                 {
                     default:
-                    case DATAVIEW_DIGITS:
+                    case DATAVIEW_FLOAT:
                         f << toString( val, 12, DF_FIXED, aColored );
                         delimiter = " | ";
                     break;
+                    case DATAVIEW_CHAR:
+                        f << valueToChar( val, aColored, VALUE_CHAR );
+                        delimiter = "";
+                    break;
                     case DATAVIEW_GRAPH:
-                        f << valueToChar( val );
+                        f << valueToChar( val, aColored, VALUE_GRAPH );
                         delimiter = "";
                     break;
                 }
@@ -815,25 +800,3 @@ Limb* Limb::onChangeValues()
     lastChangeValues = now();
     return this;
 }
-
-
-
-/*
-    Return last moment of change structure of the limb
-*/
-long long int Limb::getLastChangeStructure()
-{
-    return lastChangeStructure;
-}
-
-
-
-/*
-    Return last moment change values
-*/
-long long Limb::getLastChangeValues()
-{
-    return lastChangeValues;
-}
-
-

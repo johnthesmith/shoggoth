@@ -195,14 +195,21 @@ class Limb : public Result
         /*
             Return LayerList
         */
-        LayerList* getLayerList();
+        LayerList* getLayerList()
+        {
+            return layers;
+        }
 
 
 
         /*
             Return list of nerves
         */
-        NerveList* getNerveList();
+        NerveList* getNerveList()
+        {
+            return nerves;
+        }
+
 
 
 
@@ -443,12 +450,18 @@ class Limb : public Result
         /*
             Return last moment of change structure of the limb
         */
-        long long int getLastChangeStructure();
+        long long int getLastChangeStructure()
+        {
+            return lastChangeStructure;
+        }
 
 
 
         /*
             Return last moment change values
         */
-        long long int getLastChangeValues();
+        long long getLastChangeValues()
+        {
+            return lastChangeValues;
+        }
 };

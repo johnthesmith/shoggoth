@@ -126,7 +126,7 @@ Net* Net::readWeights
     {
         char* buffer = NULL;
         size_t size = 0;
-        io -> getAnswer() -> getData( "data", buffer, size );
+        io -> getAnswer() -> getData( Path{ "data" }, buffer, size );
         if( buffer != NULL && size > 0 )
         {
             aNerve -> readFromBuffer( buffer, size );
@@ -285,7 +285,7 @@ Net* Net::readLayers
             lock();
 
             /* Set tick from server net */
-            setTick( io -> getAnswer() -> getInt( "tick" ));
+            setTick( io -> getAnswer() -> getInt( Path{ "tick" } ));
 
             /* Loop for values */
             for( auto id : aValues )
@@ -634,7 +634,7 @@ Net* Net::readNetFromFile
 
     if( fileExists( file ))
     {
-        auto lastUpdate = (long) getConfig() -> getInt( "lastUpdate", 0 );
+        auto lastUpdate = (long) getConfig() -> getInt( Path{ "lastUpdate" }, 0 );
         auto aUpdated = checkFileUpdate( file, lastUpdate );
 
         if( aUpdated )
@@ -646,6 +646,8 @@ Net* Net::readNetFromFile
 
             Json::create()
             -> fromFile( file )
+            -> include()
+//            -> overload()
             -> copyTo( aAnswer )
             -> resultTo( this )
             -> destroy();
@@ -671,7 +673,7 @@ bool Net::isConfigUpdate
     ParamList* aConfig
 )
 {
-    return getLastUpdate() != aConfig -> getInt( "lastUpdate", 0 );
+    return getLastUpdate() != aConfig -> getInt( Path{ "lastUpdate" }, 0 );
 }
 
 
@@ -746,13 +748,14 @@ Net* Net::clone
     if( aMutationRnd != NULL )
     {
         /* Mutation */
-        auto mutations = json -> getParamList() -> getObject( "mutations" );
+        auto mutations = json -> getParamList() -> getObject( Path{ "mutations" });
 
         if( mutations != NULL )
         {
             /* calculate sum of rnd of all mutation */
             double sumRnd = mutations -> calcSum( Path{ "rnd" } );
             double dice = aMutationRnd -> get( 0.0, sumRnd );
+
             double prevDice = 0.0;
 
             getLog()
@@ -782,7 +785,7 @@ Net* Net::clone
                         if
                         (
                             dice >= prevDice &&
-                            dice < prevDice + mutation -> getDouble( "rnd" )
+                            dice < prevDice + mutation -> getDouble( Path{ "rnd" })
                         )
                         {
                             /* Get path for mutation */
@@ -801,13 +804,13 @@ Net* Net::clone
                                 {
                                     case KT_DOUBLE:
                                     {
-                                        auto mul = mutation -> getDouble( "mul", 1.0 );
-                                        auto add = mutation -> getDouble( "add", 0.0 );
+                                        auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
+                                        auto add = mutation -> getDouble( Path{ "add" }, 0.0 );
                                         auto val = mutated -> getDouble();
                                         auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
                                         auto rAdd = aMutationRnd -> get( -add, +add );
-                                        auto vMax = mutation -> getDouble( "max", val );
-                                        auto vMin = mutation -> getDouble( "min", val );
+                                        auto vMax = mutation -> getDouble( Path{ "max" }, val );
+                                        auto vMin = mutation -> getDouble( Path{ "min" }, val );
 
                                         mutationValueParent = val;
 
@@ -847,13 +850,13 @@ Net* Net::clone
                                     break;
                                     case KT_INT:
                                     {
-                                        auto mul = mutation -> getDouble( "mul", 1.0 );
-                                        int add = mutation -> getInt( "add", 0 );
+                                        auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
+                                        int add = mutation -> getInt( Path{ "add" }, 0 );
                                         auto val = mutated -> getInt();
                                         auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
                                         auto rAdd = aMutationRnd -> get( -add, +add );
-                                        auto vMax = mutation -> getDouble( "max", val );
-                                        auto vMin = mutation -> getDouble( "min", val );
+                                        auto vMax = mutation -> getDouble( Path{ "max" }, val );
+                                        auto vMin = mutation -> getDouble( Path{ "min" }, val );
 
                                         mutationValueParent = val;
 
@@ -905,7 +908,7 @@ Net* Net::clone
                                 -> prm( "path", implode( path, ".") );
                             }
                         }
-                        prevDice = prevDice + mutation -> getDouble( "rnd" );
+                        prevDice = prevDice + mutation -> getDouble( Path{ "rnd" });
                     }
                     return false;
                 }
@@ -921,11 +924,18 @@ Net* Net::clone
     /* Write child version like current */
     json
     -> getParamList()
+    -> setString( "IGOGO", "AAA" )
     -> setString( Path{ "id" }, aParentNetId )
     -> setString( Path{ "version", "current" }, aChildVersion )
     -> setString( Path{ "version", "parent" }, aParentNetVersion )
-    -> setDouble( Path{ "version", "mutation", implode( path, "." ), "from"}, mutationValueParent )
-    -> setDouble( Path{ "version", "mutation", implode( path, "." ), "to"}, mutationValue )
+    -> pushObject
+    (
+        Path{ "version", "mutation" },
+        ParamList::create()
+        -> setString( "key", implode( path, "." ) )
+        -> setDouble( "from", mutationValueParent )
+        -> setDouble( "to", mutationValue )
+    )
     -> setDouble( Path{ "survival", "error", "avg" }, aSurvivalErrorAvg );
 
     string childNetFile = getNetConfigFile( aChildVersion );
@@ -956,7 +966,7 @@ Net* Net::applyNet
 {
     config -> copyFrom( aConfig );
 
-    auto configLayers = config -> getObject( "layers" );
+    auto configLayers = config -> getObject( Path{ "layers" });
 
     if( configLayers != NULL )
     {
@@ -1016,7 +1026,7 @@ Net* Net::applyNet
         getLog() -> end( "" ); /* End of layers load */
 
         /* Nerves */
-        auto jsonNerves = config -> getObject( "nerves" );
+        auto jsonNerves = config -> getObject( Path{ "nerves" });
 
         if( jsonNerves != NULL )
         {
@@ -1037,11 +1047,11 @@ Net* Net::applyNet
                     if( aItem -> isObject() )
                     {
                         auto jsonNerve      = aItem -> getObject();
-                        auto idFrom         = jsonNerve -> getString( "idFrom" );
-                        auto idTo           = jsonNerve -> getString( "idTo" );
-                        auto bindType       = bindTypeFromString( jsonNerve -> getString( "bindType" ));
-                        auto nerveType      = nerveTypeFromString( jsonNerve -> getString( "nerveType" ));
-                        auto nerveDelete    = jsonNerve -> getBool( "delete" );
+                        auto idFrom         = jsonNerve -> getString( Path{ "idFrom" });
+                        auto idTo           = jsonNerve -> getString( Path{ "idTo" });
+                        auto bindType       = bindTypeFromString( jsonNerve -> getString( Path{ "bindType" } ));
+                        auto nerveType      = nerveTypeFromString( jsonNerve -> getString( Path{ "nerveType" } ));
+                        auto nerveDelete    = jsonNerve -> getBool( Path{ "delete" });
 
                         if
                         (
@@ -1099,9 +1109,9 @@ Net* Net::applyNet
 
                                 if( nerve == NULL && !nerveDelete )
                                 {
-                                    auto minW = jsonNerve -> getDouble( "minWeight" , 0 );
-                                    auto maxW = jsonNerve -> getDouble( "maxWeight" , 0 );
-                                    auto mulW = config -> getDouble( "weightMul", 1 );
+                                    auto minW = jsonNerve -> getDouble( Path{ "minWeight" } , 0 );
+                                    auto maxW = jsonNerve -> getDouble( Path{ "maxWeight" }, 0 );
+                                    auto mulW = config -> getDouble( Path{ "weightMul" }, 1 );
 
                                     createNerve
                                     (
@@ -1143,7 +1153,9 @@ Net* Net::applyNet
     }
 
     /* Update last update net moment */
-    setLastUpdate( aConfig -> getInt( "lastUpdate", 0 ));
+    setLastUpdate( aConfig -> getInt( Path{ "lastUpdate" }, 0 ));
+
+    getLayerList() -> dump();
 
     if( version != nextVersion )
     {
@@ -1416,7 +1428,7 @@ Net* Net::loadLayer
         if
         (
             aLayer-> getId()
-            != aParams -> getString( "id", aLayer -> getId() )
+            != aParams -> getString( Path{ "id" }, aLayer -> getId() )
         )
         {
             setCode( "InvalidLayerID" );
@@ -1427,27 +1439,27 @@ Net* Net::loadLayer
             aLayer
             -> setFrontFunc
             (
-                strToFunc( aParams -> getString( "functionFront", "NULL" ))
+                strToFunc( aParams -> getString( Path{ "functionFront" }, "NULL" ))
             )
             -> setBackFunc
             (
-                strToFunc( aParams -> getString( "functionBack", "NULL" ))
+                strToFunc( aParams -> getString( Path{ "functionBack" }, "NULL" ))
             )
             -> setBackFuncOut
             (
-                strToFunc( aParams -> getString( "functionBackOut", "NULL" ))
+                strToFunc( aParams -> getString( Path{ "functionBackOut" }, "NULL" ))
             )
             -> setErrorCalc
             (
-                errorCalcFromString( aParams -> getString( "errorCalc", "NONE" ))
+                errorCalcFromString( aParams -> getString( Path{ "errorCalc" }, "NONE" ))
             )
             -> setWeightCalc
             (
-                weightCalcFromString( aParams -> getString( "weightCalc", "NONE" ))
+                weightCalcFromString( aParams -> getString( Path{ "weightCalc" }, "NONE" ))
             );
 
             /* Set Size from params */
-            auto size = ParamPoint::point3i( aParams -> getObject( "size" ) );
+            auto size = ParamPoint::point3i( aParams -> getObject( Path{ "size" } ));
 
             /* Remove nerves for size changed layer */
             if( size.mulComponents() != aLayer -> getCount() )
@@ -1481,7 +1493,7 @@ Net* Net::purgeLayers
         ( void* iLayer )
         {
             auto layerId = (( Layer* ) iLayer ) -> getId();
-            if( aLayers -> getObject( layerId ) == NULL )
+            if( aLayers -> getObject( Path{ layerId }) == NULL )
             {
                 /* Layer is absent in the config and must be delete */
                 purgeList.push_back( layerId );
@@ -1546,8 +1558,8 @@ Net* Net::loadWeightsFrom
             if( iParam -> isObject() )
             {
                 auto params = iParam -> getObject();
-                auto layerId = params -> getString( "layerId" );
-                auto neuronIndex = params -> getInt( "neuronIndex" );
+                auto layerId = params -> getString( Path{ "layerId" });
+                auto neuronIndex = params -> getInt( Path{ "neuronIndex" });
 
                 auto layer = aLimb -> getLayerList() -> getById( layerId );
                 if( layer != NULL )
@@ -1872,7 +1884,7 @@ Net* Net::syncWithServer()
     if( io -> isOk() )
     {
         lock();
-        setTick( io -> getAnswer() -> getInt( "tick" ));
+        setTick( io -> getAnswer() -> getInt( Path{ "tick" }));
         unlock();
     }
     io -> destroy();

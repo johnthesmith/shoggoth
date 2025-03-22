@@ -5,8 +5,6 @@
 
 # pragma once
 
-//#include <functional>   /* for allocate lyambda */
-
 
 #include "../../../../lib/core/result.h"
 #include "../../../../lib/core/log_manager.h"
@@ -152,42 +150,62 @@ class Nerve: public Result
         /*
             Return BindType
         */
-        BindType getBindType();
+        BindType getBindType()
+        {
+            return bindType;
+        };
+
 
 
 
         /*
             Return NerveType
         */
-        NerveType getNerveType();
+        NerveType getNerveType()
+        {
+            return nerveType;
+        }
+
 
 
 
         /*
             Return parent layer
         */
-        Layer* getParent();
+        Layer* getParent()
+        {
+            return parent;
+        }
 
 
 
         /*
             Return child layer
         */
-        Layer* getChild();
+        Layer* getChild()
+        {
+            return child;
+        }
 
 
 
         /*
             Return count of weights
         */
-        int getWeightsCount();
+        int getWeightsCount()
+        {
+            return weightsCount;
+        }
 
 
 
         /*
             Return weights pointer
         */
-        double* getWeights();
+        double* getWeights()
+        {
+            return weights;
+        }
 
 
 
@@ -196,19 +214,28 @@ class Nerve: public Result
         */
         Nerve* setWeight
         (
-            int     /* Index of weight */,
-            double  /* Value for bind */
-        );
+            /* Index of weight */
+            int aIndex,
+            /* Value for bind */
+            double aValue
+        )
+        {
+            weights[ aIndex ] = aValue;
+            return this;
+        }
 
 
 
         /*
-            Return weights pointer
+            Return weight by index
         */
         double getDeltaWeight
         (
-            int
-        );
+            int aIndex
+        )
+        {
+            return deltaWeights[ aIndex ];
+        }
 
 
 
@@ -217,9 +244,15 @@ class Nerve: public Result
         */
         Nerve* setDeltaWeight
         (
-            int     /* Index of weight */,
-            double  /* Value for bind */
-        );
+            /* Index of weight */
+            int aIndex,
+            /* Value for bind */
+            double aValue
+        )
+        {
+            deltaWeights[ aIndex ] = aValue;
+            return this;
+        }
 
 
 
@@ -250,8 +283,11 @@ class Nerve: public Result
         double getWeight
         (
             /* Index in weights */
-            int
-        );
+            int aIndex
+        )
+        {
+            return weights[ aIndex ];
+        }
 
 
 
@@ -325,7 +361,10 @@ class Nerve: public Result
         /*
             Return minimal weight
         */
-        double getMinWeight();
+        double getMinWeight()
+        {
+            return minWeight;
+        }
 
 
 
@@ -335,14 +374,22 @@ class Nerve: public Result
         Nerve* setMinWeight
         (
             double aValue
-        );
+        )
+        {
+            minWeight = aValue;
+            return this;
+        }
+
 
 
 
         /*
             Return maximal weight
         */
-        double getMaxWeight();
+        double getMaxWeight()
+        {
+            return maxWeight;
+        }
 
 
 
@@ -352,7 +399,12 @@ class Nerve: public Result
         Nerve* setMaxWeight
         (
             double aValue
-        );
+        )
+        {
+            maxWeight = aValue;
+            return this;
+        }
+
 
 
 

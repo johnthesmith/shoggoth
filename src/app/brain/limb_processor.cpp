@@ -1,4 +1,3 @@
-#include <cmath>
 #include <fstream>
 #include <thread>
 #include <unistd.h> /* usleep */
@@ -151,6 +150,8 @@ LimbProcessor* LimbProcessor::calc()
     {
         /* Updated */
         buildCalcTables();
+        /* Calculae thread count for each layer */
+        calcThreadCount();
     }
 
     mon -> now( Path{ "trace", "syncToLimb" }, true );
@@ -183,7 +184,7 @@ LimbProcessor* LimbProcessor::calc()
         /* Action */
         {
             /* Upload start values from Net */
-            READ_VALUES,
+            READ_VALUES
         },
         /* Participant object */
         this,
@@ -792,30 +793,6 @@ LimbProcessor* LimbProcessor::neuronCalcWeight
 
 
 /*
-    Method return count of thread using following property
-        maxThreadCount
-        minNeuronPerThread
-
-*/
-int LimbProcessor::calcThreadCount
-(
-    Layer*  aLayer /* Layer for calculation */
-)
-{
-    return min
-    (
-        maxThreadCount,
-        max
-        (
-            1,
-            aLayer -> getCount() / minNeuronPerThread
-        )
-    );
-}
-
-
-
-/*
     Calculate neurons in the layer using threads
 */
 LimbProcessor* LimbProcessor::layerCalc
@@ -827,7 +804,7 @@ LimbProcessor* LimbProcessor::layerCalc
 )
 {
     /* Calculate thread count */
-    int threadCount = calcThreadCount( aLayer );
+    int threadCount = aLayer -> getThreadCount();
 
     /* Check thread count */
     if( threadManager -> prepare( threadCount ))
@@ -840,27 +817,43 @@ LimbProcessor* LimbProcessor::layerCalc
             threadNumber++
         )
         {
-            int b = calcNeuronFrom( aLayer, threadCount, threadNumber );
-            int e = calcNeuronTo( aLayer, threadCount, threadNumber );
-
             threadManager -> setHandler
             (
                 threadNumber,
-                [ this, aLayer, b, e, aData ]()
+                (void*) new LayerCalcTask
                 {
+                    this,
+                    aLayer,
+                    calcNeuronFrom( aLayer, threadCount, threadNumber ),
+                    calcNeuronTo( aLayer, threadCount, threadNumber ),
+                    aData
+                },
+                []
+                (
+                    void* aTaskPtr
+                )
+                {
+                    auto task = (LayerCalcTask*) aTaskPtr;
                     /* Thread body */
-                    for( size_t n = b; n < e; n++ )
+                    for( size_t n = task -> neuronFrom; n < task -> neuronTo; n++ )
                     {
-                        switch( aData )
+                        switch( task -> data )
                         {
                             /* Unknown data */
                             default:
                             case DATA_UNKNOWN:break;
-                            case DATA_WEIGHTS:neuronCalcWeight( aLayer, n );break;
-                            case DATA_VALUES:neuronCalcValue( aLayer, n );break;
-                            case DATA_ERRORS:neuronCalcError( aLayer, n );break;
+                            case DATA_WEIGHTS:
+                                task -> limb -> neuronCalcWeight( task -> layer, n );
+                            break;
+                            case DATA_VALUES:
+                                task -> limb -> neuronCalcValue( task -> layer, n );
+                            break;
+                            case DATA_ERRORS:
+                                task -> limb -> neuronCalcError( task -> layer, n );
+                            break;
                         }
                     }
+                    delete task;
                 }
             );
 
@@ -878,39 +871,6 @@ LimbProcessor* LimbProcessor::layerCalc
     }
 
     return this;
-}
-
-
-
-
-/*
-    Calculate start neuron for processors operations
-*/
-int LimbProcessor::calcNeuronFrom
-(
-    Layer* aLayer,
-    int aThreadCount,
-    int aThreadNumber
-)
-{
-    return floor
-    (
-        (double) aLayer -> getCount() * (double) aThreadNumber / (double) aThreadCount
-    );
-}
-
-
-/*
-    Caluculate end of neurons for processors operations
-*/
-int LimbProcessor::calcNeuronTo
-(
-    Layer* aLayer,
-    int aThreadCount,
-    int aThreadNumber
-)
-{
-    return calcNeuronFrom( aLayer, aThreadCount, aThreadNumber + 1 );
 }
 
 
@@ -1050,10 +1010,10 @@ LimbProcessor* LimbProcessor::calcDebugDump
         ( ParamList* params, string )
         {
             /* Enabled check */
-            if( params -> getBool( "enabled", true ))
+            if( params -> getBool( Path{ "enabled" }, true ))
             {
                 /* Stage check */
-                auto stages = params -> getObject( "stages" );
+                auto stages = params -> getObject( Path{ "stages" });
                 if
                 (
                     stages != NULL &&
@@ -1064,7 +1024,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                 )
                 {
                     /* Layer defining */
-                    auto layers = params -> getObject( "layers" );
+                    auto layers = params -> getObject( Path{ "layers" });
                     if( layers != NULL )
                     {
                         /* Read file name */
@@ -1072,13 +1032,17 @@ LimbProcessor* LimbProcessor::calcDebugDump
                         (
                             params -> getString
                             (
-                                "file",
+                                Path{ "file" },
                                 "tick_%tick%/%stage%/%layer%%neuron%-%direction%-%data%.txt"
                             )
                         );
 
                         /* Read dataview type */
-                        auto dataview = dataviewFromString( params -> getString( "dataview" ), DATAVIEW_DIGITS );
+                        auto dataview = dataviewFromString
+                        (
+                            params -> getString( Path{ "dataview" }),
+                            DATAVIEW_FLOAT
+                        );
 
                         layers -> loop
                         (
@@ -1100,7 +1064,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                 else
                                 {
                                     /* Data type loop VALUES ERROR WEIGHTS */
-                                    auto datas = params -> getObject( "data" );
+                                    auto datas = params -> getObject( Path{ "data" });
                                     if( datas != NULL )
                                     {
                                         datas -> loop
@@ -1118,7 +1082,9 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                             {
                                                 auto data = dataFromString( item -> getString());
                                                 /* Let directions */
-                                                auto directions = params -> getObject( "directions" );
+                                                auto directions = params
+                                                -> getObject( Path{ "directions" });
+
                                                 if( directions != NULL )
                                                 {
                                                     directions -> loop
@@ -1142,7 +1108,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                 case DIRECTION_PARENT:
                                                                 case DIRECTION_CHILD:
                                                                 {
-                                                                    auto neurons = params -> getObject( "neurons" );
+                                                                    auto neurons = params -> getObject( Path{ "neurons" });
                                                                     if( neurons != NULL )
                                                                     {
                                                                         neurons -> objectsLoop
@@ -1263,14 +1229,14 @@ LimbProcessor* LimbProcessor::calcDebugDump
                 } /* Stage check */
 
                 /* Pause */
-                auto pause = params -> getInt( "pauseMcs", 0 );
+                auto pause = params -> getInt( Path{ "pauseMcs" }, 0 );
                 if( pause > 0 )
                 {
                     usleep( pause );
                 }
 
                 /* Lock */
-                if( params -> getBool( "lock", false ))
+                if( params -> getBool( Path{ "lock" }, false ))
                 {
                     params = ParamList::create();
                     params
@@ -1303,6 +1269,41 @@ LimbProcessor* LimbProcessor::calcDebugDump
         }
     );
 
+    return this;
+}
+
+
+
+
+/*
+    Method return count of thread using following property
+        maxThreadCount
+        minNeuronPerThread
+
+*/
+LimbProcessor* LimbProcessor::calcThreadCount()
+{
+    getLayerList() -> loop
+    (
+        [ & ]
+        ( void* item )
+        {
+            auto layer = (Layer*) item;
+            layer -> setThreadCount
+            (
+                min
+                (
+                    maxThreadCount,
+                    max
+                    (
+                        1,
+                        layer -> getCount() / minNeuronPerThread
+                    )
+                )
+            );
+            return false;
+        }
+    );
     return this;
 }
 

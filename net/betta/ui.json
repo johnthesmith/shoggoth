@@ -1,0 +1,26 @@
+{
+    "loopSleepMcs"        :1000,
+
+    "io":
+    {
+        "source"                : "SERVER",
+        "host"                  : "127.0.0.1",
+        "_host"                 : "194.182.90.184",
+        "port"                  : 11120,
+        "readWaitingTimeoutMcs" : 1000000
+    },
+
+    "netLoopTimeoutMcs"     :1000,
+
+    "tasks":
+    {
+        "UI":
+        {
+
+            "enabled"   :true,
+            "fontName"  :"/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "gliphSize" :64,
+            "charSet"   :" !@#$£€¥%^&*()_+=-{}[]\\|/~`<>?.,;:'\"«»†∞1234567890abcdefghijklmnopqarstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXWZабвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+        }
+    }
+}

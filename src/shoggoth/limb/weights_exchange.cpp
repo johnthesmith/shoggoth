@@ -73,9 +73,9 @@ Param* WeightsExchange::find
 
                 if
                 (
-                    object -> getString( "layerId" ) == aLayerId &&
-                    object -> getInt( "neuronIndex" ) == aNeuron &&
-                    object -> getString( "clientId" ) == aClientId
+                    object -> getString( Path{ "layerId" }) == aLayerId &&
+                    object -> getInt( Path{ "neuronIndex" }) == aNeuron &&
+                    object -> getString( Path{ "clientId" }) == aClientId
                 )
                 {
                     result = aParam;
@@ -108,7 +108,7 @@ WeightsExchange* WeightsExchange::purgeByClientId
         [ &aClientId]
         ( Param* object )
         {
-            return object -> getObject() -> getString( "clientId" ) == aClientId;
+            return object -> getObject() -> getString( Path{ "clientId" }) == aClientId;
         }
     );
 
@@ -176,8 +176,8 @@ WeightsExchange* WeightsExchange::prepareRequest
             {
                 neurons
                 -> addObject()
-                -> setString( "layerId", item -> getObject() -> getString( "layerId" ))
-                -> setInt( "neuronIndex", item -> getObject() -> getInt( "neuronIndex" ))
+                -> setString( "layerId", item -> getObject() -> getString( Path{ "layerId" }))
+                -> setInt( "neuronIndex", item -> getObject() -> getInt( Path{ "neuronIndex" }))
                 ;
             }
             return false;
@@ -203,7 +203,7 @@ WeightsExchange* WeightsExchange::synchNeuronsByClient
         {
             return
             /* ... check clientId ... */
-            iParam -> getObject() -> getString( "clientId" ) == aClientId &&
+            iParam -> getObject() -> getString( Path{ "clientId" }) == aClientId &&
             /* ... not found ... */
             aNeurons -> findFirst
             (
@@ -238,7 +238,7 @@ WeightsExchange* WeightsExchange::synchNeuronsByClient
                     {
                         return
                         jParam -> isObject() &&
-                        jParam -> getObject() -> getString( "clientId" ) == aClientId &&
+                        jParam -> getObject() -> getString( Path{ "clientId" }) == aClientId &&
                         iParam -> getObject() -> isEqual
                         (
                             jParam -> getObject(),
@@ -268,7 +268,7 @@ WeightsExchange* WeightsExchange::readAnswer
     ParamList* aAnswer  /* Readed answer */
 )
 {
-    auto answerNeurons = aAnswer -> getObject( "neurons" );
+    auto answerNeurons = aAnswer -> getObject( Path{ "neurons" });
     if( answerNeurons != NULL )
     {
         answerNeurons -> loop
@@ -279,13 +279,20 @@ WeightsExchange* WeightsExchange::readAnswer
                 if( param -> isObject() )
                 {
                     auto params = param -> getObject();
-                    auto layerId = params -> getString( "layerId" );
-                    auto neuronIndex = params -> getInt( "neuronIndex" );
+                    auto layerId = params -> getString( Path{ "layerId" });
+                    auto neuronIndex = params -> getInt( Path{ "neuronIndex" });
                     auto item = find( layerId, neuronIndex );
                     if( item != NULL )
                     {
-                        item -> getObject() -> addObject( "children" ) -> copyFrom( params -> getObject( "children" ));
-                        item -> getObject() -> addObject( "parents" ) -> copyFrom( params -> getObject( "parents" ));
+                        item
+                        -> getObject()
+                        -> addObject( "children" )
+                        -> copyFrom( params -> getObject( Path{ "children" }));
+
+                        item
+                        -> getObject()
+                        -> addObject( "parents" )
+                        -> copyFrom( params -> getObject( Path{ "parents" }));
                     }
                 }
                 return false;
@@ -316,8 +323,8 @@ WeightsExchange* WeightsExchange::prepareAnswer
                 auto requestNeuronDetails = requestNeuron -> getObject();
                 auto netNeuron = find
                 (
-                    requestNeuronDetails -> getString( "layerId" ),
-                    requestNeuronDetails -> getInt( "neuronIndex" ),
+                    requestNeuronDetails -> getString( Path{ "layerId" }),
+                    requestNeuronDetails -> getInt( Path{ "neuronIndex" }),
                     aClientId
                 );
                 if( netNeuron != NULL )
@@ -326,11 +333,11 @@ WeightsExchange* WeightsExchange::prepareAnswer
 
                     requestNeuronDetails
                     -> addObject( "parents" )
-                    -> copyFrom( n -> getObject( "parents" ) );
+                    -> copyFrom( n -> getObject( Path{ "parents" }));
 
                     requestNeuronDetails
                     -> addObject( "children" )
-                    -> copyFrom( n -> getObject( "children" ) );
+                    -> copyFrom( n -> getObject( Path{ "children" }));
                 }
             }
             return false;

@@ -81,7 +81,7 @@ Io* Io::call
         -> getConfig()
         -> selectObject( Path { "io" });
         /* Read configuration */
-        if( config -> getString( "source", "LOCAL" ) == "LOCAL" )
+        if( config -> getString( Path{ "source" }, "LOCAL" ) == "LOCAL" )
         {
             /* File operation */
             switch( aCommand )
@@ -96,9 +96,9 @@ Io* Io::call
         }
         else
         {
-            auto  host = config -> getString( "host" );
-            auto  port = config -> getInt( "port" );
-            auto  readWaitingTimeoutMcs = config -> getInt( "readWaitingTimeoutMcs" );
+            auto  host = config -> getString( Path{ "host" });
+            auto  port = config -> getInt( Path{ "port" });
+            auto  readWaitingTimeoutMcs = config -> getInt( Path{ "readWaitingTimeoutMcs" });
 
             /* Server operation */
             auto client = RpcClient::create
@@ -151,15 +151,15 @@ Io* Io::disconnect()
     -> selectObject( Path { "io" });
 
     /* Read configuration */
-    if( config -> getString( "source", "LOCAL" ) != "LOCAL" )
+    if( config -> getString( Path{ "source" }, "LOCAL" ) != "LOCAL" )
     {
         /* Server operation */
         RpcClient::create
         (
             getApplication() -> getLogManager(),
             net -> getSockManager(),
-            config -> getString( "host" ),
-            config -> getInt( "port" )
+            config -> getString( Path{ "host" }),
+            config -> getInt( Path{ "port" })
         )
         -> disconnect()
         -> destroy();
@@ -426,7 +426,7 @@ Io* Io::getNetMode
     if( this -> isOk() )
     {
         call( CMD_GET_NET_MODE );
-        a = netModeFromString( answer -> getString( "mode" ));
+        a = netModeFromString( answer -> getString( Path{ "mode" }));
     }
     return this;
 }
@@ -472,7 +472,7 @@ void Io::handleBeforeCall
         -> valueExists
         (
             Path{ "io", "methodDump" },
-            a -> getRequest() -> getString( "method")
+            a -> getRequest() -> getString( Path{ "method" })
         )
     )
     {
@@ -497,7 +497,7 @@ void Io::handleAfterCall
         -> valueExists
         (
             Path{ "io", "methodDump" },
-            a -> getRequest() -> getString( "method")
+            a -> getRequest() -> getString( Path{ "method" })
         )
     )
     {

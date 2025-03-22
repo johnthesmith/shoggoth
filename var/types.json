@@ -1,0 +1,202 @@
+{
+    "retina":
+    {
+        "var":
+        {
+            "namePrefix":"Retina",
+        },
+        "const":
+        {
+            "type"              :"in",
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+            "actions":
+            {
+                "PROC"      :[ "READ_VALUES" ],
+                "UI"        :[ "READ_VALUES" ],
+                "TEACHER"   :[ "WRITE_VALUES" ],
+                "EVOLUTION" :[ "READ_STAT_TICK" ]
+            }
+        }
+    },
+
+    "cortex":
+    {
+        "var":
+        {
+            "namePrefix"        :"Cortex",
+            "minSize"           :[ 16, 16, 1 ],
+            "maxSize"           :[ 16, 16, 1 ],
+        },
+        "const":
+        {
+            "functionFront"     :"RELU",
+            "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"LEARNING",
+            "weightCalc"        :"CALC",
+            "drawSize"          :[ 0.1000000000, 0.1000000000, 0.1000000000 ],
+            "actions":
+            {
+                "PROC"      :[ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        :[ "READ_VALUES", "READ_ERRORS" ],
+                "EVOLUTION" :[ "READ_VALUES" ]
+            }
+        }
+    },
+
+    "bias":
+    {
+        "var":
+        {
+            "namePrefix"        :"Bias",
+            "minSize"           :[ 1, 1, 1 ],
+            "maxSize"           :[ 1, 1, 1 ]
+        },
+        "const":
+        {
+            "value"             :1,
+            "size"              :[ 1, 1, 1 ],
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+            "drawSize"          :[ 0.1000000000, 0.1000000000, 0.1000000000 ],
+            "actions":
+            {
+                "PROC"      :[ "READ_VALUES" ],
+                "UI"        :[ "READ_VALUES" ],
+                "TEACHER"   :[ "WRITE_VALUES" ],
+                "EVOLUTION" :[ "" ]
+            }
+        },
+        "nerves":
+        {
+            "cortex":
+            {
+                "uses"          :[ "PROC", "UI" ],
+                "nerveType"     :"ALL_TO_ALL",
+                "bindType"      :"ADD",
+                "minWeight"     :-1.0000000000,
+                "maxWeight"     :1.0000000000
+            }
+        }
+    },
+
+    "result":
+    {
+        "var":
+        {
+            "namePrefix":"Result",
+        },
+        "const":
+        {
+            "functionFront"     :"RELU",
+            "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"LEARNING",
+            "weightCalc"        :"CALC",
+            "actions":
+            {
+                "PROC"      :[ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        :[ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   :[ "READ_VALUES" ],
+                "EVOLUTION" :[ "READ_VALUES" ]
+            }
+        }
+    },
+
+    "sample":
+    {
+        "var":
+        {
+            "namePrefix":"Sample"
+        },
+        "const":
+        {
+            "functionFront"     :"NULL",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+            "actions":
+            {
+                "PROC"      :[ "READ_VALUES" ],
+                "UI"        :[ "READ_VALUES" ],
+                "EVOLUTION" :[ "READ_VALUES" ],
+                "TEACHER"   :[ "WRITE_VALUES" ]
+            }
+        }
+    },
+
+    "command":
+    {
+        "var":
+        {
+            "namePrefix":"Command"
+        },
+        "const":
+        {
+            "functionFront"     :"STEP",
+            "functionBack"      :"NULL",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"NONE",
+            "weightCalc"        :"NONE",
+            "actions":
+            {
+                "PROC"  :[ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"    :[ "READ_VALUES", "READ_ERRORS" ]
+            }
+        }
+    },
+
+    "error":
+    {
+        "var":
+        {
+            "namePrefix":"Error"
+        },
+        "const":
+        {
+            "functionFront"     :"LINE",
+            "functionBack"      :"ONE",
+            "functionBackOut"   :"NULL",
+            "errorCalc"         :"VALUE",
+            "weightCalc"        :"NONE",
+            "actions":
+            {
+                "PROC"      :[ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        :[ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   :[ "READ_VALUES", "WRITE_VALUES" ],
+                "EVOLUTION" :[ "READ_VALUES" ]
+            }
+        }
+    },
+
+    "test_error":
+    {
+        "var":
+        {
+            "namePrefix":"ErrorTest"
+        },
+        "const":
+        {
+            "functionFront":"LINE",
+            "functionBack":"ONE",
+            "functionBackOut":"ZERO",
+            "errorCalc":"VALUE",
+            "weightCalc":"NONE",
+            "actions":
+            {
+                "PROC"      :[ "WRITE_VALUES", "WRITE_ERRORS" ],
+                "UI"        :[ "READ_VALUES", "READ_ERRORS" ],
+                "TEACHER"   :[ "WRITE_VALUES" ],
+                "EVOLUTION" :[ "READ_VALUES", "READ_STAT_TICK", "READ_STAT_ERRORS_BEFORE_CHANGE" ]
+            }
+        }
+    }
+}

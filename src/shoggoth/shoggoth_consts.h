@@ -96,14 +96,9 @@ enum Dataview
     /* Unknown out type */
     DATAVIEW_UNKNOWN,
     /* Digits like 0.01321323 */
-    DATAVIEW_DIGITS,
-    /* Graph like:
-        " " <= EPSILON;
-        "░" <= 0.25;
-        "▒" <= 0.5;
-        "▓" <= 0.75;
-        "█" <= 1.0
-    */
+    DATAVIEW_FLOAT,
+    //
+    DATAVIEW_CHAR,
     DATAVIEW_GRAPH
 };
 
@@ -448,7 +443,7 @@ string directionToString
 Dataview dataviewFromString
 (
     /* String argument for conversion */
-    string,
+    const string,
     /* Defaule value */
     Dataview = DATAVIEW_UNKNOWN
 );

@@ -229,7 +229,7 @@ void EvolutionPayload::onEngineLoop
                     }
                     else
                     {
-                        auto cfgMaxTick = modeConfig -> getInt( "maxTick" );
+                        auto cfgMaxTick = modeConfig -> getInt( Path{ "maxTick" });
                         /* Loop for the each layer of the net mode configuration */
                         modeConfig -> objectsLoop
                         (
@@ -247,7 +247,7 @@ void EvolutionPayload::onEngineLoop
                                 {
                                     setResult( "UnknownLayer" )
                                     -> getDetails()
-                                    -> setString( "path", layerId );
+                                    -> setString( Path{ "path" }, layerId );
                                 }
                                 else
                                 {
@@ -277,9 +277,9 @@ void EvolutionPayload::onEngineLoop
                                             else
                                             {
                                                 /* Let config params */
-                                                auto cfgTickSmoth = cfg -> getDouble( "tickSmoth" );
-                                                auto cfgTickDeltaLimit = cfg -> getDouble( "tickDeltaLimit" );
-                                                auto cfgTickSmothCount = cfg -> getInt( "tickSmothCount" );
+                                                auto cfgTickSmoth = cfg -> getDouble( Path{ "tickSmoth" });
+                                                auto cfgTickDeltaLimit = cfg -> getDouble( Path{ "tickDeltaLimit" });
+                                                auto cfgTickSmothCount = cfg -> getInt( Path{ "tickSmothCount" });
 
                                                 /* Ticks smothing */
                                                 auto smoth = ChartData::create()
@@ -402,8 +402,19 @@ EvolutionPayload* EvolutionPayload::testStage
         lastNetTick = net -> getTick();
 
         /* Read config */
-        auto configTestTickCount = aConfig -> getInt( "testTickCount" );
+        auto configTestTickCount = aConfig -> getInt( Path{ "testTickCount" });
         auto chart = aLayer -> getChartErrorsBeforeChange();
+
+        if( isnan( aLayer -> calcSumValue()) )
+        {
+            commitNet
+            (
+                false,
+                1e10,
+                ParamList::shared().get()
+                -> setString( "type", "EVOLUTION_TEST_NAN" )
+            );
+        }
 
         /* Quantity check */
         if( chart -> getCount() > configTestTickCount )

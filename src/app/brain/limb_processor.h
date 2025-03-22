@@ -4,11 +4,11 @@
 # pragma once
 
 
-
 /*
     Limb - processor
 */
 
+#include <cmath>
 
 #include "../../../../../lib/core/mon.h"
 #include "../../../../../lib/core/thread_manager.h"
@@ -18,6 +18,31 @@
 #include "../../shoggoth/limb/net.h"
 
 #include "calc_table.h"
+
+
+class LimbProcessor;
+
+
+/*
+    Task structure
+*/
+struct LayerCalcTask
+{
+    /* Limb calculation */
+    LimbProcessor*  limb        = nullptr;
+    /* Layer for calculation */
+    Layer*          layer       = nullptr;
+    /* From neuron */
+    int             neuronFrom  = 0;
+    /* To nauron */
+    int             neuronTo    = 0;
+    /* With data calculation type */
+    Data            data       = DATA_UNKNOWN;
+};
+
+
+
+
 
 
 
@@ -325,10 +350,7 @@ class LimbProcessor : public Limb
                 minNeuronPerThread
 
         */
-        int calcThreadCount
-        (
-            Layer* /* Layer for calculation */
-        );
+        LimbProcessor* calcThreadCount();
 
 
 
@@ -351,10 +373,17 @@ class LimbProcessor : public Limb
         */
         int calcNeuronFrom
         (
-            Layer*,
-            int,    /* Thread count */
-            int     /* Thread number */
-        );
+            Layer* aLayer,
+            int aThreadCount,   /* Thread count */
+            int aThreadNumber   /* Thread number */
+        )
+        {
+            return floor
+            (
+                (double) aLayer -> getCount() * (double) aThreadNumber / (double) aThreadCount
+            );
+        }
+
 
 
 
@@ -363,10 +392,15 @@ class LimbProcessor : public Limb
         */
         int calcNeuronTo
         (
-            Layer*,
-            int,    /* Thread count */
-            int     /* Thread number */
-        );
+            Layer*  aLayer,
+            /* Thread count */
+            int     aThreadCount,
+            /* Thread number */
+            int     aThreadNumber
+        )
+        {
+            return calcNeuronFrom( aLayer, aThreadCount, aThreadNumber + 1 );
+        }
 
 
 

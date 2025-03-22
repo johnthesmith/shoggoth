@@ -84,8 +84,8 @@ ShoggothApplication* ShoggothApplication::prepareConfiguration()
     -> prm( "file", getConfigFileName() );
 
     /* Set net attributes for the begining */
-    netId = getCli() -> getString( "net_id", "alpha" );
-    netVersion = getCli() -> getString( "net_version", "zero" );
+    netId = getCli() -> getString( Path{ "net_id" }, "alpha" );
+    netVersion = getCli() -> getString( Path{ "net_version" }, "zero" );
 
     return this;
 }

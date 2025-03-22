@@ -2,7 +2,6 @@
 
 #include "../../../../lib/core/log_manager.h"
 
-#include <functional>
 #include "layer.h"
 #include "nerve.h"
 #include "layer_list.h"
@@ -242,15 +241,6 @@ class NerveList :  public Heap
             string aComment = ""
         );
 
-
-
-//        /*
-//            Allocate nerves weights
-//        */
-//        NerveList* weightsAllocate
-//        (
-//            function <void ( Nerve* )> /* On allocate callback */
-//        );
 
 
         /*

@@ -100,7 +100,7 @@ Layer* Layer::setSize
     ParamList* a
 )
 {
-    auto jsonSize = a -> getObject( "size" );
+    auto jsonSize = a -> getObject( Path{ "size" });
     if( jsonSize != NULL )
     {
         setSize
@@ -114,15 +114,6 @@ Layer* Layer::setSize
         );
     }
     return this;
-}
-
-
-/*
-    Return 3d size of layer
-*/
-Point3i Layer::getSize()
-{
-    return size;
 }
 
 
@@ -196,22 +187,6 @@ Layer* Layer::setValuesFromBuffer
 
 
 /*
-    Return buffer and size of buffer of values
-*/
-Layer* Layer::getValuesBuffer
-(
-    char* &aBuffer, /* Buffer pointer */
-    size_t &aSize   /* Size of buffer */
-)
-{
-    aBuffer = ( char* )values;
-    aSize = getValuesBufferSize();
-    return this;
-}
-
-
-
-/*
     Return errors buffer
 */
 Layer* Layer::errorsFromBuffer
@@ -226,22 +201,6 @@ Layer* Layer::errorsFromBuffer
         memcpy( errors, aBuffer, aSize );
     }
     getLimb() -> unlock();
-    return this;
-}
-
-
-
-/*
-    Return buffer and size of buffer of errors
-*/
-Layer* Layer::getErrorsBuffer
-(
-    char* &aBuffer, /* Buffer pointer */
-    size_t &aSize   /* Size of buffer */
-)
-{
-    aBuffer = ( char* )errors;
-    aSize = getValuesBufferSize();
     return this;
 }
 
@@ -305,17 +264,6 @@ Layer* Layer::setCount
 
     return this;
 }
-
-
-
-/*
-    Return neurons count in layer
-*/
-int Layer::getCount()
-{
-    return count;
-}
-
 
 
 
@@ -395,59 +343,6 @@ Layer* Layer::errorsCreate()
 string Layer::getName()
 {
    return name;
-}
-
-
-
-/*
-    Set the name of layer
-*/
-Layer* Layer::setName
-(
-    string a
-)
-{
-   name = a;
-   return this;
-}
-
-
-
-string Layer::getId()
-{
-   return id;
-}
-
-
-
-/*
-    Set the id of layer
-*/
-Layer* Layer::setId
-(
-    string a
-)
-{
-   id = a;
-   return this;
-}
-
-
-
-
-string Layer::getNameOrId()
-{
-   return name == "" ? id : name;
-}
-
-
-
-/*
-    Return true if neurons error changed in calcError method
-*/
-bool Layer::getErrorChange()
-{
-    return errorChange;
 }
 
 
@@ -548,127 +443,6 @@ string Layer::getStorageValueName()
 {
     return storagePath == "" ? "" : ( getLayerPath() + "/value.bin" );
 }
-
-
-
-/**********************************************************************
-    Neurons setters and getters
-*/
-
-
-
-/*
-    Set neuron value
-*/
-Layer* Layer::setNeuronValue
-(
-    int aIndex,            /* Index of neuron */
-    double aValue          /* Value */
-)
-{
-    if( values != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            values[ aIndex ] = aValue;
-        }
-        else
-        {
-            setResult( "IndexValueOutOfRangeForSet" );
-        }
-    }
-    else
-    {
-        setResult( "ValueArrayNotDefinedForSet" );
-    }
-
-    return this;
-}
-
-
-
-/*
-    Return neuron vaalue or default value
-*/
-double Layer::getNeuronValue
-(
-    int aIndex            /* Index of neuron */
-)
-{
-    double result = 0.0;
-    if( values != NULL )
-    {
-        if( aIndex >= 0 && aIndex < count )
-        {
-            result = values[ aIndex ];
-        }
-        else
-        {
-            setResult( "IndexValueOutOfRangeForGet" );
-        }
-    }
-    else
-    {
-        setResult( "ValueArrayNotDefinedForGet" );
-    }
-    return result;
-}
-
-
-
-/*
-    Set neuron error
-*/
-Layer* Layer::setNeuronError
-(
-    int aIndex,            /* Index of neuron */
-    double aValue          /* Value */
-)
-{
-    if( errors != NULL && aIndex >= 0 && aIndex < count )
-    {
-        errors[ aIndex ] = aValue;
-    }
-    else
-    {
-        setResult( "SetIndexValueOutOfRange" );
-    }
-    return this;
-}
-
-
-
-/*
-    Return neuron error or default value
-*/
-double Layer::getNeuronError
-(
-    int aIndex  /* Index of neuron */
-)
-{
-    double result = 0.0;
-
-    if( errors != NULL && aIndex >= 0 && aIndex < count )
-    {
-        result = errors[ aIndex ];
-    }
-    else
-    {
-        setResult( "GettingIndexValueOutOfRange" );
-    }
-
-    return result;
-}
-
-
-
-///*
-//    Return event actions
-//*/
-//ParamList* Layer::getActions()
-//{
-//    return actions;
-//}
 
 
 
@@ -776,92 +550,6 @@ bool Layer::compare
 
 
 
-
-/*
-    Return size of values buffer
-*/
-size_t Layer::getValuesBufferSize()
-{
-    return sizeof( double ) * count;
-}
-
-
-
-///*
-//    Return true if action exists in task for this layer
-//*/
-//bool Layer::checkTask
-//(
-//    Task aTask,
-//    Action aAction
-//)
-//{
-//    return getActions() -> exists
-//    (
-//        Path
-//        {
-//            taskToString( aTask ),
-//            actionToString( aAction )
-//        }
-//    );
-//}
-
-
-
-Layer* Layer::setFrontFunc
-(
-    NeuronFunc* a
-)
-{
-    frontFunc = a;
-    return this;
-}
-
-
-
-NeuronFunc* Layer::getFrontFunc()
-{
-    return frontFunc;
-}
-
-
-
-Layer* Layer::setBackFunc
-(
-    NeuronFunc* a
-)
-{
-    backFunc = a;
-    return this;
-}
-
-
-
-NeuronFunc* Layer::getBackFunc()
-{
-    return backFunc;
-}
-
-
-
-Layer* Layer::setBackFuncOut
-(
-    NeuronFunc* a
-)
-{
-    backFuncOut = a;
-    return this;
-}
-
-
-
-NeuronFunc* Layer::getBackFuncOut()
-{
-    return backFuncOut;
-}
-
-
-
 /*
     Dump to log
 */
@@ -879,6 +567,28 @@ Layer* Layer::dumpToLog()
         -> value( errors[ i ]);
     }
     getLog() -> end();
+    return this;
+}
+
+
+
+/*
+    Dump to stdout
+*/
+Layer* Layer::dump()
+{
+    cout << "layer_id" << getId() << "\n";
+    for( int i = 0; i < count; i++ )
+    {
+        cout
+        << " index "
+        << i
+        << " | value: "
+        << values[ i ]
+        << " | error: "
+        << errors[ i ]
+        << "\n";
+    }
     return this;
 }
 
@@ -976,82 +686,4 @@ Layer* Layer::writeErrorsBeforeChange()
     }
 
     return this;
-}
-
-
-
-ChartData* Layer::getChartTick()
-{
-    return chartTick;
-}
-
-
-
-ChartData* Layer::getChartValues()
-{
-    return chartValues;
-}
-
-
-
-ChartData* Layer::getChartErrors()
-{
-    return chartErrors;
-}
-
-
-
-ChartData* Layer::getChartErrorsBeforeChange()
-{
-    return chartErrorsBeforeChange;
-}
-
-
-
-/*
-    Set error calc flag for the layer.
-    Layer will be calculating erors.
-*/
-Layer* Layer::setErrorCalc
-(
-    ErrorCalc a
-)
-{
-    errorCalc = a;
-    return this;
-}
-
-
-
-/*
-    Return the layer calculation flag for the layer
-*/
-ErrorCalc Layer::getErrorCalc()
-{
-    return errorCalc;
-}
-
-
-
-/*
-    Set weight calc flag for the layer.
-    Layer will be calculating weights.
-*/
-Layer* Layer::setWeightCalc
-(
-    WeightCalc a
-)
-{
-    weightCalc = a;
-    return this;
-}
-
-
-
-/*
-    Return the layer calculation flag for the layer
-*/
-WeightCalc Layer::getWeightCalc()
-{
-    return weightCalc;
 }

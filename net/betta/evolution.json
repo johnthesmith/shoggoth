@@ -1,0 +1,68 @@
+{
+    "engine":
+    {
+        "enabled"   :true,
+        "trap"      :true,
+        "evolution":
+        {
+            "code":
+            {
+                "ok"                        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_continue"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_commit"          : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_rollback"        : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "evolution_mutate"          : { "log":"TRACE",      "timeoutMcs":1000000 },
+                "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "*"                         : { "log":"ERROR",      "exit":true }
+            },
+
+            "netMode":
+            {
+                "direct":"MODE_UNKNOWN",
+                "config":
+                {
+                    "MODE_UNKNOWN":{},
+                    "MODE_LEARN":
+                    {
+
+                        "maxTick":4000000,
+                        "layers":
+                        {
+                            "retina":
+                            {
+                                "tickSmoth"         : 0.5,
+                                "tickSmothCount"    : 100,
+                                "tickDeltaLimit"    : 50.0
+                            }
+                        }
+                    },
+                    "MODE_TEST":
+                    {
+                        "layers":
+                        {
+                            "test_error":
+                            {
+                                "testTickCount"         : 100
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "io":
+    {
+        "source"                : "SERVER",
+        "host"                  : "127.0.0.1",
+        "port"                  : 11120,
+        "readWaitingTimeoutMcs" : 500000,
+        "methodDump":
+        [
+            "!CMD_COMMIT_NET",
+            "!SET_NET_MODE",
+            "!READ_LAYER_STAT"
+        ]
+    }
+}

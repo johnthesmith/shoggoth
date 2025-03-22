@@ -38,7 +38,6 @@
 using namespace std;
 
 
-
 /*
     Predeclaration
 */
@@ -86,12 +85,14 @@ class Layer : public Result
         ErrorCalc       errorCalc               = EC_NONE;
         WeightCalc      weightCalc              = WC_NONE;
 
+        int             threadCount             = 0;
+
         /*
             Ticker
             Count tick between two tickerDrop calls
             Monotone incremental counter
         */
-        long long int   tickCount               = -1;
+        long long int   tickCount   = -1;
 
         /*
             Statistics block
@@ -116,11 +117,13 @@ class Layer : public Result
     public:
 
         /* Forward in function (activation) */
-        NeuronFunc*     frontFunc               = &FUNC_NULL;
+        NeuronFunc*     frontFunc   = &FUNC_NULL;
         /* Backward in function */
-        NeuronFunc*     backFunc                = &FUNC_NULL;
+        NeuronFunc*     backFunc    = &FUNC_NULL;
         /* Learning function */
-        NeuronFunc*     backFuncOut             = &FUNC_NULL;
+        NeuronFunc*     backFuncOut = &FUNC_NULL;
+
+
 
         /*
             Constructor
@@ -161,11 +164,13 @@ class Layer : public Result
 
 
 
-
         /*
             Return count of neurons in layer
         */
-        int getCount();
+        int getCount()
+        {
+            return count;
+        }
 
 
 
@@ -192,7 +197,10 @@ class Layer : public Result
         /*
             Return 3d layer size at neurons for each axis
         */
-        Point3i getSize();
+        Point3i getSize()
+        {
+            return size;
+        }
 
 
 
@@ -236,14 +244,26 @@ class Layer : public Result
 
 
 
+        /*
+            Set the name of layer
+        */
         Layer* setName
         (
-            string
-        );
+            string a
+        )
+        {
+           name = a;
+           return this;
+        }
 
 
 
-        string getId();
+
+        string getId()
+        {
+           return id;
+        }
+
 
 
 
@@ -252,15 +272,23 @@ class Layer : public Result
         */
         Layer* setId
         (
-            string
-        );
+            string a
+        )
+        {
+           id = a;
+           return this;
+        }
+
 
 
 
         /*
             Return Name of ID if Name not exists
         */
-        string getNameOrId();
+        string getNameOrId()
+        {
+           return name == "" ? id : name;
+        }
 
 
 
@@ -292,7 +320,14 @@ class Layer : public Result
 
 
 
-        bool getErrorChange();
+        /*
+            Return true if neurons error changed in calcError method
+        */
+        bool getErrorChange()
+        {
+            return errorChange;
+        }
+
 
 
 
@@ -377,13 +412,18 @@ class Layer : public Result
 
 
         /*
-            Return buffer and size of values
+            Return buffer and size of buffer of values
         */
         Layer* getValuesBuffer
         (
-            char*&,  /* Buffer pointer */
-            size_t&  /* Size of buffer */
-        );
+            char* &aBuffer, /* Buffer pointer */
+            size_t &aSize   /* Size of buffer */
+        )
+        {
+            aBuffer = ( char* )values;
+            aSize = getValuesBufferSize();
+            return this;
+        }
 
 
 
@@ -406,9 +446,14 @@ class Layer : public Result
         */
         Layer* getErrorsBuffer
         (
-            char*&, /* Buffer pointer */
-            size_t& /* Size of buffer */
-        );
+            char* &aBuffer, /* Buffer pointer */
+            size_t &aSize   /* Size of buffer */
+        )
+        {
+            aBuffer = ( char* )errors;
+            aSize = getValuesBufferSize();
+            return this;
+        }
 
 
 
@@ -438,27 +483,27 @@ class Layer : public Result
 
 
 
-
-        /************************************************************
-            Layer calculateion service
-        */
-
-
-
         /**********************************************************************
             Neurons setters and getters
         */
-
-
 
         /*
             Set neuron value
         */
         Layer* setNeuronValue
         (
-            int,            /* Index of neuron */
-            double          /* Value */
-        );
+            /* Index of neuron */
+            int aIndex,
+            /* Value */
+            double aValue
+        )
+        {
+            if( values != NULL && aIndex >= 0 && aIndex < count )
+            {
+                values[ aIndex ] = aValue;
+            }
+            return this;
+        }
 
 
 
@@ -467,8 +512,17 @@ class Layer : public Result
         */
         double getNeuronValue
         (
-            int             /* Index of neuron */
-        );
+            /* Index of neuron */
+            int aIndex
+        )
+        {
+            return
+            values != NULL
+            && aIndex >= 0
+            && aIndex < count
+            ? values[ aIndex ]
+            : 0.0;
+        };
 
 
 
@@ -477,9 +531,18 @@ class Layer : public Result
         */
         Layer* setNeuronError
         (
-            int,            /* Index of neuron */
-            double          /* Value */
-        );
+            /* Index of neuron */
+            int aIndex,
+            /* Value */
+            double aError
+        )
+        {
+            if( errors != NULL && aIndex >= 0 && aIndex < count )
+            {
+                errors[ aIndex ] = aError;
+            }
+            return this;
+        };
 
 
 
@@ -488,18 +551,17 @@ class Layer : public Result
         */
         double getNeuronError
         (
-            int             /* Index of neuron */
-        );
-
-
-
-
-
-
-//        /*
-//            Return event actions
-//        */
-//        ParamList* getActions();
+            /* Index of neuron */
+            int aIndex
+        )
+        {
+            return
+            errors != NULL
+            && aIndex >= 0
+            && aIndex < count
+            ? errors[ aIndex ]
+            : 0.0;
+        };
 
 
 
@@ -538,69 +600,16 @@ class Layer : public Result
 
 
         /*
-            Return size of values buffer
-        */
-        size_t getValuesBufferSize();
-
-
-
-//        /*
-//            Return true if action exists in task for this layer
-//        */
-//        bool checkTask
-//        (
-//            Task,   /* Checking task */
-//            Action  /* Checking action */
-//        );
-//
-
-
-        /*
-            Set front in function for the layer
-        */
-        Layer* setFrontFunc
-        (
-            NeuronFunc*
-        );
-
-
-
-        NeuronFunc* getFrontFunc();
-
-
-
-        /*
-            Set back in function for the layer
-        */
-        Layer* setBackFunc
-        (
-            NeuronFunc*
-        );
-
-
-
-        NeuronFunc* getBackFunc();
-
-
-
-        /*
-            Set back out function for the layer
-        */
-        Layer* setBackFuncOut
-        (
-            NeuronFunc*
-        );
-
-
-
-        NeuronFunc* getBackFuncOut();
-
-
-
-        /*
             Dump to log
         */
         Layer* dumpToLog();
+
+
+
+        /*
+            Dump to strout
+        */
+        Layer* dump();
 
 
 
@@ -637,10 +646,97 @@ class Layer : public Result
 
 
 
-        ChartData* getChartTick();
-        ChartData* getChartValues();
-        ChartData* getChartErrors();
-        ChartData* getChartErrorsBeforeChange();
+        /*
+            Return size of values buffer
+        */
+        size_t getValuesBufferSize()
+        {
+            return sizeof( double ) * count;
+        }
+
+
+
+        /*
+            Set front in function for the layer
+        */
+        Layer* setFrontFunc
+        (
+            NeuronFunc* a
+        )
+        {
+            frontFunc = a;
+            return this;
+        }
+
+
+
+        auto setThreadCount
+        (
+            int a
+        )
+        {
+            threadCount = a;
+            return this;
+        }
+
+
+
+        int getThreadCount()
+        {
+            return threadCount;
+        }
+
+
+        NeuronFunc* getFrontFunc()
+        {
+            return frontFunc;
+        }
+
+
+
+
+        /*
+            Set back in function for the layer
+        */
+        Layer* setBackFunc
+        (
+            NeuronFunc* a
+        )
+        {
+            backFunc = a;
+            return this;
+        }
+
+
+
+
+        NeuronFunc* getBackFunc()
+        {
+            return backFunc;
+        }
+
+
+
+
+        /*
+            Set back out function for the layer
+        */
+        Layer* setBackFuncOut
+        (
+            NeuronFunc* a
+        )
+        {
+            backFuncOut = a;
+            return this;
+        }
+
+
+
+
+        NeuronFunc* getBackFuncOut()
+        {
+            return backFuncOut;
+        }
 
 
 
@@ -650,15 +746,22 @@ class Layer : public Result
         */
         Layer* setErrorCalc
         (
-            ErrorCalc
-        );
+            ErrorCalc a
+        )
+        {
+            errorCalc = a;
+            return this;
+        }
 
 
 
         /*
             Return the layer calculation flag for the layer
         */
-        ErrorCalc getErrorCalc();
+        ErrorCalc getErrorCalc()
+        {
+            return errorCalc;
+        }
 
 
 
@@ -668,13 +771,61 @@ class Layer : public Result
         */
         Layer* setWeightCalc
         (
-            WeightCalc
-        );
+            WeightCalc a
+        )
+        {
+            weightCalc = a;
+            return this;
+        }
 
 
 
         /*
             Return the layer calculation flag for the layer
         */
-        WeightCalc getWeightCalc();
+        WeightCalc getWeightCalc()
+        {
+            return weightCalc;
+        }
+
+
+
+        ChartData* getChartTick()
+        {
+            return chartTick;
+        }
+
+
+
+        ChartData* getChartValues()
+        {
+            return chartValues;
+        }
+
+
+
+        ChartData* getChartErrors()
+        {
+            return chartErrors;
+        }
+
+
+
+        ChartData* getChartErrorsBeforeChange()
+        {
+            return chartErrorsBeforeChange;
+        }
+
 };
+
+
+
+
+
+
+//
+//TODO Добавить мутации создания удаления слоев
+//
+//Каждому слою можно прописать для какого слоя он может быть парентом и чайлдом примутации.
+//Мутации могт касаться кортекса и биаса логичеси.
+//Так же мутации для каждого слоя должны описывать правиал соединения.

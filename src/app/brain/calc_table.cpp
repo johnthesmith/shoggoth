@@ -3,64 +3,6 @@
 
 
 
-/*
-    Confirm layer calcilated
-*/
-CalcRecord* CalcRecord::setCalculated()
-{
-    calculated = true;
-    return this;
-}
-
-
-
-
-/*
-    Reset layer calcilated
-*/
-CalcRecord* CalcRecord::resetCalculated()
-{
-    calculated = false;
-    return this;
-}
-
-
-
-/*
-    Return the calculated flag
-*/
-bool CalcRecord::getCalculated()
-{
-    return calculated;
-}
-
-
-
-/*
-    Set layer for record
-*/
-CalcRecord* CalcRecord::setLayer
-(
-    Layer* aLayer
-)
-{
-    layer = aLayer;
-    calculated = false;
-    return this;
-}
-
-
-
-/*
-    Return the layer
-*/
-Layer* CalcRecord::getLayer()
-{
-    return layer;
-}
-
-
-
 
 
 

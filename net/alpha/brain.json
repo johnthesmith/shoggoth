@@ -34,7 +34,7 @@
     "maxWeight"         :1000,
     "maxError"          :10,
     "errorNormalize"    :0.11,
-    "minNeuronPerThread":10,
+    "minNeuronPerThread":5,
     "maxThreadCount"    :12,
 
     "tickWrite"         :0,

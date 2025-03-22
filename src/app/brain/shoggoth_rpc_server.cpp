@@ -85,7 +85,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     ParamList* aResults
 )
 {
-    auto methodStr = aArguments -> getString( "method" );
+    auto methodStr = aArguments -> getString( Path{ "method" });
     auto method = commandFromString( methodStr );
 
     mon
@@ -250,9 +250,9 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
     ParamList* aResults
 )
 {
-    auto parentNetId = aArguments -> getString( "parentNetId", "" );
-    auto parentNetVersion = aArguments -> getString( "parentNetVersion", "" );
-    auto parentGeneration = aArguments -> getInt( "parentGeneration", 0 );
+    auto parentNetId = aArguments -> getString( Path{ "parentNetId" }, "" );
+    auto parentNetVersion = aArguments -> getString( Path{ "parentNetVersion" }, "" );
+    auto parentGeneration = aArguments -> getInt( Path{ "parentGeneration" }, 0 );
     auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
 
     getLog() -> info( "Clone net argument" ) -> dump( aArguments );
@@ -300,8 +300,8 @@ ShoggothRpcServer* ShoggothRpcServer::switchNet
     ParamList* aResults
 )
 {
-    auto id = aArguments -> getString( "id", "" );
-    auto version = aArguments -> getString( "version", "" );
+    auto id = aArguments -> getString( Path{ "id" }, "" );
+    auto version = aArguments -> getString( Path{ "version" }, "" );
 
     /* Set new value of version */
     net -> setNextVersion( version );
@@ -330,8 +330,8 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     getLog() -> info( "Commit net argument" ) -> dump( aArguments );
 
     /* Read arguments */
-    auto id = aArguments -> getString( "id", "" );
-    auto version = aArguments -> getString( "version", "" );
+    auto id = aArguments -> getString( Path{ "id" }, "" );
+    auto version = aArguments -> getString( Path{ "version" }, "" );
     auto reason = aArguments -> getByName( Path{ "reason" });
     auto success = aArguments -> getBool( Path{ "success" });
     auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
@@ -418,7 +418,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
 
-    auto values = aArguments -> getObject( "values" );
+    auto values = aArguments -> getObject( Path{ "values" });
     if( values != NULL )
     {
         values -> loop
@@ -467,7 +467,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
 
     if( isAnswerOk( aResults ))
     {
-        auto errors = aArguments -> getObject( "errors" );
+        auto errors = aArguments -> getObject( Path{ "errors" });
         if( errors != NULL )
         {
             errors -> loop
@@ -548,7 +548,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
     /* Return positive answer */
     setAnswerResult( aResults, RESULT_OK );
 
-    auto values = aArguments -> getObject( "values" );
+    auto values = aArguments -> getObject( Path{ "values" });
     if( values != NULL )
     {
         values -> loop
@@ -604,7 +604,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
 
     if( isAnswerOk( aResults ))
     {
-        auto errors = aArguments -> getObject( "errors" );
+        auto errors = aArguments -> getObject( Path{ "errors" });
         if( errors != NULL )
         {
             errors -> loop
@@ -673,8 +673,8 @@ ShoggothRpcServer* ShoggothRpcServer::requestWeights
 {
     aResults -> copyFrom( aArguments );
 
-    auto clientId = aResults -> getString( "clientId" );
-    auto neurons = aResults -> getObject( "neurons" );
+    auto clientId = aResults -> getString( Path{ "clientId" });
+    auto neurons = aResults -> getObject( Path{ "neurons" });
 
 
     if
@@ -708,7 +708,7 @@ ShoggothRpcServer* ShoggothRpcServer::dropLayerTick
 {
     aResults -> copyFrom( aArguments );
 
-    auto layerId = aResults -> getString( "layerId" );
+    auto layerId = aResults -> getString( Path{ "layerId" });
     auto layer = net -> getLayerList() -> getById( layerId );
 
     if( layer != NULL )
@@ -784,7 +784,7 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
     string aType
 )
 {
-    auto list = aArguments -> getObject( aType );
+    auto list = aArguments -> getObject( Path{ aType });
 
     if( list != NULL )
     {
@@ -964,7 +964,7 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
     aResults -> copyFrom( aArguments );
 
     /* Change mode */
-    auto strMode = aResults -> getString( "mode" );
+    auto strMode = aResults -> getString( Path{ "mode" });
     changeNetMode( netModeFromString( strMode ) );
 
     /* Extract reason of net mode changing */

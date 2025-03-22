@@ -145,56 +145,6 @@ Nerve* Nerve::fill
 
 
 /*
-    Return BindType
-*/
-BindType Nerve::getBindType()
-{
-    return bindType;
-}
-
-
-
-/*
-    Return NerveType
-*/
-NerveType Nerve::getNerveType()
-{
-    return nerveType;
-}
-
-
-
-/*
-    Return parent layer
-*/
-Layer* Nerve::getParent()
-{
-    return parent;
-}
-
-
-
-/*
-    Return child layer
-*/
-Layer* Nerve::getChild()
-{
-    return child;
-}
-
-
-
-/*
-    Return count of weights
-*/
-int Nerve::getWeightsCount()
-{
-    return weightsCount;
-}
-
-
-
-/*
     Return the parent neuron index by index of weight array
 */
 int Nerve::getParentByWeightIndex
@@ -260,72 +210,6 @@ int Nerve::getChildByWeightIndex
         break;
     }
     return iChild;
-}
-
-
-
-/*
-    Return weights pointer
-*/
-double* Nerve::getWeights()
-{
-    return weights;
-}
-
-
-
-/*
-    Return weight by index
-*/
-double Nerve::getWeight
-(
-    int aIndex
-)
-{
-    return weights[ aIndex ];
-}
-
-
-
-/*
-    Set weight by index
-*/
-Nerve* Nerve::setWeight
-(
-    int aIndex,
-    double aValue
-)
-{
-    weights[ aIndex ] = aValue;
-    return this;
-}
-
-
-
-/*
-    Return weight by index
-*/
-double Nerve::getDeltaWeight
-(
-    int aIndex
-)
-{
-    return deltaWeights[ aIndex ];
-}
-
-
-
-/*
-    Set weight by index
-*/
-Nerve* Nerve::setDeltaWeight
-(
-    int aIndex,
-    double aValue
-)
-{
-    deltaWeights[ aIndex ] = aValue;
-    return this;
 }
 
 
@@ -479,54 +363,6 @@ int Nerve::getIndexByNeuronsIndex
         break;
     }
     return result;
-}
-
-
-
-/*
-    Return minimal weight
-*/
-double Nerve::getMinWeight()
-{
-    return minWeight;
-}
-
-
-
-/*
-    Set minimal weight
-*/
-Nerve* Nerve::setMinWeight
-(
-    double aValue
-)
-{
-    minWeight = aValue;
-    return this;
-}
-
-
-
-/*
-    Return maximal weight
-*/
-double Nerve::getMaxWeight()
-{
-    return maxWeight;
-}
-
-
-
-/*
-    Set maximal weight
-*/
-Nerve* Nerve::setMaxWeight
-(
-    double aValue
-)
-{
-    maxWeight = aValue;
-    return this;
 }
 
 

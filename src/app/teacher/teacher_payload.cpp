@@ -302,7 +302,7 @@ void TeacherPayload::onEngineLoop
                                         auto obj = aParam -> getObject();
                                         if( obj != NULL )
                                         {
-                                            auto command = obj -> getString( "cmd" );
+                                            auto command = obj -> getString( Path{ "cmd" });
                                             getLog()
                                             -> begin( "Command" )
                                             -> prm( "cmd", command )
@@ -448,14 +448,16 @@ NetMode TeacherPayload::getNetMode()
 
 bool TeacherPayload::getEnabled()
 {
-    return getApplication() -> getConfig() -> getBool( "enabled", true );
+    return getApplication()
+    -> getConfig()
+    -> getBool( Path{ "enabled" }, true );
 }
 
 
 
 ParamList* TeacherPayload::getBatches()
 {
-    return getApplication() -> getConfig() -> getObject( "batches" );
+    return getApplication() -> getConfig() -> getObject( Path{ "batches" });
 }
 
 
@@ -470,22 +472,22 @@ TeacherPayload* TeacherPayload::cmdValueToLayer
 {
     limb -> lock();
 
-    auto layerId = a -> getString( "layer" );
+    auto layerId = a -> getString( Path{ "layer" });
     auto layer = limb -> getLayerById( layerId );
     if( layer != NULL )
     {
         layer -> noiseValue
         (
             net -> getRnd(),
-            a -> getDouble( "min", 0.0 ),
-            a -> getDouble( "max", 1.0 )
+            a -> getDouble( Path{ "min" }, 0.0 ),
+            a -> getDouble( Path{ "max" }, 1.0 )
         );
     }
     else
     {
         setResult( "layer_not_found" )
         -> getDetails()
-        -> setString( "layer id", layerId );
+        -> setString( Path{ "layer id" }, layerId );
     }
 
     limb -> unlock();
@@ -506,12 +508,12 @@ TeacherPayload* TeacherPayload::cmdValuesToLayer
 {
     limb -> lock();
 
-    auto layerId = a -> getString( "layer" );
+    auto layerId = a -> getString( Path{ "layer" });
     auto layer = limb -> getLayerById( layerId );
 
     if( layer != NULL )
     {
-        layer -> fillValue( a -> getObject( "values", 0 ));
+        layer -> fillValue( a -> getObject( Path{ "values" }, 0 ));
     }
     else
     {
@@ -535,13 +537,13 @@ TeacherPayload* TeacherPayload::cmdImageToLayer
     ParamList* a
 )
 {
-    auto layerId = a -> getString( "layer" );
+    auto layerId = a -> getString( Path{ "layer" });
 
     limb -> lock();
     auto layer = limb -> getLayerById( layerId );
     if( layer != NULL )
     {
-        auto files = a -> getObject( "files" );
+        auto files = a -> getObject( Path{ "files" });
         if( files != NULL )
         {
             auto file = files -> getRndItem( net -> getRnd() ) -> getString();
@@ -550,10 +552,10 @@ TeacherPayload* TeacherPayload::cmdImageToLayer
                 layer -> imageToValue
                 (
                     file,
-                    a -> getDouble( "rotate" ),
-                    a -> getDouble( "zoomMin" ),
-                    a -> getDouble( "zoomMax" ),
-                    a -> getDouble( "shift" ),
+                    a -> getDouble( Path{ "rotate" }),
+                    a -> getDouble( Path{ "zoomMin" }),
+                    a -> getDouble( Path{ "zoomMax" }),
+                    a -> getDouble( Path{ "shift" }),
                     this,
                     net -> getRnd()
                 );
@@ -589,13 +591,13 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
     ParamList* a
 )
 {
-    auto layerId = a -> getString( "layer" );
+    auto layerId = a -> getString( Path{ "layer" });
 
     limb -> lock();
     auto layer = limb -> getLayerById( layerId );
     if( layer != NULL )
     {
-        auto folder = a -> getString( "folder", "" );
+        auto folder = a -> getString( Path{ "folder" }, "" );
         if( folder != "" )
         {
             auto files = ParamList::create() -> filesFromPath( folder );
@@ -605,10 +607,10 @@ TeacherPayload* TeacherPayload::cmdFolderToLayer
                 layer -> imageToValue
                 (
                     folder +  "/" + file -> getString(),
-                    a -> getDouble( "rotate" ),
-                    a -> getDouble( "zoomMin" ),
-                    a -> getDouble( "zoomMax" ),
-                    a -> getDouble( "shift" ),
+                    a -> getDouble( Path{ "rotate" }),
+                    a -> getDouble( Path{ "zoomMin" }),
+                    a -> getDouble( Path{ "zoomMax" }),
+                    a -> getDouble( Path{ "shift" }),
                     this,
                     net -> getRnd()
                 );

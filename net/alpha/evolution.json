@@ -19,7 +19,7 @@
 
             "netMode":
             {
-                "direct":"MODE_UNKNOWN",
+                "direct":"MODE_UNKNOW",
                 "config":
                 {
                     "MODE_UNKNOWN":{},

@@ -32,21 +32,34 @@ class CalcRecord
         /*
             Confirm layer calcilated
         */
-        CalcRecord* setCalculated();
+        CalcRecord* setCalculated()
+        {
+            calculated = true;
+            return this;
+        }
+
 
 
 
         /*
             Reset layer calcilated
         */
-        CalcRecord* resetCalculated();
+        CalcRecord* resetCalculated()
+        {
+            calculated = false;
+            return this;
+        }
 
 
 
         /*
             Return the calculated flag
         */
-        bool getCalculated();
+        inline bool getCalculated()
+        {
+            return calculated;
+        };
+
 
 
 
@@ -55,15 +68,24 @@ class CalcRecord
         */
         CalcRecord* setLayer
         (
-            Layer*
-        );
+            Layer* aLayer
+        )
+        {
+            layer = aLayer;
+            calculated = false;
+            return this;
+        }
 
 
 
         /*
             Return the layer
         */
-        Layer* getLayer();
+        Layer* getLayer()
+        {
+            return layer;
+        }
+
 };
 
 
