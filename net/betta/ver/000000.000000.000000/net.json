@@ -27,7 +27,7 @@
 
     "teacher":
     {
-        "errorLimit":0.001
+        "errorLimit":0.01
     },
 
     "processor":
@@ -39,7 +39,7 @@
     {
         "retina":
         {
-            "*":[ "types", "retina", "const" ],
+            "*":[ "types", "layers", "retina", "const" ],
             "name":"Retina",
             "size":
             [
@@ -60,7 +60,7 @@
         },
         "cortex_1":
         {
-            "*":[ "types", "cortex", "const" ],
+            "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 1",
             "size":
             [
@@ -83,7 +83,7 @@
         },
         "bias":
         {
-            "*":[ "types", "bias", "const" ],
+            "*":[ "types", "layers", "bias", "const" ],
             "name":"Bias",
             "size":
             [
@@ -100,7 +100,7 @@
         },
         "cortex_2":
         {
-            "*":[ "types", "cortex", "const" ],
+            "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 2",
             "size":
             [
@@ -123,7 +123,7 @@
         },
         "result":
         {
-            "*":[ "types", "result", "const" ],
+            "*":[ "types", "layers", "result", "const" ],
             "name":"Result",
             "size":
             [
@@ -140,62 +140,42 @@
         },
         "sample":
         {
-            "*":[ "types", "sample", "const" ],
+            "*":[ "types", "layers", "sample", "const" ],
             "name":"Sample",
-            "size":
-            [
-                30,
-                30,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                0.0000000000,
-                4.0000000000
-            ]
+            "size":[ 30, 30, 1 ],
+            "position":[ 0.0000000000, 0.0000000000, 4.0000000000 ]
         },
         "command":
         {
-            "*":[ "types", "command", "const" ],
+            "*":[ "types", "layers", "command", "const" ],
             "name":"Command",
-            "size":
-            [
-                1,
-                1,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                -1.0000000000,
-                3.5000000000
-            ]
+            "size": [ 1, 1, 1 ],
+            "position": [ 0.0000000000, -1.0000000000, 3.5000000000 ]
         },
         "error":
         {
-            "*":[ "types", "error", "const" ],
+            "*":[ "types", "layers", "error", "const" ],
             "name":"Error",
             "size":[ 30, 30, 1 ],
             "position":[ 0.0000000000, 1.0000000000, 3.0000000000 ]
         },
         "test_error":
         {
-            "*":[ "types", "test_error", "const" ],
+            "*":[ "types", "layers", "test_error", "const" ],
             "name":"Error of Test",
             "size":[ 30, 30, 1 ],
             "position":[ 0.0000000000, -1.0000000000, 3.0000000000 ]
         },
         "test":
         {
-            "*":[ "types", "sample", "const" ],
+            "*":[ "types", "layers", "sample", "const" ],
             "name":"Test",
             "size": [ 30, 30, 1 ],
             "position":[ 0.0000000000, 0.0000000000, 4.0000000000 ]
         },
         "test_command":
         {
-            "*":[ "types", "command", "const" ],
+            "*":[ "types", "layers", "command", "const" ],
             "name":"Command test",
             "size":[ 1, 1, 1 ],
             "position":[ 0.0000000000, -2.0000000000, 3.5000000000 ]
@@ -205,88 +185,35 @@
     "nerves":
     [
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"retina",
-            "idTo":"cortex_1",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"cortex_1"
         },
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"cortex_1",
-            "idTo":"cortex_2",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"cortex_2"
         },
-        
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"bias",
-            "idTo":"cortex_1",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"cortex_1"
         },
-        
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"bias",
-            "idTo":"cortex_2",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"cortex_2"
         },
-        
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"cortex_2",
-            "idTo":"result",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"result"
         },
-        
         {
-            "uses":
-            [
-                "PROC",
-                "UI"
-            ],
+            "*":[ "types", "nerves", "cortex_nerve", "const" ],
             "idFrom":"bias",
-            "idTo":"result",
-            "nerveType":"ALL_TO_ALL",
-            "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":1.0000000000
+            "idTo":"result"
         },
-        
         {
             "uses":
             [
@@ -300,7 +227,6 @@
             "minWeight":1.0000000000,
             "maxWeight":1.0000000000
         },
-        
         {
             "description":"Formering the command signal",
             "uses":
@@ -315,7 +241,6 @@
             "minWeight":1.0000000000,
             "maxWeight":1.0000000000
         },
-        
         {
             "desciption":"Turn on/off the error layer",
             "uses":
@@ -330,7 +255,6 @@
             "minWeight":1.0000000000,
             "maxWeight":1.0000000000
         },
-        
         {
             "description":"Calculate error for sample",
             "uses":
@@ -345,7 +269,6 @@
             "minWeight":-1.0000000000,
             "maxWeight":-1.0000000000
         },
-        
         {
             "description":"Conducts the result values in to test block",
             "uses":
@@ -360,7 +283,6 @@
             "minWeight":1.0000000000,
             "maxWeight":1.0000000000
         },
-        
         {
             "description":"Calculate error for test",
             "uses":
@@ -375,7 +297,6 @@
             "minWeight":-1.0000000000,
             "maxWeight":-1.0000000000
         },
-        
         {
             "description":"Formering the test command signal",
             "uses":
@@ -390,7 +311,6 @@
             "minWeight":1.0000000000,
             "maxWeight":1.0000000000
         },
-        
         {
             "desciption":"Turn on/off the test error layer",
             "uses":
