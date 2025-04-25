@@ -49,6 +49,7 @@ $shab execute "COMPILER -g -O3 -o evolution $(grep -v '^#' evolution.objs) -lpth
 
 $shab header "make teacher"
 $shab execute "COMPILER -g -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread -lMagick++"
+#$shab execute "COMPILER -g -rdynamic -O3 -o teacher $(grep -v '^#' teacher.objs) -lpthread -lMagick++"
 
 $shab header "make brain"
 $shab execute "COMPILER -g -O3 -o brain $(grep -v '^#' brain.objs) -lpthread"

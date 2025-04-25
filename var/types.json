@@ -5,7 +5,7 @@
         {
             "var":
             {
-                "namePrefix":"Retina",
+                "namePrefix":"Retina"
             },
             "const":
             {
@@ -31,17 +31,17 @@
             {
                 "namePrefix"        :"Cortex",
                 "minSize"           :[ 16, 16, 1 ],
-                "maxSize"           :[ 16, 16, 1 ],
+                "maxSize"           :[ 16, 16, 1 ]
             },
             "const":
             {
-                "type":             :"cortex"
+                "type"              :"cortex",
                 "functionFront"     :"RELU",
                 "functionBack"      :"ONE",
                 "functionBackOut"   :"NULL",
                 "errorCalc"         :"LEARNING",
                 "weightCalc"        :"CALC",
-                "drawSize"          :[ 0.1000000000, 0.1000000000, 0.1000000000 ],
+                "drawSize"          :[ 0.1, 0.1, 0.1 ],
                 "actions":
                 {
                     "PROC"      :[ "WRITE_VALUES", "WRITE_ERRORS" ],
@@ -61,6 +61,7 @@
             },
             "const":
             {
+                "type"              :"bias",
                 "value"             :1,
                 "size"              :[ 1, 1, 1 ],
                 "functionFront"     :"NULL",
@@ -68,24 +69,13 @@
                 "functionBackOut"   :"NULL",
                 "errorCalc"         :"NONE",
                 "weightCalc"        :"NONE",
-                "drawSize"          :[ 0.1000000000, 0.1000000000, 0.1000000000 ],
+                "drawSize"          :[ 0.1, 0.1, 0.1 ],
                 "actions":
                 {
                     "PROC"      :[ "READ_VALUES" ],
                     "UI"        :[ "READ_VALUES" ],
                     "TEACHER"   :[ "WRITE_VALUES" ],
                     "EVOLUTION" :[ "" ]
-                }
-            },
-            "nerves":
-            {
-                "cortex":
-                {
-                    "uses"          :[ "PROC", "UI" ],
-                    "nerveType"     :"ALL_TO_ALL",
-                    "bindType"      :"ADD",
-                    "minWeight"     :-1.0000000000,
-                    "maxWeight"     :1.0000000000
                 }
             }
         },
@@ -94,10 +84,11 @@
         {
             "var":
             {
-                "namePrefix":"Result",
+                "namePrefix":"Result"
             },
             "const":
             {
+                "type"              :"result",
                 "functionFront"     :"RELU",
                 "functionBack"      :"ONE",
                 "functionBackOut"   :"NULL",
@@ -121,6 +112,7 @@
             },
             "const":
             {
+                "type"              :"sample",
                 "functionFront"     :"NULL",
                 "functionBack"      :"NULL",
                 "functionBackOut"   :"NULL",
@@ -144,6 +136,7 @@
             },
             "const":
             {
+                "type"              :"command",
                 "functionFront"     :"STEP",
                 "functionBack"      :"NULL",
                 "functionBackOut"   :"NULL",
@@ -165,6 +158,7 @@
             },
             "const":
             {
+                "type"              :"error",
                 "functionFront"     :"LINE",
                 "functionBack"      :"ONE",
                 "functionBackOut"   :"NULL",
@@ -188,6 +182,7 @@
             },
             "const":
             {
+                "type"              :"error",
                 "functionFront"     :"LINE",
                 "functionBack"      :"ONE",
                 "functionBackOut"   :"ZERO",
@@ -203,6 +198,7 @@
             }
         }
     },
+
     "nerves":
     {
         "cortex_nerve":
@@ -212,10 +208,10 @@
                 "uses"          : [ "PROC", "UI" ],
                 "nerveType"     :"ALL_TO_ALL",
                 "bindType"      :"ADD",
-                "minWeight"     :-1.0000000000,
-                "maxWeight"     :1.0000000000,
+                "minWeight"     :-1.0,
+                "maxWeight"     :1.0,
                 "_parentType"   :[ "retina", "cortex", "bias" ],
-                "_childType"    :[ "result", "cortex" ],
+                "_childType"    :[ "result", "cortex" ]
             }
         }
     }

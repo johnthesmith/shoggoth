@@ -1,11 +1,11 @@
 #!/bin/bash
 
 SLEEP=0.05
-PROJECT="~/code/c/app/shoggoth/"
-PROJECT_LIB="~/code/c/lib/"
+PROJECT="~/src/c/app/shoggoth/"
+PROJECT_LIB="~/src/c/lib/"
 
-# Переключаемся на 5-е рабочее место
-i3-msg workspace 9
+# Переключаемся на 6-е рабочее место
+i3-msg workspace 6
 
 sleep $SLEEP
 

@@ -214,10 +214,12 @@ Net* Net::writeLayers
                         layer -> getId(),
                         (char*) buffer,
                         size
-                    );
+                    )
+                    ;
                 }
             }
         }
+
 
         /* Build errors */
         for( auto id : aErrors )
@@ -647,7 +649,6 @@ Net* Net::readNetFromFile
             Json::create()
             -> fromFile( file )
             -> include()
-//            -> overload()
             -> copyTo( aAnswer )
             -> resultTo( this )
             -> destroy();
@@ -655,6 +656,13 @@ Net* Net::readNetFromFile
             if( isOk() )
             {
                 aAnswer -> setInt( "lastUpdate", lastUpdate );
+            }
+            else
+            {
+                getLog()
+                -> warning( this -> getCode() )
+                -> prm( "message", this -> getMessage())
+                ;
             }
 
             getLog() -> end();
@@ -734,21 +742,21 @@ Net* Net::clone
     aParentNetId = aParentNetId == "" ? id : aParentNetId;
     aParentNetVersion = aParentNetVersion == "" ? version : aParentNetVersion;
 
-    /* Set default mutation path */
-    Path path = { "pure" };
-    double mutationValue = 0.0;
-    double mutationValueParent = 0.0;
-
     /* Define net files */
     string parentNetFile = getNetConfigFile( aParentNetVersion );
 
-    /* Create JSON structure */
+
     auto json = Json::create() -> fromFile( parentNetFile );
+    json -> include();
+
+    /* Create JSON structure */
+    auto mutateConfig = NetConfig::create();
+    mutateConfig -> copyFrom( json -> getParamList());
 
     if( aMutationRnd != NULL )
     {
         /* Mutation */
-        auto mutations = json -> getParamList() -> getObject( Path{ "mutations" });
+        auto mutations = mutateConfig -> getObject( Path{ "mutations" });
 
         if( mutations != NULL )
         {
@@ -767,13 +775,10 @@ Net* Net::clone
             mutations -> loop
             (
                 [
-                    &json,
+                    &mutateConfig,
                     this,
                     &dice,
                     &prevDice,
-                    &path,
-                    &mutationValue,
-                    &mutationValueParent,
                     &aMutationRnd
                 ]
                 ( Param* iParam )
@@ -788,125 +793,16 @@ Net* Net::clone
                             dice < prevDice + mutation -> getDouble( Path{ "rnd" })
                         )
                         {
-                            /* Get path for mutation */
-                            path = mutation -> getPath( Path{ "path" });
+                            auto operation = mutation -> getString
+                            (
+                                Path{ "operation" },
+                                "changeParam"
+                            );
 
-                            getLog()
-                            -> trace( "Mutation" )
-                            -> prm( "param", implode( path, "." ));
-
-                            /* Get mutating parameter */
-                            auto mutated = json -> getParamList() -> getByName( path );
-
-                            if( mutated != NULL )
-                            {
-                                switch( mutated -> getType() )
-                                {
-                                    case KT_DOUBLE:
-                                    {
-                                        auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
-                                        auto add = mutation -> getDouble( Path{ "add" }, 0.0 );
-                                        auto val = mutated -> getDouble();
-                                        auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
-                                        auto rAdd = aMutationRnd -> get( -add, +add );
-                                        auto vMax = mutation -> getDouble( Path{ "max" }, val );
-                                        auto vMin = mutation -> getDouble( Path{ "min" }, val );
-
-                                        mutationValueParent = val;
-
-                                        getLog()
-                                        -> prm( "val", val )
-                                        -> prm( "mul", mul )
-                                        -> prm( "add", add )
-                                        -> prm( "min", vMin )
-                                        -> prm( "max", vMax )
-                                        -> prm( "rndmul", rMul )
-                                        -> prm( "rndadd", rAdd )
-                                        ;
-
-                                        if( mul < 1.0 || add < 0.0 )
-                                        {
-                                            getLog()
-                                            -> warning( "Multiplexor or additive is low" )
-                                            -> prm( "path", implode( path, ".") )
-                                            -> prm( "mul", mul )
-                                            -> prm( "add", add )
-                                            ;
-                                        }
-                                        else
-                                        {
-                                            mutationValue =
-                                            min
-                                            (
-                                                vMax,
-                                                max( vMin, val * rMul + rAdd )
-                                            );
-                                            mutated -> setDouble( mutationValue );
-                                        }
-
-                                        getLog() -> prm( "result", mutated -> getDouble() );
-
-                                    }
-                                    break;
-                                    case KT_INT:
-                                    {
-                                        auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
-                                        int add = mutation -> getInt( Path{ "add" }, 0 );
-                                        auto val = mutated -> getInt();
-                                        auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
-                                        auto rAdd = aMutationRnd -> get( -add, +add );
-                                        auto vMax = mutation -> getDouble( Path{ "max" }, val );
-                                        auto vMin = mutation -> getDouble( Path{ "min" }, val );
-
-                                        mutationValueParent = val;
-
-                                        getLog()
-                                        -> prm( "val", val )
-                                        -> prm( "mul", mul )
-                                        -> prm( "add", add )
-                                        -> prm( "min", vMin )
-                                        -> prm( "max", vMax )
-                                        -> prm( "rndmul", rMul )
-                                        -> prm( "rndadd", rAdd )
-                                        ;
-
-                                        if( mul < 1 || add < 0 )
-                                        {
-                                            getLog()
-                                            -> warning( "Multiplexor or additive is low" )
-                                            -> prm( "path", implode( path, ".") )
-                                            -> prm( "mul", mul )
-                                            -> prm( "add", add )
-                                            ;
-                                        }
-                                        else
-                                        {
-                                            mutationValue = min
-                                            (
-                                                vMax,
-                                                max( vMin, val * rMul + rAdd )
-                                            );
-
-                                            mutated -> setInt( ( int ) mutationValue );
-                                        }
-
-                                        getLog() -> prm( "result", mutated -> getInt() );
-
-                                    }
-                                    break;
-                                    default:
-                                        getLog()
-                                        -> warning( "Mutaded is not a DOUBLE or INT" )
-                                        -> prm( "path", implode( path, ".") );
-                                    break;
-                                }
-                            }
+                            if( operation == "insertLayer" )
+                                mutateConfig -> mutateInsertLayer( mutation, aMutationRnd );
                             else
-                            {
-                                getLog()
-                                -> warning( "Mutated key not found" )
-                                -> prm( "path", implode( path, ".") );
-                            }
+                                mutateChangeParam( mutateConfig, mutation, aMutationRnd );
                         }
                         prevDice = prevDice + mutation -> getDouble( Path{ "rnd" });
                     }
@@ -922,20 +818,10 @@ Net* Net::clone
     -> prm( "to", aChildVersion );
 
     /* Write child version like current */
-    json
-    -> getParamList()
-    -> setString( "IGOGO", "AAA" )
+    mutateConfig
     -> setString( Path{ "id" }, aParentNetId )
     -> setString( Path{ "version", "current" }, aChildVersion )
     -> setString( Path{ "version", "parent" }, aParentNetVersion )
-    -> pushObject
-    (
-        Path{ "version", "mutation" },
-        ParamList::create()
-        -> setString( "key", implode( path, "." ) )
-        -> setDouble( "from", mutationValueParent )
-        -> setDouble( "to", mutationValue )
-    )
     -> setDouble( Path{ "survival", "error", "avg" }, aSurvivalErrorAvg );
 
     string childNetFile = getNetConfigFile( aChildVersion );
@@ -943,15 +829,168 @@ Net* Net::clone
     /* Save children file */
     if( checkPath( getPath( childNetFile )))
     {
+        json -> getParamList() -> clear() -> copyFrom( mutateConfig );
+        json -> uninclude();
         json -> toFile( childNetFile );
     }
 
+    mutateConfig -> destroy();
     json -> destroy();
 
     getLog() -> end();
 
     return this;
 }
+
+
+
+Net* Net::mutateChangeParam
+(
+    ParamList* config,
+    ParamList* mutation,
+    Rnd* aMutationRnd
+)
+{
+    /* Get path for mutation */
+    auto path = mutation -> getPath( Path{ "path" });
+    /* Set default mutation path */
+    double mutationValue = 0.0;
+    double mutationValueParent = 0.0;
+
+    getLog()
+    -> trace( "Mutation" )
+    -> prm( "param", implode( path, "." ));
+
+    /* Get mutating parameter */
+    auto mutated = config -> getByName( path );
+
+    if( mutated != NULL )
+    {
+        switch( mutated -> getType() )
+        {
+            case KT_DOUBLE:
+            {
+                auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
+                auto add = mutation -> getDouble( Path{ "add" }, 0.0 );
+                auto val = mutated -> getDouble();
+                auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
+                auto rAdd = aMutationRnd -> get( -add, +add );
+                auto vMax = mutation -> getDouble( Path{ "max" }, val );
+                auto vMin = mutation -> getDouble( Path{ "min" }, val );
+
+                mutationValueParent = val;
+
+                getLog()
+                -> prm( "val", val )
+                -> prm( "mul", mul )
+                -> prm( "add", add )
+                -> prm( "min", vMin )
+                -> prm( "max", vMax )
+                -> prm( "rndmul", rMul )
+                -> prm( "rndadd", rAdd )
+                ;
+
+                if( mul < 1.0 || add < 0.0 )
+                {
+                    getLog()
+                    -> warning( "Multiplexor or additive is low" )
+                    -> prm( "path", implode( path, ".") )
+                    -> prm( "mul", mul )
+                    -> prm( "add", add )
+                    ;
+                }
+                else
+                {
+                    mutationValue =
+                    min
+                    (
+                        vMax,
+                        max( vMin, val * rMul + rAdd )
+                    );
+                    mutated -> setDouble( mutationValue );
+                }
+
+                getLog() -> prm( "result", mutated -> getDouble() );
+
+            }
+            break;
+            case KT_INT:
+            {
+                auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
+                int add = mutation -> getInt( Path{ "add" }, 0 );
+                auto val = mutated -> getInt();
+                auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
+                auto rAdd = aMutationRnd -> get( -add, +add );
+                auto vMax = mutation -> getDouble( Path{ "max" }, val );
+                auto vMin = mutation -> getDouble( Path{ "min" }, val );
+
+                mutationValueParent = val;
+
+                getLog()
+                -> prm( "val", val )
+                -> prm( "mul", mul )
+                -> prm( "add", add )
+                -> prm( "min", vMin )
+                -> prm( "max", vMax )
+                -> prm( "rndmul", rMul )
+                -> prm( "rndadd", rAdd )
+                ;
+
+                if( mul < 1 || add < 0 )
+                {
+                    getLog()
+                    -> warning( "Multiplexor or additive is low" )
+                    -> prm( "path", implode( path, ".") )
+                    -> prm( "mul", mul )
+                    -> prm( "add", add )
+                    ;
+                }
+                else
+                {
+                    mutationValue = min
+                    (
+                        vMax,
+                        max( vMin, val * rMul + rAdd )
+                    );
+
+                    mutated -> setInt( ( int ) mutationValue );
+                }
+
+                getLog() -> prm( "result", mutated -> getInt() );
+
+            }
+            break;
+            default:
+                getLog()
+                -> warning( "Mutaded is not a DOUBLE or INT" )
+                -> prm( "path", implode( path, ".") );
+            break;
+        }
+    }
+    else
+    {
+        getLog()
+        -> warning( "Mutated key not found" )
+        -> prm( "path", implode( path, ".") );
+    }
+
+    config -> pushObject
+    (
+        Path{ "version", "mutation" },
+        ParamList::create()
+        -> setString
+        (
+            "operation",
+            mutation -> getString( Path{ "operation" }, "changeParam" )
+        )
+        -> setString( "key", implode( path, "." ) )
+        -> setDouble( "from", mutationValueParent )
+        -> setDouble( "to", mutationValue )
+    );
+
+    return this;
+}
+
 
 
 
@@ -965,7 +1004,6 @@ Net* Net::applyNet
 )
 {
     config -> copyFrom( aConfig );
-
     auto configLayers = config -> getObject( Path{ "layers" });
 
     if( configLayers != NULL )
@@ -1015,7 +1053,10 @@ Net* Net::applyNet
                 }
                 else
                 {
-                    getLog() -> trace( "Layer skipd" ) -> prm( "id", iName );
+                    getLog()
+                    -> trace( "Layer skiped" )
+                    -> prm( "id", iName )
+                    ;
                 }
 
                 used -> destroy();

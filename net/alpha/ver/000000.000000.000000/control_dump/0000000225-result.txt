@@ -1,0 +1,3 @@
+result (VALUES) RELU/ONE/NULL
+ALL #76642
+     +   +▓ 

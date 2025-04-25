@@ -15,7 +15,7 @@
 
     "seed":1413,
 
-    "weightMul":0.1000000000,
+    "weightMul":0.1,
 
     "survival":
     {
@@ -41,144 +41,81 @@
         {
             "*":[ "types", "layers", "retina", "const" ],
             "name":"Retina",
-            "size":
-            [
-                10, 1, 1
-            ],
-            "position":
-            [
-                0.0000000000,
-                0.0000000000,
-                0.0000000000
-            ],
-            "drawSize":
-            [
-                1.0000000000,
-                1.0000000000,
-                1.0000000000
-            ]
+            "size":[ 10, 1, 1 ],
+            "position": [ 0.0, 0.0, 0.0 ],
+            "drawSize": [ 1.0, 1.0, 1.0 ]
         },
         "cortex_1":
         {
             "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 1",
-            "size":
-            [
-                16,
-                16,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                0.0000000000,
-                1.0000000000
-            ],
-            "drawSize":
-            [
-                0.1000000000,
-                0.1000000000,
-                0.1000000000
-            ]
+            "size":[ 16, 16, 1 ],
+            "position":[ 0.0, 0.0, 1.0 ],
+            "drawSize":[ 0.1, 0.1, 0.1 ]
         },
         "bias":
         {
             "*":[ "types", "layers", "bias", "const" ],
             "name":"Bias",
-            "size":
-            [
-                1,
-                1,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                1.0000000000,
-                1.0000000000
-            ]
+            "size":[ 1, 1, 1 ],
+            "position":[ 0.0, 1.0, 1.0 ]
         },
         "cortex_2":
         {
             "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 2",
-            "size":
-            [
-                16,
-                16,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                0.0000000000,
-                1.5000000000
-            ],
-            "drawSize":
-            [
-                0.1000000000,
-                0.1000000000,
-                0.1000000000
-            ]
+            "size":[ 16, 16, 1 ],
+            "position":[ 0.0, 0.0, 1.5 ],
+            "drawSize":[ 0.1, 0.1, 0.1 ]
         },
         "result":
         {
             "*":[ "types", "layers", "result", "const" ],
             "name":"Result",
-            "size":
-            [
-                30,
-                30,
-                1
-            ],
-            "position":
-            [
-                0.0000000000,
-                0.0000000000,
-                3.0000000000
-            ]
+            "size":[ 30, 30, 1 ],
+            "position":[ 0.0, 0.0, 3.0 ]
         },
         "sample":
         {
             "*":[ "types", "layers", "sample", "const" ],
             "name":"Sample",
             "size":[ 30, 30, 1 ],
-            "position":[ 0.0000000000, 0.0000000000, 4.0000000000 ]
+            "position":[ 0.0, 0.0, 4.0 ]
         },
         "command":
         {
             "*":[ "types", "layers", "command", "const" ],
             "name":"Command",
             "size": [ 1, 1, 1 ],
-            "position": [ 0.0000000000, -1.0000000000, 3.5000000000 ]
+            "position": [ 0.0, -1.0, 3.5 ]
         },
         "error":
         {
             "*":[ "types", "layers", "error", "const" ],
             "name":"Error",
             "size":[ 30, 30, 1 ],
-            "position":[ 0.0000000000, 1.0000000000, 3.0000000000 ]
+            "position":[ 0.0, 1.0, 3.0 ]
         },
         "test_error":
         {
             "*":[ "types", "layers", "test_error", "const" ],
             "name":"Error of Test",
             "size":[ 30, 30, 1 ],
-            "position":[ 0.0000000000, -1.0000000000, 3.0000000000 ]
+            "position":[ 0.0, -1.0, 3.0 ]
         },
         "test":
         {
             "*":[ "types", "layers", "sample", "const" ],
             "name":"Test",
             "size": [ 30, 30, 1 ],
-            "position":[ 0.0000000000, 0.0000000000, 4.0000000000 ]
+            "position":[ 0.0, 0.0, 4.0 ]
         },
         "test_command":
         {
             "*":[ "types", "layers", "command", "const" ],
             "name":"Command test",
             "size":[ 1, 1, 1 ],
-            "position":[ 0.0000000000, -2.0000000000, 3.5000000000 ]
+            "position":[ 0.0, -2.0, 3.5 ]
         }
     },
 
@@ -224,8 +161,8 @@
             "idTo":"error",
             "nerveType":"ONE_TO_ONE",
             "bindType":"ADD",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         },
         {
             "description":"Formering the command signal",
@@ -238,8 +175,8 @@
             "idTo":"command",
             "nerveType":"ALL_TO_ALL",
             "bindType":"ADD",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         },
         {
             "desciption":"Turn on/off the error layer",
@@ -252,8 +189,8 @@
             "idTo":"error",
             "nerveType":"ALL_TO_ALL",
             "bindType":"MUL",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         },
         {
             "description":"Calculate error for sample",
@@ -266,8 +203,8 @@
             "idTo":"error",
             "nerveType":"ONE_TO_ONE",
             "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":-1.0000000000
+            "minWeight":-1.0,
+            "maxWeight":-1.0
         },
         {
             "description":"Conducts the result values in to test block",
@@ -280,8 +217,8 @@
             "idTo":"test_error",
             "nerveType":"ONE_TO_ONE",
             "bindType":"ADD",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         },
         {
             "description":"Calculate error for test",
@@ -294,8 +231,8 @@
             "idTo":"test_error",
             "nerveType":"ONE_TO_ONE",
             "bindType":"ADD",
-            "minWeight":-1.0000000000,
-            "maxWeight":-1.0000000000
+            "minWeight":-1.0,
+            "maxWeight":-1.0
         },
         {
             "description":"Formering the test command signal",
@@ -308,8 +245,8 @@
             "idTo":"test_command",
             "nerveType":"ALL_TO_ALL",
             "bindType":"ADD",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         },
         {
             "desciption":"Turn on/off the test error layer",
@@ -322,8 +259,8 @@
             "idTo":"test_error",
             "nerveType":"ALL_TO_ALL",
             "bindType":"MUL",
-            "minWeight":1.0000000000,
-            "maxWeight":1.0000000000
+            "minWeight":1.0,
+            "maxWeight":1.0
         }
     ]
 }

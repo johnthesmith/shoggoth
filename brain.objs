@@ -48,6 +48,7 @@ OBJECT_PATH/param_point.o
 # Shoggoth
 OBJECT_PATH/func.o
 OBJECT_PATH/net.o
+OBJECT_PATH/net_config.o
 OBJECT_PATH/nerve_list.o
 OBJECT_PATH/nerve.o
 OBJECT_PATH/limb.o

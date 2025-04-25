@@ -1,0 +1,3 @@
+test (VALUES) NULL/NULL/NULL
+ALL #5005
+ +█        

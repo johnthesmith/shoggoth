@@ -208,7 +208,20 @@ class LayerList : public Heap
         */
         LayerList* dump
         (
+            /* Comment */
             string = ""
         );
+
+
+
+        /*
+            Dump limb information to STD_OUT
+        */
+        LayerList* dumpCout
+        (
+            /* Comment */
+            string = ""
+        );
+
 
 };

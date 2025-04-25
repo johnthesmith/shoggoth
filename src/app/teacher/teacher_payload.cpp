@@ -195,6 +195,7 @@ void TeacherPayload::onEngineLoop
 
             if( errorLayer != NULL )
             {
+
                 auto error = errorLayer -> calcRmsValue();
 
                 getLog()

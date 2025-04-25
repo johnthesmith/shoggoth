@@ -91,26 +91,14 @@
         "max"       :3
     },
     {
-        "rnd"       :0.1,
-        "_"         :"delete layer by type",
-        "operation" :"delLayer",
-        "type"      :[ "cortex" ]
-    },
-    {
-        "rnd"       :0.1,
-        "_"         :"Clone and insert new layer",
-        "operation" :"insertLayer",
-        "type"      :[ "cortex" ],
-        "side"      :[ "PARENT", "CHILD" ]
-    },
-    {
-        "rnd"           :0.01,
-        "_"             :"create new layer branch",
-        "operation"     :"createLayer",
-        "type"          :[ "cortex" ],
-        "parentLayer"   :[ "cortex", "retina" ],
-        "childLayer"    :[ "cortex", "result" ],
-        "parentNerve"   : "cortex_nerve",
-        "childNerve"    : "cortex_nerve"
+        "rnd"           :0.1,
+        "_"             :"Search nerve and create new layer between parent and child",
+        "operation"     :"insertLayer",
+        "parent"        :[ "cortex", "retina" ],
+        "child"         :[ "cortex", "result" ],
+        "extParentsId"  :[ "bias" ],
+        "extChildrenId" :[],
+        "layerType"     :[ "types", "layers", "cortex", "const" ],
+        "nerveType"     :[ "types", "nerves", "cortex_nerve", "const" ]
     }
 ]

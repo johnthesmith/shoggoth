@@ -465,16 +465,16 @@ void Io::handleBeforeCall
 )
 {
 
-    if
-    (
-        getApplication()
-        -> getConfig()
-        -> valueExists
-        (
-            Path{ "io", "methodDump" },
-            a -> getRequest() -> getString( Path{ "method" })
-        )
-    )
+//    if
+//    (
+//        getApplication()
+//        -> getConfig()
+//        -> valueExists
+//        (
+//            Path{ "io", "methodDump" },
+//            a -> getRequest() -> getString( Path{ "method" })
+//        )
+//    )
     {
         getLog()
         -> begin( "Call RPC" ) /* End of log in the Io::handleAfterCall */
@@ -490,16 +490,16 @@ void Io::handleAfterCall
     RpcClient* a
 )
 {
-    if
-    (
-        getApplication()
-        -> getConfig()
-        -> valueExists
-        (
-            Path{ "io", "methodDump" },
-            a -> getRequest() -> getString( Path{ "method" })
-        )
-    )
+//    if
+//    (
+//        getApplication()
+//        -> getConfig()
+//        -> valueExists
+//        (
+//            Path{ "io", "methodDump" },
+//            a -> getRequest() -> getString( Path{ "method" })
+//        )
+//    )
     {
         getLog()
         -> dump( a -> getAnswer(), "Response" )

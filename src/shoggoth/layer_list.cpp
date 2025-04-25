@@ -205,6 +205,7 @@ bool LayerList::compare
 )
 {
     bool result = getCount() == a -> getCount();
+
     if( result )
     {
         loop
@@ -212,10 +213,9 @@ bool LayerList::compare
             [ &a, &result ]
             ( void* p )
             {
-
                 auto iLayer = (Layer*) p;
                 auto jLayer = a -> getById( iLayer -> getId() );
-                result = iLayer -> compare( jLayer );
+                result = jLayer != NULL && iLayer -> compare( jLayer );
                 return !result;
             }
         );
@@ -306,6 +306,42 @@ LayerList* LayerList::dump
             }
         );
         getLog() -> end();
+    }
+
+    return this;
+}
+
+
+
+
+/*
+    Dump limb information to STD_OUT
+*/
+LayerList* LayerList::dumpCout
+(
+    string aComment
+)
+{
+    if( limb != NULL )
+    {
+        cout << aComment << "\n";
+        loop
+        (
+            []
+            ( void* p )
+            {
+                auto iLayer = (Layer*) p;
+                cout
+                << "id:"
+                << iLayer -> getId()
+                << " address:"
+                << (void*) iLayer
+                << "size:"
+                << iLayer -> getCount()
+                << "\n";
+                return false;
+            }
+        );
     }
 
     return this;

@@ -17,6 +17,7 @@
                 "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
+                "UNKNOWN_RPC_CLIENT_ANSWER_CODE": { "log":"WARNING",    "timeoutMcs":1000000 },
                 "*"                         : { "log":"ERROR",      "exit":true }
             },
 
@@ -39,7 +40,16 @@
         "net"                   :"net/net.json",
         "host"                  :"127.0.0.1",
         "port"                  :11120,
-        "readWaitingTimeoutMcs" :500000
+        "readWaitingTimeoutMcs" :500000,
+
+        "methodDump":
+        [
+            "!CMD_WRITE_LAYERS",
+            "!CMD_COMMIT_NET",
+            "!SET_NET_MODE",
+            "!READ_LAYER_STAT"
+        ]
+
     },
 
     "batches":

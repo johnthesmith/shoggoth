@@ -13,6 +13,7 @@
 #include "../../../../../lib/sock/sock_manager.h"
 
 #include "../limb.h"
+#include "../net_config.h"
 
 #include "weights_exchange.h"
 
@@ -423,6 +424,16 @@ class Net: public Limb
             string,         /* New net version */
             double,         /* survivalErrorAvg */
             Rnd*            /* rnd stream object for mutation */
+        );
+
+
+
+        Net* mutateChangeParam
+        (
+            ParamList*,
+            ParamList*,
+            /* rnd stream object for mutation */
+            Rnd*
         );
 
 
