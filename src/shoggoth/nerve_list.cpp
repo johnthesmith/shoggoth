@@ -380,7 +380,7 @@ bool NerveList::compare
 */
 Nerve* NerveList::getByNerve
 (
-    Nerve* aNerve
+Nerve* aNerve
 )
 {
     Nerve* result = NULL;
@@ -395,7 +395,9 @@ Nerve* NerveList::getByNerve
             && aNerve -> getChild() -> getId() == iNerve -> getChild() -> getId()
             && aNerve -> getWeightsCount() == iNerve -> getWeightsCount()
             && aNerve -> getNerveType() == iNerve -> getNerveType()
-            && aNerve -> getBindType() == iNerve -> getBindType() ? iNerve : NULL;
+            && aNerve -> getBindType() == iNerve -> getBindType()
+            && aNerve -> getSize() == iNerve -> getSize()
+            ? iNerve : NULL;
             return result != NULL;
         }
     );
@@ -434,7 +436,8 @@ NerveList* NerveList::copyStructureFrom
                         parent,
                         child,
                         source -> getNerveType(),
-                        source -> getBindType()
+                        source -> getBindType(),
+                        source -> getSize()
                     )
                     -> setMinWeight( source -> getMinWeight())
                     -> setMaxWeight( source -> getMaxWeight())
@@ -477,6 +480,3 @@ NerveList* NerveList::dump
     getLog() -> end();
     return this;
 }
-
-
-

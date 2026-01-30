@@ -74,7 +74,7 @@ class LimbUi : public Limb
         Rgba            colorErrorZ         = Rgba( 1.0, 1.0, 1.0, 0.3 );
         Rgba            colorErrorP         = Rgba( 1.0, 0.0, 0.0, 1.0 );
 
-        double          cursorRadius        = 10.0;
+        real          cursorRadius        = 10.0;
     public:
         /*
             Constructor
@@ -228,21 +228,21 @@ class LimbUi : public Limb
 
         Rgba getBindErrorColor
         (
-            const double
+            const real
         );
 
 
 
         Rgba getBindValueColor
         (
-            const double
+            const real
         );
 
 
 
         Rgba getErrorColor
         (
-            const double
+            const real
         );
 
 
@@ -312,7 +312,7 @@ class LimbUi : public Limb
         /*
             Return screen radius
         */
-        double getCursorRadius();
+        real getCursorRadius();
 
 
 
@@ -321,7 +321,7 @@ class LimbUi : public Limb
         */
         LimbUi* setCursorRadius
         (
-            double /* Pixel radius */
+            real /* Pixel radius */
         );
 
 
@@ -329,7 +329,7 @@ class LimbUi : public Limb
         /*
             Return average weights for selected neurons
         */
-        double avgWeightBySelect();
+        real avgWeightBySelect();
 
 
 
@@ -383,7 +383,7 @@ class LimbUi : public Limb
             int,             /* Z layer */
             ofstream&,      /* File stream */
             LayerUi*,
-            function <double ( int )>
+            function <real ( int )>
         );
 
 

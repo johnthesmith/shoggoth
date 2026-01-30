@@ -2,6 +2,7 @@
     Teacher payload
 */
 
+
 /* Vanilla libraris */
 #include <iostream>
 #include <cmath>
@@ -195,7 +196,6 @@ void TeacherPayload::onEngineLoop
 
             if( errorLayer != NULL )
             {
-
                 auto error = errorLayer -> calcRmsValue();
 
                 getLog()
@@ -217,43 +217,52 @@ void TeacherPayload::onEngineLoop
                     lastNetMode == NET_MODE_TEST
                 )
                 {
+                    getLog() -> trace( "error < error limit" );
+
                     auto layers = batches -> getObject( Path{ mode, "controlDump" } );
                     if( layers != NULL )
                     {
+                        vector <string> values;
+
                         layers -> loop
                         (
-                            [ this ]
+                            [ this, &values ]
                             ( Param* item )
                             {
                                 auto layerId = item -> getString();
                                 auto layer = net -> getLayerList() -> getById( layerId );
                                 if( layer != NULL )
                                 {
-                                    /* Dump */
-                                    net -> dump
-                                    (
-                                        net -> getNetVersionPath
-                                        (
-                                            "control_dump/" +
-                                            toString( testId, false, 10 ) +
-                                            "-" +
-                                            layerId +
-                                            ".txt"
-                                        ),
-                                        CALC_STAGE_ALL,
-                                        layer,
-                                        DATA_VALUES,
-                                        DATAVIEW_GRAPH,
-                                        net -> getTick(),
-                                        false
-                                    );
+                                    values.push_back( layer -> getValuesString() );
                                 }
                                 return false;
                             }
                         );
+
+                        /* Send resul to server */
+                        Io::create( net )
+                        -> testResult
+                        (
+                            net -> getVersion(),
+                            net -> getTick(),
+                            implode( values, " | " )
+                        )
+                        -> resultTo( this )
+                        -> destroy();
+
                     }
                     testId++;
                 }
+
+                /* Reset all batch parameter for net mode changing */
+                if( lastNetMode != netMode )
+                {
+                    currentItem     = NULL;
+                    orderIndex      = 0;
+                    loopIndex       = 0;
+                    repeatIndex     = 0;
+                }
+
 
                 /* Select new batch */
                 if
@@ -280,19 +289,22 @@ void TeacherPayload::onEngineLoop
                     /* Check new batch */
                     getLog() -> begin( "New batch" );
 
-                    auto list = batches -> getObject( Path{ mode, "list" } );
                     auto all = batches -> getObject( Path{ mode, "all" } );
 
-                    if( list != NULL && all != NULL )
+                    if( all != NULL )
                     {
-                        auto item = list -> getRndItem( net -> getRnd() );
-                        if( item != NULL )
+                        nextBatchItem
+                        (
+                            batches -> getObject( Path{ mode } )
+                        );
+
+                        if( currentItem != NULL )
                         {
-                            if( item -> isObject() )
+                            if( currentItem -> isObject() )
                             {
                                 auto batch = ParamList::create()
                                 -> copyFrom( all )
-                                -> copyFrom( item -> getObject() );
+                                -> copyFrom( currentItem -> getObject() );
 
                                 /* Batch precessing */
                                 batch -> loop
@@ -392,9 +404,84 @@ void TeacherPayload::onEngineLoop
             limb -> unlock();
             getLog() -> end();
         }
+
+        getMon()
+        -> setInt( Path{ "last", "orderIndex" }, orderIndex )
+        -> setInt( Path{ "last", "loopIndex" }, loopIndex )
+        -> setInt( Path{ "last", "repeatIndex" }, repeatIndex )
+        ;
+
     }
 }
 
+
+TeacherPayload* TeacherPayload::nextBatchItem
+(
+    ParamList* aBatch
+)
+{
+    if( aBatch != NULL )
+    {
+        auto list = aBatch -> getObject( Path{ "list" });
+        auto repeatCount = aBatch -> getInt( Path{ "repeat-count" });
+        auto strategy = stringToTeacherStrategy
+        (
+            aBatch -> getString( Path{ "strategy" })
+        );
+
+        if( list != NULL && ( repeatIndex == 0 || currentItem == NULL ))
+        {
+            switch( strategy )
+            {
+                 default:
+                 case TEACHER_STRATEGY_UNKNOWN :
+                 case TEACHER_STRATEGY_LOOP:
+                    if( loopIndex >= list -> getCount() )
+                    {
+                        loopIndex = 0;
+                    }
+                    currentItem = list -> getByIndex( loopIndex );
+                    loopIndex++;
+                 break;
+                 case TEACHER_STRATEGY_RANDOM:
+                    currentItem = list -> getRndItem( net -> getRnd() );
+                 break;
+                 case TEACHER_STRATEGY_ORDER:
+                 {
+                    auto order = aBatch -> getObject( Path{ "order" });
+                    if( order != NULL )
+                    {
+                        if( orderIndex >= order -> getCount() )
+                        {
+                            orderIndex = 0;
+                            currentItem = NULL;
+                        }
+
+                        auto currentItemIndex = order -> getInt( orderIndex );
+                        if( currentItemIndex >= 0 )
+                        {
+                            currentItem = list -> getByIndex( currentItemIndex );
+                        }
+
+                        orderIndex ++;
+                    }
+                 }
+                 break;
+                 case TEACHER_STRATEGY_PER:
+                    currentItem = NULL;
+                 break;
+            }
+        }
+
+        repeatIndex++;
+        if( repeatIndex >= repeatCount )
+        {
+            repeatIndex = 0;
+        }
+    }
+
+    return this;
+}
 
 
 /******************************************************************************
@@ -405,7 +492,7 @@ void TeacherPayload::onEngineLoop
 /*
     Return current error limit from Net config
 */
-double TeacherPayload::getErrorLimit()
+real TeacherPayload::getErrorLimit()
 {
     limb -> getNet() -> lock();
     auto result = limb

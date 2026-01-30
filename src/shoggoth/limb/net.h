@@ -13,7 +13,9 @@
 #include "../../../../../lib/sock/sock_manager.h"
 
 #include "../limb.h"
+#include "../shoggoth_db.h"
 #include "../net_config.h"
+
 
 #include "weights_exchange.h"
 
@@ -40,6 +42,9 @@ class Net: public Limb
         /* Rnd object */
         Rnd*            rnd             = NULL;
 
+        /* Net database */
+        ShoggothDb*     db              = nullptr;
+
         /* Lists of layers id after update by swap operations */
         vector<string>  changedValues;
         vector<string>  changedErrors;
@@ -51,28 +56,27 @@ class Net: public Limb
         Task task                       = TASK_UNKNOWN;
 
         /* Synchronization states */
-        int             randVersion     = 0;        /* Random vesion after load */
+        /* Random vesion after load */
+        int             randVersion     = 0;
 
-        /*
-            Storage settings
-            The net contains at storage
-                storate - value from net storagePath
-                    id - value from net id
-                        net.json - net configuration
-                        versions - version of net
-                            log - log files
-                            mon - mon files
-                            weights - weighs data
-        */
-
-        string          storagePath     = "net";    /* Path for storage */
-        string          id              = "";       /* Net id */
-        /* Current net version */
-        string          version         = "";
+        /* Protects net weights from writing */
+        bool            weightWriteLock = false;
+        /* Net id */
+        string          id              = "";
         /* Net version, for switching at next turn of calculation */
         string          nextVersion     = "";
         /* Tick of the net. Settings by processor */
         unsigned long long tick         = 0;
+
+        Net* loadNerves
+        (
+            /* Load nerves for applyNet */
+            ParamList*,
+            /* Task name */
+            string
+        );
+
+
     public:
 
         /*
@@ -200,22 +204,6 @@ class Net: public Limb
         Log* getLog();
 
 
-        /*
-            Set storage path
-        */
-        Net* setStoragePath
-        (
-            const string
-        );
-
-
-
-        /*
-            Get storage path
-        */
-        string getStoragePath();
-
-
 
         /*
             Return net id
@@ -232,12 +220,6 @@ class Net: public Limb
             string
         );
 
-
-
-        /*
-            Return net version
-        */
-        string getVersion();
 
 
 
@@ -261,8 +243,8 @@ class Net: public Limb
         */
         string getNetPath
         (
-            string = "", /* Subpath */
-            string = ""  /* Net id */
+            /* Subpath */
+            string = ""
         );
 
 
@@ -272,9 +254,10 @@ class Net: public Limb
         */
         string getNetVersionPath
         (
-            string = "",    /* Subpath */
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Subpath */
+            string = "",
+            /* Specific version */
+            string = ""
         );
 
 
@@ -284,8 +267,8 @@ class Net: public Limb
         */
         string getNetConfigFile
         (
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Specific version */
+            string = ""
         );
 
 
@@ -295,9 +278,10 @@ class Net: public Limb
         */
         string getLogPath
         (
-            string = "",    /* Subpath */
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Subpath */
+            string = "",
+            /* Specific version */
+            string = ""
         );
 
 
@@ -307,9 +291,10 @@ class Net: public Limb
         */
         string getMonPath
         (
-            string = "",    /* Subpath */
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Subpath */
+            string = "",
+            /* Specific version */
+            string = ""
         );
 
 
@@ -319,9 +304,10 @@ class Net: public Limb
         */
         string getDumpPath
         (
-            string = "",    /* Subpath */
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Subpath */
+            string = "",
+            /* Specific version */
+            string = ""
         );
 
 
@@ -331,9 +317,10 @@ class Net: public Limb
         */
         string getNervesPath
         (
-            string = "",    /* Subpath */
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Subpath */
+            string = "",
+            /* Specific version */
+            string = ""
         );
 
 
@@ -344,8 +331,8 @@ class Net: public Limb
         string getWeightsPath
         (
             string = "",
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Specific version */
+            string = ""
         );
 
 
@@ -355,8 +342,8 @@ class Net: public Limb
         */
         string getMonFile
         (
-            string = "",    /* Specific version */
-            string = ""     /* Specific net id */
+            /* Specific version */
+            string = ""
         );
 
 
@@ -400,7 +387,7 @@ class Net: public Limb
 
 
 
-        Net* readNetFromFile
+        bool readNetFromFile
         (
             ParamList* /* Answer */
         );
@@ -422,7 +409,7 @@ class Net: public Limb
             string,         /* Parent Net Id */
             string,         /* Parent Net Version */
             string,         /* New net version */
-            double,         /* survivalErrorAvg */
+            real,           /* survivalErrorAvg */
             Rnd*            /* rnd stream object for mutation */
         );
 
@@ -440,7 +427,8 @@ class Net: public Limb
 
         Net* applyNet
         (
-            ParamList* /* Config */
+            /* Config */
+            ParamList*
         );
 
 
@@ -661,4 +649,30 @@ class Net: public Limb
 
 
         Net* setRndSeedFromConfig();
+
+
+
+
+        bool getWeightWriteLock()
+        {
+            return weightWriteLock;
+        }
+
+
+
+        Net* setWeightWriteLock
+        (
+            bool a
+        )
+        {
+            weightWriteLock = a;
+            return this;
+        }
+
+
+
+        ShoggothDb* getDb()
+        {
+            return db;
+        }
 };

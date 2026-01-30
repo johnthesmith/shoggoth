@@ -1,3 +1,0 @@
-result (VALUES) RELU/ONE/NULL
-ALL #3383
-  +      +▓ 

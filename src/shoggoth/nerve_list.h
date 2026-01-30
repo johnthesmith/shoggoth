@@ -246,17 +246,13 @@ class NerveList :  public Heap
         /*
             Allocate nerves weights
         */
-        template <typename Func>
-        NerveList* weightsAllocate
-        (
-            Func aOnAllocate
-        )
+        NerveList* weightsAllocate()
         {
             loop
             (
-                [ &aOnAllocate ]( void* p )
+                []( void* p )
                 {
-                    (( Nerve*) p ) -> allocate( aOnAllocate );
+                    (( Nerve*) p ) -> allocate();
                     return false;
                 }
             );

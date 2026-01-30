@@ -84,7 +84,6 @@ ShoggothApplication* ShoggothApplication::prepareConfiguration()
     -> prm( "file", getConfigFileName() );
 
     /* Set net attributes for the begining */
-    netId = getCli() -> getString( Path{ "net_id" }, "alpha" );
     netVersion = getCli() -> getString( Path{ "net_version" }, "zero" );
 
     return this;
@@ -105,17 +104,6 @@ SockManager* ShoggothApplication::getSockManager()
 {
     return sockManager;
 }
-
-
-
-/*
-    Return the net identifier
-*/
-string ShoggothApplication::getNetId()
-{
-    return netId;
-}
-
 
 
 

@@ -64,8 +64,8 @@ void LayerTeacher::destroy()
 LayerTeacher* LayerTeacher::noiseValue
 (
     Rnd*    aRnd,
-    double  aMin,
-    double  aMax
+    real  aMin,
+    real  aMax
 )
 {
     getLimb() -> lock();
@@ -135,14 +135,14 @@ LayerTeacher* LayerTeacher::bitmapToValue
             {
                 a -> getRgba
                 (
-                    ( double ) x / ( double ) size.x * w,
-                    (1-(( double ) y / ( double ) size.y )) * h - 1,
+                    ( real ) x / ( real ) size.x * w,
+                    (1-(( real ) y / ( real ) size.y )) * h - 1,
                     rgba
                 );
                 setNeuronValue
                 (
                     indexByPos( Point3i( x, y, z )),
-                    rgba.getGray()
+                    1 - rgba.getGray()
                 );
             }
         }
@@ -161,10 +161,10 @@ LayerTeacher* LayerTeacher::bitmapToValue
 LayerTeacher* LayerTeacher::imageToValue
 (
     string aFileName,
-    double aRotate,
-    double aZoomMin,
-    double aZoomMax,
-    double aShift,
+    real aRotate,
+    real aZoomMin,
+    real aZoomMax,
+    real aShift,
     Result* result,
     Rnd*    aRnd
 )

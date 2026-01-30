@@ -14,7 +14,6 @@
 
 
 
-
 /*
     Constructor
 */
@@ -22,7 +21,12 @@ LimbProcessor::LimbProcessor
 (
     Net* aNet /* Net limb object*/
 )
-:Limb( aNet -> getLogManager() )
+:Limb
+(
+    aNet -> getLogManager(),
+    /* Empty version */
+    ""
+)
 {
     net             = aNet;
 
@@ -30,7 +34,7 @@ LimbProcessor::LimbProcessor
     -> setString( Path{ "start", "Source" }, "Limb processor" )
     -> now( Path{ "start", "now" });
 
-    weightsChart = ChartList::create();
+//    weightsChart = ChartList::create();
     dumpConf = ParamList::create();
 
     fps = ChartData::create() -> setMaxCount( 100 );
@@ -57,7 +61,7 @@ LimbProcessor::~LimbProcessor()
     fps -> destroy();
 
     dumpConf -> destroy();
-    weightsChart -> destroy();
+//    weightsChart -> destroy();
 
     mon -> destroy();
 }
@@ -136,23 +140,61 @@ int LimbProcessor::getMinNeuronPerThread()
 /*
     Calculate all layers
 */
+
 LimbProcessor* LimbProcessor::calc()
 {
     auto fpsBegin = now();
+    mon -> now( Path{ "trace", "start" }, true );
+
+    net -> lock();
+
+    if
+    (
+        /* Net is not locked for writing */
+        !net -> getWeightWriteLock()
+        &&
+        (
+            ( getVersion() != net -> getVersion() && getVersion() != "" )
+            ||
+            ( tickWrite != 0 && net -> getTick() % tickWrite == 0 )
+        )
+    )
+    {
+        /* Writes weights for current version */
+        weightsWrite( net -> getNervesPath( "", getVersion() ));
+    }
+
+    mon -> now( Path{ "trace", "write_nerves" }, true);
 
     /* Increase the tick */
     net -> incTick();
 
-    mon -> now( Path{ "trace", "start" }, true );
+    /* Detect changes of config */
+    auto reload = net -> getLastUpdate() != this -> getLastUpdate();
 
-    /* Check structure with net */
     if( net -> syncToLimb( this, false ))
+    {
+        /* Reallocates and fill weights */
+        nerveControl();
+    }
+
+    /* Rebuild calculations */
+    if( reload )
     {
         /* Updated */
         buildCalcTables();
         /* Calculae thread count for each layer */
         calcThreadCount();
     }
+
+
+    if( getVersion() != net -> getVersion() )
+    {
+        /* Set version from net */
+        setVersion( net -> getVersion() );
+    }
+    net ->  unlock();
+
 
     mon -> now( Path{ "trace", "syncToLimb" }, true );
 
@@ -169,10 +211,6 @@ LimbProcessor* LimbProcessor::calc()
     ;
 
     mon -> now( Path{ "trace", "mon" }, true);
-
-    /*   */
-    nerveControl();
-
     mon -> now( Path{ "trace", "nerveControl" }, true );
 
     auto netLastChangeValues = net -> getLastChangeValues();
@@ -190,11 +228,9 @@ LimbProcessor* LimbProcessor::calc()
         this,
         false
     );
-
     mon -> now( Path{ "trace" , "swap" }, true );
 
     /* Drop learing mode flag */
-    learning = false;
     calcDebugDump( CALC_STAGE_START );
 
     mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
@@ -210,7 +246,6 @@ LimbProcessor* LimbProcessor::calc()
         ( CalcTable* table, Layer* layer, bool &terminate )
         {
             terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
-
             if( !terminate )
             {
                 /* Exclude calculation for layers without parents */
@@ -230,6 +265,7 @@ LimbProcessor* LimbProcessor::calc()
             return false;
         }
     );
+
 
     mon -> now( Path{ "trace" , "calcFront" }, true );
 
@@ -272,18 +308,19 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Learning calculation (nerve weights)
     */
-
-    getLayerList()
+    getNerveList()
     -> loop
     (
         [ this, &netLastChangeValues ]
         ( void* item )
         {
-            auto layer = (Layer*) item;
-            auto terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
+            auto nerve = (Nerve*) item;
+            auto terminate =
+            terminated ||
+            net -> getLastChangeValues() != netLastChangeValues;
             if( !terminate )
             {
-                layerCalc( layer, DATA_WEIGHTS );
+                nerve -> calcWeights( learningSpeed );
             }
             return terminate;
         }
@@ -298,40 +335,6 @@ LimbProcessor* LimbProcessor::calc()
     /*
         End of calculation
     */
-
-    /* Write the nerves weights in to storage */
-    if
-    (
-        !terminated &&
-        net -> getLastChangeValues() == netLastChangeValues &&
-        tickWrite != 0 &&
-        net -> getTick() % tickWrite == 0
-    )
-    {
-        getNerveList() -> loop
-        (
-            [ this ]
-            ( void* item )
-            {
-                auto nerve = (Nerve*) item;
-                if
-                (
-                    !nerve
-                    -> saveWeight( net -> getNervesPath() )
-                    -> isOk()
-                )
-                {
-                    getLog()
-                    -> warning( nerve -> getCode() )
-                    -> dump( nerve -> getDetails() );
-                    nerve -> setOk();
-                }
-                return false;
-            }
-        );
-    }
-
-    mon -> now( Path{ "trace", "write_nerves" }, true);
 
     /* Move calculated data to net */
     if
@@ -372,6 +375,8 @@ LimbProcessor* LimbProcessor::calc()
         net -> getTick() % tickChart == 0
     )
     {
+        mon -> remove( Path{ "mon" } );
+
         net -> lock();
 
         net
@@ -388,24 +393,29 @@ LimbProcessor* LimbProcessor::calc()
                 mon
                 -> setString
                 (
-                    Path{ "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    Path{ "mon", "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
                     layer -> getChartValues() -> toString( 40 )
                 )
                 -> setString
                 (
-                    Path{ "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    Path{ "mon", "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
                     layer -> getChartErrors() -> toString( 40 )
                 )
 
                 -> setString
                 (
-                    Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    Path{ "mon", "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
                     layer -> getChartTick() -> toString( 40 )
                 )
 
                 -> setString
                 (
-                    Path{ "errorsBeforeChange", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+                    Path
+                    {
+                        "mon",
+                        "errorsBeforeChange",
+                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                    },
                     layer -> getChartErrorsBeforeChange() -> toString( 40 )
                 )
                 ;
@@ -425,12 +435,11 @@ LimbProcessor* LimbProcessor::calc()
     mon
     -> now( Path{ "current", "last" } )
     -> setDouble( Path{ "current", "fps" }, fps -> avg() )
-    -> setBool( Path{ "current", "learning" }, learning )
     -> setInt( Path{ "current", "thread_count" }, threadManager -> getCount() )
     -> flush();
 
     auto fpsEnd = now();
-    fps -> createLast( (double) SECOND / ( fpsEnd - fpsBegin ));
+    fps -> createLast( (real) SECOND / ( fpsEnd - fpsBegin ));
 
     return this;
 }
@@ -442,51 +451,49 @@ LimbProcessor* LimbProcessor::calc()
 */
 LimbProcessor* LimbProcessor::nerveControl()
 {
-    bool reallocated = false;
-
     /* Allocate weigth */
-    getNerveList() -> weightsAllocate
+    getNerveList() -> weightsAllocate();
+
+    /* Network was realocated and have to loading */
+    auto loadingError = false;
+    getNerveList() -> loop
     (
-        [ &reallocated ]
-        ( Nerve* nerve )
+        [ this, &loadingError ]
+        ( void* item )
         {
-            reallocated = true;
+            auto nerve = ( Nerve* ) item;
+            if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk() )
+            {
+                loadingError = true;
+            }
+            return loadingError;
         }
     );
 
-    if( reallocated )
+    /* Generage weights */
+    if( loadingError )
     {
-        /* Network was realocated and have to loading */
-        auto loadingError = false;
         getNerveList() -> loop
         (
-            [ this, &loadingError ]
+            [ this ]
             ( void* item )
             {
                 auto nerve = ( Nerve* ) item;
-                if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk() )
-                {
-                    loadingError = true;
-                }
-                return loadingError;
+                nerve -> setOk();
+                nerve -> fill( net -> getRnd() );
+
+                net -> getDb() -> writeStartWeights
+                (
+                    net -> getVersion(),
+                    nerve -> calcId(),
+                    nerve -> calcSumWeights(),
+                    nerve -> getWeightsCount()
+                );
+                return false;
             }
         );
-        /* Generage weights */
-        if( loadingError )
-        {
-            getNerveList() -> loop
-            (
-                [ this ]
-                ( void* item )
-                {
-                    auto nerve = ( Nerve* ) item;
-                    nerve -> setOk();
-                    nerve -> fill( net -> getRnd() );
-                    return false;
-                }
-            );
-        }
     }
+
     return this;
 }
 
@@ -503,7 +510,7 @@ LimbProcessor* LimbProcessor::nerveControl()
 */
 LimbProcessor* LimbProcessor::setLearningSpeed
 (
-    double a
+    real a
 )
 {
     learningSpeed = a;
@@ -517,7 +524,7 @@ LimbProcessor* LimbProcessor::setLearningSpeed
 */
 LimbProcessor* LimbProcessor::setMinWeight
 (
-    double a
+    real a
 )
 {
     minWeight = a;
@@ -529,7 +536,7 @@ LimbProcessor* LimbProcessor::setMinWeight
 /*
     Get wakeup weight
 */
-double LimbProcessor::getMinWeight()
+real LimbProcessor::getMinWeight()
 {
     return minWeight;
 }
@@ -541,7 +548,7 @@ double LimbProcessor::getMinWeight()
 */
 LimbProcessor* LimbProcessor::setMaxWeight
 (
-    double a
+    real a
 )
 {
     maxWeight = a;
@@ -553,7 +560,7 @@ LimbProcessor* LimbProcessor::setMaxWeight
 /*
     Get max weight
 */
-double LimbProcessor::getMaxWeight()
+real LimbProcessor::getMaxWeight()
 {
     return maxWeight;
 }
@@ -565,7 +572,7 @@ double LimbProcessor::getMaxWeight()
 */
 LimbProcessor* LimbProcessor::setMaxError
 (
-    double a
+    real a
 )
 {
     maxError = a;
@@ -577,7 +584,7 @@ LimbProcessor* LimbProcessor::setMaxError
 /*
     Get max error
 */
-double LimbProcessor::getMaxError()
+real LimbProcessor::getMaxError()
 {
     return maxError;
 }
@@ -587,7 +594,7 @@ double LimbProcessor::getMaxError()
 /*
     Get learning speed
 */
-double LimbProcessor::getLearningSpeed()
+real LimbProcessor::getLearningSpeed()
 {
     return learningSpeed;
 }
@@ -603,10 +610,15 @@ LimbProcessor* LimbProcessor::neuronCalcValue
     int aIndex
 )
 {
+    /* Max accum */
+    real max = -INFINITY;
+    Nerve* maxNerve = NULL;
+    int maxWeightIndex = -1;
+
     /* Additive accum */
-    double add = 0.0;
+    real add = 0.0;
     /* Multiplexor accum */
-    double mul = 1.0;
+    real mul = 1.0;
     /* Additive count */
     int count = 0;
 
@@ -617,18 +629,28 @@ LimbProcessor* LimbProcessor::neuronCalcValue
         aIndex,
         BT_ALL,
         [
-            this, &add, &mul, &count
+            this,
+            &add,
+            &mul,
+            &count,
+            &max,
+            &maxNerve,
+            &maxWeightIndex
         ]
         (
             Layer*  aParentLayer,
             int     aParentIndex,
             Nerve*  aNerve,
-            double  aWeight,
+            real    aWeight,
             int     aWeightIndex /* not use */
         ) -> bool
         {
             /* The incoming value from parent to current neuron */
-            auto w = aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
+            auto w
+            = aParentIndex == -1
+            ? 0
+            : aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
+
             /* Calculate summ */
             switch( aNerve -> getBindType() )
             {
@@ -641,23 +663,57 @@ LimbProcessor* LimbProcessor::neuronCalcValue
                 case BT_MUL:
                     mul *= w;
                 break;
+                case BT_MAX:
+                    aNerve -> setControl( aWeightIndex, 0.0 );
+                    if( w > max )
+                    {
+                        maxNerve = aNerve;
+                        maxWeightIndex = aWeightIndex;
+                        max = w;
+                    }
+                break;
             }
             return terminated;
         }
     );
 
-    if( count > 0 )
+    /* MAX postprocessing hi priority */
+    if( maxWeightIndex > -1 )
     {
+        maxNerve -> setControl( maxWeightIndex, 1.0 );
         aLayer -> setNeuronValue
         (
             aIndex,
-            /* Main value calculation */
-            (*( aLayer -> frontFunc ))( add * mul )
+            (*( aLayer -> frontFunc ))( max )
         );
+    }
+    else
+    {
+        /* ADD postprocessing */
+        if( count > 0 )
+        {
+            aLayer -> setNeuronValue
+            (
+                aIndex,
+                /* Main value calculation */
+                (*( aLayer -> frontFunc ))( add * mul )
+            );
+        }
     }
 
     return this;
 }
+
+
+TODO почему то начинается на обратном проходе от 9 до 7 тестирование
+по идее не должно.
+
+надо понять как эта вся херня работает в плане обучения... что цикл верно
+выполняется и обходится обучение. нужен какой то видимый прихнак
+понимать что обучение остановилось
+
+а еще надо повысить скорость работы тичера резко потому что он ща медленный
+
 
 
 
@@ -671,7 +727,7 @@ LimbProcessor* LimbProcessor::neuronCalcError
 )
 {
     /* Define variables */
-    double error    = 0.0;
+    real error    = 0.0;
     switch( aLayer -> getErrorCalc() )
     {
         default:
@@ -688,21 +744,38 @@ LimbProcessor* LimbProcessor::neuronCalcError
             (
                 aLayer,
                 aIndex,
-                BT_ADD,
+                BT_ALL,
                 [ this, &error ]
                 (
                     Layer* aChild,
                     int aChildIndex,
                     Nerve* aNerve,
-                    double aWeight,
+                    real aWeight,
                     int aWeightIndex    /* Not use */
                 ) -> bool
                 {
-                    /* Use the back func out for outgoing error */
-                    error += (*( aChild -> backFuncOut ))
-                    (
-                         aChild -> getNeuronError( aChildIndex )
-                    ) * aWeight;
+                    /* Calculate summ */
+                    switch( aNerve -> getBindType() )
+                    {
+                        default:
+                        break;
+                        case BT_ADD:
+                            /* Use the back func out for outgoing error */
+                            error += (*( aChild -> backFuncOut ))
+                            (
+                                 aChild -> getNeuronError( aChildIndex )
+                            )
+                            * aWeight;
+                        break;
+                        case BT_MAX:
+                            error += aNerve -> getControl( aWeightIndex )
+                            * (*( aChild -> backFuncOut ))
+                            (
+                                 aChild -> getNeuronError( aChildIndex )
+                            )
+                            * aWeight;
+                        break;
+                    }
                     return terminated;
                 }
             );
@@ -731,68 +804,6 @@ LimbProcessor* LimbProcessor::neuronCalcError
 
 
 /*
-    Learning a neuron by recalculating
-    the weights of parent connections.
-*/
-LimbProcessor* LimbProcessor::neuronCalcWeight
-(
-    Layer*  aLayer, /* Layer for calculation */
-    int     aIndex  /* Neuron index of layer */
-)
-{
-    /* Learnin, calculating weights */
-    switch( aLayer -> getErrorCalc() )
-    {
-        default:
-            /* EC_NONE */
-            /* EC_VALUE */
-        break;
-        case EC_LEARNING:
-            auto error = aLayer -> getNeuronError( aIndex );
-            parentsLoop
-            (
-                aLayer,
-                aIndex,
-                BT_ADD,
-                [
-                    this,
-                    &error
-                ]
-                 (
-                    Layer*  aParentLayer,
-                    int     aParentIndex,
-                    Nerve*  aNerve,
-                    double  aWeight,
-                    int     aWeightIndex
-                )
-                {
-                    /*
-                        Emplementate the https://habr.com/ru/articles/313216/
-                    */
-                    double gradient =
-                    aParentLayer -> getNeuronValue( aParentIndex )
-                    * error;
-
-                    double deltaWeight = gradient * learningSpeed
-                    + aNerve -> getDeltaWeight( aWeightIndex ) * 0.3;
-
-                    double newWeight = aWeight + deltaWeight;
-
-                    aNerve -> setWeight( aWeightIndex, newWeight );
-                    aNerve -> setDeltaWeight( aWeightIndex, deltaWeight );
-
-                    return terminated;
-                }
-            );
-        break;
-    }
-
-    return this;
-}
-
-
-
-/*
     Calculate neurons in the layer using threads
 */
 LimbProcessor* LimbProcessor::layerCalc
@@ -805,7 +816,6 @@ LimbProcessor* LimbProcessor::layerCalc
 {
     /* Calculate thread count */
     int threadCount = aLayer -> getThreadCount();
-
     /* Check thread count */
     if( threadManager -> prepare( threadCount ))
     {
@@ -835,21 +845,29 @@ LimbProcessor* LimbProcessor::layerCalc
                 {
                     auto task = (LayerCalcTask*) aTaskPtr;
                     /* Thread body */
-                    for( size_t n = task -> neuronFrom; n < task -> neuronTo; n++ )
+                    for
+                    (
+                        size_t n = task -> neuronFrom;
+                        n < task -> neuronTo;
+                        n++
+                    )
                     {
                         switch( task -> data )
                         {
                             /* Unknown data */
                             default:
-                            case DATA_UNKNOWN:break;
-                            case DATA_WEIGHTS:
-                                task -> limb -> neuronCalcWeight( task -> layer, n );
                             break;
                             case DATA_VALUES:
-                                task -> limb -> neuronCalcValue( task -> layer, n );
+                                task -> limb -> neuronCalcValue
+                                (
+                                    task -> layer, n
+                                );
                             break;
                             case DATA_ERRORS:
-                                task -> limb -> neuronCalcError( task -> layer, n );
+                                task -> limb -> neuronCalcError
+                                (
+                                    task -> layer, n
+                                );
                             break;
                         }
                     }
@@ -861,7 +879,8 @@ LimbProcessor* LimbProcessor::layerCalc
 
         /* Run calculation and wait */
         threadManager
-        -> run()
+        -> run();
+        threadManager
         -> wait();
     }
 
@@ -872,6 +891,7 @@ LimbProcessor* LimbProcessor::layerCalc
 
     return this;
 }
+
 
 
 
@@ -985,17 +1005,51 @@ LimbProcessor* LimbProcessor::buildCalcTables()
 
 
 /*
-    Write debug monitoring
+    Dump layers
+*/
+LimbProcessor* LimbProcessor::dumptypeLayerProcessing
+(
+    string aFile,
+    ParamList* aLayers,
+    Dataview aDataview,
+    Data aData,
+    int aTick
+)
+{
+    aLayers -> loop
+    (
+        [ this, aFile, &aDataview, &aData, aTick ]
+        ( Param* param )
+        {
+            /* Get layer by index */
+            auto layer = getLayerList()
+            -> getById( param -> getString());
+            if( layer == NULL )
+            {
+                getLog()
+                -> warning( "Layer monitoring not found" )
+                -> prm( "id", param -> getString() )
+                ;
+            }
+            else
+            {
+                /* Dump */
+                dumpLayer( aFile, layer, aData, aDataview, aTick );
+            }
+            return false;
+        }
+    );
+    return this;
+}
 
-    File name keys for replacing
-        %stage%
-        %tick%
-        %layer%
-        %neuron%
-        %direction%
+
+
+/*
+    Write debug monitoring
 */
 LimbProcessor* LimbProcessor::calcDebugDump
 (
+    /* Calculation stage CALC_STAGE_* */
     CalcStage aStage
 )
 {
@@ -1006,16 +1060,20 @@ LimbProcessor* LimbProcessor::calcDebugDump
     /* Loop for monitoring rules from config */
     dumpConf -> objectsLoop
     (
-        [ this, &aStage, &stage, &stageAll ]
+        [ this, &stage, &stageAll, &aStage ]
         ( ParamList* params, string )
         {
             /* Enabled check */
             if( params -> getBool( Path{ "enabled" }, true ))
             {
+                /* File name */
+                auto file = params -> getString( Path{ "file" }, "" );
+
                 /* Stage check */
                 auto stages = params -> getObject( Path{ "stages" });
                 if
                 (
+                    file != "" &&
                     stages != NULL &&
                     (
                         stages -> contains( stage ) ||
@@ -1023,209 +1081,207 @@ LimbProcessor* LimbProcessor::calcDebugDump
                     )
                 )
                 {
-                    /* Layer defining */
-                    auto layers = params -> getObject( Path{ "layers" });
-                    if( layers != NULL )
+                    /* Types defenition as DUMP_TYPE_* */
+                    auto dumptype = dumptypeFromString
+                    (
+                        params -> getString( Path{ "dumptype" })
+                    );
+
+                    /* Change file to mon path/file */
+                    file = net -> getMonPath( file );
+
+                    /* Replace stage and tick in the file */
+                    file = replace
+                    (
+                        file,
+                        vector <string>
+                        {
+                            "%stage%",
+                            "%tick%",
+                            "%dumptype%"
+                        },
+                        vector <string>
+                        {
+                            stage,
+                            toString( net -> getTick() ),
+                            dumptypeToString( dumptype )
+                        }
+                    );
+
+                    /* Read dataview type */
+                    auto dataview = dataviewFromString
+                    (
+                        params -> getString( Path{ "dataview" }),
+                        DATAVIEW_FLOAT
+                    );
+
+                    /* Data type loop VALUES ERROR WEIGHTS */
+                    auto datas = params -> getObject( Path{ "data" });
+                    if( datas != NULL )
                     {
-                        /* Read file name */
-                        auto file = net -> getMonPath
-                        (
-                            params -> getString
-                            (
-                                Path{ "file" },
-                                "tick_%tick%/%stage%/%layer%%neuron%-%direction%-%data%.txt"
-                            )
-                        );
-
-                        /* Read dataview type */
-                        auto dataview = dataviewFromString
-                        (
-                            params -> getString( Path{ "dataview" }),
-                            DATAVIEW_FLOAT
-                        );
-
-                        layers -> loop
+                        datas -> loop
                         (
                             [
-                                this, &params, &aStage,
-                                &stage, &file, &dataview
+                                this,
+                                &params,
+                                file,
+                                dataview,
+                                dumptype
                             ]
-                            ( Param* param )
+                            ( Param* item )
                             {
-                                /* Get layer by index */
-                                auto layer = getLayerList()
-                                -> getById( param -> getString());
+                                auto data = dataFromString( item -> getString());
+                                auto file1 = replace( file, "%data%", item -> getString() );
 
-                                if( layer == NULL )
+                                switch( dumptype )
                                 {
-                                    getLog()
-                                    -> warning( "Layer monitoring not found" );
-                                }
-                                else
-                                {
-                                    /* Data type loop VALUES ERROR WEIGHTS */
-                                    auto datas = params -> getObject( Path{ "data" });
-                                    if( datas != NULL )
+                                    default:
+                                    case DUMP_TYPE_LAYER:
                                     {
-                                        datas -> loop
-                                        (
-                                            [
-                                                this,
-                                                &params,
-                                                &aStage,
-                                                &stage,
-                                                &file,
-                                                &layer,
-                                                &dataview
-                                            ]
-                                            ( Param* item )
-                                            {
-                                                auto data = dataFromString( item -> getString());
-                                                /* Let directions */
-                                                auto directions = params
-                                                -> getObject( Path{ "directions" });
-
-                                                if( directions != NULL )
+                                        auto layers = params -> getObject( Path{ "layers" });
+                                        if( layers != NULL )
+                                        {
+                                            dumptypeLayerProcessing
+                                            (
+                                                file1,
+                                                layers,
+                                                dataview,
+                                                data,
+                                                net -> getTick()
+                                            );
+                                        }
+                                    }
+                                    break;
+                                    case DUMP_TYPE_NERVE:
+                                    {
+                                        auto nervesConfig = params -> getObject( Path{ "nerves" });
+                                        if( nervesConfig != NULL )
+                                        {
+                                            nervesConfig -> loop
+                                            (
+                                                [ this, file1, data, dataview ]
+                                                ( Param* item )
                                                 {
-                                                    directions -> loop
-                                                    (
-                                                        [
-                                                            this,
-                                                            &params,
-                                                            &aStage,
-                                                            &stage,
-                                                            &file,
-                                                            &layer,
-                                                            &data,
-                                                            &dataview
-                                                        ]
-                                                        ( Param* param )
+                                                    if( item != NULL && item -> isObject() )
+                                                    {
+                                                        auto nerveRecord = item -> getObject();
+                                                        if( nerveRecord -> getCount() > 1 )
                                                         {
-                                                            /* Extract the config arguments */
-                                                            auto direction = directionFromString( param -> getString() );
-                                                            switch( direction )
-                                                            {
-                                                                case DIRECTION_PARENT:
-                                                                case DIRECTION_CHILD:
+                                                            auto from = nerveRecord -> getByIndex( 0 ) -> getString();
+                                                            auto to = nerveRecord -> getByIndex( 1 ) -> getString();
+
+                                                            auto file2 = replace
+                                                            (
+                                                                file1,
+                                                                vector <string> {"%layer-from%", "%layer-to%"},
+                                                                vector <string> { from, to }
+                                                            );
+
+                                                            getNerveList() -> loop
+                                                            (
+                                                                [
+                                                                    this,
+                                                                    file2,
+                                                                    data,
+                                                                    dataview,
+                                                                    from,
+                                                                    to
+                                                                ]
+                                                                ( void* item )
                                                                 {
-                                                                    auto neurons = params -> getObject( Path{ "neurons" });
-                                                                    if( neurons != NULL )
+                                                                    auto nerve = ( Nerve* )item;
+
+                                                                    if
+                                                                    (
+                                                                        nerve -> getParent() -> getId() == from &&
+                                                                        nerve -> getChild() -> getId() == to
+                                                                    )
                                                                     {
-                                                                        neurons -> objectsLoop
+                                                                        dumpNerve
                                                                         (
-                                                                            [
-                                                                                this,
-                                                                                &layer,
-                                                                                &direction,
-                                                                                &data,
-                                                                                &file,
-                                                                                &stage,
-                                                                                &dataview
-                                                                            ]
-                                                                            ( ParamList* item, string )
-                                                                            {
-                                                                                auto pos = ParamPoint::point3i( item );
-
-                                                                                /* Replace file name */
-                                                                                auto f = replace
-                                                                                (
-                                                                                    file,
-                                                                                    vector <string>
-                                                                                    {
-                                                                                        "%tick%",
-                                                                                        "%stage%",
-                                                                                        "%layer%",
-                                                                                        "%direction%",
-                                                                                        "%data%",
-                                                                                        "%neuron%"
-                                                                                    },
-                                                                                    vector <string>
-                                                                                    {
-                                                                                        toString( net -> getTick() ),
-                                                                                        stage,
-                                                                                        layer -> getId(),
-                                                                                        directionToString( direction ),
-                                                                                        dataToString( data ),
-                                                                                        pos.toString()
-                                                                                    }
-                                                                                );
-
-                                                                                /* Dump */
-                                                                                dump
-                                                                                (
-                                                                                    f,
-                                                                                    layer,
-                                                                                    pos,
-                                                                                    direction,
-                                                                                    data,
-                                                                                    dataview,
-                                                                                    net -> getTick()
-                                                                                );
-                                                                                return false;
-                                                                            } /* Neuron list and data exists */
-                                                                        ); /* Neurns loop */
-                                                                    } /* Neurons exists */
+                                                                            file2,
+                                                                            nerve,
+                                                                            data,
+                                                                            dataview
+                                                                        );
+                                                                    }
+                                                                    return false;
                                                                 }
-                                                                break;
+                                                            );
 
-                                                                default:
-                                                                case DIRECTION_UNKNOWN:
-                                                                case DIRECTION_NONE:
-                                                                {
-                                                                    /* Replace file name */
-                                                                    auto f = replace
-                                                                    (
-                                                                        file,
-                                                                        vector <string>
-                                                                        {
-                                                                            "%tick%",
-                                                                            "%stage%",
-                                                                            "%layer%",
-                                                                            "%direction%",
-                                                                            "%data%",
-                                                                            "%neuron%"
-                                                                        },
-                                                                        vector <string>
-                                                                        {
-                                                                            toString( net -> getTick() ),
-                                                                            stage,
-                                                                            layer -> getId(),
-                                                                            directionToString( direction ),
-                                                                            dataToString( data ),
-                                                                            ""
-                                                                        }
-                                                                    );
-                                                                    /* Dump */
-                                                                    dump
-                                                                    (
-                                                                        f,
-                                                                        aStage,
-                                                                        layer,
-                                                                        data,
-                                                                        dataview,
-                                                                        net -> getTick()
-                                                                    );
-                                                                }
-                                                                break;
-
-                                                            } /* Switch direction */
-                                                            return false;
-                                                        } /* Direction lambda */
-                                                    ); /* Direction loop */
-                                                } /* Direction exists */
-                                                else
-                                                {
-                                                    setResult( "dump_directions_key_not_exists" );
+                                                        }
+                                                    }
+                                                    return false;
                                                 }
-                                                return false;
-                                            }/* Data loop laymbda */
-                                        ); /* Data loop */
-                                    } /* Datas exists */
-                                } /* Layer exists */
+                                            );
+                                        }
+                                    }
+                                    break;
+                                    case DUMP_TYPE_NEURON:
+                                    {
+                                        /* Layer defining */
+                                        auto neurons = params -> getObject( Path{ "neurons" });
+                                        if( neurons != NULL )
+                                        {
+                                            neurons -> loop
+                                            (
+                                                [ this, file1, data, dataview ]
+                                                ( Param* param )
+                                                {
+                                                    if( param -> isObject() )
+                                                    {
+                                                        auto layerId = param -> getName();
+                                                        auto layer = getLayerList()
+                                                        -> getById( layerId );
+                                                        if( layer != NULL )
+                                                        {
+                                                            auto poses = param -> getObject();
+                                                            poses -> objectsLoop
+                                                            (
+                                                                [
+                                                                    this,
+                                                                    layer,
+                                                                    data,
+                                                                    file1,
+                                                                    dataview
+                                                                ]
+                                                                ( ParamList* item, string )
+                                                                {
+                                                                    auto pos = ParamPoint::point3i( item );
+
+                                                                    /* Replace file name */
+                                                                    auto file2 = replace
+                                                                    (
+                                                                        file1,
+                                                                        "%neuron%",
+                                                                        pos.toString()
+                                                                    );
+                                                                    /* Dump for neuron */
+
+                                                                    dumpNeuron
+                                                                    (
+                                                                        file2,
+                                                                        layer,
+                                                                        pos,
+                                                                        data,
+                                                                        dataview
+                                                                    );
+                                                                    return false;
+                                                                } /* Poses loop callback */
+                                                            ); /* Poses loop */
+                                                        } /* Layer exists */
+                                                    } /* Layer params exists */
+                                                    return false;
+                                                } /* Neurons params loop callback */
+                                            ); /* Neurons loop */
+                                        } /* Neurons exists */
+                                        break;
+                                    } /* case DUMP_TYPE_NEURON */
+                                } /* dumptypeswitch */
                                 return false;
-                            } /* Layers loop lambda */
-                        ); /* Layers loop */
-                    } /* Layers exists */
+                            } /* Datas callback  */
+                        );  /* datas loop */
+                    } /* Datas exists */
                 } /* Stage check */
 
                 /* Pause */
@@ -1309,3 +1365,31 @@ LimbProcessor* LimbProcessor::calcThreadCount()
 
 
 
+LimbProcessor* LimbProcessor::weightsWrite
+(
+    /* Path folder for layers */
+    string a
+)
+{
+    getNerveList() -> loop
+    (
+        [ &a, this ]( void *item )
+        {
+            auto nerve = ( Nerve* ) item;
+            if
+            (
+                !nerve
+                -> saveWeight( a )
+                -> isOk()
+            )
+            {
+                getLog()
+                -> warning( nerve -> getCode() )
+                -> dump( nerve -> getDetails() );
+                nerve -> setOk();
+            }
+            return false;
+        }
+    );
+    return this;
+}

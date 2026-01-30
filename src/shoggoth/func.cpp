@@ -1,207 +1,6 @@
-#include "iostream"
-#include "cmath"
-
-#include "../../../../lib/core/rnd.h"
-#include "../../../../lib/core/math.h"
-
 #include "func.h"
 
 using namespace std;
-
-
-
-
-/*
-    Zero function
-*/
-NeuronFunc FUNC_ZERO =
-[]( double x ) -> double
-{
-    return 0;
-};
-
-
-
-/*
-    Linear function
-*/
-NeuronFunc FUNC_LINE =
-[]( double x ) -> double
-{
-    return x;
-};
-
-
-
-
-/*
-    Heaviside step Function
-    |
-    |           Power = 10
-    |
-    |               ^
-    |               ************
-    |               *
-    |               *
-    |               *
-    |               *  0.5
-    |               *
-    |               *
-    |               *
-    |               *
-    |  -1***********0-----------1
-*/
-
-NeuronFunc FUNC_STEP =
-[]( double x ) -> double
-{
-    return x < EPSILON_D ? 0.0 : 1.0;
-};
-
-
-
-/*
-    Alwayse return one
-    Heaviside step Function
-    |
-    |           Power = 10
-    |
-    |               ^
-    |   ************************
-    |               |
-    |               |
-    |               |
-    |               |  0.5
-    |               |
-    |               |
-    |               |
-    |               |
-    |  -1-----------0-----------1
-*/
-
-NeuronFunc FUNC_ONE =
-[]( double x ) -> double
-{
-    return 1;
-};
-
-
-
-
-/*
-    Null function
-*/
-
-NeuronFunc FUNC_NULL =
-[]( double x ) -> double
-{
-    return x;
-};
-
-
-
-
-
-/*
-    Create sigmoid modifer
-    https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%B3%D0%BC%D0%BE%D0%B8%D0%B4%D0%B0
-    |
-    |           Power = 10
-    |
-    |               ^
-    |               |       ****
-    |               |   ****
-    |               | **
-    |               |*
-    |               *  0.5
-    |              *|
-    |            ** |
-    |        ****   |
-    |   *****       |
-    |  -1-----------0-----------1
-*/
-
-NeuronFunc FUNC_SIGMOID =
-[]( double x ) -> double
-{
-    return 1.0 / ( 1.0 + pow( M_E, ( -x )));
-};
-
-
-
-/*
-    Create sigmoid derivative
-    https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%B3%D0%BC%D0%BE%D0%B8%D0%B4%D0%B0
-    https://kawahara.ca/how-to-compute-the-derivative-of-a-sigmoid-function-fully-worked-example/
-    |                y
-    |                ^
-    |                |
-    |                |
-    |                |
-    |                |
-    |               *** 0.25
-    |             ** | ***
-    |        *****   |    ***
-    |   -1-----------0-----------1
-*/
-
-NeuronFunc FUNC_SIGMOID_BACK =
-[]( double x ) -> double
-{
-    return x * ( 1 - x );
-};
-
-
-
-/*
-    Create sigmoid derivative
-    https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%B3%D0%BC%D0%BE%D0%B8%D0%B4%D0%B0
-    https://kawahara.ca/how-to-compute-the-derivative-of-a-sigmoid-function-fully-worked-example/
-    |                y
-    |                ^
-    |                |
-    |                |
-    |                |
-    |                |
-    |               *** 0.25
-    |             ** | ***
-    |        *****   |    ***
-    |   -1-----------0-----------1
-*/
-
-NeuronFunc FUNC_SIGMOID_DERIVATIVE =
-[]( double x ) -> double
-{
-    auto sigmoida = FUNC_SIGMOID( x );
-    return sigmoida * ( 1 - sigmoida );
-};
-
-
-
-
-/*
-    ReLU
-       ^ y                    **
-       | +1.0               **
-     - - - - - - - - - - -**
-       |                **:
-       |              **  :
-       |            **    :
-       |          **      :
-       |        **  0.5   :
-       |      **          :
-       |    **            :
-       |  **              :
-       |**                :
-    ****------------------o-> x
-        0                +s
-*/
-NeuronFunc FUNC_RELU =
-[]( double x ) -> double
-{
-    return x < 0.0 ? 0.0 : x;
-};
-
 
 
 /*
@@ -225,7 +24,7 @@ NeuronFunc FUNC_RELU =
 */
 
 NeuronFunc2 FUNC_SIGMOID_LINE_MINUS_PLUS =
-[]( double x, double s ) -> double
+[]( real x, real s ) -> real
 {
     return x < -s ? -1.0 : ( x > s ? 1.0 :  x / s );
 };
@@ -251,7 +50,7 @@ NeuronFunc2 FUNC_SIGMOID_LINE_MINUS_PLUS =
 */
 
 NeuronFunc2 FUNC_V_LINE =
-[]( double x, double s ) -> double
+[]( real x, real s ) -> real
 {
     return abs( x < -s ? -1.0 : ( x > s ? 1.0 : x / s ));
 };
@@ -278,7 +77,7 @@ NeuronFunc2 FUNC_V_LINE =
 
 */
 NeuronFunc2 FUNC_SIGMOID_PLUS_MINUS =
-[]( double x, double sensivity ) -> double
+[]( real x, real sensivity ) -> real
 {
     return  2.0 / ( 1.0 + pow( M_E, ( -x ) * sensivity ) ) - 1;
 };
@@ -309,7 +108,7 @@ NeuronFunc2 FUNC_SIGMOID_PLUS_MINUS =
 */
 
 NeuronFunc3 FUNC_WEIGHT =
-[]( double x, double min, double max ) -> double
+[]( real x, real min, real max ) -> real
 {
     return x > max ? max :
     (
@@ -345,7 +144,7 @@ NeuronFunc3 FUNC_WEIGHT =
         -s       |        +s
 */
 NeuronFunc2 FUNC_ERROR =
-[]( double x, double max ) -> double
+[]( real x, real max ) -> real
 {
     return x > max ? max :
     (
@@ -353,41 +152,3 @@ NeuronFunc2 FUNC_ERROR =
     );
 };
 
-
-
-/*
-    Convert string to function
-*/
-NeuronFunc* strToFunc
-(
-    string aArgument
-)
-{
-    if( aArgument == "NULL" )           return &FUNC_NULL;
-    if( aArgument == "ZERO" )           return &FUNC_ZERO;
-    if( aArgument == "LINE" )           return &FUNC_LINE;
-    if( aArgument == "ONE" )            return &FUNC_ONE;
-    if( aArgument == "STEP" )           return &FUNC_STEP;
-    if( aArgument == "RELU" )           return &FUNC_RELU;
-    if( aArgument == "SIGMOID" )        return &FUNC_SIGMOID;
-    if( aArgument == "SIGMOID_BACK" )   return &FUNC_SIGMOID_BACK;
-    return &FUNC_NULL;
-}
-
-
-
-string neuronFuncToStr
-(
-    NeuronFunc* a
-)
-{
-    if( a == &FUNC_NULL )               return "NULL";
-    if( a == &FUNC_ZERO )               return "ZERO";
-    if( a == &FUNC_LINE )               return "LINE";
-    if( a == &FUNC_ONE )                return "ONE";
-    if( a == &FUNC_STEP )               return "STEP";
-    if( a == &FUNC_RELU )               return "RELU";
-    if( a == &FUNC_SIGMOID )            return "SIGMOID";
-    if( a == &FUNC_SIGMOID_BACK )       return "SIGMOID_BACK";
-    return "NULL";
-}

@@ -104,14 +104,14 @@ class NeuronListUi : public Heap
         /*
             Calculate average value
         */
-        double calcAvgValue();
+        real calcAvgValue();
 
 
 
         /*
             Calculate average error
         */
-        double calcAvgError();
+        real calcAvgError();
 
 
 

@@ -5,31 +5,6 @@
 
 
 
-/*
-    Convert command to string
-*/
-std::string actionToString
-(
-    Action a
-)
-{
-    switch( a )
-    {
-        default:
-        case ACTION_UNKNOWN     : return "ACTION_UNKNOWN";
-        case READ_VALUES        : return "READ_VALUES";
-        case WRITE_VALUES       : return "WRITE_VALUES";
-        case READ_ERRORS        : return "READ_ERRORS";
-        case WRITE_ERRORS       : return "WRITE_ERRORS";
-        case SYNC_RESET         : return "SYNC_RESET";
-        case READ_STAT_ERROR    : return "READ_STAT_ERROR";
-        case READ_STAT_ERRORS_BEFORE_CHANGE    : return "READ_STAT_ERRORS_BEFORE_CHANGE";
-        case READ_STAT_VALUE    : return "READ_STAT_VALUE";
-        case READ_STAT_TICK     : return "READ_STAT_TICK";
-    }
-}
-
-
 
 /*
     Return task of participant string by task enum
@@ -78,6 +53,7 @@ std::string commandToString
         case CMD_READ_LAYER_STAT: return "READ_LAYER_STAT";
         case CMD_GET_NET_MODE   : return "GET_NET_MODE";
         case CMD_SET_NET_MODE   : return "SET_NET_MODE";
+        case CMD_TEST_RESULT    : return "TEST_RESULT";
     }
 }
 
@@ -105,6 +81,7 @@ Command commandFromString
     if( a == "READ_LAYER_STAT" )     return CMD_READ_LAYER_STAT;
     if( a == "GET_NET_MODE" )        return CMD_GET_NET_MODE;
     if( a == "SET_NET_MODE" )        return CMD_SET_NET_MODE;
+    if( a == "TEST_RESULT" )         return CMD_TEST_RESULT;
 
     return CMD_UNKNOWN;
 }
@@ -154,17 +131,18 @@ CalcStage calcStageToString
 
 NerveType nerveTypeFromString
 (
-    string a
+    std::string a
 )
 {
     if( a == "ONE_TO_ONE" ) return ONE_TO_ONE;
     if( a == "ALL_TO_ALL" ) return ALL_TO_ALL;
+    if( a == "SOME_TO_SOME" ) return SOME_TO_SOME;
     return ALL_TO_ALL;
 };
 
 
 
-string nerveTypeToString
+std::string nerveTypeToString
 (
     NerveType a
 )
@@ -174,43 +152,9 @@ string nerveTypeToString
         default:
         case ALL_TO_ALL : return "ALL_TO_ALL";
         case ONE_TO_ONE : return "ONE_TO_ONE";
+        case SOME_TO_SOME : return "SOME_TO_SOME";
     }
 }
-
-
-
-
-/*
-    Converts string to bind type
-*/
-BindType bindTypeFromString
-(
-    std::string a
-)
-{
-    if( a == "MUL" ) return BT_MUL;
-    if( a == "ADD" ) return BT_ADD;
-    return BT_ADD;
-}
-
-
-
-/*
-    Converts bind type to string
-*/
-std::string bindTypeToString
-(
-    BindType a
-)
-{
-    switch( a )
-    {
-        default:
-        case BT_ADD : return "ADD";
-        case BT_MUL : return "MUL";
-    };
-}
-
 
 
 
@@ -287,12 +231,13 @@ std::string weightCalcToString
 */
 Data dataFromString
 (
-    string a
+    std::string a
 )
 {
     if( a == "WEIGHTS" ) return DATA_WEIGHTS;
     if( a == "VALUES" ) return DATA_VALUES;
     if( a == "ERRORS" ) return DATA_ERRORS;
+    if( a == "INDEX_WEIGHTS" ) return DATA_INDEX_WEIGHTS;
     return DATA_UNKNOWN;
 }
 
@@ -301,7 +246,7 @@ Data dataFromString
 /*
     Convert datatype to string
 */
-string dataToString
+std::string dataToString
 (
     Data a
 )
@@ -309,10 +254,11 @@ string dataToString
     switch( a )
     {
         default:
-        case DATA_UNKNOWN   : return "UNKNOWN";
-        case DATA_VALUES    : return "VALUES";
-        case DATA_ERRORS    : return "ERRORS";
-        case DATA_WEIGHTS   : return "WEIGHTS";
+        case DATA_UNKNOWN       : return "UNKNOWN";
+        case DATA_VALUES        : return "VALUES";
+        case DATA_ERRORS        : return "ERRORS";
+        case DATA_WEIGHTS       : return "WEIGHTS";
+        case DATA_INDEX_WEIGHTS : return "INDEX_WEIGHTS";
     };
 }
 
@@ -323,7 +269,7 @@ string dataToString
 */
 Direction directionFromString
 (
-    string a
+    std::string a
 )
 {
     if( a == "NONE" )   return DIRECTION_NONE;
@@ -337,7 +283,7 @@ Direction directionFromString
 /*
     Convert direction to string
 */
-string directionToString
+std::string directionToString
 (
     Direction a
 )
@@ -359,11 +305,11 @@ string directionToString
 */
 Dataview dataviewFromString
 (
-    const string aValue,
+    const std::string aValue,
     Dataview aDefault
 )
 {
-    static const unordered_map<string, Dataview> lookup =
+    static const std::unordered_map<std::string, Dataview> lookup =
     {
         { "UNKNOWN", DATAVIEW_UNKNOWN },
         { "GRAPH",   DATAVIEW_GRAPH },
@@ -378,11 +324,10 @@ Dataview dataviewFromString
 
 
 
-
 /*
     Convert Dataview to string
 */
-string dataviewToString
+std::string dataviewToString
 (
     Dataview a
 )
@@ -405,7 +350,7 @@ string dataviewToString
 NetMode netModeFromString
 (
     /* String argument for conversion */
-    string aValue,
+    std::string aValue,
     /* Defaule value */
     NetMode aDefault
 )
@@ -419,21 +364,3 @@ NetMode netModeFromString
 }
 
 
-
-/*
-    Convert Dataview to string
-*/
-string netModeToString
-(
-    NetMode a
-)
-{
-    switch( a )
-    {
-        default:
-        case NET_MODE_UNKNOWN   : return "MODE_UNKNOWN";
-        case NET_MODE_LEARN     : return "MODE_LEARN";
-        case NET_MODE_TEST      : return "MODE_TEST";
-        case NET_MODE_WORK      : return "MODE_WORK";
-    };
-}

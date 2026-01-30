@@ -393,6 +393,32 @@ Io* Io::cloneNet
 
 
 /*
+    Clone net from id and version
+*/
+Io* Io::testResult
+(
+    string aNetVersion,
+    int aTick,
+    string aTestResult
+)
+{
+    if( isOk() )
+    {
+        request
+        -> clear()
+        -> setString( "netVersion", aNetVersion )
+        -> setInt( "tick", aTick )
+        -> setString( "testResult", aTestResult )
+        ;
+
+        call( CMD_TEST_RESULT );
+    }
+    return this;
+}
+
+
+
+/*
     Switch net from id and version
 */
 Io* Io::switchNet

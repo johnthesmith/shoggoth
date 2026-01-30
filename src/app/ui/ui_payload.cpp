@@ -594,7 +594,7 @@ void UiPayload::onRightDrag
     const Point3d& aPoint
 )
 {
-    double k = camera -> getGaze().magn() / aScene.getNear();
+    real k = camera -> getGaze().magn() / aScene.getNear();
     Point3d p =
     (
         aScene.getMouseLastWorld() - aScene.getMouseCurrentWorld()
@@ -618,7 +618,7 @@ void UiPayload::onMouseWheel
 //    if( aScene.isKey( KEY_W ))
 //    {
 //        int total = 0;
-//        double sum = 0;
+//        real sum = 0;
 //
 //        limb -> nerveWeightLoop
 //        (
@@ -641,7 +641,7 @@ void UiPayload::onMouseWheel
 //
 //        if( total != 0 )
 //        {
-//            auto avgWeight = (double)sum / total;
+//            auto avgWeight = (real)sum / total;
 //
 //            limb -> nerveWeightLoop
 //            (
@@ -683,7 +683,7 @@ void UiPayload::onMouseWheel
 //                        Layer* aParentLayer,
 //                        int aParentIndex,
 //                        Nerve* aNerve,
-//                        double aWeight,
+//                        real aWeight,
 //                        int aIndexWeight
 //                    )
 //                    {

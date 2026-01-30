@@ -347,7 +347,7 @@ LayerUi* LayerUi::setPosition
 
 LayerUi* LayerUi::setNeuronDrawBox
 (
-    const double a
+    const real a
 )
 {
     neuronDrawBox = a;
@@ -358,7 +358,7 @@ LayerUi* LayerUi::setNeuronDrawBox
 
 LayerUi* LayerUi::setNeuronDrawSize
 (
-    const double a
+    const real a
 )
 {
     neuronDrawSize = a;

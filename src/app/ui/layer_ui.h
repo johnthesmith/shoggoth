@@ -52,9 +52,9 @@ class LayerUi : public Layer
         /* SHow layer cover */
         bool            showLayer               = true;
         /* Neuron size in 3d space */
-        double          neuronDrawBox           = 0.1;
+        real          neuronDrawBox           = 0.1;
         /* Neuron size in scerrn pixels */
-        double          neuronDrawSize          = 6.0;
+        real          neuronDrawSize          = 6.0;
         Point3d         borderSize              = POINT_3D_I * 0.1;
 
         /*
@@ -163,14 +163,14 @@ class LayerUi : public Layer
 
         LayerUi* setNeuronDrawBox
         (
-            const double
+            const real
         );
 
 
 
         LayerUi* setNeuronDrawSize
         (
-            const double
+            const real
         );
 
 

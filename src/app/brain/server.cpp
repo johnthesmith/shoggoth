@@ -124,13 +124,13 @@ void Server::onStartAfter()
         /* Read port */
         auto listenPort = config -> getInt
         (
-            Path{ "tasks",  taskToString( TASK_PROC ), "listen", "port" },
+            Path{ "engine", "server", "listen", "port" },
             11120
         );
 
         auto  readWaitingTimeoutMcs = config -> getInt
         (
-            Path{ "tasks",  taskToString( TASK_PROC ), "listen", "readWaitingTimeoutMcs" },
+            Path{ "engine",  "server", "listen", "readWaitingTimeoutMcs" },
             READ_WAITING_TIMEOUT_MCS
         );
 

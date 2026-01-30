@@ -35,7 +35,7 @@ class EvolutionPayload : public PayloadEngine
         /* Last tick of the net for test stage*/
         long long int lastNetTick   = 0;
 
-        double      lastTestError = 0.0;
+        real      lastTestError = 0.0;
 
         /* Quantity successful tests */
         int         testSuccessCount = 0;
@@ -153,14 +153,16 @@ class EvolutionPayload : public PayloadEngine
         );
 
 
-
         /*
             Mutate net
         */
         EvolutionPayload* commitNet
         (
-            bool, /* Success */
-            double,
-            ParamList* /* Reason */
+            /* Success */
+            bool,
+            /* Current survival error*/
+            real,
+            /* Reason */
+            ParamList*
         );
 };

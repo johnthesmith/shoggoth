@@ -5,7 +5,7 @@
 */
 struct StorageNeuron
 {
-    double value;   /* Value */
-    double error;   /* Error */
+    real value;   /* Value */
+    real error;   /* Error */
 };
 

@@ -83,7 +83,7 @@ class NeuronUi
         */
         NeuronUi* setValue
         (
-            double
+            real
         );
 
 
@@ -91,7 +91,7 @@ class NeuronUi
         /*
             Return neuron screen position
         */
-        double getValue();
+        real getValue();
 
 
 
@@ -100,7 +100,7 @@ class NeuronUi
         */
         NeuronUi* setError
         (
-            double
+            real
         );
 
 
@@ -108,7 +108,7 @@ class NeuronUi
         /*
             Return neuron error
         */
-        double getError();
+        real getError();
 
 
 

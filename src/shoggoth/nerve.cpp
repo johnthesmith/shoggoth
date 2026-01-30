@@ -1,8 +1,10 @@
 #include <cmath>
+#include <cstring> /* для std::memset */
 
 #include "nerve.h"
 
 #include "../../../../lib/sock/rpc_client.h"
+#include "../../../../lib/graph/point3.h"
 
 #include "limb.h"
 #include "layer.h"
@@ -19,7 +21,8 @@ Nerve::Nerve
     Layer*      aParent,        /* Parent layer */
     Layer*      aChild,         /* Child layer */
     NerveType   aNerveType,     /* Type of nerve */
-    BindType    aBindType       /* Bind of nerve */
+    BindType    aBindType,      /* Bind of nerve */
+    Point3i     aWindowSize
 )
 {
     /* Set properties */
@@ -28,10 +31,11 @@ Nerve::Nerve
     child       = aChild;
     nerveType   = aNerveType;
     bindType    = aBindType;
+    size        = aWindowSize;
 
     /* Connect */
     getLog()
-    -> trace( "Layer connecting" )
+    -> trace( "Nerve created" )
     -> prm( "from", parent -> getNameOrId() )
     -> prm( "to", child -> getNameOrId() )
     -> lineEnd();
@@ -42,6 +46,7 @@ Nerve::Nerve
 /*
     Destructor
 */
+
 Nerve::~Nerve()
 {
     purge();
@@ -58,7 +63,8 @@ Nerve* Nerve::create
     Layer*      aParent,    /* Parent layer */
     Layer*      aChild,     /* Child layer */
     NerveType   aNerveType, /* Type of nerve */
-    BindType    aBindType   /* Bind of nerve */
+    BindType    aBindType,  /* Bind of nerve */
+    Point3i     aWindowSize
 )
 {
     return new Nerve
@@ -67,7 +73,8 @@ Nerve* Nerve::create
         aParent,
         aChild,
         aNerveType,
-        aBindType
+        aBindType,
+        aWindowSize
     );
 }
 
@@ -95,6 +102,45 @@ Log* Nerve::getLog()
 
 
 
+/*
+    Set dimations size
+*/
+Nerve* Nerve::setSize
+(
+    const Point3i& a
+)
+{
+    size = a;
+    return this;
+}
+
+
+
+/*
+    Set dimentions size from ParamList object
+*/
+Nerve* Nerve::setSize
+(
+    ParamList* a
+)
+{
+    auto jsonSize = a -> getObject( Path{ "size" });
+    if( jsonSize != NULL )
+    {
+        setSize
+        (
+            Point3i
+            (
+                jsonSize -> getInt( 0 ),
+                jsonSize -> getInt( 1 ),
+                jsonSize -> getInt( 2 )
+            )
+        );
+    }
+    return this;
+}
+
+
 
 /*
     purge memomry buffer for weights
@@ -104,8 +150,23 @@ Nerve* Nerve::purge()
     /* Purge previous weights buffer if exists */
     if( weights != NULL )
     {
+        /* Purge weights */
         delete [] weights;
+        weights = NULL;
         delete [] deltaWeights;
+        deltaWeights = NULL;
+        weightsCount = 0;
+        /* Purge binds */
+        delete [] binds;
+        binds = NULL;
+        bindsCount = 0;
+    }
+
+    /* Purge controls signal if exists */
+    if( controls != NULL )
+    {
+        delete [] controls;
+        controls = NULL;
     }
     return this;
 }
@@ -120,11 +181,12 @@ Nerve* Nerve::fill
     /* Rnd seed */
     Rnd*    aSeed,
     /* MinWeight */
-    double  aMinWeight,
+    real  aMinWeight,
     /* MaxWeight */
-    double  aMaxWeight
+    real  aMaxWeight
 )
 {
+    /* Fill weights */
     if( aMinWeight > aMaxWeight )
     {
         aMinWeight = minWeight;
@@ -135,145 +197,168 @@ Nerve* Nerve::fill
     {
         for( int i = 0; i < weightsCount; i++ )
         {
-            weights[ i ] = aSeed == NULL ? aMinWeight : aSeed -> get( aMinWeight, aMaxWeight );
+            weights[ i ]
+            = aSeed == NULL
+            ? aMinWeight
+            : aSeed -> get( aMinWeight, aMaxWeight );
             deltaWeights[ i ] = 0.0;
         }
     }
-    return this;
-}
 
+    /* Fill binds */
+    auto cp = parent -> getCount();
+    auto cc = child -> getCount();
 
-
-/*
-    Return the parent neuron index by index of weight array
-*/
-int Nerve::getParentByWeightIndex
-(
-    int aIndex
-)
-{
-    int iParent = -1;
-
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-            /*
-                Parent0--0--child0
-                      \    /
-                       2  1
-                        \/
-                        /\
-                       /  \
-                      /    \
-                parent2--3--child2
-            */
-            iParent = aIndex % parent -> getCount();
-        break;
-        case ONE_TO_ONE:
-            /*
-                P0--0--c0
-
-                p2--1--c2
-            */
-            double cp = parent -> getCount();
-            double cc = child -> getCount();
-            double m = max( cp, cc );
-            iParent = ( int ) ( cp  / m * aIndex );
-        break;
-    }
-
-    return iParent;
-}
-
-
-
-/*
-    Return the child neuron index by index of weight array
-*/
-int Nerve::getChildByWeightIndex
-(
-    int aIndex
-)
-{
-    int iChild = -1;
-
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-            iChild = aIndex / parent -> getCount();
-        break;
-        case ONE_TO_ONE:
-            double cp = parent -> getCount();
-            double cc = child -> getCount();
-            double m = max( cp, cc );
-            iChild = ( int ) ( cc / m * aIndex );
-        break;
-    }
-    return iChild;
-}
-
-
-
-/*
-    Return the weights from and to indexes by child index
-*/
-Nerve* Nerve::getWeightsRangeByChildIndex
-(
-    int aIndex, /* index of neuron */
-    int &aFrom, /* index of weights begin for neurn */
-    int &aTo    /* index of weights eend for neuron */
-)
-{
     switch( nerveType )
     {
         case ALL_TO_ALL:
         {
-            auto c = parent-> getCount();
-            aFrom = aIndex * c;
-            aTo = aFrom + c;
+            /*
+                Заполняем каждую связь прямо ссылаясб на массив весов
+                те каждая связь уникальна и обладает своим весом.
+            */
+            for( int i = 0; i < bindsCount; i ++ )
+            {
+                binds[ i ] = i;
+            }
         }
         break;
+
         case ONE_TO_ONE:
-            double cp = parent -> getCount();
-            double cc = child -> getCount();
-            double m = max( cp, cc );
-            aFrom = (int) ceil( aIndex * m / cc );
-            aTo = (int) ceil(( aIndex + 1 ) * m / cc );
+        {
+            /* Reset index of weights */
+            for( int i = 0; i < bindsCount; i ++ )
+            {
+                binds[ i ] = -1;
+            }
+
+            auto parentSize = parent -> getSize();
+            auto childSize = child -> getSize();
+
+            if( cp > cc )
+            {
+                /* Для случая если парентов больше чем потомков */
+                for( int ip = 0; ip < cp; ip ++ )
+                {
+                    auto ic = calcChildPosByParentIndex( ip ).toIndex( childSize );
+                    binds[ ip + ic * cp ] = ip;
+                }
+            }
+            else
+            {
+                /* Для случая если потомков больше чем потомков или столько же */
+                for( int ic = 0; ic < cc; ic ++ )
+                {
+                    int ip = calcParentPosByChildIndex( ic ).toIndex( parentSize );
+                    binds[ ip + ic * cp ] = ic;
+                }
+            }
+        }
+        break;
+
+        case SOME_TO_SOME:
+        {
+            /* Reset index of weights */
+            for( int i = 0; i < bindsCount; i ++ )
+            {
+                binds[ i ] = -1;
+            }
+
+            auto parentSize = getParent() -> getSize();
+            /* Обходим потомков */
+            for( int ic = 0; ic < cc; ic ++ )
+            {
+                /*
+                    Для каждого потомка находим отражение в родителях
+                    нормированием, при этом нейрон будет центром матрицы
+                    весов
+                */
+                auto parentCenter = calcParentPosByChildIndex( ic );
+
+                /* Обходим матрицу весов и находим родителей для каждого веса */
+                for( int iw = 0; iw < weightsCount; iw ++ )
+                {
+                    /* Calc parent pos by weight index */
+                    auto p = parentCenter + Point3i::byIndex( iw, size ) - size / 2;
+
+                    if
+                    (
+                        p.x > -1 && p.x < parentSize.x &&
+                        p.y > -1 && p.y < parentSize.y &&
+                        p.z > -1 && p.z < parentSize.z
+                    )
+                    {
+                        /* В указатели на веса записываем текущий индекс связи */
+                        binds[ p.toIndex( parentSize ) + ic * cp ] = iw;
+                    }
+                }
+            }
+        }
         break;
     }
+
     return this;
 }
 
 
 
 /*
-    Return the weights from and to indexes by parent index
+    Reflect child neuron index to parent neuron position
+
+    P         C
+    6         3
+
+    *         *
+    *
+    O----<----O
+    *
+    *         *
+    *
+
 */
-Nerve* Nerve::getWeightsRangeByParentIndex
-(
-    int aIndex, /* index of parent neuron */
-    int &aFrom, /* index of weights begin for neurn */
-    int &aTo,   /* index of weights eend for neuron */
-    int &aStep  /* step for shift between from and to */
-)
+
+Point3i Nerve::calcParentPosByChildIndex(int aChildIndex)
 {
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-            aFrom = aIndex;
-            aTo = weightsCount - parent-> getCount() + aIndex + 1;
-            aStep = parent -> getCount();
-        break;
-        case ONE_TO_ONE:
-            double cp = parent -> getCount();
-            double cc = child -> getCount();
-            double m = max( cp, cc );
-            aFrom = (int) ceil( aIndex * m / cp );
-            aTo = (int) ceil(( aIndex + 1 ) * m / cp );
-            aStep = 1;
-        break;
-    }
-    return this;
+    auto childPos = getChild()->calcPosByIndex(aChildIndex);
+    auto childSize = getChild()->getSize();
+    auto parentSize = getParent()->getSize();
+
+    Point3i parentPos;
+    parentPos.x = (childPos.x * parentSize.x) / childSize.x;
+    parentPos.y = (childPos.y * parentSize.y) / childSize.y;
+    parentPos.z = (childPos.z * parentSize.z) / childSize.z;
+    return parentPos;
+}
+
+
+
+
+/*
+    Reflect parent neuron index to child neuron position
+
+    P         C
+    6         3
+
+    *         *
+    *
+    O---->----O
+    *
+    *         *
+    *
+
+*/
+Point3i Nerve::calcChildPosByParentIndex( int aParentIndex )
+{
+    auto parentPos = getParent()->calcPosByIndex(aParentIndex);
+    auto parentSize = getParent()->getSize();
+    auto childSize = getChild()->getSize();
+
+    Point3i childPos;
+    childPos.x = (parentPos.x * childSize.x) / parentSize.x;
+    childPos.y = (parentPos.y * childSize.y) / parentSize.y;
+    childPos.z = (parentPos.z * childSize.z) / parentSize.z;
+
+    return childPos;
 }
 
 
@@ -288,7 +373,7 @@ Nerve* Nerve::readFromBuffer
     size_t aSize
 )
 {
-    if( aSize == weightsCount * sizeof( double ) )
+    if( aSize == weightsCount * sizeof( real ) )
     {
         memcpy(( char* )weights, aBuffer, aSize );
     }
@@ -312,7 +397,7 @@ Nerve* Nerve::writeToBuffer
 {
     if( aBuffer == NULL )
     {
-        aSize = sizeof( double ) * weightsCount;
+        aSize = sizeof( real ) * weightsCount;
         aBuffer = new char[ aSize ];
         memcpy( aBuffer, (char*) weights, aSize );
     }
@@ -323,47 +408,6 @@ Nerve* Nerve::writeToBuffer
     return this;
 }
 
-
-
-/*
-    Return weight index in nerve by neurons index
-*/
-int Nerve::getIndexByNeuronsIndex
-(
-    int aIndexNeuronParent,
-    int aIndexNeuronChild
-)
-{
-    int result = -1;
-
-    switch( nerveType )
-    {
-        case ALL_TO_ALL:
-        {
-            int from, to = 0;
-            getWeightsRangeByChildIndex( aIndexNeuronChild, from, to );
-            result = from + aIndexNeuronParent;
-        }
-        break;
-        case ONE_TO_ONE:
-        {
-            int fromChild, toChild = 0;
-            int fromParent, toParent, step = 0;
-            getWeightsRangeByParentIndex( aIndexNeuronParent, fromParent, toParent, step );
-            getWeightsRangeByChildIndex( aIndexNeuronChild, fromChild, toChild );
-            if( fromParent > fromChild && fromParent < toChild )
-            {
-                result = fromParent;
-            }
-            if( fromChild >= fromParent && fromChild < toParent )
-            {
-                result = fromChild;
-            }
-        }
-        break;
-    }
-    return result;
-}
 
 
 
@@ -418,13 +462,13 @@ Nerve* Nerve::loadWeight
         else
         {
             auto size = fileSize( file );
-            if( size != weightsCount * sizeof( double ) )
+            if( size != weightsCount * sizeof( real ) )
             {
                 setResult( "WeightFileSizeChanged" )
                 -> getDetails()
                 -> setString( "file", file )
                 -> setInt( "fileSize", size )
-                -> setInt( "weightSize", weightsCount * sizeof( double ) )
+                -> setInt( "weightSize", weightsCount * sizeof( real ) )
                 ;
             }
             else
@@ -447,7 +491,15 @@ Nerve* Nerve::loadWeight
                     }
                     else
                     {
-                        getLog() -> trace( "Weights loaded" ) -> prm( "file", file );
+                        /* Fill deltaweight with 0 */
+                        std::memset( deltaWeights, 0, size );
+
+                        getLog()
+                        -> trace( "Weights loaded" )
+                        -> prm( "file", file )
+                        -> prm( "from", getChild() -> getId() )
+                        -> prm( "to", getParent() -> getId() )
+                        ;
                     }
                     fclose( h );
                 }
@@ -457,7 +509,6 @@ Nerve* Nerve::loadWeight
 
     return this;
 }
-
 
 
 
@@ -491,7 +542,7 @@ Nerve* Nerve::saveWeight
         }
         else
         {
-            auto writed = fwrite( weights, weightsCount * sizeof( double ), 1, h );
+            auto writed = fwrite( weights, weightsCount * sizeof( real ), 1, h );
             if( writed != 1 )
             {
                 setResult( "SaveError" )
@@ -516,8 +567,11 @@ Nerve* Nerve::extractParentsWeightsBuffer
     size_t  &aSize
 )
 {
-    int from, to = 0;
-    getWeightsRangeByChildIndex( aNeuronIndex, from, to );
+    int from = 0, to = 0;
+// TODO
+// Закоментировано так как метод возможно не нужен используется только
+// для возврата буффера по кнкретному нейрону для отправки на UI
+//  getWeightsRangeByChildIndex( aNeuronIndex, from, to );
     aSize = ( to - from ) * NEURON_WEIGHT_SIZE;
     aBuffer = new char [ aSize ];
     memcpy( aBuffer, weights, aSize );
@@ -537,11 +591,13 @@ Nerve* Nerve::extractChildWeightsBuffer
     size_t  &aSize
 )
 {
-    int from, to, step = 0;
+    int from = 0, to = 0, step = 0;
+// TODO
+// Закоментировано так как метод возможно не нужен используется только
+// для возврата буффера по кнкретному нейрону для отправки на UI
+//    getWeightsRangeByParentIndex( aNeuronIndex, from, to, step );
 
-    getWeightsRangeByParentIndex( aNeuronIndex, from, to, step );
-
-    int count = ceil(( to - from ) / (double) step);
+    int count = ceil(( to - from ) / (real) step);
     aSize = count * NEURON_WEIGHT_SIZE;
 
     auto buffer = new NeuronWeight[ count ];
@@ -553,6 +609,7 @@ Nerve* Nerve::extractChildWeightsBuffer
     aBuffer = (char*) buffer;
     return this;
 }
+
 
 
 /*

@@ -123,7 +123,7 @@ class NetConfig : public ParamList
              /* Type pointer */
              ParamList* pointer,
             /* Interpolation */
-            double
+            real
         );
 
 

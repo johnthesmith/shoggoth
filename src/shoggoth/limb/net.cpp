@@ -1,3 +1,8 @@
+/* for current_path */
+#include <filesystem>
+#include <algorithm>
+#include <iostream>
+
 #include "net.h"
 
 #include "../io.h"
@@ -23,14 +28,13 @@ Net::Net
     /* The net version */
     Task            aTask
 )
-:Limb( aApplication -> getLogManager() )
+:Limb( aApplication -> getLogManager(), aVersion )
 {
     application = aApplication;
     sockManager = aSockManager;
     id          = aId;
 
     /* Set versions */
-    version     = aVersion;
     nextVersion = aVersion;
 
     task        = aTask;
@@ -40,6 +44,8 @@ Net::Net
     rnd = Rnd::create();
 
     mon = Mon::create( getMonFile() );
+
+    db = ShoggothDb::create( getLogManager(), "db.sql" );
 
     config = ParamList::create();
     weightsExchange = WeightsExchange::create();
@@ -52,6 +58,8 @@ Net::Net
 */
 Net::~Net()
 {
+    db -> destroy();
+
     /* Destroy monitoring */
     mon -> destroy();
 
@@ -162,7 +170,7 @@ Net* Net::writeWeights
     (
         "data",
         ( char* ) aNerve -> getWeights(),
-        sizeof(double) * aNerve -> getWeightsCount()
+        sizeof(real) * aNerve -> getWeightsCount()
     );
 
     io
@@ -611,7 +619,9 @@ Net* Net::readNet
     ParamList* aAnswer
 )
 {
-    getLog() -> begin( "Read net config" ) -> lineEnd();
+    getLog()
+    -> begin( "Read net config" )
+    -> lineEnd();
 
     /* Read net */
     Io::create( this, aAnswer )
@@ -626,11 +636,13 @@ Net* Net::readNet
 
 
 
-Net* Net::readNetFromFile
+bool Net::readNetFromFile
 (
     ParamList* aAnswer
 )
 {
+    bool result = false;
+
     /* Buid file for next version */
     string file = getNetConfigFile( getNextVersion() );
 
@@ -639,11 +651,12 @@ Net* Net::readNetFromFile
         auto lastUpdate = (long) getConfig() -> getInt( Path{ "lastUpdate" }, 0 );
         auto aUpdated = checkFileUpdate( file, lastUpdate );
 
-        if( aUpdated )
+        if( aUpdated || isVersionChanged())
         {
             getLog()
             -> begin( "Read net config" )
             -> prm( "file", file )
+            -> prm( "pwd", std::filesystem::current_path() )
             -> lineEnd();
 
             Json::create()
@@ -653,9 +666,11 @@ Net* Net::readNetFromFile
             -> resultTo( this )
             -> destroy();
 
+getLog() -> info( "1") -> lineEnd();
             if( isOk() )
             {
                 aAnswer -> setInt( "lastUpdate", lastUpdate );
+                result = true;
             }
             else
             {
@@ -664,12 +679,13 @@ Net* Net::readNetFromFile
                 -> prm( "message", this -> getMessage())
                 ;
             }
+getLog() -> info("2") -> lineEnd();
 
             getLog() -> end();
         }
     }
 
-    return this;
+    return result;
 
 }
 
@@ -732,7 +748,7 @@ Net* Net::clone
     string aParentNetId,
     string aParentNetVersion,
     string aChildVersion,
-    double aSurvivalErrorAvg,
+    real aSurvivalErrorAvg,
     Rnd* aMutationRnd
 )
 {
@@ -740,7 +756,7 @@ Net* Net::clone
 
     /* Set current id and version for not specified */
     aParentNetId = aParentNetId == "" ? id : aParentNetId;
-    aParentNetVersion = aParentNetVersion == "" ? version : aParentNetVersion;
+    aParentNetVersion = aParentNetVersion == "" ? getVersion() : aParentNetVersion;
 
     /* Define net files */
     string parentNetFile = getNetConfigFile( aParentNetVersion );
@@ -753,6 +769,11 @@ Net* Net::clone
     auto mutateConfig = NetConfig::create();
     mutateConfig -> copyFrom( json -> getParamList());
 
+    ParamList* mutation = NULL;
+
+    /* Unlock weightWriteLock for net */
+    mutateConfig -> setBool( Path{ "processor", "weightWriteLock" }, false );
+
     if( aMutationRnd != NULL )
     {
         /* Mutation */
@@ -761,10 +782,10 @@ Net* Net::clone
         if( mutations != NULL )
         {
             /* calculate sum of rnd of all mutation */
-            double sumRnd = mutations -> calcSum( Path{ "rnd" } );
-            double dice = aMutationRnd -> get( 0.0, sumRnd );
+            real sumRnd = mutations -> calcSum( Path{ "rnd" } );
+            real dice = aMutationRnd -> get( 0.0, sumRnd );
 
-            double prevDice = 0.0;
+            real prevDice = 0.0;
 
             getLog()
             -> trace( "Select mutation" )
@@ -779,20 +800,24 @@ Net* Net::clone
                     this,
                     &dice,
                     &prevDice,
-                    &aMutationRnd
+                    &aMutationRnd,
+                    &mutation
                 ]
                 ( Param* iParam )
                 {
                     if( iParam -> isObject() )
                     {
                         /* Processing mutation */
-                        auto mutation = iParam -> getObject();
+                        auto itemMutation = iParam -> getObject();
+
                         if
                         (
                             dice >= prevDice &&
-                            dice < prevDice + mutation -> getDouble( Path{ "rnd" })
+                            dice < prevDice + itemMutation -> getDouble( Path{ "rnd" })
                         )
                         {
+                            mutation = itemMutation;
+
                             auto operation = mutation -> getString
                             (
                                 Path{ "operation" },
@@ -804,13 +829,20 @@ Net* Net::clone
                             else
                                 mutateChangeParam( mutateConfig, mutation, aMutationRnd );
                         }
-                        prevDice = prevDice + mutation -> getDouble( Path{ "rnd" });
+
+                        prevDice = prevDice + itemMutation -> getDouble( Path{ "rnd" });
                     }
-                    return false;
+                    return mutation != NULL;
                 }
             );
         }
     }
+
+    getDb() -> netStart
+    (
+        aChildVersion,
+        mutation == NULL ? "" : mutation -> toString()
+    );
 
     getLog()
     -> info( "Copy net files" )
@@ -854,8 +886,8 @@ Net* Net::mutateChangeParam
     /* Get path for mutation */
     auto path = mutation -> getPath( Path{ "path" });
     /* Set default mutation path */
-    double mutationValue = 0.0;
-    double mutationValueParent = 0.0;
+    real mutationValue = 0.0;
+    real mutationValueParent = 0.0;
 
     getLog()
     -> trace( "Mutation" )
@@ -1009,7 +1041,13 @@ Net* Net::applyNet
     if( configLayers != NULL )
     {
         /* Set net version from config */
-        setNextVersion( config -> getString( Path{ "version", "current" } ) );
+        setNextVersion( config -> getString( Path{ "version", "current" } ));
+
+        /* Read weights write lock flag */
+        setWeightWriteLock
+        (
+            config -> getBool( Path{ "processor", "weightWriteLock" })
+        );
 
         /* Set rnd seed version from config */
         setRndSeedFromConfig();
@@ -1049,7 +1087,7 @@ Net* Net::applyNet
                     auto layerId = iName;
                     auto layer = createLayer( layerId );
                     loadLayer( layer, iParam );
-                    layer -> setStoragePath( storagePath );
+//                    layer -> setStoragePath( storagePath );
                 }
                 else
                 {
@@ -1066,131 +1104,7 @@ Net* Net::applyNet
 
         getLog() -> end( "" ); /* End of layers load */
 
-        /* Nerves */
-        auto jsonNerves = config -> getObject( Path{ "nerves" });
-
-        if( jsonNerves != NULL )
-        {
-            auto layers = getLayerList();
-            auto nerves = getNerveList();
-
-
-            getLog()
-            -> begin( "Nerves load for task" )
-            -> prm( "task", taskName );
-
-            jsonNerves -> loop
-            (
-                [ this, &layers, &nerves, &taskName ]
-                ( Param* aItem )
-                {
-                    /* Check the json layer */
-                    if( aItem -> isObject() )
-                    {
-                        auto jsonNerve      = aItem -> getObject();
-                        auto idFrom         = jsonNerve -> getString( Path{ "idFrom" });
-                        auto idTo           = jsonNerve -> getString( Path{ "idTo" });
-                        auto bindType       = bindTypeFromString( jsonNerve -> getString( Path{ "bindType" } ));
-                        auto nerveType      = nerveTypeFromString( jsonNerve -> getString( Path{ "nerveType" } ));
-                        auto nerveDelete    = jsonNerve -> getBool( Path{ "delete" });
-
-                        if
-                        (
-                            ! aItem
-                            -> getObject()
-                            -> valueExists( Path{ "uses" }, taskName )
-                        )
-                        {
-                            getLog()
-                            -> trace( "Nerve skiped for the task" )
-                            -> prm( "idFrom", idFrom )
-                            -> prm( "idTo", idTo )
-                            -> lineEnd()
-                            ;
-                        }
-                        else
-                        {
-                            /* Find the layers */
-                            auto from = layers -> getById( idFrom );
-                            auto to = layers -> getById( idTo );
-
-                            if( from != NULL && to != NULL )
-                            {
-                                auto nerve = nerves -> find
-                                (
-                                    idFrom,
-                                    idTo,
-                                    bindType
-                                );
-
-                                if( nerve != NULL )
-                                {
-                                    if
-                                    (
-                                        nerve -> getParent() != from ||
-                                        nerve -> getChild() != to ||
-                                        nerve -> getBindType() != bindType ||
-                                        nerve -> getNerveType() != nerveType ||
-                                        nerveDelete
-                                    )
-                                    {
-                                        deleteNerve( nerve );
-                                        nerve = NULL;
-                                    }
-                                    else
-                                    {
-                                        getLog()
-                                        -> trace( "Nerve exists and stay" )
-                                        -> prm( "idFrom", idFrom )
-                                        -> prm( "idTo", idTo )
-                                        -> lineEnd()
-                                        ;
-                                    }
-                                }
-
-                                if( nerve == NULL && !nerveDelete )
-                                {
-                                    auto minW = jsonNerve -> getDouble( Path{ "minWeight" } , 0 );
-                                    auto maxW = jsonNerve -> getDouble( Path{ "maxWeight" }, 0 );
-                                    auto mulW = config -> getDouble( Path{ "weightMul" }, 1 );
-
-                                    createNerve
-                                    (
-                                        from,
-                                        to,
-                                        nerveType,
-                                        bindType
-                                    )
-                                    -> setMinWeight
-                                    (
-                                        minW * ( minW == maxW ? 1 : mulW )
-                                    )
-                                    -> setMaxWeight
-                                    (
-                                        maxW * ( minW == maxW ? 1 : mulW )
-                                    )
-                                    ;
-                                }
-                            }
-                            else
-                            {
-                                getLog()
-                                -> info( "Layers not found for nerve" )
-                                -> prm( "idFrom", idFrom )
-                                -> prm( "idTo", idTo )
-                                -> lineEnd()
-                                ;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            );
-
-            getLog()
-            -> end();
-
-        } /* End of nerves load */
+        loadNerves( config, taskName );
     }
 
     /* Update last update net moment */
@@ -1198,10 +1112,10 @@ Net* Net::applyNet
 
     getLayerList() -> dump();
 
-    if( version != nextVersion )
+    if( getVersion() != nextVersion )
     {
         /* Set nextVersion in to version */
-        version = nextVersion;
+        setVersion( nextVersion );
 
         /* Drop tick */
         tick = 0;
@@ -1222,7 +1136,7 @@ Net* Net::applyNet
         -> setFile( getMonFile() )
         -> now( Path{ "created" })
         -> setString( Path{ "id" }, id )
-        -> setString( Path{ "version" }, version )
+        -> setString( Path{ "version" }, getVersion() )
         -> flush();
     }
 
@@ -1231,20 +1145,170 @@ Net* Net::applyNet
 
 
 
-Net* Net::setStoragePath
+/*
+    Load nerves from config
+*/
+Net* Net::loadNerves
 (
-    const string a
+    ParamList* aConfig,
+    string aTaskName
 )
 {
-    storagePath = a;
+    /* Nerves */
+    auto jsonNerves = aConfig -> getObject( Path{ "nerves" });
+    if( jsonNerves != NULL )
+    {
+        auto layers = getLayerList();
+        auto nerves = getNerveList();
+
+        getLog()
+        -> begin( "Nerves load for task" )
+        -> prm( "task", aTaskName );
+
+        jsonNerves -> loop
+        (
+            [ this, &layers, &nerves, &aTaskName ]
+            ( Param* aItem )
+            {
+                /* Check the json layer */
+                if( aItem -> isObject() )
+                {
+                    auto jsonNerve = aItem -> getObject();
+
+                    auto fromList = jsonNerve -> getStringVector( Path{ "idFrom" });
+                    auto toList = jsonNerve -> getStringVector( Path{ "idTo" });
+
+                    auto bindType = bindTypeFromString
+                    (
+                        jsonNerve -> getString( Path{ "bindType" } )
+                    );
+                    auto nerveType = nerveTypeFromString
+                    (
+                        jsonNerve -> getString( Path{ "nerveType" } )
+                    );
+                    auto nerveDelete = jsonNerve -> getBool( Path{ "delete" });
+                    auto windowSize = ParamPoint::point3i
+                    (
+                        jsonNerve -> getObject( Path{ "windowSize" } )
+                    );
+
+                    if
+                    (
+                        ! aItem
+                        -> getObject()
+                        -> valueExists( Path{ "uses" }, aTaskName )
+                    )
+                    {
+                        getLog()
+                        -> trace( "Nerve skiped for the task" )
+                        -> prm( "idFrom", implode( fromList, "," ))
+                        -> prm( "idTo", implode( toList, "," ))
+                        -> lineEnd()
+                        ;
+                    }
+                    else
+                    {
+                        /* Cartesian product for form and to */
+                        for( auto& idFrom:fromList )
+                        {
+                            for( auto& idTo:toList )
+                            {
+                                /* Find the layers */
+                                auto from = layers -> getById( idFrom );
+                                auto to = layers -> getById( idTo );
+
+                                if( from != NULL && to != NULL )
+                                {
+                                    auto nerve = nerves -> find
+                                    (
+                                        idFrom,
+                                        idTo,
+                                        bindType
+                                    );
+
+                                    if( nerve != NULL )
+                                    {
+                                        if
+                                        (
+                                            nerve -> getParent() != from ||
+                                            nerve -> getChild() != to ||
+                                            nerve -> getBindType() != bindType ||
+                                            nerve -> getNerveType() != nerveType ||
+                                            nerveDelete
+                                        )
+                                        {
+                                            deleteNerve( nerve );
+                                            nerve = NULL;
+                                        }
+                                        else
+                                        {
+                                            getLog()
+                                            -> trace( "Nerve exists and stay" )
+                                            -> prm( "idFrom", idFrom )
+                                            -> prm( "idTo", idTo )
+                                            -> lineEnd()
+                                            ;
+                                        }
+                                    }
+
+                                    if( nerve == NULL && !nerveDelete )
+                                    {
+                                        auto minW = jsonNerve
+                                        -> getDouble( Path{ "minWeight" } , 0 );
+                                        auto maxW = jsonNerve
+                                        -> getDouble( Path{ "maxWeight" }, 0 );
+                                        auto mulW = config
+                                        -> getDouble( Path{ "weightMul" }, 1 );
+                                        nerve = createNerve
+                                        (
+                                            from,
+                                            to,
+                                            nerveType,
+                                            bindType,
+                                            windowSize
+                                        )
+                                        -> setMinWeight
+                                        (
+                                            minW * ( minW == maxW ? 1 : mulW )
+                                        )
+                                        -> setMaxWeight
+                                        (
+                                            maxW * ( minW == maxW ? 1 : mulW )
+                                        )
+                                        ;
+                                        if( !nerve -> isOk() )
+                                        {
+                                            getLog()
+                                            -> warning( "Nerve error" )
+                                            -> prm( "code", nerve -> getCode() )
+                                            -> lineEnd();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    getLog()
+                                    -> info( "Layers not found for nerve" )
+                                    -> prm( "idFrom", idFrom )
+                                    -> prm( "idTo", idTo )
+                                    -> lineEnd()
+                                    ;
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                return false;
+            }
+        );
+
+        getLog()
+        -> end();
+
+    } /* End of nerves load */
     return this;
-}
-
-
-
-string Net::getStoragePath()
-{
-    return storagePath;
 }
 
 
@@ -1260,12 +1324,10 @@ string Net::getStoragePath()
 */
 string Net::getNetPath
 (
-    string aSubpath,
-    string aId      /* Net id */
+    string aSubpath
 )
 {
-    aId = aId =="" ? id : aId;
-    return getStoragePath() + "/" + aId + ( aSubpath == "" ? "" : "/" + aSubpath );
+    return "./" + aSubpath;
 }
 
 
@@ -1276,16 +1338,16 @@ string Net::getNetPath
 */
 string Net::getNetVersionPath
 (
-    string aSubpath,    /* Subpath */
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Subpath */
+    string aSubpath,
+    /* Specific version */
+    string aVersion
 )
 {
-    aVersion = aVersion == "" ? version : aVersion;
+    aVersion = aVersion == "" ? getVersion() : aVersion;
     return getNetPath
     (
-        "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aId
+        "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath )
     );
 }
 
@@ -1296,11 +1358,11 @@ string Net::getNetVersionPath
 */
 string Net::getNetConfigFile
 (
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
-    return getNetVersionPath( "net.json", aVersion, aId );
+    return getNetVersionPath( "net.json", aVersion );
 }
 
 
@@ -1311,14 +1373,13 @@ string Net::getNetConfigFile
 string Net::getLogPath
 (
     string aSubpath,
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
     return getNetPath
     (
-        "log" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aId
+        "log" + ( aSubpath == "" ? "" : "/" + aSubpath )
     );
 }
 
@@ -1330,14 +1391,13 @@ string Net::getLogPath
 string Net::getMonPath
 (
     string aSubpath,
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
     return getNetPath
     (
-        "mon" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aId
+        "mon" + ( aSubpath == "" ? "" : "/" + aSubpath )
     );
 }
 
@@ -1349,15 +1409,14 @@ string Net::getMonPath
 string Net::getDumpPath
 (
     string aSubpath,
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
     return getNetVersionPath
     (
         "dump" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aVersion,
-        aId
+        aVersion
     );
 }
 
@@ -1369,35 +1428,14 @@ string Net::getDumpPath
 string Net::getNervesPath
 (
     string aSubpath,
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
     return getNetVersionPath
     (
         "nerves" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aVersion,
-        aId
-    );
-}
-
-
-
-/*
-    Return weights dump path
-*/
-string Net::getWeightsPath
-(
-    string aSubpath,
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
-)
-{
-    return getDumpPath
-    (
-        "weights" + ( aSubpath == "" ? "" : "/" + aSubpath ),
-        aVersion,
-        aId
+        aVersion
     );
 }
 
@@ -1408,17 +1446,18 @@ string Net::getWeightsPath
 */
 string Net::getMonFile
 (
-    string aVersion,    /* Specific version */
-    string aId          /* Net id */
+    /* Specific version */
+    string aVersion
 )
 {
     return getNetVersionPath
     (
         "/mon/" + taskToString( task ) + ".json",
-        aVersion,
-        aId
+        aVersion
     );
 }
+
+
 
 
 /******************************************************************************
@@ -1988,16 +2027,6 @@ Net* Net::setId
 
 
 /*
-    Return net version
-*/
-string Net::getVersion()
-{
-    return version;
-}
-
-
-
-/*
     Return parent net version
 */
 string Net::getParentVersion()
@@ -2085,7 +2114,7 @@ string Net::getNextVersion()
 
 bool Net::isVersionChanged()
 {
-    return nextVersion != version;
+    return nextVersion != getVersion();
 }
 
 

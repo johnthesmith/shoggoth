@@ -39,7 +39,7 @@
         "source"                :"SERVER",
         "net"                   :"net/net.json",
         "host"                  :"127.0.0.1",
-        "port"                  :11120,
+        "port"                  :11121,
         "readWaitingTimeoutMcs" :500000,
 
         "methodDump":
@@ -65,43 +65,43 @@
             "list":
             [
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
                 ]
             ]
@@ -122,43 +122,43 @@
             "list":
             [
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0" },
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2" },
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8" },
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9"},
                     { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
                 ]
             ]
@@ -178,43 +178,43 @@
             "list":
             [
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8"},
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ],
                 [
-                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "./patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9" },
                     { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
                 ]
             ]

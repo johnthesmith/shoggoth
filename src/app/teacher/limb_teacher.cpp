@@ -9,7 +9,12 @@ LimbTeacher::LimbTeacher
 (
     Net* aNet /* Net limb object*/
 )
-:Limb( aNet -> getLogManager() )
+:Limb
+(
+    aNet -> getLogManager(),
+    /* Empty version */
+    ""
+)
 {
     net = aNet;
 }

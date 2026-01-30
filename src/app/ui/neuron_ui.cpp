@@ -94,7 +94,7 @@ Point3d NeuronUi::getWorld()
 */
 NeuronUi* NeuronUi::setValue
 (
-    double aValue
+    real aValue
 )
 {
     layer -> setNeuronValue( index, aValue );
@@ -106,7 +106,7 @@ NeuronUi* NeuronUi::setValue
 /*
     Return neuron value
 */
-double NeuronUi::getValue()
+real NeuronUi::getValue()
 {
     return layer -> getNeuronValue( index );
 }
@@ -118,7 +118,7 @@ double NeuronUi::getValue()
 */
 NeuronUi* NeuronUi::setError
 (
-    double aValue
+    real aValue
 )
 {
     layer -> setNeuronError( index, aValue );
@@ -130,7 +130,7 @@ NeuronUi* NeuronUi::setError
 /*
     Return neuron error
 */
-double NeuronUi::getError()
+real NeuronUi::getError()
 {
     return layer -> getNeuronError( index );
 }

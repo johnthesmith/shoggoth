@@ -2,7 +2,7 @@
     "engine":
     {
         "enabled": true,
-        "trap"   : true,
+        "trap"   : false,
 
         "brain":
         {
@@ -18,16 +18,10 @@
         {
             "listen":
             {
-                "port"                  :11120,
+                "port"                  :11121,
                 "readWaitingTimeoutMcs" :1000000
             }
         }
-    },
-
-    "listen":
-    {
-        "port"                  :11120,
-        "readWaitingTimeoutMcs" :1000000
     },
 
     "minWeight"         :0.000001,
@@ -35,7 +29,7 @@
     "maxError"          :10,
     "errorNormalize"    :0.11,
     "minNeuronPerThread":5,
-    "maxThreadCount"    :12,
+    "maxThreadCount"    :3,
 
     "tickWrite"         :0,
     "tickChart"         :100,
@@ -44,33 +38,69 @@
     [
         {
             "enabled"       :false,
-            "file"          :"dump/%stage%_%data%_%layer%%neuron%-%direction%.txt",
-            "stages"        :[ "AFTER_LEARNING" ],
-            "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error" ],
-            "directions"    :[ "PARENT", "CHILD" ],
-            "neurons"       :[ [ 0,0,0 ], [ 1,0,0 ], [2,0,0], [3,0,0] ],
-            "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
-            "dataview"      :"GRAPH",
-            "precision"     :4
-        },
-        {
-            "enabled"       :false,
-            "file"          :"dump/%stage%_%layer%_%data%.txt",
+            "dumptype"      : "LAYER",
+            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%.txt",
             "stages"        :[ "AFTER_FRONT" ],
-            "layers"        :[ "retina", "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command", "test", "test_error", "test_command" ],
-            "directions"    :[ "NONE" ],
+            "layers"        :
+            [
+                "retina",
+                "cortex_1",
+                "cortex_2",
+                "result",
+                "sample",
+                "error",
+                "command"
+            ],
             "data"          :[ "VALUES" ],
-            "dataview"      :"GRAPH",
+            "dataview"      :"DIGIT",
             "precision"     :4
         },
         {
             "enabled"       :false,
-            "file"          :"dump/%stage%_%layer%_%data%.txt",
+            "dumptype"      : "LAYER",
+            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%.txt",
             "stages"        :[ "AFTER_BACK" ],
-            "layers"        :[ "cortex_1", "cortex_2", "result", "sample", "error", "bias", "command", "test", "test_error", "test_command" ],
-            "directions"    :[ "NONE" ],
+            "layers"        :
+            [
+                "cortex_1",
+                "cortex_2",
+                "result",
+                "sample",
+                "error",
+                "bias",
+                "command"
+            ],
             "data"          :[ "ERRORS" ],
-            "dataview"      :"GRAPH",
+            "dataview"      :"DIGIT",
+            "precision"     :4
+        },
+        {
+            "enabled"       :false,
+            "dumptype"      :"NERVE",
+            "file"          :"dump/%dumptype%-%stage%-%data%-%layer-from%-%layer-to%.txt",
+            "stages"        :[ "AFTER_LEARNING" ],
+            "nerves"        :
+            [
+                [ "retina", "cortex_1" ],
+                [ "cortex_1", "cortex_2" ],
+                [ "cortex_2", "result" ]
+            ],
+            "data"          :[ "WEIGHTS" ],
+            "dataview"      :"DIGIT",
+            "precision"     :4
+        },
+        {
+            "enabled"       :false,
+            "dumptype"      :"NEURON",
+            "file"          :"dump/%dumptype%-%stage%-%data%-%layer-from%-%layer-to%-%neuron%.txt",
+            "stages"        :[ "AFTER_LEARNING" ],
+            "neurons"       :
+            {
+                "cortex_1": [ [ 0,0,0 ], [ 1,0,0 ] ],
+                "cortex_2": [ [ 0,0,0 ], [ 1,0,0 ] ]
+            },
+            "data"          :[ "WEIGHTS", "ERRORS", "VALUES" ],
+            "dataview"      :"DIGIT",
             "precision"     :4
         },
         {

@@ -229,52 +229,70 @@ void EvolutionPayload::onEngineLoop
                     }
                     else
                     {
-                        auto cfgMaxTick = modeConfig -> getInt( Path{ "maxTick" });
-                        /* Loop for the each layer of the net mode configuration */
-                        modeConfig -> objectsLoop
-                        (
-                            Path{ "layers" },
-                            [ this, &netMode, &cfgMaxTick ]
+
+                        bool stopWithNan = false;
+                        if( netMode == NET_MODE_LEARN )
+                        {
+                            net -> getLayerList() -> loop
                             (
-                                ParamList* cfg,
-                                string layerId
-                            )
-                            {
-                                auto layer = net -> getLayerList()
-                                -> getById( layerId );
-
-                                if( layer == NULL )
+                                [ &stopWithNan ]
+                                ( void* item )
                                 {
-                                    setResult( "UnknownLayer" )
-                                    -> getDetails()
-                                    -> setString( Path{ "path" }, layerId );
+                                    auto layer = (Layer*) item;
+                                    auto sumVal = layer -> calcSumValue();
+                                    stopWithNan = isnan( sumVal ) || isinf( sumVal );
+                                    return  stopWithNan;
                                 }
-                                else
-                                {
-                                    /* Decision making */
-                                    switch( netMode )
-                                    {
-                                        case NET_MODE_WORK:
-                                        case NET_MODE_UNKNOWN:
-                                        break;
-                                        case NET_MODE_LEARN:
-                                        {
-                                            if( isnan( layer -> calcSumValue()) )
-                                            {
-                                                /* Checking the NAN criterion */
-                                                commitNet
-                                                (
-                                                    false,
-                                                    1e10,
-                                                    ParamList::shared().get()
-                                                    -> setString( "type", "EVOLUTION_NAN" )
-                                                );
+                            );
+                        }
 
-                                                getLog() -> info( "Result" )
-                                                -> prm( "layer", layer -> getId() )
-                                                -> prm( "reason", "is_nan" );
-                                            }
-                                            else
+                        if( stopWithNan )
+                        {
+                            /* Checking the NAN criterion */
+                            commitNet
+                            (
+                                false,
+                                net -> getConfig() -> getDouble
+                                (
+                                    Path{ "survival", "error", "avg" }
+                                ),
+                                ParamList::shared().get()
+                                -> setString( "type", "EVOLUTION_NAN" )
+                            );
+                            getLog()
+                            -> info( "Result" )
+                            -> prm( "reason", "is_nan" );
+                        }
+                        else
+                        {
+                            auto cfgMaxTick = modeConfig -> getInt( Path{ "maxTick" });
+                            /* Loop for the each layer of the net mode configuration */
+                            modeConfig -> objectsLoop
+                            (
+                                Path{ "layers" },
+                                [ this, &netMode, &cfgMaxTick ]
+                                (
+                                    ParamList* cfg,
+                                    string layerId
+                                )
+                                {
+                                    auto layer = net -> getLayerList()
+                                    -> getById( layerId );
+
+                                    if( layer == NULL )
+                                    {
+                                        setResult( "UnknownLayer" )
+                                        -> getDetails()
+                                        -> setString( Path{ "path" }, layerId );
+                                    }
+                                    else
+                                    {
+                                        /* Decision making */
+                                        switch( netMode )
+                                        {
+                                            case NET_MODE_WORK:
+                                            case NET_MODE_UNKNOWN: break;
+                                            case NET_MODE_LEARN:
                                             {
                                                 /* Let config params */
                                                 auto cfgTickSmoth = cfg -> getDouble( Path{ "tickSmoth" });
@@ -327,17 +345,17 @@ void EvolutionPayload::onEngineLoop
                                                 /* Destroy the smoth */
                                                 smoth -> destroy();
                                             }
-                                        }
-                                        break;
+                                            break;
 
-                                        case NET_MODE_TEST:
-                                            testStage( layer, cfg );
-                                        break;
-                                    }   /*  End of net mode case */
-                                } /* Unknown layer */
-                                return false;
-                            }
-                        ); /* Loop of layers in config mode */
+                                            case NET_MODE_TEST:
+                                                testStage( layer, cfg );
+                                            break;
+                                        }   /*  End of net mode case */
+                                    } /* Unknown layer */
+                                    return false;
+                                }
+                            ); /* Loop of layers in config mode */
+                        } /* non stop nan */
                     }
                 }
             } /* Net mode is not unknown */
@@ -410,7 +428,10 @@ EvolutionPayload* EvolutionPayload::testStage
             commitNet
             (
                 false,
-                1e10,
+                net -> getConfig() -> getDouble
+                (
+                    Path{ "survival", "error", "avg" }
+                ),
                 ParamList::shared().get()
                 -> setString( "type", "EVOLUTION_TEST_NAN" )
             );
@@ -424,8 +445,8 @@ EvolutionPayload* EvolutionPayload::testStage
                 Path{ "survival", "error", "avg" }
             );
 
-            double currentSurvivalErrorAvg = chart -> calcAvgY();
-            double success = parentSurvivalErrorAvg > currentSurvivalErrorAvg;
+            real currentSurvivalErrorAvg = chart -> calcAvgY();
+            real success = parentSurvivalErrorAvg > currentSurvivalErrorAvg;
 
             /* Quality test */
             commitNet
@@ -516,7 +537,7 @@ TODO
 EvolutionPayload* EvolutionPayload::commitNet
 (
     bool aSuccess,
-    double aSurvivalErrorAvg,
+    real aSurvivalErrorAvg,
     ParamList* aReason
 )
 {

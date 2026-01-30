@@ -52,7 +52,7 @@ TeacherApplication* TeacherApplication::run()
 
     prepareConfiguration();
 
-    TeacherPayload::create( this, "teacher", getNetId(), getNetVersion() )
+    TeacherPayload::create( this, "teacher", "", getNetVersion() )
     -> start()
     -> destroy();
 

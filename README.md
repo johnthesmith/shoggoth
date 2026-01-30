@@ -36,9 +36,16 @@ sudo apt install -y \
     clang \
     libglfw3 libglfw3-dev libglu1-mesa-dev \
     libglew-dev \
-    graphicsmagick-libmagick-dev-compat \
-    upx
+    graphicsmagick-libmagick-dev-compat
 ```
+2. For arch
+```
+sudo pacman -S \
+    clang \
+    graphicsmagick \
+    glfw-x11 glew mesa
+```
+
 
 2. You need to clone following projects:
 ```

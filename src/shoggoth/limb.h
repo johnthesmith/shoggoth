@@ -28,7 +28,7 @@
 //        Layer*, /* Layer with parent neurons */
 //        int,    /* Neuron index*/
 //        Nerve*, /* Nerve */
-//        double, /* Weight of bind */
+//        real, /* Weight of bind */
 //        int     /* return weight index */
 //    )
 //>
@@ -47,7 +47,7 @@
 //        Layer*, /* return layer with children neurons */
 //        int,    /* return child neuron index*/
 //        Nerve*, /* return nerve */
-//        double, /* return weight of bind */
+//        real, /* return weight of bind */
 //        int     /* return weight index */
 //    )
 //>
@@ -66,7 +66,7 @@ class Limb : public Result
         NerveList*      nerves      = NULL;     /* List of nerves*/
 
         /*
-            Synchronization states
+            wSynchronization states
         */
         /* Moment of reconfuguration */
         long long       lastUpdate = 0;
@@ -74,6 +74,8 @@ class Limb : public Result
         long long       lastChangeStructure = 0;
         /* Moment last values changed */
         long long       lastChangeValues = 0;
+        /* Current net version */
+        string          version         = "";
 
     public:
 
@@ -82,7 +84,9 @@ class Limb : public Result
         */
         Limb
         (
-            LogManager*
+            LogManager*,
+            /* version */
+            string
         );
 
 
@@ -99,13 +103,15 @@ class Limb : public Result
         */
         static Limb* create
         (
-            LogManager* /* The log object*/
+            /* The log object*/
+            LogManager*,
+            /* Version */
+            string
         );
 
 
 
-        /*
-            Destroy
+        /* Destroy
         */
         void destroy();
 
@@ -140,7 +146,8 @@ class Limb : public Result
         */
         Limb* deleteLayer
         (
-            string  /* Id of layer */
+            /* Id of layer */
+            string
         );
 
 
@@ -149,10 +156,13 @@ class Limb : public Result
         */
         Nerve* createNerve
         (
-            Layer*,         /* Layer source */
-            Layer*,         /* Layer destination */
-            NerveType,
-            BindType
+            /* Layer source */
+            Layer*,
+            /* Layer destination */
+            Layer*,
+            NerveType,      /* */
+            BindType,
+            Point3i
         );
 
 
@@ -175,13 +185,18 @@ class Limb : public Result
 
         /*
             Copy limb property
+            Return true if stracture was different and copied
         */
-        Limb* copyTo
+        bool copyTo
         (
-            Limb*,  /* Destination */
-            bool,   /* Need structure synchronize if structuires not equals */
-            bool,   /* Skip synchronization if this was locked */
-            bool    /* Skip synchronization if limb was locked */
+            /* Destination */
+            Limb*,
+            /* Need structure synchronize if structuires not equals */
+            bool,
+            /* Skip synchronization if this was locked */
+            bool,
+            /* Skip synchronization if limb was locked */
+            bool
         );
 
 
@@ -212,26 +227,27 @@ class Limb : public Result
 
 
 
-
         /*
             Loop for each parents neuron of this neuron
         */
         template <typename Func> Limb* parentsLoop
         (
-            Layer*          aLayer,     /* Layer */
-            int             aIndex,     /* Neuron index */
+            /* Child layer */
+            Layer*          aLayer,
+            /* Child neuron index */
+            int             aChildIndex,
+            /* */
             BindType        aBindType,
             Func            aCallback
         )
         {
-            /* Loop by nerves */
-            getNerveList() -> loop
-            (
-                [ &aLayer, &aCallback, &aIndex, &aBindType ]
+             /* Loop by nerves */
+             getNerveList() -> loop
+             (
+                [ &aLayer, &aCallback, &aChildIndex, &aBindType ]
                 ( void* aNerve )
                 {
                     auto iNerve = ( Nerve* ) aNerve;
-
                     if
                     (
                         iNerve -> getChild() == aLayer &&
@@ -241,23 +257,28 @@ class Limb : public Result
                         )
                     )
                     {
-                        int from = 0;
-                        int to = 0;
-                        iNerve -> getWeightsRangeByChildIndex
-                        (
-                            aIndex, from, to
-                        );
+                        auto parentsCount = iNerve -> getParent() -> getCount();
                         /* Loop by weights */
-                        for( int i = from; i < to;  i++ )
+                        for
+                        (
+                            int parentIndex = 0;
+                            parentIndex < parentsCount;
+                            parentIndex++
+                        )
                         {
-                            aCallback
-                            (
-                                iNerve -> getParent(),
-                                iNerve -> getParentByWeightIndex( i ),
-                                iNerve,
-                                iNerve -> getWeight( i ),
-                                i
-                            );
+                            auto weightIndex = iNerve
+                            -> getWeightIndex( parentIndex, aChildIndex );
+                            if( weightIndex >= 0 )
+                            {
+                                aCallback
+                                (
+                                    iNerve -> getParent(),
+                                    parentIndex,
+                                    iNerve,
+                                    iNerve -> getWeight( weightIndex ),
+                                    weightIndex
+                                );
+                            }
                         }
                     }
                     return false;
@@ -274,7 +295,8 @@ class Limb : public Result
         template <typename Func> Limb* childrenLoop
         (
             Layer*          aLayer,
-            int             aIndex,
+            /* Parent index */
+            int             aParentIndex,
             BindType        aBindType,
             Func            aCallback
         )
@@ -282,7 +304,7 @@ class Limb : public Result
             /* Loop by nerves */
             getNerveList() -> loop
             (
-                [ &aLayer, &aCallback, &aIndex, &aBindType ]
+                [ &aLayer, &aCallback, &aParentIndex, &aBindType ]
                 ( void* aNerve )
                 {
                     auto iNerve = ( Nerve* ) aNerve;
@@ -295,26 +317,29 @@ class Limb : public Result
                         )
                     )
                     {
-                        int from = 0;
-                        int to = 0;
-                        int step = 0;
-
-                        iNerve -> getWeightsRangeByParentIndex
-                        (
-                            aIndex, from, to, step
-                        );
-
+                        auto childrenCount = iNerve -> getChild() -> getCount();
                         /* Loop by weights */
-                        for( int i = from; i < to;  i += step )
+                        for
+                        (
+                            int childIndex = 0;
+                            childIndex < childrenCount;
+                            childIndex++
+                        )
                         {
-                            aCallback
-                            (
-                                iNerve -> getChild(),
-                                iNerve -> getChildByWeightIndex( i ),
-                                iNerve,
-                                iNerve -> getWeight( i ),
-                                i
-                            );
+                            auto weightIndex = iNerve
+                            -> getWeightIndex( aParentIndex, childIndex );
+
+                            if( weightIndex >= 0 )
+                            {
+                                aCallback
+                                (
+                                    iNerve -> getChild(),
+                                    childIndex,
+                                    iNerve,
+                                    iNerve -> getWeight( weightIndex ),
+                                    weightIndex
+                                );
+                            }
                         }
                     }
                     return false;
@@ -322,6 +347,7 @@ class Limb : public Result
             );
             return this;
         };
+
 
 
         /**********************************************************************
@@ -383,25 +409,33 @@ class Limb : public Result
 
 
 
+        /*
+            Dump value in to file
+        */
         Limb* dumpValue
         (
+            /* File stream */
             ofstream&,
+            /**/
             Data&,
-            double,
+            real,
             Layer*,
             int
         );
 
 
 
-        /*
-            Dump weights from neuron of the layer
-        */
-        Limb* dump
+        string getDumpFile
         (
-            /* Store path */
+            /* File name masque цшер %% */
             string,
+            /* Number of tick */
+            long long int,
+            /* Stage */
+            CalcStage,
             /* The layer */
+            Layer*,
+            /* Neuron Index in the layer */
             Layer*,
             /* Neuron Index in the layer */
             Point3i,
@@ -410,9 +444,7 @@ class Limb : public Result
             /* Data type */
             Data,
             /* Data view*/
-            Dataview,
-            /* Tick number */
-            long long int
+            Dataview
         );
 
 
@@ -420,20 +452,56 @@ class Limb : public Result
         /*
             Dump weights from neuron of the layer
         */
-        Limb* dump
+        Limb* dumpLayer
         (
             /* Store path */
             string,
-            /* Data type */
-            CalcStage,
             /* The layer */
             Layer*,
             /* Data type */
             Data,
             /* Data view*/
             Dataview,
-            /* Tick number */
-            long long int,
+            /* Tick */
+            int,
+            /* Colored */
+            bool = true
+        );
+
+
+
+        /*
+            Dump weights from neuron of the layer
+        */
+        Limb* dumpNeuron
+        (
+            /* File masque */
+            string          aFile,
+            /* The layer */
+            Layer*          aLayer,
+            /* Neuron Index in the layer */
+            Point3i         aNeuronPos,
+            /* Data type */
+            Data            aData,
+            /* Data view*/
+            Dataview        aDataview
+        );
+
+
+
+        /*
+            Dump nerve information in to the file
+        */
+        Limb* dumpNerve
+        (
+            /* Store path */
+            string,
+            /* The layer */
+            Nerve*,
+            /* Data type */
+            Data,
+            /* Data view*/
+            Dataview,
             /* Colored */
             bool = true
         );
@@ -464,4 +532,116 @@ class Limb : public Result
         {
             return lastChangeValues;
         }
+
+
+
+        /*
+            Return net version
+        */
+        Limb* setVersion
+        (
+            string a
+        )
+        {
+            version = a;
+            return this;
+        }
+
+
+
+        /*
+            Return net version
+        */
+        string getVersion()
+        {
+            return version;
+        }
+
+
 };
+
+
+
+
+
+
+
+
+
+//Arguments:
+//
+//int wParent
+//int hParent
+//int dParent
+//
+//int wChild
+//int hChild
+//int dChild
+//
+//int iChild
+//
+//Processing:
+//
+//int xChild = iChild % wChild
+//int yChild = ( iChild / wChild ) % hChild
+//int zChild = iChild / ( wChild * hChild )
+//
+//float wk = (float)wParent / wChild
+//float hk = (float)hParent / hChild
+//float dk = (float)dParent / dChild
+//
+//int xParent = wk * xChild
+//int yParent = hk * yChild
+//int zParent = dk * zChild
+//
+//
+//int iParent = xParent + yParent * wParent + zParent * wParent * hParent
+//
+//
+//
+//iParent = (int)((iChild % wChild) * wk)
+//        + (int)(((iChild / wChild) % hChild) * hk) * wParent
+//        + (int)((iChild / (wChild * hChild)) * dk) * wParent * hParent
+//
+//
+//for (int iChild = 0; iChild < this->count; iChild++)
+//{
+//    int iParent = (int)((iChild % wChild) * wk)
+//                + (int)(((iChild / wChild) % hChild) * hk) * wParent
+//                + (int)((iChild / (wChild*hChild)) * dk) * wParent * hParent;
+//
+//    // обработка iParent
+//}
+//
+//
+//
+//
+//
+//for (int iChild = 0; iChild < this->count; iChild++)
+//{
+//    int xParent = (int)((iChild % wChild) * wk);
+//    int yParent = (int)(((iChild / wChild) % hChild) * hk);
+//    int zParent = (int)((iChild / (wChild*hChild)) * dk);
+//
+//    for (int iWin = 0; iWin < wWin*hWin*dWin; iWin++)
+//    {
+//        int xWin = iWin % wWin;
+//        int yWin = (iWin / wWin) % hWin;
+//        int zWin = iWin / (wWin*hWin);
+//
+//        int dx = xWin - wWin/2;
+//        int dy = yWin - hWin/2;
+//        int dz = zWin - dWin/2;
+//
+//        int xi = xParent + dx;
+//        int yi = yParent + dy;
+//        int zi = zParent + dz;
+//
+//        // iParentShifted = xi + yi*wParent + zi*wParent*hParent
+//        // обработка xi, yi, zi
+//    }
+//}
+
+
+
+

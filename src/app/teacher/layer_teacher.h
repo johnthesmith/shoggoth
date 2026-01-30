@@ -85,10 +85,10 @@ class LayerTeacher : public Layer
         LayerTeacher* imageToValue
         (
             string,     /* File name */
-            double,     /* Rotate */
-            double,     /* ZoomMin */
-            double,     /* ZoomMax */
-            double,     /* Shift */
+            real,     /* Rotate */
+            real,     /* ZoomMin */
+            real,     /* ZoomMax */
+            real,     /* Shift */
             Result*,
             Rnd*
         );
@@ -111,9 +111,9 @@ class LayerTeacher : public Layer
             /* Random seed */
             Rnd*,
             /* Min value */
-            double,
+            real,
             /* Max value */
-            double
+            real
         );
 
 

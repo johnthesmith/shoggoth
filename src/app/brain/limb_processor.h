@@ -64,8 +64,6 @@ class LimbProcessor : public Limb
         /*
             Calculation state
         */
-        /* Automatic learning mode, indicates learning stage */
-        bool            learning        = false;
         /* Terminated status, stop the calculation and dump works */
         bool            terminated      = false;
 
@@ -73,13 +71,13 @@ class LimbProcessor : public Limb
             Settings
         */
         /* 0.0 - learning disable, max 0.1 recomended */
-        double  learningSpeed           = 0.001;
+        real  learningSpeed           = 0.001;
         /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
-        double  minWeight               = 0.0001;
+        real  minWeight               = 0.0001;
         /* Maxumum weight */
-        double  maxWeight               = 1000;
+        real  maxWeight               = 1000;
         /* Maxumum error, have to less then maxWeight */
-        double  maxError                = 100;
+        real  maxError                = 100;
 
         /* Count of threads */
         int     maxThreadCount          = 1;
@@ -204,18 +202,11 @@ class LimbProcessor : public Limb
 
 
 
-        /*
-            Get learning mode
-        */
-        bool getLearningMode();
-
-
-
 
         /*
             Get learning speed
         */
-        double getLearningSpeed();
+        real getLearningSpeed();
 
 
 
@@ -224,7 +215,7 @@ class LimbProcessor : public Limb
         */
         LimbProcessor* setLearningSpeed
         (
-            double /* Value */
+            real /* Value */
         );
 
 
@@ -259,7 +250,7 @@ class LimbProcessor : public Limb
         /*
             Get wakeup weight k
         */
-        double getMinWeight();
+        real getMinWeight();
 
 
 
@@ -268,7 +259,7 @@ class LimbProcessor : public Limb
         */
         LimbProcessor* setMinWeight
         (
-            double /* Value */
+            real /* Value */
         );
 
 
@@ -276,7 +267,7 @@ class LimbProcessor : public Limb
         /*
             Get max weight
         */
-        double getMaxWeight();
+        real getMaxWeight();
 
 
 
@@ -285,7 +276,7 @@ class LimbProcessor : public Limb
         */
         LimbProcessor* setMaxWeight
         (
-            double /* Value */
+            real /* Value */
         );
 
 
@@ -293,7 +284,7 @@ class LimbProcessor : public Limb
         /*
             Get max eror
         */
-        double getMaxError();
+        real getMaxError();
 
 
 
@@ -302,7 +293,7 @@ class LimbProcessor : public Limb
         */
         LimbProcessor* setMaxError
         (
-            double /* Value */
+            real /* Value */
         );
 
 
@@ -380,7 +371,7 @@ class LimbProcessor : public Limb
         {
             return floor
             (
-                (double) aLayer -> getCount() * (double) aThreadNumber / (double) aThreadCount
+                (real) aLayer -> getCount() * (real) aThreadNumber / (real) aThreadCount
             );
         }
 
@@ -443,8 +434,46 @@ class LimbProcessor : public Limb
 
 
 
+        /*
+            Write debug monitoring
+        */
         LimbProcessor* calcDebugDump
         (
             CalcStage aStage
+        );
+
+
+
+        LimbProcessor* weightsRead
+        (
+            /* Path folder for layers */
+            string
+        );
+
+
+
+        LimbProcessor* weightsWrite
+        (
+            /* Path folder for layers */
+            string
+        );
+
+
+
+        /*
+            Dump layers
+        */
+        LimbProcessor* dumptypeLayerProcessing
+        (
+            /* file name */
+            string,
+            /* List of layers id*/
+            ParamList*,
+            /* Dataview ( how ) */
+            Dataview,
+            /* Data ( what ) */
+            Data,
+            /* Tick */
+            int
         );
 };

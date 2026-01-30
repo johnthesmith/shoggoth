@@ -1,5 +1,6 @@
 # Core libraries
 OBJECT_PATH/utils.o
+OBJECT_PATH/real.o
 OBJECT_PATH/result.o
 OBJECT_PATH/log_manager.o
 OBJECT_PATH/log.o
@@ -43,6 +44,9 @@ OBJECT_PATH/rpc_server.o
 
 # Graph and math
 OBJECT_PATH/point3i.o
+OBJECT_PATH/point4d.o
+OBJECT_PATH/point3.o
+OBJECT_PATH/matrix.o
 OBJECT_PATH/param_point.o
 
 # Shoggoth
@@ -58,6 +62,7 @@ OBJECT_PATH/layer_list.o
 OBJECT_PATH/layer.o
 OBJECT_PATH/shoggoth_consts.o
 OBJECT_PATH/shoggoth_application.o
+OBJECT_PATH/shoggoth_db.o
 
 # Teacher
 OBJECT_PATH/brain.o

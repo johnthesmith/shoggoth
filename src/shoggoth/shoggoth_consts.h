@@ -9,17 +9,14 @@
 
 
 
-using namespace std;
-
-
-
 /*
     Type of nerves
 */
 enum NerveType
 {
     ALL_TO_ALL,
-    ONE_TO_ONE
+    ONE_TO_ONE,
+    SOME_TO_SOME
 };
 
 
@@ -47,7 +44,7 @@ enum Action
 /*
     List of actions
 */
-typedef vector <Action> Actions;
+typedef std::vector <Action> Actions;
 
 
 
@@ -83,7 +80,9 @@ enum Data
     /* Neuron values */
     DATA_VALUES,
     /* Neuron errors */
-    DATA_ERRORS
+    DATA_ERRORS,
+    /* Weights index */
+    DATA_INDEX_WEIGHTS
 };
 
 
@@ -104,7 +103,17 @@ enum Dataview
 
 
 
-
+/*
+    Dump types
+*/
+enum Dumptype
+{
+    /* Unknown out type */
+    DUMP_TYPE_UNKNOWN,
+    DUMP_TYPE_LAYER,
+    DUMP_TYPE_NERVE,
+    DUMP_TYPE_NEURON
+};
 
 
 
@@ -195,7 +204,9 @@ enum Command
     /* Request and return net mode from server */
     CMD_GET_NET_MODE,
     /* Set net mode for server */
-    CMD_SET_NET_MODE
+    CMD_SET_NET_MODE,
+    /* Clients (teacher) sent test result */
+    CMD_TEST_RESULT
 };
 
 
@@ -248,7 +259,12 @@ enum BindType
     /* Additive bind*/
     BT_ADD,
     /* Multiplexor bind */
-    BT_MUL
+    BT_MUL,
+    /*
+        Maximizator bind
+        hi priority befor BT_ALL BT_MUL in the calculation
+    */
+    BT_MAX
 };
 
 
@@ -256,10 +272,27 @@ enum BindType
 /*
     Convert command to string
 */
-std::string actionToString
+inline std::string actionToString
 (
-    Action
-);
+    Action a
+)
+{
+    switch( a )
+    {
+        default:
+        case ACTION_UNKNOWN     : return "ACTION_UNKNOWN";
+        case READ_VALUES        : return "READ_VALUES";
+        case WRITE_VALUES       : return "WRITE_VALUES";
+        case READ_ERRORS        : return "READ_ERRORS";
+        case WRITE_ERRORS       : return "WRITE_ERRORS";
+        case SYNC_RESET         : return "SYNC_RESET";
+        case READ_STAT_ERROR    : return "READ_STAT_ERROR";
+        case READ_STAT_ERRORS_BEFORE_CHANGE:
+            return "READ_STAT_ERRORS_BEFORE_CHANGE";
+        case READ_STAT_VALUE    : return "READ_STAT_VALUE";
+        case READ_STAT_TICK     : return "READ_STAT_TICK";
+    }
+}
 
 
 
@@ -319,28 +352,9 @@ std::string calcStageToString
 */
 CalcStage calcStageFromString
 (
-    string
+    std::string
 );
 
-
-
-/*
-    Convert string to neuron bind type
-*/
-BindType bindTypeFromString
-(
-    string
-);
-
-
-
-/*
-    Convert neuron bind type to string
-*/
-string bindTypeToString
-(
-    BindType
-);
 
 
 
@@ -349,14 +363,14 @@ string bindTypeToString
 */
 ErrorCalc errorCalcFromString
 (
-    string
+    std::string
 );
 
 
 /*
     Converts error calculation to string
 */
-string errorCalcToString
+std::string errorCalcToString
 (
     ErrorCalc
 );
@@ -368,7 +382,7 @@ string errorCalcToString
 */
 WeightCalc weightCalcFromString
 (
-    string a
+    std::string a
 );
 
 
@@ -376,7 +390,7 @@ WeightCalc weightCalcFromString
 /*
     Converts error calculation to string
 */
-string weightCalcToString
+std::string weightCalcToString
 (
     WeightCalc
 );
@@ -385,12 +399,12 @@ string weightCalcToString
 
 NerveType nerveTypeFromString
 (
-    string
+    std::string
 );
 
 
 
-string nerveTypeToString
+std::string nerveTypeToString
 (
     NerveType
 );
@@ -402,7 +416,7 @@ string nerveTypeToString
 */
 Data dataFromString
 (
-    string
+    std::string
 );
 
 
@@ -410,7 +424,7 @@ Data dataFromString
 /*
     Convert datatype to string
 */
-string dataToString
+std::string dataToString
 (
     Data
 );
@@ -422,7 +436,7 @@ string dataToString
 */
 Direction directionFromString
 (
-    string
+    std::string
 );
 
 
@@ -430,7 +444,7 @@ Direction directionFromString
 /*
     Convert direction to string
 */
-string directionToString
+std::string directionToString
 (
     Direction
 );
@@ -443,7 +457,7 @@ string directionToString
 Dataview dataviewFromString
 (
     /* String argument for conversion */
-    const string,
+    const std::string,
     /* Defaule value */
     Dataview = DATAVIEW_UNKNOWN
 );
@@ -453,7 +467,7 @@ Dataview dataviewFromString
 /*
     Convert dataview to string
 */
-string dataviewToString
+std::string dataviewToString
 (
     Dataview
 );
@@ -466,7 +480,7 @@ string dataviewToString
 NetMode netModeFromString
 (
     /* String argument for conversion */
-    string,
+    std::string,
     /* Defaule value */
     NetMode = NET_MODE_UNKNOWN
 );
@@ -476,7 +490,89 @@ NetMode netModeFromString
 /*
     Convert Dataview to string
 */
-string netModeToString
+inline std::string netModeToString
 (
-    NetMode
-);
+    NetMode a
+)
+{
+    switch( a )
+    {
+        default:
+        case NET_MODE_UNKNOWN   : return "MODE_UNKNOWN";
+        case NET_MODE_LEARN     : return "MODE_LEARN";
+        case NET_MODE_TEST      : return "MODE_TEST";
+        case NET_MODE_WORK      : return "MODE_WORK";
+    };
+}
+
+
+
+/*
+    Converts string to bind type
+*/
+inline BindType bindTypeFromString
+(
+    std::string a
+)
+{
+    if( a == "MUL" ) return BT_MUL;
+    if( a == "ADD" ) return BT_ADD;
+    if( a == "MAX" ) return BT_MAX;
+    return BT_ADD;
+}
+
+
+
+/*
+    Converts bind type to string
+*/
+inline std::string bindTypeToString
+(
+    BindType a
+)
+{
+    switch( a )
+    {
+        default:
+        case BT_ADD : return "ADD";
+        case BT_MUL : return "MUL";
+        case BT_MAX : return "MAX";
+    };
+}
+
+
+
+/*
+    Convert type of dump from string
+*/
+inline Dumptype dumptypeFromString
+(
+    std::string a
+)
+{
+    if( a == "NERVE" ) return DUMP_TYPE_NERVE;
+    if( a == "LAYER" ) return DUMP_TYPE_LAYER;
+    if( a == "NEURON" ) return DUMP_TYPE_NEURON;
+    return DUMP_TYPE_UNKNOWN;
+}
+
+
+
+/*
+    Convert type of dump from string
+*/
+inline std::string dumptypeToString
+(
+    Dumptype a
+)
+{
+    switch( a )
+    {
+        default:
+        case DUMP_TYPE_NERVE   : return "NERVE";
+        case DUMP_TYPE_LAYER   : return "LAYER";
+        case DUMP_TYPE_NEURON  : return "NEURON";
+        case DUMP_TYPE_UNKNOWN : return "UNKNOWN";
+    };
+}
+

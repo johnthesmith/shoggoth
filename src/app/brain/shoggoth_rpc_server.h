@@ -289,6 +289,19 @@ class ShoggothRpcServer : public RpcServer
 
 
         /*
+            Remote host set net mode
+        */
+        ShoggothRpcServer* testResult
+        (
+            /* Arguments */
+            ParamList*,
+            /* Result */
+            ParamList*
+        );
+
+
+
+        /*
             Change net mode and reset layers charts
         */
         ShoggothRpcServer* changeNetMode

@@ -1,0 +1,92 @@
+digraph DeepSeek {
+    rankdir=LR;
+    node [shape=box];
+    
+    /* Слои */
+    retina [label="Retina (30x30)"];
+    learning [label="Learning (1)"];
+    
+    cortex1a [label="Cortex1a (26x26)"];
+    cortex1b [label="Cortex1b (26x26)"];
+    cortex1c [label="Cortex1c (26x26)"];
+    cortex1d [label="Cortex1d (26x26)"];
+    
+    pool1a [label="Pool1a (13x13)"];
+    pool1b [label="Pool1b (13x13)"];
+    pool1c [label="Pool1c (13x13)"];
+    pool1d [label="Pool1d (13x13)"];
+    
+    cortex2a [label="Cortex2a (11x11)"];
+    cortex2b [label="Cortex2b (11x11)"];
+    cortex2c [label="Cortex2c (11x11)"];
+    cortex2d [label="Cortex2d (11x11)"];
+    cortex2e [label="Cortex2e (11x11)"];
+    cortex2f [label="Cortex2f (11x11)"];
+    cortex2g [label="Cortex2g (11x11)"];
+    cortex2h [label="Cortex2h (11x11)"];
+    
+    pool2a [label="Pool2a (5x5)"];
+    pool2b [label="Pool2b (5x5)"];
+    pool2c [label="Pool2c (5x5)"];
+    pool2d [label="Pool2d (5x5)"];
+    pool2e [label="Pool2e (5x5)"];
+    pool2f [label="Pool2f (5x5)"];
+    pool2g [label="Pool2g (5x5)"];
+    pool2h [label="Pool2h (5x5)"];
+    
+    fc [label="FC (16x8)"];
+    result [label="Result (10)"];
+    sample [label="Sample (10)"];
+    command [label="Command (1)"];
+    error [label="Error (10)"];
+    test [label="Test (10)"];
+    test_error [label="TestError (10)"];
+    test_command [label="TestCommand (1)"];
+    bias [label="Bias (1)"];
+    
+    /* Связи */
+    retina -> {cortex1a cortex1b cortex1c cortex1d} [label="SOME_TO_SOME\n5x5, ADD"];
+    
+    cortex1a -> pool1a [label="ONE_TO_ONE\nMAX"];
+    cortex1b -> pool1b [label="ONE_TO_ONE\nMAX"];
+    cortex1c -> pool1c [label="ONE_TO_ONE\nMAX"];
+    cortex1d -> pool1d [label="ONE_TO_ONE\nMAX"];
+    
+    {pool1a pool1b pool1c pool1d} -> 
+    {cortex2a cortex2b cortex2c cortex2d cortex2e cortex2f cortex2g cortex2h} 
+    [label="SOME_TO_SOME\n3x3, ADD"];
+    
+    cortex2a -> pool2a [label="ONE_TO_ONE\nMAX"];
+    cortex2b -> pool2b [label="ONE_TO_ONE\nMAX"];
+    cortex2c -> pool2c [label="ONE_TO_ONE\nMAX"];
+    cortex2d -> pool2d [label="ONE_TO_ONE\nMAX"];
+    cortex2e -> pool2e [label="ONE_TO_ONE\nMAX"];
+    cortex2f -> pool2f [label="ONE_TO_ONE\nMAX"];
+    cortex2g -> pool2g [label="ONE_TO_ONE\nMAX"];
+    cortex2h -> pool2h [label="ONE_TO_ONE\nMAX"];
+    
+    {pool2a pool2b pool2c pool2d pool2e pool2f pool2g pool2h} -> fc 
+    [label="ALL_TO_ALL\nADD"];
+    
+    bias -> {cortex1a cortex1b cortex1c cortex1d 
+            cortex2a cortex2b cortex2c cortex2d cortex2e cortex2f cortex2g cortex2h 
+            fc result} 
+    [label="ALL_TO_ALL\nADD"];
+    
+    fc -> result [label="ALL_TO_ALL\nADD"];
+    
+    result -> error [label="ONE_TO_ONE\nADD"];
+    sample -> command [label="ALL_TO_ALL\nADD"];
+    command -> error [label="ALL_TO_ALL\nMUL"];
+    sample -> error [label="ONE_TO_ONE\nADD, w=-1"];
+    
+    result -> test_error [label="ONE_TO_ONE\nADD"];
+    test -> test_error [label="ONE_TO_ONE\nADD, w=-1"];
+    test -> test_command [label="ALL_TO_ALL\nADD"];
+    test_command -> test_error [label="ALL_TO_ALL\nMUL"];
+    
+    /* Механизм learning */
+    learning -> learning [label="ONE_TO_ONE\nADD, w=1"];
+    bias -> learning [label="ONE_TO_ONE\nADD, w=-1"];
+    learning -> command [label="ONE_TO_ONE\nMUL"];
+}

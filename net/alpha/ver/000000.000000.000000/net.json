@@ -29,8 +29,8 @@
         "learningSpeed":0.0001782364
     },
 
-    "types":{ "include" : "./var/types.json" },
-    "mutations":{ "include" : "./var/mutations.json" },
+    "types":{ "include" : "../../var/types.json" },
+    "mutations":{ "include" : "../../var/mutations.json" },
 
     "layers":
     {
@@ -46,7 +46,7 @@
         {
             "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 1",
-            "size": [ 10, 5, 1 ],
+            "size": [ 26, 26, 1 ],
             "position": [ 0.0, 0.0, 1.0 ],
             "drawSize": [ 0.1, 0.1, 0.1 ]
         },
@@ -61,7 +61,7 @@
         {
             "*":[ "types", "layers", "cortex", "const" ],
             "name":"Cortex 2",
-            "size": [ 16, 1, 1 ],
+            "size": [ 11, 11, 1 ],
             "position": [ 0.0, 0.0, 1.5 ],
             "drawSize": [ 0.1, 0.1, 0.1 ]
         },
@@ -118,32 +118,34 @@
     "nerves":
     [
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "cortex-nerve" ],
             "idFrom":"retina",
-            "idTo":"cortex_1"
+            "idTo":"cortex_1",
+            "windowSize": [ 5, 5, 1 ]
         },
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "cortex-nerve" ],
             "idFrom":"cortex_1",
-            "idTo":"cortex_2"
+            "idTo":"cortex_2",
+            "windowSize": [ 3, 3, 1 ]
         },
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "simple" ],
             "idFrom":"bias",
             "idTo":"cortex_1"
         },
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "simple" ],
             "idFrom":"bias",
             "idTo":"cortex_2"
         },
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "simple" ],
             "idFrom":"cortex_2",
             "idTo":"result"
         },
         {
-            "*":[ "types", "nerves", "cortex_nerve", "const" ],
+            "*":[ "types", "nerves", "simple" ],
             "idFrom":"bias",
             "idTo":"result"
         },

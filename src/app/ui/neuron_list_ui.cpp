@@ -153,9 +153,9 @@ NeuronListUi* NeuronListUi::loop
 /*
     Calculate average value
 */
-double NeuronListUi::calcAvgValue()
+real NeuronListUi::calcAvgValue()
 {
-    double sum = 0;
+    real sum = 0;
     loop
     (
         [ &sum ]
@@ -173,9 +173,9 @@ double NeuronListUi::calcAvgValue()
 /*
     Calculate average error
 */
-double NeuronListUi::calcAvgError()
+real NeuronListUi::calcAvgError()
 {
-    double sum = 0;
+    real sum = 0;
     loop
     (
         [ &sum ]

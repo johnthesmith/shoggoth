@@ -118,6 +118,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
 //        case CMD_READ_WEIGHTS       :readWeights( aArguments, aResults); break;
         case CMD_GET_NET_MODE       :getNetMode( aArguments, aResults); break;
         case CMD_SET_NET_MODE       :setNetMode( aArguments, aResults); break;
+        case CMD_TEST_RESULT        :testResult( aArguments, aResults); break;
         default                     :unknownMethod( aArguments, aResults); break;
     }
 
@@ -330,7 +331,6 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     getLog() -> info( "Commit net argument" ) -> dump( aArguments );
 
     /* Read arguments */
-    auto id = aArguments -> getString( Path{ "id" }, "" );
     auto version = aArguments -> getString( Path{ "version" }, "" );
     auto reason = aArguments -> getByName( Path{ "reason" });
     auto success = aArguments -> getBool( Path{ "success" });
@@ -340,38 +340,29 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     if
     (
         /* Arguments validation */
-        validate( id != "", "IdNetIsEmpty", aResults ) &&
         validate( version != "", "VersionNetIsEmpty", aResults ) &&
         validate( reason != NULL, "ReasonNotFound", aResults ) &&
         validate( reason -> isObject(), "ReasonIsNotObject", aResults )
     )
     {
-        /* Write reason to mon */
-        Mon::create
+        net -> getDb() -> netCommit
         (
-            net -> getNetVersionPath
-            (
-                "/mon/commit.json",
-                version,
-                id
-            )
-        )
-        -> setString( Path{ "result" }, success ? "SUCCESS" : "ROLLBACK" )
-        -> now( Path{ "moment" })
-        -> setInt( Path{ "tick" },  net -> getTick())
-        -> copyObject( Path{ "reason" }, reason -> getObject())
-        -> flush()
-        -> destroy();
+            version,
+            success ? "SUCCESS" : "ROLLBACK",
+            net -> getTick(),
+            reason -> getObject() -> getDouble( Path{ "testCount" }, 0 ),
+            reason -> getObject() -> getDouble( Path{ "parentSurvivalErrorAvg" }),
+            reason -> getObject() -> getDouble( Path{ "currentSurvivalErrorAvg" })
+        );
 
-        auto parentVersion = net -> getParentVersion( id, version, success ? 0 : 1 );
-        auto newVersion = net -> generateVersion( id, version, success );
-
+        auto parentVersion = net -> getParentVersion( "", version, success ? 0 : 1 );
+        auto newVersion = net -> generateVersion( "", version, success );
         auto mutationRnd = Rnd::create() -> setSeed( mutationSeed );
 
         /* Clone network */
         net -> clone
         (
-            id,
+            "",
             parentVersion,
             newVersion,
             survivalErrorAvg,
@@ -388,7 +379,7 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
 
         /* Return result */
         aResults
-        -> setString( "id", id )
+        -> setString( "id", "" )
         -> setString( "version", newVersion );
 
         /* Return positive answer */
@@ -981,6 +972,30 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
         )
         -> flush();
     }
+
+    return this;
+}
+
+
+
+
+/*
+    Remote host set net mode
+*/
+ShoggothRpcServer* ShoggothRpcServer::testResult
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    net -> getDb() -> testResult
+    (
+        aArguments -> getString( Path{ "netVersion" }),
+        aArguments -> getInt( Path{ "tick" }),
+        aArguments -> getString( Path{ "testResult" })
+    );
+
+    setAnswerResult( aResults, RESULT_OK );
 
     return this;
 }

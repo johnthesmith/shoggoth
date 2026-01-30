@@ -541,7 +541,7 @@ NeuronListUi* LimbUi::getSelectedNeurons()
 
 Rgba LimbUi::getErrorColor
 (
-    const double a
+    const real a
 )
 {
     return
@@ -554,7 +554,7 @@ Rgba LimbUi::getErrorColor
 
 Rgba LimbUi::getBindErrorColor
 (
-    const double a
+    const real a
 )
 {
     return
@@ -568,7 +568,7 @@ Rgba LimbUi::getBindErrorColor
 
 Rgba LimbUi::getBindValueColor
 (
-    const double a
+    const real a
 )
 {
     return
@@ -773,7 +773,7 @@ LimbUi* LimbUi::removeSelectedByCursor
 /*
     Return screen radius
 */
-double LimbUi::getCursorRadius()
+real LimbUi::getCursorRadius()
 {
     return cursorRadius;
 }
@@ -785,7 +785,7 @@ double LimbUi::getCursorRadius()
 */
 LimbUi* LimbUi::setCursorRadius
 (
-    double a /* Pixel radius */
+    real a /* Pixel radius */
 )
 {
     cursorRadius = a;
@@ -797,10 +797,10 @@ LimbUi* LimbUi::setCursorRadius
 /*
     Return average weights for selected neurons
 */
-double LimbUi::avgWeightBySelect()
+real LimbUi::avgWeightBySelect()
 {
     int total = 0;
-    double sum = 0;
+    real sum = 0;
 
     nerveWeightLoop
     (
@@ -821,7 +821,7 @@ double LimbUi::avgWeightBySelect()
         }
     );
 
-    return total == 0.0 ? 0.0 : (double)sum / total;
+    return total == 0.0 ? 0.0 : (real)sum / total;
 }
 
 

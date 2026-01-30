@@ -237,5 +237,20 @@ class Io: public Result
             NetMode,
             ParamList*
         );
+
+
+
+        /*
+            Send test result to server
+        */
+        Io* testResult
+        (
+            /* Net verstion */
+            string,
+            /* Tick number */
+            int,
+            /* Test result string */
+            string
+        );
 };
 

@@ -118,20 +118,6 @@ Layer* Layer::setSize
 
 
 
-/*
-    Return linear index of neuron by position
-*/
-int Layer::indexByPos
-(
-    const Point3i& a
-)
-{
-    auto s = getSize();
-    return a.x + a.y * s.x + a.z * s.x * s.y;
-}
-
-
-
 /******************************************************************************
     Data plans work
 */
@@ -305,7 +291,7 @@ Layer* Layer::valuesCreate()
     /*Create new plan */
     if( count != 0 )
     {
-        values = new double[ count ];
+        values = new real[ count ];
     }
 
     getLimb() -> unlock();
@@ -325,7 +311,7 @@ Layer* Layer::errorsCreate()
     /*Create new plan */
     if( count != 0 )
     {
-        errors = new double[ count ];
+        errors = new real[ count ];
     }
 
     getLimb() -> unlock();
@@ -350,9 +336,9 @@ string Layer::getName()
 /*
     Return sum of error
 */
-double Layer::calcSumError()
+real Layer::calcSumError()
 {
-    double result = 0.0;
+    real result = 0.0;
 
     getLimb() -> lock();
     for( int i = 0; i < count; i ++ )
@@ -369,9 +355,9 @@ double Layer::calcSumError()
 /*
     Return sum of value
 */
-double Layer::calcSumValue()
+real Layer::calcSumValue()
 {
-    double result = 0.0;
+    real result = 0.0;
 
     getLimb() -> lock();
     for( int i = 0; i < count; i ++ )
@@ -388,9 +374,9 @@ double Layer::calcSumValue()
 /*
     Calculate Root Main Square of neurons value
 */
-double Layer::calcRmsValue()
+real Layer::calcRmsValue()
 {
-    double result = 0.0;
+    real result = 0.0;
 
     getLimb() -> lock();
     for( int i = 0; i < count; i ++ )
@@ -404,45 +390,45 @@ double Layer::calcRmsValue()
 
 
 
-/*
-    Storage path
-*/
+///*
+//    Storage path
+//*/
+//
+//Layer* Layer::setStoragePath
+//(
+//    string a
+//)
+//{
+//    storagePath = a;
+//    return this;
+//}
+//
 
-Layer* Layer::setStoragePath
-(
-    string a
-)
-{
-    storagePath = a;
-    return this;
-}
+//
+///*
+//*/
+//string Layer::getStoragePath()
+//{
+//    return storagePath;
+//}
+//
+//
 
-
-
-/*
-*/
-string Layer::getStoragePath()
-{
-    return storagePath;
-}
-
-
-
-
-string Layer::getLayerPath()
-{
-    return storagePath == "" ? "" : storagePath + "/" + getId();
-}
-
-
-
-/*
-    Return layer file name
-*/
-string Layer::getStorageValueName()
-{
-    return storagePath == "" ? "" : ( getLayerPath() + "/value.bin" );
-}
+//
+//string Layer::getLayerPath()
+//{
+//    return storagePath == "" ? "" : storagePath + "/" + getId();
+//}
+//
+//
+//
+///*
+//    Return layer file name
+//*/
+//string Layer::getStorageValueName()
+//{
+//    return storagePath == "" ? "" : ( getLayerPath() + "/value.bin" );
+//}
 
 
 
@@ -546,6 +532,22 @@ bool Layer::compare
     getErrorCalc()      == aLayer -> getErrorCalc() &&
     getWeightCalc()     == aLayer -> getWeightCalc()
     ;
+}
+
+
+
+/*
+    Return layer values like array
+    id[ v1, v2, .... ]
+*/
+string Layer::getValuesString()
+{
+    vector <string> valuesString;
+    for( int i = 0; i < count; i++ )
+    {
+        valuesString.push_back( toString( values[ i ] ));
+    }
+    return getId() + "[ "+ implode( valuesString, ", " ) +" ]";
 }
 
 
@@ -664,7 +666,7 @@ Layer* Layer::dropTickCount()
     /* Push count in to stat chart */
     if( tickCount >= 0 )
     {
-        chartTick -> createLast( ( double ) tickCount );
+        chartTick -> createLast( ( real ) tickCount );
     }
     /* Reset tick counter */
     tickCount = 0;
@@ -682,7 +684,7 @@ Layer* Layer::writeErrorsBeforeChange()
     /* Push error in to the stat chart */
     if( tickCount >= 0 )
     {
-        chartErrorsBeforeChange -> createLast( ( double ) calcSumError() );
+        chartErrorsBeforeChange -> createLast( ( real ) calcSumError() );
     }
 
     return this;

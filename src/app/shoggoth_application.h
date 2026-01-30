@@ -17,7 +17,6 @@ class ShoggothApplication : public Application
     private:
 
         SockManager*    sockManager         = NULL;
-        string          netId               = "alpha";
         string          netVersion          = "zero";
 
     public:
@@ -69,13 +68,6 @@ class ShoggothApplication : public Application
             Return the sock manager from application
         */
         SockManager* getSockManager();
-
-
-
-        /*
-            Return the net identifier
-        */
-        string getNetId();
 
 
 

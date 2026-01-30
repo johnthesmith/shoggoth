@@ -96,11 +96,19 @@ bool CalcTable::isParentsCalculated
 
     parents -> loop
     (
-        [ this, &result ]
+        [ this, &result, aLayer ]
         ( void* item )
         {
             auto layer = ( Layer* ) item;
-            result = result && isCalculated( layer );
+            result =
+            result
+            &&
+            (
+                /* Already calculated */
+                isCalculated( layer )
+                /* Selfconnected */
+                || layer == aLayer
+            );
             return false;
         }
     );
@@ -252,6 +260,7 @@ CalcTable* CalcTable::dump
 
     return this;
 }
+
 
 
 

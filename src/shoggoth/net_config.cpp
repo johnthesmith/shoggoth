@@ -100,7 +100,7 @@ ParamList* NetConfig::createLayer
     /* Type pointer */
     ParamList* aType,
     /* Interpolation 0.0..1.0 */
-    double aItp
+    real aItp
 )
 {
     /* Get parent structure */
@@ -342,6 +342,22 @@ NetConfig* NetConfig::mutateInsertLayer
                 mutation -> getObject( Path{ "nerveType" })
             );
         }
+
+
+        pushObject
+        (
+            Path{ "version", "mutation" },
+            ParamList::create()
+            -> setString
+            (
+                "operation",
+                mutation -> getString( Path{ "operation" }, "changeParam" )
+            )
+            -> setString( "layerCurrentId", layerCurrentId )
+            -> setString( "layerParrentId", layerParentId )
+            -> setString( "layerChildId", layerChildId )
+        );
+
     }
     return this;
 }

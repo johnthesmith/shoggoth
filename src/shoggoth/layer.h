@@ -60,14 +60,16 @@ class Layer : public Result
         /* Dimention size */
         Point3i         size                    = POINT_3I_0;
 
-        bool            errorChange             = false;        /* True - method errorChange return true for any neuron, else false */
-        bool            incomeChanged           = false;        /* True if preceptron chenged. Set in neuron->setValue*/
+        /* True - method errorChange return true for any neuron, else false */
+        bool            errorChange             = false;
+        /* True if preceptron chenged. Set in neuron->setValue*/
+        bool            incomeChanged           = false;
 
         /* Settings */
         string          id                      = "";           /* Id of layer */
         string          name                    = "";           /* Name of layer */
 
-        string          storagePath             = "";
+//        string          storagePath             = "";
 
 //        /* List of actions for layer */
 //        ParamList*      actions                 = NULL;
@@ -76,8 +78,8 @@ class Layer : public Result
             Plans of neurons data
         */
 
-        double*         values                  = NULL;
-        double*         errors                  = NULL;
+        real*         values                  = NULL;
+        real*         errors                  = NULL;
 
         /*
             Layer settings
@@ -209,8 +211,30 @@ class Layer : public Result
         */
         int indexByPos
         (
-            const Point3i&
-        );
+            const Point3i& a
+        )
+        {
+            return a.x + a.y * size.x + a.z * size.x * size.y;
+        }
+
+
+
+        /*
+            Return point by index
+        */
+        Point3i posByIndex
+        (
+            int aIndex
+        )
+        {
+            return Point3i
+            (
+                aIndex % size.x,
+                ( aIndex / size.x ) % size.y,
+                aIndex / ( size.x * size.y )
+            );
+        }
+
 
 
         /**********************************************************************
@@ -334,21 +358,21 @@ class Layer : public Result
         /*
             Calculate sum of neurons error
         */
-        double calcSumError();
+        real calcSumError();
 
 
 
         /*
             Calculate sum of neurons value
         */
-        double calcSumValue();
+        real calcSumValue();
 
 
 
         /*
             Calculate Root Main Square of neurons value
         */
-        double calcRmsValue();
+        real calcRmsValue();
 
 
 
@@ -369,36 +393,36 @@ class Layer : public Result
 
 
 
-        /*
-            Return layer file name
-        */
-        string getStorageValueName();
-
-
-
-        /*
-            return the storage path
-        */
-        string getStoragePath();
-
-
-
-        /*
-            Set storage path
-        */
-        Layer* setStoragePath
-        (
-            string
-        );
-
-
-
-        /*
-            Return layer path
-        */
-        string getLayerPath();
-
-
+//        /*
+//            Return layer file name
+//        */
+//        string getStorageValueName();
+//
+//
+//
+//        /*
+//            return the storage path
+//        */
+//        string getStoragePath();
+//
+//
+//
+//        /*
+//            Set storage path
+//        */
+//        Layer* setStoragePath
+//        (
+//            string
+//        );
+//
+//
+//
+//        /*
+//            Return layer path
+//        */
+//        string getLayerPath();
+//
+//
 
         /*
             Set buffer and size of values
@@ -483,6 +507,17 @@ class Layer : public Result
 
 
 
+        /*
+            Return read role
+        */
+        long long int getTickCount()
+        {
+            return tickCount;
+        }
+
+
+
+
         /**********************************************************************
             Neurons setters and getters
         */
@@ -495,7 +530,7 @@ class Layer : public Result
             /* Index of neuron */
             int aIndex,
             /* Value */
-            double aValue
+            real aValue
         )
         {
             if( values != NULL && aIndex >= 0 && aIndex < count )
@@ -510,7 +545,7 @@ class Layer : public Result
         /*
             Return neuron vaalue or default value
         */
-        double getNeuronValue
+        real getNeuronValue
         (
             /* Index of neuron */
             int aIndex
@@ -534,7 +569,7 @@ class Layer : public Result
             /* Index of neuron */
             int aIndex,
             /* Value */
-            double aError
+            real aError
         )
         {
             if( errors != NULL && aIndex >= 0 && aIndex < count )
@@ -549,7 +584,7 @@ class Layer : public Result
         /*
             Return neuron error or default value
         */
-        double getNeuronError
+        real getNeuronError
         (
             /* Index of neuron */
             int aIndex
@@ -626,6 +661,13 @@ class Layer : public Result
 
 
         /*
+            Return layer values like array
+            id[ v1, v2, .... ]
+        */
+        string getValuesString();
+
+
+        /*
             Calculate statistics for layer
         */
         Layer* stat();
@@ -651,7 +693,7 @@ class Layer : public Result
         */
         size_t getValuesBufferSize()
         {
-            return sizeof( double ) * count;
+            return sizeof( real ) * count;
         }
 
 
@@ -816,16 +858,18 @@ class Layer : public Result
             return chartErrorsBeforeChange;
         }
 
+
+        /*
+            Index
+        */
+        Point3i calcPosByIndex
+        (
+            /* Index from 0 to count -1 */
+            int index
+        )
+        {
+            return Point3i::byIndex( index, size );
+        }
 };
 
 
-
-
-
-
-//
-//TODO Добавить мутации создания удаления слоев
-//
-//Каждому слою можно прописать для какого слоя он может быть парентом и чайлдом примутации.
-//Мутации могт касаться кортекса и биаса логичеси.
-//Так же мутации для каждого слоя должны описывать правиал соединения.

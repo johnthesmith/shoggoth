@@ -229,5 +229,15 @@ class CalcTable
 
 
 
+        CalcTable* dump()
+        {
+        for( auto record:table )
+        {
+            cout << record.layer -> getId() << "\n";
+        }
+        return this;
+        }
+
+
         CalcTable* clear();
 };

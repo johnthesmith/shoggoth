@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SLEEP=0.05
+SLEEP=0.2
 PROJECT="~/src/c/app/shoggoth/"
 PROJECT_LIB="~/src/c/lib/"
 

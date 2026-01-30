@@ -51,6 +51,44 @@
             }
         },
 
+        "pool": {
+            "var": {
+                "namePrefix": "Pool"
+            },
+            "const": {
+                "type": "pool",
+                "functionFront": "NULL",
+                "functionBack": "NULL",
+                "functionBackOut": "NULL",
+                "errorCalc": "NONE",
+                "weightCalc": "NONE",
+                "actions": {
+                    "PROC": ["WRITE_VALUES", "WRITE_ERRORS"],
+                    "UI": ["READ_VALUES", "READ_ERRORS"],
+                    "EVOLUTION": ["READ_VALUES"]
+                }
+            }
+        },
+
+        "flatten": {
+            "var": {
+                "namePrefix": "Flatten"
+            },
+            "const": {
+                "type": "flatten",
+                "functionFront": "NULL",
+                "functionBack": "NULL",
+                "functionBackOut": "NULL",
+                "errorCalc": "LEARNING",
+                "weightCalc": "NONE",
+                "actions": {
+                    "PROC": ["WRITE_VALUES", "WRITE_ERRORS"],
+                    "UI": ["READ_VALUES", "READ_ERRORS"],
+                    "EVOLUTION": ["READ_VALUES"]
+                }
+            }
+        },
+
         "bias":
         {
             "var":
@@ -201,18 +239,25 @@
 
     "nerves":
     {
-        "cortex_nerve":
+        "simple":
         {
-            "const":
-            {
-                "uses"          : [ "PROC", "UI" ],
-                "nerveType"     :"ALL_TO_ALL",
-                "bindType"      :"ADD",
-                "minWeight"     :-1.0,
-                "maxWeight"     :1.0,
-                "_parentType"   :[ "retina", "cortex", "bias" ],
-                "_childType"    :[ "result", "cortex" ]
-            }
+            "uses"          : [ "PROC", "UI" ],
+            "nerveType"     :"ALL_TO_ALL",
+            "bindType"      :"ADD",
+            "minWeight"     :-1.0,
+            "maxWeight"     :1.0,
+            "_parentType"   :[ "bias" ],
+            "_childType"    :[ "cortex" ]
+        },
+        "cortex-nerve":
+        {
+            "uses"          : [ "PROC", "UI" ],
+            "nerveType"     :"SOME_TO_SOME",
+            "bindType"      :"ADD",
+            "minWeight"     :-1.0,
+            "maxWeight"     :1.0,
+            "_parentType"   :[ "retina", "cortex" ],
+            "_childType"    :[ "cortex", "result" ]
         }
     }
 }

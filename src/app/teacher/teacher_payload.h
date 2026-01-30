@@ -40,6 +40,11 @@ class TeacherPayload : public PayloadEngine
 
         long long       testId          = 0;
 
+        Param*          currentItem     = NULL;
+        int             orderIndex      = 0;
+        int             loopIndex       = 0;
+        int             repeatIndex     = 0;
+
     public:
 
         /*
@@ -120,7 +125,7 @@ class TeacherPayload : public PayloadEngine
         /*
             Return current error limit from Net config
         */
-        double getErrorLimit();
+        real getErrorLimit();
 
 
 
@@ -147,6 +152,13 @@ class TeacherPayload : public PayloadEngine
 
 
         ParamList* getBatches();
+
+
+
+        TeacherPayload* nextBatchItem
+        (
+            ParamList*
+        );
 
 
         /******************************************************************************

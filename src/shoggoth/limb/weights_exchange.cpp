@@ -2,7 +2,6 @@
 #include "../../../../../lib/core/rnd.h"
 
 
-
 /*
     Constructor
 */
@@ -225,6 +224,7 @@ WeightsExchange* WeightsExchange::synchNeuronsByClient
     */
     aNeurons -> loop
     (
+
         [ this, &aClientId ]
         ( Param* iParam )
         {

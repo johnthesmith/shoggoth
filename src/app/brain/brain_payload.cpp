@@ -123,7 +123,7 @@ void BrainPayload::onEngineLoop
         string file = net -> getNetConfigFile( net -> getNextVersion() );
 
         /* Read net config from server */
-        net -> readNetFromFile( netConfig );
+        auto reloadNet = net -> readNetFromFile( netConfig );
 
         /* Monitoring */
         getMon()
@@ -150,24 +150,18 @@ void BrainPayload::onEngineLoop
             Path{ "loop", "lastNetConfig" }
         );
 
-        /* Get net variables */
-        auto netConfigUpdated = net -> isConfigUpdate( netConfig );
-        auto netVersionChanged = net -> isVersionChanged();
-
-
-        if( netConfigUpdated || netVersionChanged || aConfigUpdated )
+        if( reloadNet || aConfigUpdated )
         {
             getLog()
             -> begin( "Restarting" )
             -> info( "by reason" )
-            -> prm( "Net updated", netConfigUpdated )
-            -> prm( "Net version changed", netVersionChanged )
+            -> prm( "Net file or version updated", reloadNet )
             -> prm( "App config updated", aConfigUpdated)
             -> prm( "File", getApplication() -> getConfigFileName() )
             -> lineEnd();
 
             /* Dump net config if changed */
-            if( netConfigUpdated )
+            if( reloadNet )
             {
                 getLog() -> dump( netConfig, "Net config" );
             }
@@ -182,7 +176,7 @@ void BrainPayload::onEngineLoop
                     processor -> waitStop();
                 getLog() -> end( "" );
 
-                if( netConfigUpdated || netVersionChanged )
+                if( reloadNet )
                 {
                     /* Apply config */
                     net -> applyNet( netConfig );
