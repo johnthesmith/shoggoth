@@ -30,7 +30,7 @@ Layer::Layer
 
 
 /*
-    Internal destructor
+    Internal destructor for Layer object
 */
 Layer::~Layer()
 {
@@ -77,7 +77,7 @@ void Layer::destroy()
 
 
 /*
-    Set dimations size
+    Sets dimensions size
 */
 Layer* Layer::setSize
 (
@@ -93,7 +93,7 @@ Layer* Layer::setSize
 
 
 /*
-    Set dimentions size from ParamList object
+    Sets dimensions size from ParamList object
 */
 Layer* Layer::setSize
 (
@@ -119,7 +119,7 @@ Layer* Layer::setSize
 
 
 /******************************************************************************
-    Data plans work
+    Methods for work with dataplans
 */
 
 
@@ -205,7 +205,7 @@ Limb* Layer::getLimb()
 
 
 /*
-    Return the log object
+    Returns the log object
 */
 Log* Layer::getLog()
 {
@@ -215,7 +215,7 @@ Log* Layer::getLog()
 
 
 /*
-    Set count of neurons
+    Sets count of neurons
     Do not use this method.
     Use the setSize
 
