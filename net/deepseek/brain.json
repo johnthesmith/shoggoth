@@ -11,7 +11,28 @@
                 "ok"        : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "disabled"  : { "log":"TRACE",      "timeoutMcs":1000000 },
                 "*"         : { "log":"ERROR",      "exit":true }
-            }
+            },
+
+            "mon":
+            {
+                "charts":
+                {
+                    "values":
+                    {
+                        "retina": false,
+                        "command": true
+                    },
+                    "errors":
+                    {
+                        "error": true,
+                    },
+                    "ticks":
+                    {
+                    }
+                }
+            },
+
+
         },
 
         "server":
@@ -37,11 +58,10 @@
     "dump":
     [
         {
-            "enabled"       :true,
-            "lock"          :false,
+            "enabled"       :false,
+            "lock"          :true,
             "pauseMcs"      :0,
-            "stages"        :[ "AFTER_FRONT" ],
-            "precision"     :4
+            "stages"        :[ "AFTER_FRONT" ]
         },
 
         {
@@ -67,18 +87,22 @@
             "stages"        :[ "AFTER_BACK" ],
             "layers"        :
             [
-                "retina",
+                "error",
                 "learning",
                 "command",
                 "result",
+                "sample"
+            ],
+            "reserv":
+            [
+                "retina",
                 "fc",
                 "pool_2a","pool_2b","pool_2c","pool_2d",
                 "pool_2e","pool_2f","pool_2g","pool_2h",
                 "cortex_2a", "cortex_2b", "cortex_2c", "cortex_2g",
                 "cortex_2e", "cortex_2f", "cortex_2g", "cortex_2h",
                 "pool_1a","pool_1b","pool_1c","pool_1d",
-                "cortex_1a", "cortex_1b", "cortex_1c", "cortex_1d",
-                "sample"
+                "cortex_1a", "cortex_1b", "cortex_1c", "cortex_1d"
             ],
             "data"          :[ "VALUES", "ERRORS" ],
             "dataview"      :"DIGIT",
@@ -99,7 +123,7 @@
             "precision"     :2
         },
         {
-            "enabled"       :true,
+            "enabled"       :false,
             "dumptype"      :"NEURON",
             "file"          :"dump/%dumptype%-%stage%-%data%-%layer%-%neuron%.txt",
             "stages"        :[ "AFTER_FRONT" ],
@@ -107,66 +131,6 @@
             {
                 "cortex_1a": [[ 2,2,0 ]],
             },
-            "data"          :[ "WEIGHTS" ],
-            "dataview"      :"DIGIT",
-            "precision"     :4
-        },
-
-
-
-
-
-
-        {
-            "enabled"       :false,
-            "dumptype"      : "LAYER",
-            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%.txt",
-            "stages"        :[ "AFTER_FRONT" ],
-            "layers"        :
-            [
-                "retina",
-                "cortex_1",
-                "cortex_2",
-                "result",
-                "sample",
-                "error",
-                "command"
-            ],
-            "data"          :[ "VALUES" ],
-            "dataview"      :"DIGIT",
-            "precision"     :4
-        },
-        {
-            "enabled"       :false,
-            "dumptype"      : "LAYER",
-            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%.txt",
-            "stages"        :[ "AFTER_BACK" ],
-            "layers"        :
-            [
-                "retina",
-                "cortex_1",
-                "cortex_2",
-                "result",
-                "sample",
-                "error",
-                "bias",
-                "command"
-            ],
-            "data"          :[ "ERRORS" ],
-            "dataview"      :"DIGIT",
-            "precision"     :4
-        },
-        {
-            "enabled"       :false,
-            "dumptype"      :"NERVE",
-            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%-%layer-to%.txt",
-            "stages"        :[ "AFTER_LEARNING" ],
-            "nerves"        :
-            [
-                [ "retina", "cortex_1" ],
-                [ "cortex_1", "cortex_2" ],
-                [ "cortex_2", "result" ]
-            ],
             "data"          :[ "WEIGHTS" ],
             "dataview"      :"DIGIT",
             "precision"     :4

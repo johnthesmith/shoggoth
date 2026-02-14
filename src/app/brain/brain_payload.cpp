@@ -198,14 +198,10 @@ void BrainPayload::onEngineLoop
 
                 processor
                 -> getLimb()
-                -> setMinWeight( appConfig -> getDouble( Path{ "minWeight" }, 1.0e-5 ))
-                -> setMaxWeight( appConfig -> getDouble( Path{ "maxWeight" }, 1.0e5 ))
                 -> setMaxError( appConfig -> getDouble( Path{ "maxError" }, 0.01 ))
                 -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
                 -> setTickChart( appConfig -> getInt( Path{ "tickChart" }, 0 ))
                 -> setDumpConf( appConfig -> getObject( Path{ "dump" }))
-                -> setMinNeuronPerThread( appConfig -> getInt( Path{ "minNeuronPerThread" }))
-                -> setMaxThreadCount( appConfig -> getInt( Path{ "maxThreadCount" }))
                 ;
 
                 /* Apply config for server */

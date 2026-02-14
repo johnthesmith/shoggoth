@@ -58,4 +58,3 @@ BrainApplication* BrainApplication::run()
 
     return this;
 }
-

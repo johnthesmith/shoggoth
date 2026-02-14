@@ -198,22 +198,6 @@ Layer* Layer::errorsFromBuffer
 
 
 
-Limb* Layer::getLimb()
-{
-    return limb;
-}
-
-
-/*
-    Returns the log object
-*/
-Log* Layer::getLog()
-{
-    return limb -> getLog();
-}
-
-
-
 /*
     Sets count of neurons
     Do not use this method.
@@ -324,28 +308,22 @@ Layer* Layer::errorsCreate()
 
 
 /*
-    Return the name of layer
-*/
-string Layer::getName()
-{
-   return name;
-}
-
-
-
-/*
     Return sum of error
 */
-real Layer::calcSumError()
+real Layer::calcRmsError()
 {
     real result = 0.0;
 
-    getLimb() -> lock();
-    for( int i = 0; i < count; i ++ )
+    if( count > 0 )
     {
-        result += abs( errors[ i ] );
+        getLimb() -> lock();
+        for( int i = 0; i < count; i ++ )
+        {
+            result += errors[ i ] * errors[ i ];
+        }
+        getLimb() -> unlock();
+        result = sqrt( result ) / count;
     }
-    getLimb() -> unlock();
 
     return result;
 }
@@ -377,15 +355,18 @@ real Layer::calcSumValue()
 real Layer::calcRmsValue()
 {
     real result = 0.0;
-
-    getLimb() -> lock();
-    for( int i = 0; i < count; i ++ )
+    if( count > 0 )
     {
-        result += values[ i ] * values[ i ];
+        getLimb() -> lock();
+        for( int i = 0; i < count; i ++ )
+        {
+            result += values[ i ] * values[ i ];
+        }
+        getLimb() -> unlock();
+        result = sqrt( result ) / count;
     }
-    getLimb() -> unlock();
 
-    return count > 0 ? sqrt( result / count ) : 0;
+    return result;
 }
 
 
@@ -632,7 +613,7 @@ Layer* Layer::dumpToMon
         aMonErrors -> setString
         (
             Path{ getId(), to_string( i ) },
-            iValuesChart -> toString( 40 )
+            iErrorsChart -> toString( 40 )
         );
     }
 
@@ -652,7 +633,7 @@ Layer* Layer::stat()
         tickCount ++;
     }
     chartValues -> createLast( calcSumValue() );
-    chartErrors -> createLast( calcSumError() );
+    chartErrors -> createLast( calcRmsError() );
     return this;
 }
 
@@ -684,8 +665,19 @@ Layer* Layer::writeErrorsBeforeChange()
     /* Push error in to the stat chart */
     if( tickCount >= 0 )
     {
-        chartErrorsBeforeChange -> createLast( ( real ) calcSumError() );
+        chartErrorsBeforeChange -> createLast( ( real ) calcRmsError() );
     }
 
     return this;
+}
+
+
+
+
+/*
+    Returns the log object
+*/
+Log* Layer::getLog()
+{
+    return limb -> getLog();
 }

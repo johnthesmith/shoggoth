@@ -60,7 +60,7 @@ obj/limb_processor.o: src/app/brain/limb_processor.cpp \
   src/app/brain/../../shoggoth/limb/../nerve.h \
   src/app/brain/../../shoggoth/limb/../shoggoth_consts.h \
   src/app/brain/../../shoggoth/limb/weights_exchange.h \
-  src/app/brain/calc_table.h \
+  src/app/brain/layer_processor.h \
   src/app/brain/../../../../../lib/core/math.h \
   src/app/brain/../../../../../lib/core/moment.h \
   src/app/brain/../../../../../lib/core/str.h \
@@ -128,7 +128,7 @@ src/app/brain/../../shoggoth/limb/../../../../../lib/json/param_list.h:
 src/app/brain/../../shoggoth/limb/../nerve.h:
 src/app/brain/../../shoggoth/limb/../shoggoth_consts.h:
 src/app/brain/../../shoggoth/limb/weights_exchange.h:
-src/app/brain/calc_table.h:
+src/app/brain/layer_processor.h:
 src/app/brain/../../../../../lib/core/math.h:
 src/app/brain/../../../../../lib/core/moment.h:
 src/app/brain/../../../../../lib/core/str.h:

@@ -1,0 +1,240 @@
+#include <iostream>
+
+/* User libraries */
+#include "../../../../../lib/core/moment.h"
+
+/* User libraries */
+#include "brain_payload.h"
+
+
+
+using namespace std;
+
+
+
+/*
+    Constructor
+*/
+BrainPayload::BrainPayload
+(
+    BrainApplication* a,
+    string aPayloadId,
+    string aNetId,
+    string aNetVersion
+)
+: PayloadEngine( a, aPayloadId ) /* Call parent constructor */
+{
+    net = Net::create
+    (
+        a,
+        a -> getSockManager(),
+        aNetId,
+        aNetVersion,
+        TASK_PROC
+    );
+
+    /* Create server and Brain payloads */
+    server = Server::create( net );
+    processor = Processor::create( net );
+}
+
+
+
+
+
+/*
+    Destructor
+*/
+BrainPayload::~BrainPayload()
+{
+    processor -> destroy();
+    server -> destroy();
+    net -> destroy();
+}
+
+
+
+/*
+    Creator
+*/
+BrainPayload* BrainPayload::create
+(
+    BrainApplication* a,
+    string aPayloadId,
+    string aNetId,
+    string aNetVersion
+)
+{
+    return new BrainPayload( a, aPayloadId, aNetId, aNetVersion );
+}
+
+
+
+/*
+    Destructor
+*/
+void BrainPayload::destroy()
+{
+    delete this;
+}
+
+
+
+BrainApplication* BrainPayload::getApplication()
+{
+    return ( BrainApplication* ) Payload::getApplication();
+}
+
+
+
+Limb* BrainPayload::getNet()
+{
+    return net;
+}
+
+
+/******************************************************************************
+    Events
+*/
+
+
+
+/*
+    Net calculateion
+*/
+void BrainPayload::onEngineLoop
+(
+    bool aConfigUpdated,
+    bool aEnabled
+)
+{
+    if( aEnabled )
+    {
+        /* Processing processor */
+
+        /* Write log */
+        getLog() -> begin( "Brain processing" );
+
+        /* Check net config */
+
+        /* Check server net config */
+        auto netConfig = ParamList::create();
+
+        string file = net -> getNetConfigFile( net -> getNextVersion() );
+
+        /* Read net config from server */
+        auto reloadNet = net -> readNetFromFile( netConfig );
+
+        /* Monitoring */
+        getMon()
+        -> setInt
+        (
+            Path{ "loop", "netConfigUpdate" },
+            netConfig -> getInt( Path{ "lastUpdate" }) * SECOND
+        )
+        -> setInt
+        (
+            Path{ "loop", "lastNetConfig" },
+            net -> getLastUpdate() * SECOND
+        )
+        -> interval
+        (
+            Path{ "loop", "netConfigUpdateStr" },
+            Path{ "momentMcs" },
+            Path{ "loop", "netConfigUpdate" }
+        )
+        -> interval
+        (
+            Path{ "loop", "lastNetConfigStr" },
+            Path{ "momentMcs" },
+            Path{ "loop", "lastNetConfig" }
+        );
+
+        if( reloadNet || aConfigUpdated )
+        {
+            getLog()
+            -> begin( "Restarting" )
+            -> info( "by reason" )
+            -> prm( "Net file or version updated", reloadNet )
+            -> prm( "App config updated", aConfigUpdated)
+            -> prm( "File", getApplication() -> getConfigFileName() )
+            -> lineEnd();
+
+            /* Dump net config if changed */
+            if( reloadNet )
+            {
+                getLog() -> dump( netConfig, "Net config" );
+            }
+
+            if( getApplication() -> getConfig() -> isOk())
+            {
+                getLog() -> begin( "Threads stoping" );
+                    /* Paused processes */
+                    server -> stop();
+                    processor -> stop();
+                    server -> waitStop();
+                    processor -> waitStop();
+                getLog() -> end( "" );
+
+                if( reloadNet )
+                {
+                    /* Apply config */
+                    net -> applyNet( netConfig );
+                }
+
+                /* Settings of the processor */
+                processor -> getLimb() -> setLearningSpeed
+                (
+                    net
+                    -> getConfig()
+                    -> getDouble( Path{ "processor", "learningSpeed" }, 0.001 )
+                );
+
+                /* Apply config for processor */
+                auto appConfig = getApplication() -> getConfig();
+
+                processor
+                -> setLoopTimeoutMcs( 0 );
+
+                processor
+                -> getLimb()
+                -> setMinWeight( appConfig -> getDouble( Path{ "minWeight" }, 1.0e-5 ))
+                -> setMaxWeight( appConfig -> getDouble( Path{ "maxWeight" }, 1.0e5 ))
+                -> setMaxError( appConfig -> getDouble( Path{ "maxError" }, 0.01 ))
+                -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
+                -> setTickChart( appConfig -> getInt( Path{ "tickChart" }, 0 ))
+                -> setDumpConf( appConfig -> getObject( Path{ "dump" }))
+                -> setMinNeuronPerThread( appConfig -> getInt( Path{ "minNeuronPerThread" }))
+                -> setMaxThreadCount( appConfig -> getInt( Path{ "maxThreadCount" }))
+                ;
+
+                /* Apply config for server */
+                server -> setLoopTimeoutMcs( 1000000 );
+
+                server -> start( true );
+                processor -> start( true );
+            }
+
+            getLog() -> end();
+        }
+
+        netConfig -> destroy();
+        getLog() -> end();
+    }
+    else
+    {
+        if( processor -> getState() == STATE_LOOP )
+        {
+            processor -> stop() -> waitStop();
+        }
+        if( server -> getState() == STATE_LOOP )
+        {
+            server -> stop() -> waitStop();
+        }
+    }
+
+    getMon()
+    -> setString( Path{ "current", "processor" }, stateToString( processor -> getState()))
+    -> setString( Path{ "current", "server" }, stateToString( server -> getState()));
+
+}

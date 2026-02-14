@@ -1,0 +1,34 @@
+{
+    "engine":
+    {
+        "enabled":true,
+        "trap":true,
+        "debugger":
+        {
+            "code":
+            {
+                "*" : { "log":"INFO", "timeoutMcs":10000 }
+            }
+        }
+    },
+
+    "io":
+    {
+        "source"                :"SERVER",
+        "net"                   :"net/net.json",
+        "host"                  :"127.0.0.1",
+        "port"                  :11121,
+        "readWaitingTimeoutMcs" :500000,
+
+        "methodDump":
+        [
+            "!CMD_WRITE_LAYERS",
+            "!CMD_COMMIT_NET",
+            "!SET_NET_MODE",
+            "!READ_LAYER_STAT"
+        ]
+
+    }
+}
+
+

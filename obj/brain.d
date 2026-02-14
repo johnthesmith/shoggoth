@@ -17,7 +17,8 @@ obj/brain.o: src/app/brain/brain.cpp src/app/brain/brain_application.h \
   src/app/brain/../../../../../lib/core/../json/../core/text.h \
   src/app/brain/../../../../../lib/core/log_manager.h \
   src/app/brain/../../../../../lib/core/../json/param_list_file.h \
-  src/app/brain/../../../../../lib/sock/sock_manager.h
+  src/app/brain/../../../../../lib/sock/sock_manager.h \
+  src/app/brain/../../../../../lib/core/thread_manager.h
 src/app/brain/brain_application.h:
 src/app/brain/../shoggoth_application.h:
 src/app/brain/../../../../../lib/core/application.h:
@@ -38,3 +39,4 @@ src/app/brain/../../../../../lib/core/../json/../core/text.h:
 src/app/brain/../../../../../lib/core/log_manager.h:
 src/app/brain/../../../../../lib/core/../json/param_list_file.h:
 src/app/brain/../../../../../lib/sock/sock_manager.h:
+src/app/brain/../../../../../lib/core/thread_manager.h:

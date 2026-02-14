@@ -55,9 +55,9 @@ obj/processor.o: src/app/brain/processor.cpp \
   src/app/brain/../../../../../lib/sock/sock_manager.h \
   src/app/brain/limb_processor.h \
   src/app/brain/../../../../../lib/core/thread_manager.h \
-  src/app/brain/../../shoggoth/limb.h src/app/brain/calc_table.h \
+  src/app/brain/../../shoggoth/limb.h src/app/brain/layer_processor.h \
   src/app/brain/../../shoggoth/layer.h \
-  src/app/brain/../../shoggoth/nerve_list.h \
+  src/app/brain/../../shoggoth/nerve.h \
   src/app/brain/shoggoth_rpc_server.h \
   src/app/brain/../../../../../lib/sock/rpc_server.h \
   src/app/brain/../../../../../lib/sock/sock_rpc.h \
@@ -125,9 +125,9 @@ src/app/brain/../../../../../lib/sock/sock_manager.h:
 src/app/brain/limb_processor.h:
 src/app/brain/../../../../../lib/core/thread_manager.h:
 src/app/brain/../../shoggoth/limb.h:
-src/app/brain/calc_table.h:
+src/app/brain/layer_processor.h:
 src/app/brain/../../shoggoth/layer.h:
-src/app/brain/../../shoggoth/nerve_list.h:
+src/app/brain/../../shoggoth/nerve.h:
 src/app/brain/shoggoth_rpc_server.h:
 src/app/brain/../../../../../lib/sock/rpc_server.h:
 src/app/brain/../../../../../lib/sock/sock_rpc.h:

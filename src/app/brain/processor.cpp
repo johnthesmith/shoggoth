@@ -133,7 +133,6 @@ void Processor::onLoop()
 void Processor::onStartBefore()
 {
     getLog() -> trace( "Processor starting" );
-    limb -> up();
 }
 
 
@@ -144,7 +143,6 @@ void Processor::onStartBefore()
 void Processor::onStopBefore()
 {
     getLog() -> begin( "Processor stoping" ) -> lineEnd();
-    limb -> down();
     getLog() -> end() -> lineEnd();;
 }
 

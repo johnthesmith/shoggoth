@@ -260,11 +260,21 @@ class Layer : public Result
         */
 
 
-        Limb* getLimb();
+        Limb* getLimb()
+        {
+            return limb;
+        }
 
 
 
-        string getName();
+        /*
+            Return the name of layer
+        */
+        string getName()
+        {
+           return name;
+        }
+
 
 
 
@@ -358,7 +368,7 @@ class Layer : public Result
         /*
             Calculate sum of neurons error
         */
-        real calcSumError();
+        real calcRmsError();
 
 
 
@@ -470,8 +480,10 @@ class Layer : public Result
         */
         Layer* getErrorsBuffer
         (
-            char* &aBuffer, /* Buffer pointer */
-            size_t &aSize   /* Size of buffer */
+            /* Buffer pointer */
+            char* &aBuffer,
+            /* Size of buffer */
+            size_t &aSize
         )
         {
             aBuffer = ( char* )errors;
@@ -502,7 +514,8 @@ class Layer : public Result
         */
         Layer* setRoleRead
         (
-            bool /* value */
+            /* value */
+            bool
         );
 
 
@@ -525,7 +538,7 @@ class Layer : public Result
         /*
             Set neuron value
         */
-        Layer* setNeuronValue
+        inline Layer* setNeuronValue
         (
             /* Index of neuron */
             int aIndex,
@@ -545,7 +558,7 @@ class Layer : public Result
         /*
             Return neuron vaalue or default value
         */
-        real getNeuronValue
+        inline real getNeuronValue
         (
             /* Index of neuron */
             int aIndex
@@ -564,7 +577,7 @@ class Layer : public Result
         /*
             Set neuron error
         */
-        Layer* setNeuronError
+        inline Layer* setNeuronError
         (
             /* Index of neuron */
             int aIndex,
@@ -584,7 +597,7 @@ class Layer : public Result
         /*
             Return neuron error or default value
         */
-        real getNeuronError
+        inline real getNeuronError
         (
             /* Index of neuron */
             int aIndex
@@ -601,7 +614,7 @@ class Layer : public Result
 
 
         /*
-            Return the log object
+            Returns the log object
         */
         Log* getLog();
 
@@ -871,5 +884,3 @@ class Layer : public Result
             return Point3i::byIndex( index, size );
         }
 };
-
-

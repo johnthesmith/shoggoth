@@ -29,7 +29,8 @@ src/shoggoth/limb \
 src/app \
 src/app/teacher \
 src/app/evolution \
-src/app/brain
+src/app/brain \
+src/app/debugger
 
 
 # All sources for objects index
@@ -43,7 +44,8 @@ SRCS := \
 	$(wildcard src/app/*.cpp) \
 	$(wildcard src/app/teacher/*.cpp) \
 	$(wildcard src/app/evolution/*.cpp) \
-	$(wildcard src/app/brain/*.cpp)
+	$(wildcard src/app/brain/*.cpp) \
+	$(wildcard src/app/debugger/*.cpp)
 # $(info SRCS: $(SRCS))
 
 # Создаем явные зависимости для каждого объектного файла
@@ -126,23 +128,28 @@ TEACHER_EXTRA := \
 	$(OBJ_DIR)/rgba.o \
 	$(OBJ_DIR)/bitmap.o \
 	$(OBJ_DIR)/teacher.o \
-	$(OBJ_DIR)/teacher_consts.o \
 	$(OBJ_DIR)/layer_teacher.o \
 	$(OBJ_DIR)/limb_teacher.o \
 	$(OBJ_DIR)/teacher_application.o \
 	$(OBJ_DIR)/teacher_payload.o
 
+DEBUGGER_EXTRA := \
+	$(OBJ_DIR)/debugger.o \
+	$(OBJ_DIR)/debugger_application.o \
+	$(OBJ_DIR)/debugger_payload.o \
+	$(OBJ_DIR)/terminal.o
+
 BRAIN_EXTRA := \
 	$(OBJ_DIR)/hid.o \
-	$(OBJ_DIR)/thread_manager.o \
 	$(OBJ_DIR)/brain.o \
 	$(OBJ_DIR)/brain_application.o \
 	$(OBJ_DIR)/server.o \
 	$(OBJ_DIR)/processor.o \
 	$(OBJ_DIR)/limb_processor.o \
-	$(OBJ_DIR)/calc_table.o \
+	$(OBJ_DIR)/layer_processor.o \
 	$(OBJ_DIR)/shoggoth_rpc_server.o \
-	$(OBJ_DIR)/brain_payload.o
+	$(OBJ_DIR)/brain_payload.o \
+	$(OBJ_DIR)/thread_manager.o
 
 
 # Правило компиляции любого .cpp в .o
@@ -162,7 +169,7 @@ $(OBJ_DIR)/%.o: %.cpp
 
 
 # Цели линковки
-all: evolution teacher brain
+all: evolution teacher brain debugger
 
 evolution: $(BASE_OBJS) $(EVOLUTION_EXTRA)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
@@ -170,8 +177,11 @@ evolution: $(BASE_OBJS) $(EVOLUTION_EXTRA)
 teacher: $(BASE_OBJS) $(TEACHER_EXTRA)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS) -lGraphicsMagick++
 
+debugger: $(BASE_OBJS) $(DEBUGGER_EXTRA)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS) -lncursesw
+
 brain: $(BASE_OBJS) $(BRAIN_EXTRA)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 
 clean:
-	rm -f evolution teacher brain $(OBJ_DIR)/*.o $(OBJ_DIR)/*.d
+	rm -f evolution teacher brain debugger $(OBJ_DIR)/*.o $(OBJ_DIR)/*.d

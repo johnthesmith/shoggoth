@@ -26,7 +26,7 @@
                     "MODE_UNKNOWN":{},
                     "MODE_LEARN":
                     {
-
+                        "batches": "learning",
                         "maxTick":5000000,
                         "layers":
                         {
@@ -40,6 +40,7 @@
                     },
                     "MODE_TEST":
                     {
+                        "batches":"testing",
                         "layers":
                         {
                             "test_error":

@@ -37,13 +37,9 @@ LimbProcessor::LimbProcessor
 //    weightsChart = ChartList::create();
     dumpConf = ParamList::create();
 
-    fps = ChartData::create() -> setMaxCount( 100 );
-
     threadManager = ThreadManager::create( aNet -> getLogManager() );
 
-
-    calcTableValues = CalcTable::create();
-    calcTableErrors = CalcTable::create();
+    fps = ChartData::create() -> setMaxCount( 100 );
 }
 
 
@@ -53,14 +49,11 @@ LimbProcessor::LimbProcessor
 */
 LimbProcessor::~LimbProcessor()
 {
-    calcTableValues -> destroy();
-    calcTableErrors -> destroy();
-
-    threadManager -> destroy();
-
     fps -> destroy();
 
     dumpConf -> destroy();
+    threadManager -> destroy();
+
 //    weightsChart -> destroy();
 
     mon -> destroy();
@@ -88,6 +81,31 @@ LimbProcessor* LimbProcessor::create
 
 
 /*
+    Create new layer for this limb and copy parameters from source layer.
+    This method have to overriden at children Limbs.
+*/
+LayerProcessor* LimbProcessor::copyLayerFrom
+(
+    LayerProcessor* aLayerFrom
+)
+{
+    auto result = LayerProcessor::create( this, aLayerFrom -> getId() );
+
+    result
+    -> setErrorCalc( aLayerFrom -> getErrorCalc() )
+    -> setWeightCalc( aLayerFrom -> getWeightCalc() )
+    -> setFrontFunc( aLayerFrom -> getFrontFunc() )
+    -> setBackFunc( aLayerFrom -> getBackFunc() )
+    -> setBackFuncOut( aLayerFrom -> getBackFuncOut() )
+    -> setSize( aLayerFrom -> getSize() );
+
+    return result;
+}
+
+
+
+
+/*
     Set terminated signal
 */
 LimbProcessor* LimbProcessor::setTerminated
@@ -99,41 +117,6 @@ LimbProcessor* LimbProcessor::setTerminated
     return this;
 }
 
-
-
-LimbProcessor* LimbProcessor::setMaxThreadCount
-(
-    int a
-)
-{
-    maxThreadCount = a;
-    return this;
-}
-
-
-
-int LimbProcessor::getMaxThreadCount()
-{
-    return maxThreadCount;
-}
-
-
-
-LimbProcessor* LimbProcessor::setMinNeuronPerThread
-(
-    int a
-)
-{
-    minNeuronPerThread = a;
-    return this;
-}
-
-
-
-int LimbProcessor::getMinNeuronPerThread()
-{
-    return minNeuronPerThread;
-}
 
 
 
@@ -174,19 +157,23 @@ LimbProcessor* LimbProcessor::calc()
 
     if( net -> syncToLimb( this, false ))
     {
+        /*
+            Clear parents and children for each layer
+            Filling in the followng nerveControl
+        */
+        getLayerList() -> loop
+        (
+            []
+            ( void* item )
+            {
+                (( LayerProcessor* ) item ) -> clearParentsAndChildren();
+                return false;
+            }
+        );
+
         /* Reallocates and fill weights */
         nerveControl();
     }
-
-    /* Rebuild calculations */
-    if( reload )
-    {
-        /* Updated */
-        buildCalcTables();
-        /* Calculae thread count for each layer */
-        calcThreadCount();
-    }
-
 
     if( getVersion() != net -> getVersion() )
     {
@@ -204,8 +191,6 @@ LimbProcessor* LimbProcessor::calc()
     mon
     -> setInt( Path{ "net", "seed" }, net -> getRnd() -> getSeed() )
     -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
-    -> setDouble( Path{ "config", "minWeight" }, minWeight )
-    -> setDouble( Path{ "config", "maxWeight" }, maxWeight )
     -> setDouble( Path{ "config", "maxError" }, maxError )
     -> setInt( Path{ "current", "tick" }, net -> getTick() )
     ;
@@ -236,73 +221,57 @@ LimbProcessor* LimbProcessor::calc()
     mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
 
     /*
-        Forward calculation (neuron values)
+        Init forward calculation (neuron values)
+        from layers without parents
     */
-    calcTableValues
-    -> reset()
-    -> loop
-    (
-        [ this, &netLastChangeValues ]
-        ( CalcTable* table, Layer* layer, bool &terminate )
-        {
-            terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
-            if( !terminate )
-            {
-                /* Exclude calculation for layers without parents */
-                if( ! getNerveList() -> parentsExists( layer ))
-                {
-                    return true;
-                }
-                /* Calculate all layers with parents calculating */
-                if( table -> isParentsCalculated( layer, getNerveList() ))
-                {
-                    /* Set default thread id */
-                    layerCalc( layer, DATA_VALUES );
-                    return true;
-                }
-            }
+    resetCalcState();
 
+    /* Start tasks */
+    getLayerList() -> loop
+    (
+        [ this ]
+        ( void* item )
+        {
+            auto layer = ( LayerProcessor* ) item;
+            if( layer -> isParentsCalculated())
+            {
+                layer -> forwardCalcComplete();
+            }
             return false;
         }
     );
 
+    /* Wait tasks */
+    threadManager -> wait();
 
+
+    onChangeValues();
     mon -> now( Path{ "trace" , "calcFront" }, true );
-
     calcDebugDump( CALC_STAGE_AFTER_FRONT );
-
     mon -> now( Path{ "trace", "debugDumpStageAfterFront" }, true);
 
     /*
         Backward calculation (neuron errors)
     */
-    calcTableErrors
-    -> reset()
-    -> loop
+    resetCalcState();
+    getLayerList() -> loop
     (
-        [ this, &netLastChangeValues ]
-        ( CalcTable* table, Layer* layer, bool& terminate )
+        [ this ]
+        ( void* item )
         {
-            terminate = terminated || net -> getLastChangeValues() != netLastChangeValues;
-
-            if( !terminate )
+            auto layer = ( LayerProcessor* ) item;
+            if( layer -> isChildrenCalculated())
             {
-                if( table -> isChildrenCalculated( layer, getNerveList() ))
-                {
-                    /* Calculate errors for layers with parents */
-                    layerCalc( layer, DATA_ERRORS );
-                    return true;
-                }
+                layer -> backwardCalcComplete();
             }
-
             return false;
         }
     );
 
+//    WAIT!!!!!
+
     mon -> now( Path{ "trace", "calc_back" }, true );
-
     calcDebugDump( CALC_STAGE_AFTER_BACK );
-
     mon -> now( Path{ "trace", "debug_dump_stage_after_back" }, true);
 
     /*
@@ -325,11 +294,8 @@ LimbProcessor* LimbProcessor::calc()
             return terminate;
         }
     );
-
     mon -> now( Path{ "trace", "calc_learning" }, true );
-
     calcDebugDump( CALC_STAGE_AFTER_LEARNING );
-
     mon -> now( Path{ "trace", "debug_dump_stage_after_learning" }, true );
 
     /*
@@ -377,47 +343,78 @@ LimbProcessor* LimbProcessor::calc()
     {
         mon -> remove( Path{ "mon" } );
 
+
+        auto monConfig = net
+        -> getApplication()
+        -> getConfig()
+        -> getObject( Path{  "engine",  "brain", "mon", "charts" });
+
         net -> lock();
 
         net
         -> getLayerList()
         -> loop
         (
-            [ this ]
+            [ this, monConfig ]
             (
                 void* aItem
             )
             {
                 auto layer = (Layer*) aItem;
+                auto layerId = layer -> getId();
 
-                mon
-                -> setString
-                (
-                    Path{ "mon", "values", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    layer -> getChartValues() -> toString( 40 )
-                )
-                -> setString
-                (
-                    Path{ "mon", "errors", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    layer -> getChartErrors() -> toString( 40 )
-                )
+                if( monConfig -> getBool( Path{ "values", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "values",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartValues() -> toString( 40 )
+                    );
+                }
 
-                -> setString
-                (
-                    Path{ "mon", "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                    layer -> getChartTick() -> toString( 40 )
-                )
+                if( monConfig -> getBool( Path{ "errors", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "errors",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartErrors() -> toString( 40 )
+                    );
+                }
 
-                -> setString
-                (
-                    Path
-                    {
-                        "mon",
-                        "errorsBeforeChange",
-                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-                    },
-                    layer -> getChartErrorsBeforeChange() -> toString( 40 )
-                )
+                if( monConfig -> getBool( Path{ "ticks", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "ticks",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartTick() -> toString( 40 )
+                    );
+                }
+
+//                -> setString
+//                (
+//                    Path
+//                    {
+//                        "mon",
+//                        "errorsBeforeChange",
+//                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+//                    },
+//                    layer -> getChartErrorsBeforeChange() -> toString( 40 )
+//                )
                 ;
 
                 return false;
@@ -435,7 +432,6 @@ LimbProcessor* LimbProcessor::calc()
     mon
     -> now( Path{ "current", "last" } )
     -> setDouble( Path{ "current", "fps" }, fps -> avg() )
-    -> setInt( Path{ "current", "thread_count" }, threadManager -> getCount() )
     -> flush();
 
     auto fpsEnd = now();
@@ -447,14 +443,13 @@ LimbProcessor* LimbProcessor::calc()
 
 
 /*
-    Controling the nerve list
+    Controling the nerve list and prepare layers
 */
 LimbProcessor* LimbProcessor::nerveControl()
 {
     /* Allocate weigth */
     getNerveList() -> weightsAllocate();
 
-    /* Network was realocated and have to loading */
     auto loadingError = false;
     getNerveList() -> loop
     (
@@ -462,10 +457,19 @@ LimbProcessor* LimbProcessor::nerveControl()
         ( void* item )
         {
             auto nerve = ( Nerve* ) item;
+            /* Network was realocated and have to loading */
             if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk() )
             {
                 loadingError = true;
             }
+
+            /* Fill parents and fildren for layers */
+            (( LayerProcessor* )(nerve -> getParent()))
+            -> addChild( nerve );
+
+            (( LayerProcessor* )( nerve -> getChild()))
+            -> addParent( nerve );
+
             return loadingError;
         }
     );
@@ -519,53 +523,6 @@ LimbProcessor* LimbProcessor::setLearningSpeed
 
 
 
-/*
-    Set wakeup weight
-*/
-LimbProcessor* LimbProcessor::setMinWeight
-(
-    real a
-)
-{
-    minWeight = a;
-    return this;
-}
-
-
-
-/*
-    Get wakeup weight
-*/
-real LimbProcessor::getMinWeight()
-{
-    return minWeight;
-}
-
-
-
-/*
-    Set min weight
-*/
-LimbProcessor* LimbProcessor::setMaxWeight
-(
-    real a
-)
-{
-    maxWeight = a;
-    return this;
-}
-
-
-
-/*
-    Get max weight
-*/
-real LimbProcessor::getMaxWeight()
-{
-    return maxWeight;
-}
-
-
 
 /*
     Set min error
@@ -597,299 +554,6 @@ real LimbProcessor::getMaxError()
 real LimbProcessor::getLearningSpeed()
 {
     return learningSpeed;
-}
-
-
-
-/*
-    Calculate value and error for neuron of layer
-*/
-LimbProcessor* LimbProcessor::neuronCalcValue
-(
-    Layer* aLayer,
-    int aIndex
-)
-{
-    /* Max accum */
-    real max = -INFINITY;
-    Nerve* maxNerve = NULL;
-    int maxWeightIndex = -1;
-
-    /* Additive accum */
-    real add = 0.0;
-    /* Multiplexor accum */
-    real mul = 1.0;
-    /* Additive count */
-    int count = 0;
-
-    /* Neuron has a binds and it is not a Receptor */
-    parentsLoop
-    (
-        aLayer,
-        aIndex,
-        BT_ALL,
-        [
-            this,
-            &add,
-            &mul,
-            &count,
-            &max,
-            &maxNerve,
-            &maxWeightIndex
-        ]
-        (
-            Layer*  aParentLayer,
-            int     aParentIndex,
-            Nerve*  aNerve,
-            real    aWeight,
-            int     aWeightIndex /* not use */
-        ) -> bool
-        {
-            /* The incoming value from parent to current neuron */
-            auto w
-            = aParentIndex == -1
-            ? 0
-            : aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
-
-            /* Calculate summ */
-            switch( aNerve -> getBindType() )
-            {
-                default:
-                break;
-                case BT_ADD:
-                    count ++;
-                    add += w;
-                break;
-                case BT_MUL:
-                    mul *= w;
-                break;
-                case BT_MAX:
-                    aNerve -> setControl( aWeightIndex, 0.0 );
-                    if( w > max )
-                    {
-                        maxNerve = aNerve;
-                        maxWeightIndex = aWeightIndex;
-                        max = w;
-                    }
-                break;
-            }
-            return terminated;
-        }
-    );
-
-    /* MAX postprocessing hi priority */
-    if( maxWeightIndex > -1 )
-    {
-        maxNerve -> setControl( maxWeightIndex, 1.0 );
-        aLayer -> setNeuronValue
-        (
-            aIndex,
-            (*( aLayer -> frontFunc ))( max )
-        );
-    }
-    else
-    {
-        /* ADD postprocessing */
-        if( count > 0 )
-        {
-            aLayer -> setNeuronValue
-            (
-                aIndex,
-                /* Main value calculation */
-                (*( aLayer -> frontFunc ))( add * mul )
-            );
-        }
-    }
-
-    return this;
-}
-
-
-TODO почему то начинается на обратном проходе от 9 до 7 тестирование
-по идее не должно.
-
-надо понять как эта вся херня работает в плане обучения... что цикл верно
-выполняется и обходится обучение. нужен какой то видимый прихнак
-понимать что обучение остановилось
-
-а еще надо повысить скорость работы тичера резко потому что он ща медленный
-
-
-
-
-/*
-    Calculate neuron error
-*/
-LimbProcessor* LimbProcessor::neuronCalcError
-(
-    Layer*  aLayer, /* Layer for calculation */
-    int     aIndex  /* Neuron index of layer */
-)
-{
-    /* Define variables */
-    real error    = 0.0;
-    switch( aLayer -> getErrorCalc() )
-    {
-        default:
-        case EC_NONE:
-            error = 0;
-            /* Error not changing */
-        break;
-        case EC_LEARNING:
-        {
-            /*
-                caclulate error form all children for the current neuron
-            */
-            childrenLoop
-            (
-                aLayer,
-                aIndex,
-                BT_ALL,
-                [ this, &error ]
-                (
-                    Layer* aChild,
-                    int aChildIndex,
-                    Nerve* aNerve,
-                    real aWeight,
-                    int aWeightIndex    /* Not use */
-                ) -> bool
-                {
-                    /* Calculate summ */
-                    switch( aNerve -> getBindType() )
-                    {
-                        default:
-                        break;
-                        case BT_ADD:
-                            /* Use the back func out for outgoing error */
-                            error += (*( aChild -> backFuncOut ))
-                            (
-                                 aChild -> getNeuronError( aChildIndex )
-                            )
-                            * aWeight;
-                        break;
-                        case BT_MAX:
-                            error += aNerve -> getControl( aWeightIndex )
-                            * (*( aChild -> backFuncOut ))
-                            (
-                                 aChild -> getNeuronError( aChildIndex )
-                            )
-                            * aWeight;
-                        break;
-                    }
-                    return terminated;
-                }
-            );
-        }
-        break;
-        case EC_VALUE:
-            error = - aLayer -> getNeuronValue( aIndex );
-        break;
-    }
-
-    /*
-        Calculate current neuron error
-        https://habr.com/ru/articles/313216/
-    */
-    auto currentError = error * ( * ( aLayer -> backFunc ))
-    (
-        aLayer -> getNeuronValue( aIndex )
-    );
-
-    /* Write error in to neuron */
-    aLayer -> setNeuronError( aIndex, currentError );
-
-    return this;
-}
-
-
-
-/*
-    Calculate neurons in the layer using threads
-*/
-LimbProcessor* LimbProcessor::layerCalc
-(
-    /* Layer for calculation */
-    Layer*  aLayer,
-    /* Type of calculation */
-    Data    aData
-)
-{
-    /* Calculate thread count */
-    int threadCount = aLayer -> getThreadCount();
-    /* Check thread count */
-    if( threadManager -> prepare( threadCount ))
-    {
-        /* Set handlers for thread */
-        for
-        (
-            size_t threadNumber = 0;
-            threadNumber < threadCount && !threadManager -> isTerminating();
-            threadNumber++
-        )
-        {
-            threadManager -> setHandler
-            (
-                threadNumber,
-                (void*) new LayerCalcTask
-                {
-                    this,
-                    aLayer,
-                    calcNeuronFrom( aLayer, threadCount, threadNumber ),
-                    calcNeuronTo( aLayer, threadCount, threadNumber ),
-                    aData
-                },
-                []
-                (
-                    void* aTaskPtr
-                )
-                {
-                    auto task = (LayerCalcTask*) aTaskPtr;
-                    /* Thread body */
-                    for
-                    (
-                        size_t n = task -> neuronFrom;
-                        n < task -> neuronTo;
-                        n++
-                    )
-                    {
-                        switch( task -> data )
-                        {
-                            /* Unknown data */
-                            default:
-                            break;
-                            case DATA_VALUES:
-                                task -> limb -> neuronCalcValue
-                                (
-                                    task -> layer, n
-                                );
-                            break;
-                            case DATA_ERRORS:
-                                task -> limb -> neuronCalcError
-                                (
-                                    task -> layer, n
-                                );
-                            break;
-                        }
-                    }
-                    delete task;
-                }
-            );
-
-        }
-
-        /* Run calculation and wait */
-        threadManager
-        -> run();
-        threadManager
-        -> wait();
-    }
-
-    if( aData == DATA_VALUES )
-    {
-        onChangeValues();
-    }
-
-    return this;
 }
 
 
@@ -945,60 +609,6 @@ LimbProcessor* LimbProcessor::setDumpConf
     {
         dumpConf -> clear() -> copyFrom( a );
     }
-    return this;
-}
-
-
-
-LimbProcessor* LimbProcessor::down()
-{
-    threadManager -> terminate();
-    return this;
-}
-
-
-
-LimbProcessor* LimbProcessor::up()
-{
-    terminated = false;
-    return this;
-}
-
-
-
-LimbProcessor* LimbProcessor::buildCalcTables()
-{
-    calcTableValues -> clear();
-    calcTableErrors -> clear();
-
-    getLayerList() -> loop
-    (
-        [ this ]
-        ( void* item )
-        {
-            calcTableValues
-            -> addLayer( (Layer*) item )
-            ;
-
-            calcTableErrors
-            -> addLayer( (Layer*) item )
-            ;
-            return false;
-        }
-    );
-
-    calcTableValues
-    -> dump( getLog(), "Layers before forward sort" )
-    -> sortForward( getNerveList() )
-    -> dump( getLog(), "Layers after forward sort" )
-    ;
-
-    calcTableErrors
-    -> dump( getLog(), "Layers before backward sort" )
-    -> sortBackward( getNerveList() )
-    -> dump( getLog(), "Layers after backward sort" )
-    ;
-
     return this;
 }
 
@@ -1325,41 +935,6 @@ LimbProcessor* LimbProcessor::calcDebugDump
         }
     );
 
-    return this;
-}
-
-
-
-
-/*
-    Method return count of thread using following property
-        maxThreadCount
-        minNeuronPerThread
-
-*/
-LimbProcessor* LimbProcessor::calcThreadCount()
-{
-    getLayerList() -> loop
-    (
-        [ & ]
-        ( void* item )
-        {
-            auto layer = (Layer*) item;
-            layer -> setThreadCount
-            (
-                min
-                (
-                    maxThreadCount,
-                    max
-                    (
-                        1,
-                        layer -> getCount() / minNeuronPerThread
-                    )
-                )
-            );
-            return false;
-        }
-    );
     return this;
 }
 
