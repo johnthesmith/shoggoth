@@ -62,7 +62,8 @@ void LayerProcessor::destroy()
 LayerProcessor* LayerProcessor::calc
 (
     /* Type of data calculation */
-    Data aData
+    Data aData,
+    ThreadManager* aThreadManager
 )
 {
     if( setCalcState( CALCULATING ))
@@ -73,11 +74,11 @@ LayerProcessor* LayerProcessor::calc
             break;
             case DATA_VALUES:
                 calcValues();
-                forwardCalcComplete();
+                forwardCalcComplete( aThreadManager );
             break;
             case DATA_ERRORS:
                 calcErrors();
-                backwardCalcComplete();
+                backwardCalcComplete( aThreadManager );
             break;
         }
     }

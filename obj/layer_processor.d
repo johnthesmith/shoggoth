@@ -35,7 +35,10 @@ obj/layer_processor.o: src/app/brain/layer_processor.cpp \
   src/app/brain/../../shoggoth/nerve.h \
   src/app/brain/../../shoggoth/../../../../lib/core/rnd.h \
   src/app/brain/../../shoggoth/shoggoth_db.h \
-  src/app/brain/layer_processor.h
+  src/app/brain/layer_processor.h \
+  src/app/brain/../../../../../lib/core/thread_manager.h \
+  src/app/brain/../../../../../lib/core/log_manager.h \
+  src/app/brain/../../../../../lib/core/result.h
 src/app/brain/../../shoggoth/limb.h:
 src/app/brain/../../shoggoth/../../../../lib/core/log_manager.h:
 src/app/brain/../../shoggoth/../../../../lib/core/log.h:
@@ -73,3 +76,6 @@ src/app/brain/../../shoggoth/nerve.h:
 src/app/brain/../../shoggoth/../../../../lib/core/rnd.h:
 src/app/brain/../../shoggoth/shoggoth_db.h:
 src/app/brain/layer_processor.h:
+src/app/brain/../../../../../lib/core/thread_manager.h:
+src/app/brain/../../../../../lib/core/log_manager.h:
+src/app/brain/../../../../../lib/core/result.h:

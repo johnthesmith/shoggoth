@@ -134,7 +134,7 @@ class Limb : public Result
         /*
             Create new layer
         */
-        Layer* createLayer
+        Layer* addLayer
         (
             string /* Id of layer */
         );
@@ -557,6 +557,17 @@ class Limb : public Result
             return version;
         }
 
+
+        /*
+            Create new layer in this limb
+        */
+        inline virtual Layer* createLayer
+        (
+            string aLayerId
+        )
+        {
+            return Layer::create( this, aLayerId );
+        }
 
 };
 

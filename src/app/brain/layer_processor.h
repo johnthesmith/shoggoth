@@ -13,6 +13,7 @@
 
 #include "../../shoggoth/layer.h"
 #include "../../shoggoth/nerve.h"
+#include "../../../../../lib/core/thread_manager.h"
 
 
 
@@ -95,7 +96,8 @@ public:
     */
     LayerProcessor* calc
     (
-        Data
+        Data,
+        ThreadManager*
     );
 
 
@@ -227,26 +229,32 @@ public:
 
 
 
-    inline LayerProcessor* backwardCalcComplete()
+    inline LayerProcessor* backwardCalcComplete
+    (
+        ThreadManager* threadManager
+    )
     {
-        /* Set status */
-        if( this -> setCalcState( CALCULATED ))
-        {
-            for( Nerve* nerve:parents )
-            {
-                auto parent = (LayerProcessor* )(nerve -> getParent());
-                if( parent != this && parent -> isChildrenCalculated())
-                {
-                    parent -> calc( DATA_ERRORS );
-                }
-            }
-        }
+//        /* Set status */
+//        if( this -> setCalcState( CALCULATED ))
+//        {
+//            for( Nerve* nerve:parents )
+//            {
+//                auto parent = (LayerProcessor* )(nerve -> getParent());
+//                if( parent != this && parent -> isChildrenCalculated())
+//                {
+//                    parent -> calc( DATA_ERRORS );
+//                }
+//            }
+//        }
         return this;
     }
 
 
 
-    inline LayerProcessor* forwardCalcComplete()
+    inline LayerProcessor* forwardCalcComplete
+    (
+        ThreadManager* threadManager
+    )
     {
         /* Set status */
         if( this -> setCalcState( CALCULATED ))
@@ -256,7 +264,17 @@ public:
                 auto child = (LayerProcessor* )(nerve -> getChild());
                 if( child != this && child -> isParentsCalculated())
                 {
-                    child -> calc( DATA_VALUES );
+                    threadManager
+                    -> add( child -> getId() )
+                    -> run
+                    (
+                        []
+                        ( void* item )
+                        {
+                            auto child = (LayerProcessor*) item;
+                            // child -> calc( DATA_VALUES );
+                        }
+                    );
                 }
             }
         }

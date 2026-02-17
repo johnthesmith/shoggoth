@@ -290,4 +290,18 @@ public:
         );
         return this;
     }
+
+
+
+    /*
+        Create new layer in this limb
+    */
+    inline Layer* createLayer
+    (
+        string aLayerId
+    ) override
+    {
+        return ( Layer* ) LayerProcessor::create( ( Limb* ) this, aLayerId );
+    }
+
 };

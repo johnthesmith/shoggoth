@@ -87,7 +87,7 @@ LogManager* Limb::getLogManager()
 /*
     Create new layer
 */
-Layer* Limb::createLayer
+Layer* Limb::addLayer
 (
     string aId /* Id of layer */
 )
@@ -107,7 +107,7 @@ Layer* Limb::createLayer
     else
     {
         /* Create new layer object */
-        result = Layer::create( this, aId );
+        result = createLayer( aId );
         layers -> push( result );
 
         lastChangeStructure = now();
@@ -347,7 +347,7 @@ Layer* Limb::copyLayerFrom
 )
 {
     return
-    Layer::create( this, aLayerFrom -> getId() )
+    createLayer( aLayerFrom -> getId() )
     -> setErrorCalc( aLayerFrom -> getErrorCalc() )
     -> setWeightCalc( aLayerFrom -> getWeightCalc() )
     -> setFrontFunc( aLayerFrom -> getFrontFunc() )

@@ -1085,7 +1085,7 @@ Net* Net::applyNet
                 )
                 {
                     auto layerId = iName;
-                    auto layer = createLayer( layerId );
+                    auto layer = addLayer( layerId );
                     loadLayer( layer, iParam );
 //                    layer -> setStoragePath( storagePath );
                 }
