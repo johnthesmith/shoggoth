@@ -45,9 +45,6 @@
         }
     },
 
-    "minWeight"         :0.000001,
-    "maxWeight"         :1000,
-    "maxError"          :10,
     "errorNormalize"    :0.11,
     "minNeuronPerThread":5,
     "maxThreadCount"    :3,
@@ -91,7 +88,8 @@
                 "learning",
                 "command",
                 "result",
-                "sample"
+                "sample",
+                "retina"
             ],
             "reserv":
             [
@@ -116,7 +114,11 @@
             "nerves"        :
             [
                 [ "retina", "cortex_1a" ],
-                [ "retina", "cortex_1b" ],
+                [ "cortex_1a", "pool_1a" ],
+                [ "pool_1a", "cordex_2a" ],
+                [ "cortex_2a", "pool_2a" ],
+                [ "pool_2a", "fc" ],
+                [ "fc", "result" ]
             ],
             "data"          :[ "WEIGHTS" ],
             "dataview"      :"DIGIT",

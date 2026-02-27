@@ -198,7 +198,6 @@ void BrainPayload::onEngineLoop
 
                 processor
                 -> getLimb()
-                -> setMaxError( appConfig -> getDouble( Path{ "maxError" }, 0.01 ))
                 -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
                 -> setTickChart( appConfig -> getInt( Path{ "tickChart" }, 0 ))
                 -> setDumpConf( appConfig -> getObject( Path{ "dump" }))

@@ -4,6 +4,35 @@
 # pragma once
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//TODO проверяем скорость
+//присобваичваем к каждому потоку время начала и заврешения работы
+//смотрим на предмет зависит ли длительность рачета от объема слоя
+//если не зависит то высокие накладыне расходы на потоки
+
+
+
+
+
+
+
+
+
+
+
+
 /*
     Limb - processor
 */
@@ -27,13 +56,15 @@ class LimbProcessor : public Limb
 {
 private:
     /* External Net object */
-    Net*            net             = NULL;
+    Net*            net                 = NULL;
     /* Monitor object */
-    Mon*            mon             = NULL;
+    Mon*            mon                 = NULL;
     /* Chart list object */
-    ChartList*      weightsChart    = NULL;
-
-    ThreadManager*  threadManager   = NULL;
+    ChartList*      weightsChart        = NULL;
+    /* Forward and backward thread manager */
+    ThreadManager*  threadManager       = NULL;
+    /* Weight thread manager */
+    ThreadManager*  threadManagerWeight = NULL;
 
     /*
         Calculation state
@@ -46,13 +77,6 @@ private:
     */
     /* 0.0 - learning disable, max 0.1 recomended */
     real  learningSpeed           = 0.001;
-    /* 0.0 - zero weight does not wakeup, max 0.0001 recomended */
-    real  minWeight               = 0.0001;
-    /* Maxumum weight */
-    real  maxWeight               = 1000;
-    /* Maxumum error, have to less then maxWeight */
-    real  maxError                = 100;
-
     /* Each tickWrite from tick all Weights will be writen to file */
     int     tickWrite               = 10;
     /* Each tickChart from ешсл Chartss will be writen to mon */
@@ -180,23 +204,6 @@ public:
 
 
 
-    /*
-        Get max eror
-    */
-    real getMaxError();
-
-
-
-    /*
-        Set max error
-    */
-    LimbProcessor* setMaxError
-    (
-        real /* Value */
-    );
-
-
-
 
     /*
         Calculate neuron parent weights
@@ -303,5 +310,13 @@ public:
     {
         return ( Layer* ) LayerProcessor::create( ( Limb* ) this, aLayerId );
     }
+
+
+
+    /*
+        Dump layers
+    */
+    virtual LimbProcessor* dump() override;
+
 
 };

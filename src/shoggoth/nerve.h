@@ -12,7 +12,6 @@
 #include "../../../../lib/core/log_manager.h"
 #include "../../../../lib/core/mon.h"
 #include "../../../../lib/core/rnd.h"
-
 #include "../../../../lib/core/chart_list.h"
 
 #include "shoggoth_consts.h"
@@ -602,55 +601,8 @@ class Nerve: public Result
     */
     Nerve* calcWeights
     (
-        real aLearningSpeed
-    )
-    {
-        if
-        (
-            /* Learning mode enabled for child layer */
-            child -> getErrorCalc() == EC_LEARNING &&
-            /* Only for add signal nerve */
-            bindType == BT_ADD
-        )
-        {
-            /*
-                Упрощенный однопоточный алгоритм. Бежим по всем биндам нерва
-                TODO В дальнейшем следует реализовать таблицу
-                ПОток - список биндов. и распределять бинды по потокам
-                с учтом того куда какой нейрон попал.
-            */
-
-            /* Let count of weights  */
-            for( int i = 0; i < bindsCount; i++ )
-            {
-                /* Check weight exists */
-                auto weightIndex = binds[ i ];
-                if( weightIndex > -1 )
-                {
-                    /* Вытряхиваем индексы нейронов */
-                    auto parentNeuron = calcParentIndexByBind( i );
-                    auto childNeuron = calcChildIndexByBind( i );
-
-                    /* Retrive spreded error from child */
-                    auto error = child -> getNeuronError( childNeuron );
-
-                    /* the https://habr.com/ru/articles/313216/ */
-                    real gradient =
-                    parent -> getNeuronValue( parentNeuron )
-                    * error;
-
-                    real deltaWeight = gradient * aLearningSpeed
-                    + getDeltaWeight( weightIndex ) * 0.3;
-
-                    real newWeight = getWeight( weightIndex ) + deltaWeight;
-
-                    setWeight( weightIndex, newWeight );
-                    setDeltaWeight( weightIndex, deltaWeight );
-                }
-            }
-        }
-        return this;
-    }
+        real
+    );
 
 
 
@@ -743,4 +695,18 @@ class Nerve: public Result
         return this;
     }
 
+
+
+    /*
+        Return nerve id
+    */
+    string buildId()
+    {
+        return
+        getParent() -> getId()
+        + "-"
+        + bindTypeToString( bindType )
+        + "-"
+        + getChild() -> getId();
+    }
 };

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-watch -n 0.1 -c jq . -C mon/procesor.json
+watch -n 0.3 -c jq . -C mon/procesor.json

@@ -56,44 +56,14 @@ void LayerProcessor::destroy()
 */
 
 
-/*
-    Calculate neurns in the thread
-*/
-LayerProcessor* LayerProcessor::calc
-(
-    /* Type of data calculation */
-    Data aData,
-    ThreadManager* aThreadManager
-)
-{
-    if( setCalcState( CALCULATING ))
-    {
-        switch( aData )
-        {
-            default:
-            break;
-            case DATA_VALUES:
-                calcValues();
-                forwardCalcComplete( aThreadManager );
-            break;
-            case DATA_ERRORS:
-                calcErrors();
-                backwardCalcComplete( aThreadManager );
-            break;
-        }
-    }
-
-    return this;
-}
-
-
 
 /*
     Calculate neurons in the layer using threads
 */
 LayerProcessor* LayerProcessor::calcValues()
 {
-    for( size_t index = 0; index < getCount(); index++ )
+    auto c = getCount();
+    for( size_t index = 0; index < c; index++ )
     {
         /* Max accum */
         real max = -INFINITY;
@@ -134,7 +104,6 @@ LayerProcessor* LayerProcessor::calcValues()
                 = aParentIndex == -1
                 ? 0
                 : aParentLayer -> getNeuronValue( aParentIndex ) * aWeight;
-
                 /* Calculate summ */
                 switch( aNerve -> getBindType() )
                 {
@@ -192,9 +161,10 @@ LayerProcessor* LayerProcessor::calcValues()
 */
 LayerProcessor* LayerProcessor::calcErrors()
 {
-    for( size_t index = 0; index < getCount(); index++ )
+    auto c = getCount();
+    for( size_t index = 0; index < c; index++ )
     {
-        real error    = 0.0;
+        real error = 0.0;
         switch( getErrorCalc() )
         {
             default:
@@ -211,7 +181,7 @@ LayerProcessor* LayerProcessor::calcErrors()
                 (
                     index,
                     BT_ALL,
-                    [ this, &error ]
+                    [ this, &error, index ]
                     (
                         Layer* aChild,
                         int aChildIndex,
@@ -220,6 +190,12 @@ LayerProcessor* LayerProcessor::calcErrors()
                         int aWeightIndex    /* Not use */
                     ) -> bool
                     {
+//childrenLoop тут конский баг он ничего не вернул для 11 нейрона!!!
+//
+//if( getId() == "fc" )
+//{
+//    cout << index << ":"  << aChild -> getId() << aChildIndex << ":" << aChild -> getCount() << "\n";
+//}
                         /* Calculate summ */
                         switch( aNerve -> getBindType() )
                         {
@@ -266,11 +242,3 @@ LayerProcessor* LayerProcessor::calcErrors()
     }
     return this;
 }
-
-
-
-
-
-
-
-

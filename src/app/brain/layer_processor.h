@@ -42,6 +42,8 @@ private:
     int             remoteProcessorPort;
 
     CalcState       calcState = WAIT;
+    mutex           stateMutex;
+
 
     /* List of parents nerve for layer */
     vector <Nerve*> parents;
@@ -91,15 +93,6 @@ public:
         Specific methods
     */
 
-    /*
-        Calc layer in the thread
-    */
-    LayerProcessor* calc
-    (
-        Data,
-        ThreadManager*
-    );
-
 
 
     /*
@@ -123,14 +116,21 @@ public:
 
 
 
+    /*
+        Change state for layer
+    */
     inline bool setCalcState
     (
         CalcState a
     )
     {
+        /* Lock state for layer */
+        unique_lock <mutex> lck( stateMutex );
+
         if
         (
-            ( calcState == WAIT && a != WAIT )
+            ( calcState == WAIT && a == WAIT )
+            || ( calcState == WAIT && a != WAIT )
             || ( calcState == CALCULATING && a == CALCULATED )
             || ( calcState == CALCULATED && a == WAIT )
         )
@@ -138,12 +138,10 @@ public:
             calcState = a;
             return true;
         }
-
-        getLog()
-        -> warning( "Strange state chage" )
-        -> prm( "Layer", getId());
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -194,6 +192,30 @@ public:
 
 
     /*
+        Return children vector
+    */
+    inline vector <Nerve*> getChildrenVector()
+    {
+        return children;
+    }
+
+
+
+    inline bool isInput()
+    {
+        return parents.size() == 0;
+    }
+
+
+
+    inline bool isOutput()
+    {
+        return children.size() == 0;
+    }
+
+
+
+    /*
         Return true if all parents of the layer has a calculated
     */
     inline bool isParentsCalculated()
@@ -201,7 +223,7 @@ public:
         for( Nerve* nerve:parents )
         {
             auto parent = (LayerProcessor* )(nerve -> getParent());
-            if( parent != this && parent -> getCalcState() == CALCULATED )
+            if( parent != this && parent -> getCalcState() != CALCULATED )
             {
                 return false;
             }
@@ -229,28 +251,10 @@ public:
 
 
 
-    inline LayerProcessor* backwardCalcComplete
-    (
-        ThreadManager* threadManager
-    )
-    {
-//        /* Set status */
-//        if( this -> setCalcState( CALCULATED ))
-//        {
-//            for( Nerve* nerve:parents )
-//            {
-//                auto parent = (LayerProcessor* )(nerve -> getParent());
-//                if( parent != this && parent -> isChildrenCalculated())
-//                {
-//                    parent -> calc( DATA_ERRORS );
-//                }
-//            }
-//        }
-        return this;
-    }
-
-
-
+    /*
+        Finish backward calculation and run
+        all children calcualteion
+    */
     inline LayerProcessor* forwardCalcComplete
     (
         ThreadManager* threadManager
@@ -261,25 +265,99 @@ public:
         {
             for( Nerve* nerve:children )
             {
-                auto child = (LayerProcessor* )(nerve -> getChild());
-                if( child != this && child -> isParentsCalculated())
+                struct DataStruct
                 {
+                    LayerProcessor* layer;
+                    ThreadManager* manager;
+                };
+
+                auto child = (LayerProcessor* )( nerve -> getChild() );
+                if
+                (
+                    child != this
+                    && child -> isParentsCalculated()
+                    && child -> setCalcState( CALCULATING )
+                )
+                {
+                    auto data = DataStruct{ child, threadManager };
                     threadManager
                     -> add( child -> getId() )
                     -> run
                     (
                         []
-                        ( void* item )
+                        ( void* data )
                         {
-                            auto child = (LayerProcessor*) item;
-                            // child -> calc( DATA_VALUES );
-                        }
+                            auto [ child, manager ] = *(DataStruct*) data;
+                            child
+                            -> calcValues()
+                            -> forwardCalcComplete( manager );
+                        },
+                        &data,
+                        sizeof( data )
                     );
                 }
             }
         }
         return this;
     }
+
+
+
+    /*
+        Finish backward calculation and run
+        all children calcualteion
+    */
+    inline LayerProcessor* backwardCalcComplete
+    (
+        ThreadManager* threadManager
+    )
+    {
+        /* Set status */
+        if( this -> setCalcState( CALCULATED ))
+        {
+            for( Nerve* nerve:parents )
+            {
+                struct DataStruct
+                {
+                    LayerProcessor* layer;
+                    ThreadManager* manager;
+                };
+
+                auto parent = (LayerProcessor* )(nerve -> getParent());
+                if
+                (
+                    parent != this
+                    && parent -> isChildrenCalculated()
+                    && parent -> setCalcState( CALCULATING )
+                )
+                {
+                    auto data = DataStruct{ parent, threadManager };
+                    threadManager
+                    -> add( parent -> getId() )
+                    -> run
+                    (
+                        []
+                        ( void* data )
+                        {
+                            auto [ parent, manager ] = *(DataStruct*) data;
+                            parent
+                            -> calcErrors()
+                            -> backwardCalcComplete( manager );
+                        },
+                        &data,
+                        sizeof( data )
+                    );
+                }
+            }
+        }
+        return this;
+    }
+
+
+
+
+
+
 
 
 
@@ -363,7 +441,7 @@ public:
                 )
                 {
                     auto weightIndex =
-                    nerve -> getWeightIndex( childIndex, aParentIndex );
+                    nerve -> getWeightIndex( aParentIndex, childIndex );
                     if( weightIndex >= 0 )
                     {
                         aCallback
@@ -380,4 +458,20 @@ public:
         }
         return this;
     }
+
+
+
+    /*
+        Calculate neurons in the layer using threads
+    */
+    LayerProcessor* dump()
+    {
+        cout
+        << getId() << ":"
+        << calcState << ":"
+        << calcSumValue() << ":"
+        << calcRmsError() << "\n";
+        return this;
+    }
+
 };

@@ -38,6 +38,7 @@ LimbProcessor::LimbProcessor
     dumpConf = ParamList::create();
 
     threadManager = ThreadManager::create( aNet -> getLogManager() );
+    threadManagerWeight = ThreadManager::create( aNet -> getLogManager() );
 
     fps = ChartData::create() -> setMaxCount( 100 );
 }
@@ -53,6 +54,7 @@ LimbProcessor::~LimbProcessor()
 
     dumpConf -> destroy();
     threadManager -> destroy();
+    threadManagerWeight -> destroy();
 
 //    weightsChart -> destroy();
 
@@ -130,7 +132,6 @@ LimbProcessor* LimbProcessor::calc()
     mon -> now( Path{ "trace", "start" }, true );
 
     net -> lock();
-
     if
     (
         /* Net is not locked for writing */
@@ -174,267 +175,287 @@ LimbProcessor* LimbProcessor::calc()
         /* Reallocates and fill weights */
         nerveControl();
     }
-//
-//    if( getVersion() != net -> getVersion() )
-//    {
-//        /* Set version from net */
-//        setVersion( net -> getVersion() );
-//    }
-//    net ->  unlock();
-//
-//
-//    mon -> now( Path{ "trace", "syncToLimb" }, true );
-//
-//    /*
-//        Calculation begin
-//    */
-//    mon
-//    -> setInt( Path{ "net", "seed" }, net -> getRnd() -> getSeed() )
-//    -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
-//    -> setDouble( Path{ "config", "maxError" }, maxError )
-//    -> setInt( Path{ "current", "tick" }, net -> getTick() )
-//    ;
-//
-//    mon -> now( Path{ "trace", "mon" }, true);
-//    mon -> now( Path{ "trace", "nerveControl" }, true );
-//
-//    auto netLastChangeValues = net -> getLastChangeValues();
-//
-//    /* Swap values and errors */
-//    net
-//    -> swapValuesAndErrors
-//    (
-//        /* Action */
-//        {
-//            /* Upload start values from Net */
-//            READ_VALUES
-//        },
-//        /* Participant object */
-//        this,
-//        false
-//    );
-//    mon -> now( Path{ "trace" , "swap" }, true );
-//
-//    /* Drop learing mode flag */
-//    calcDebugDump( CALC_STAGE_START );
-//
-//    mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
-//
-//    /*
-//        Init forward calculation (neuron values)
-//        from layers without parents
-//    */
-////    resetCalcState();
-////
-////    /* Start tasks */
-////    getLayerList() -> loop
-////    (
-////        [ this ]
-////        ( void* item )
-////        {
-////            auto layer = ( LayerProcessor* ) item;
-////            if( layer -> isParentsCalculated())
-////            {
-////                layer -> forwardCalcComplete( threadManager );
-////            }
-////            return false;
-////        }
-////    );
-////
-////    /* Wait tasks */
-////    threadManager -> wait();
-////
-////    onChangeValues();
-////    mon -> now( Path{ "trace" , "calcFront" }, true );
-////    calcDebugDump( CALC_STAGE_AFTER_FRONT );
-////    mon -> now( Path{ "trace", "debugDumpStageAfterFront" }, true);
-//
-////    /*
-////        Backward calculation (neuron errors)
-////    */
-////    resetCalcState();
-////    getLayerList() -> loop
-////    (
-////        [ this ]
-////        ( void* item )
-////        {
-////            auto layer = ( LayerProcessor* ) item;
-////            if( layer -> isChildrenCalculated())
-////            {
-////                layer -> backwardCalcComplete();
-////            }
-////            return false;
-////        }
-////    );
-////
-//////    WAIT!!!!!
-////
-////    mon -> now( Path{ "trace", "calc_back" }, true );
-////    calcDebugDump( CALC_STAGE_AFTER_BACK );
-////    mon -> now( Path{ "trace", "debug_dump_stage_after_back" }, true);
-////
-////    /*
-////        Learning calculation (nerve weights)
-////    */
-////    getNerveList()
-////    -> loop
-////    (
-////        [ this, &netLastChangeValues ]
-////        ( void* item )
-////        {
-////            auto nerve = (Nerve*) item;
-////            auto terminate =
-////            terminated ||
-////            net -> getLastChangeValues() != netLastChangeValues;
-////            if( !terminate )
-////            {
-////                nerve -> calcWeights( learningSpeed );
-////            }
-////            return terminate;
-////        }
-////    );
-////    mon -> now( Path{ "trace", "calc_learning" }, true );
-////    calcDebugDump( CALC_STAGE_AFTER_LEARNING );
-////    mon -> now( Path{ "trace", "debug_dump_stage_after_learning" }, true );
-////
-////    /*
-////        End of calculation
-////    */
-////
-////    /* Move calculated data to net */
-////    if
-////    (
-////        !terminated  &&
-////        net -> getLastChangeValues() == netLastChangeValues
-////    )
-////    {
-////        net
-////        /* Swap values and errors */
-////        -> swapValuesAndErrors
-////        (
-////            /* Action */
-////            {
-////                /* Load values and errors to Net */
-////                WRITE_VALUES,
-////                WRITE_ERRORS
-////            },
-////            /* Participant object */
-////            this,
-////            false
-////        )
-////        /* Load weights to Net from this limb */
-////        -> loadWeightsFrom( this )
-////        /* Write stat for Net */
-////        -> stat()
-////        ;
-////    }
-//
-//    mon -> now( Path{ "trace", "move_data_to_net" }, true );
-//
-//    /* Write charts in to monitoring */
-//    if
-//    (
-//        !terminated &&
-//        net -> getLastChangeValues() == netLastChangeValues &&
-//        tickChart != 0 &&
-//        net -> getTick() % tickChart == 0
-//    )
-//    {
-//        mon -> remove( Path{ "mon" } );
-//
-//
-//        auto monConfig = net
-//        -> getApplication()
-//        -> getConfig()
-//        -> getObject( Path{  "engine",  "brain", "mon", "charts" });
-//
-//        net -> lock();
-//
-//        net
-//        -> getLayerList()
-//        -> loop
-//        (
-//            [ this, monConfig ]
-//            (
-//                void* aItem
-//            )
-//            {
-//                auto layer = (Layer*) aItem;
-//                auto layerId = layer -> getId();
-//
-//                if( monConfig -> getBool( Path{ "values", layerId } ))
-//                {
-//                    mon -> setString
-//                    (
-//                        Path
-//                        {
-//                            "mon",
-//                            "values",
-//                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-//                        },
-//                        layer -> getChartValues() -> toString( 40 )
-//                    );
-//                }
-//
-//                if( monConfig -> getBool( Path{ "errors", layerId } ))
-//                {
-//                    mon -> setString
-//                    (
-//                        Path
-//                        {
-//                            "mon",
-//                            "errors",
-//                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-//                        },
-//                        layer -> getChartErrors() -> toString( 40 )
-//                    );
-//                }
-//
-//                if( monConfig -> getBool( Path{ "ticks", layerId } ))
-//                {
-//                    mon -> setString
-//                    (
-//                        Path
-//                        {
-//                            "mon",
-//                            "ticks",
-//                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-//                        },
-//                        layer -> getChartTick() -> toString( 40 )
-//                    );
-//                }
-//
-////                -> setString
-////                (
-////                    Path
-////                    {
-////                        "mon",
-////                        "errorsBeforeChange",
-////                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-////                    },
-////                    layer -> getChartErrorsBeforeChange() -> toString( 40 )
-////                )
-//                ;
-//
-//                return false;
-//            }
-//        );
-//
-//        net -> unlock();
-//    }
-//
-//    mon
-//    -> now( Path{ "trace", "write_charts" }, true )
-//    -> trace( Path{ "trace" } );
-//
-//    /* Write final monitoring */
-//    mon
-//    -> now( Path{ "current", "last" } )
-//    -> setDouble( Path{ "current", "fps" }, fps -> avg() )
-//    -> flush();
-//
-//    auto fpsEnd = now();
-//    fps -> createLast( (real) SECOND / ( fpsEnd - fpsBegin ));
+
+    mon -> now( Path{ "trace", "syncToLimb" }, true );
+
+    if( getVersion() != net -> getVersion() )
+    {
+        /* Set version from net */
+        setVersion( net -> getVersion() );
+    }
+    net ->  unlock();
+
+    /*
+        Calculation begin
+    */
+    mon
+    -> setInt( Path{ "net", "seed" }, net -> getRnd() -> getSeed() )
+    -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
+    -> setInt( Path{ "current", "tick" }, net -> getTick() )
+    ;
+
+    auto netLastChangeValues = net -> getLastChangeValues();
+
+
+    /* Swap values and errors */
+    net
+    -> swapValuesAndErrors
+    (
+        /* Action */
+        {
+            /* Upload start values from Net */
+            READ_VALUES
+        },
+        /* Participant object */
+        this,
+        false
+    );
+    mon -> now( Path{ "trace" , "swapValuesAndErrors" }, true );
+
+    /* Drop learing mode flag */
+    calcDebugDump( CALC_STAGE_START );
+    mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
+
+    /*
+        Init forward calculation (neuron values)
+        from layers without parents
+    */
+    resetCalcState();
+    mon -> now( Path{ "trace" , "resetCalcState" }, true );
+
+    /* Start tasks */
+    getLayerList() -> loop
+    (
+        [ this ]
+        ( void* item )
+        {
+            auto layer = ( LayerProcessor* ) item;
+            if( layer -> isInput() )
+            {
+                layer -> forwardCalcComplete( threadManager );
+            }
+            return false;
+        }
+    );
+    mon -> now( Path{ "trace" , "forwardStart" }, true );
+    /* Wait tasks */
+    threadManager -> wait();
+    mon -> now( Path{ "trace" , "forwardWait" }, true );
+    onChangeValues();
+    calcDebugDump( CALC_STAGE_AFTER_FRONT );
+    mon -> now( Path{ "trace", "forwardDump" }, true);
+
+    /*
+        Backward calculation (neuron errors)
+    */
+    resetCalcState();
+    getLayerList() -> loop
+    (
+        [ this ]
+        ( void* item )
+        {
+            auto layer = ( LayerProcessor* ) item;
+            if( layer -> isOutput())
+            {
+                layer
+                -> calcErrors()
+                -> backwardCalcComplete( threadManager );
+            }
+            return false;
+        }
+    );
+    mon -> now( Path{ "trace" , "backwardStart" }, true );
+    threadManager -> wait();
+    mon -> now( Path{ "trace" , "backwardWait" }, true );
+    calcDebugDump( CALC_STAGE_AFTER_BACK );
+    mon -> now( Path{ "trace", "backwardDump" }, true);
+
+
+    /*
+        Learning calculation (nerve weights)
+    */
+    struct DataStruct
+    {
+        Nerve* nerve;
+        real learningSpeed;
+    };
+
+    getNerveList()
+    -> loop
+    (
+        [ this, &netLastChangeValues ]
+        ( void* item )
+        {
+            auto nerve = (Nerve*) item;
+            auto data = DataStruct{ nerve, learningSpeed };
+
+            auto terminate =
+            terminated ||
+            net -> getLastChangeValues() != netLastChangeValues;
+
+            if( !terminate )
+            {
+                threadManagerWeight
+                -> add( nerve -> buildId() )
+                -> run
+                (
+                    []
+                    ( void* data )
+                    {
+                        auto [ nerve, learningSpeed ] = *(DataStruct*) data;
+                        nerve -> calcWeights( learningSpeed );
+                    },
+                    &data,
+                    sizeof( data )
+                );
+            }
+
+            return terminate;
+        }
+    );
+
+    mon -> now( Path{ "trace", "weightStart" }, true);
+    threadManagerWeight -> wait();
+    mon -> now( Path{ "trace", "weightWait" }, true );
+    calcDebugDump( CALC_STAGE_AFTER_LEARNING );
+    mon -> now( Path{ "trace", "weightDump" }, true );
+
+    /*
+        End of calculation
+    */
+
+    /* Move calculated data to net */
+    if
+    (
+        !terminated  &&
+        net -> getLastChangeValues() == netLastChangeValues
+    )
+    {
+        net
+        /* Swap values and errors */
+        -> swapValuesAndErrors
+        (
+            /* Action */
+            {
+                /* Load values and errors to Net */
+                WRITE_VALUES,
+                WRITE_ERRORS
+            },
+            /* Participant object */
+            this,
+            false
+        )
+        /* Load weights to Net from this limb */
+        -> loadWeightsFrom( this )
+        /* Write stat for Net */
+        -> stat()
+        ;
+    }
+
+    mon -> now( Path{ "trace", "move_data_to_net" }, true );
+
+    /* Write charts in to monitoring */
+    if
+    (
+        !terminated &&
+        net -> getLastChangeValues() == netLastChangeValues &&
+        tickChart != 0 &&
+        net -> getTick() % tickChart == 0
+    )
+    {
+        mon -> remove( Path{ "mon" } );
+
+
+        auto monConfig = net
+        -> getApplication()
+        -> getConfig()
+        -> getObject( Path{  "engine",  "brain", "mon", "charts" });
+
+        net -> lock();
+
+        net
+        -> getLayerList()
+        -> loop
+        (
+            [ this, monConfig ]
+            (
+                void* aItem
+            )
+            {
+                auto layer = (Layer*) aItem;
+                auto layerId = layer -> getId();
+
+                if( monConfig -> getBool( Path{ "values", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "values",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartValues() -> toString( 40 )
+                    );
+                }
+
+                if( monConfig -> getBool( Path{ "errors", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "errors",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartErrors() -> toString( 40 )
+                    );
+                }
+
+                if( monConfig -> getBool( Path{ "ticks", layerId } ))
+                {
+                    mon -> setString
+                    (
+                        Path
+                        {
+                            "mon",
+                            "ticks",
+                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+                        },
+                        layer -> getChartTick() -> toString( 40 )
+                    );
+                }
+
+//                -> setString
+//                (
+//                    Path
+//                    {
+//                        "mon",
+//                        "errorsBeforeChange",
+//                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+//                    },
+//                    layer -> getChartErrorsBeforeChange() -> toString( 40 )
+//                )
+                ;
+
+                return false;
+            }
+        );
+
+        net -> unlock();
+    }
+
+    mon
+    -> now( Path{ "trace", "write_charts" }, true )
+    -> trace( Path{ "trace" } )
+    /* Write final monitoring */
+    -> now( Path{ "current", "last" } )
+    -> setDouble( Path{ "current", "fps" }, fps -> avg() )
+    -> flush();
+
+    auto fpsEnd = now();
+    fps -> createLast( (real) SECOND / ( fpsEnd - fpsBegin ));
 
     return this;
 }
@@ -450,26 +471,28 @@ LimbProcessor* LimbProcessor::nerveControl()
     getNerveList() -> weightsAllocate();
 
     auto loadingError = false;
+
     getNerveList() -> loop
     (
         [ this, &loadingError ]
         ( void* item )
         {
             auto nerve = ( Nerve* ) item;
+
             /* Network was realocated and have to loading */
             if( !nerve -> loadWeight( net -> getNervesPath() ) -> isOk() )
             {
                 loadingError = true;
             }
 
-            /* Fill parents and fildren for layers */
+            /* Fill parents and children for layers */
             (( LayerProcessor* )(nerve -> getParent()))
             -> addChild( nerve );
 
             (( LayerProcessor* )( nerve -> getChild()))
             -> addParent( nerve );
 
-            return loadingError;
+            return false; //loadingError;
         }
     );
 
@@ -497,6 +520,7 @@ LimbProcessor* LimbProcessor::nerveControl()
         );
     }
 
+
     return this;
 }
 
@@ -518,31 +542,6 @@ LimbProcessor* LimbProcessor::setLearningSpeed
 {
     learningSpeed = a;
     return this;
-}
-
-
-
-
-/*
-    Set min error
-*/
-LimbProcessor* LimbProcessor::setMaxError
-(
-    real a
-)
-{
-    maxError = a;
-    return this;
-}
-
-
-
-/*
-    Get max error
-*/
-real LimbProcessor::getMaxError()
-{
-    return maxError;
 }
 
 
@@ -650,6 +649,28 @@ LimbProcessor* LimbProcessor::dumptypeLayerProcessing
     );
     return this;
 }
+
+
+
+
+/*
+    Dump layers
+*/
+LimbProcessor* LimbProcessor::dump()
+{
+    getLayerList() -> loop
+    (
+        []
+        ( void* item )
+        {
+            /* Get layer by index */
+            ((LayerProcessor*) item) -> dump();
+            return false;
+        }
+    );
+    return this;
+}
+
 
 
 
@@ -967,3 +988,6 @@ LimbProcessor* LimbProcessor::weightsWrite
     );
     return this;
 }
+
+
+

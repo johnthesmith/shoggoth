@@ -310,9 +310,7 @@
             "nerveType"     :"ALL_TO_ALL",
             "bindType"      :"ADD",
             "minWeight"     :-1.0,
-            "maxWeight"     :1.0,
-            "_parentType"   :[ "bias" ],
-            "_childType"    :[ "cortex" ]
+            "maxWeight"     :1.0
         },
 
         "retina-cortex1":

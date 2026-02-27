@@ -7,16 +7,16 @@
         {
             "code":
             {
-                "new_batch_learning"        : { "log":"TRACE",      "timeoutMcs":1000 },
-                "new_batch_testing"         : { "log":"TRACE",      "timeoutMcs":1000 },
+                "new_batch_learning"        : { "log":"TRACE",      "timeoutMcs":10000 },
+                "new_batch_testing"         : { "log":"TRACE",      "timeoutMcs":2000000 },
                 "new_batch_reading"         : { "log":"TRACE",      "timeoutMcs":4000000 },
-                "new_batch_draw"            : { "log":"TRACE",      "timeoutMcs":10000 },
+                "new_batch_draw"            : { "log":"TRACE",      "timeoutMcs":100000 },
                 "disabled"                  : { "log":"TRACE",      "timeoutMcs":1000000 },
-                "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":1000 },
+                "hight_error_rate"          : { "log":"TRACE",      "timeoutMcs":10000 },
                 "batch_sections_not_found"  : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "batch_is_not_a_object"     : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "config_not_exists"         : { "log":"WARNING",    "timeoutMcs":5000000 },
-                "unknown_image_format":       { "log":"TRACE",      "timeoutMcs":1000 },
+                "unknown_image_format":       { "log":"TRACE",      "timeoutMcs":100000 },
                 "SocketWriteError"          : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "ConnectionTimeout"         : { "log":"WARNING",    "timeoutMcs":1000000 },
                 "UNKNOWN_RPC_CLIENT_ANSWER_CODE":
@@ -29,7 +29,7 @@
 
             "idErrorLayer" : "error",
 
-            "currentBatches" : "learning",
+            "currentBatches" : "testing",
 
             "batches":
             {

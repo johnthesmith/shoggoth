@@ -16,8 +16,8 @@
         }
     },
 
-    "seed": 4,
-    "weightMul": 0.1000000000,
+    "seed": 5,
+    "weightMul": 0.2000000000,
 
     "teacher":
     {
@@ -26,7 +26,7 @@
 
     "processor":
     {
-        "learningSpeed": 0.001
+        "learningSpeed": 0.0001
     },
 
     "types": {

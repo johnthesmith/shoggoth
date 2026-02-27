@@ -569,6 +569,15 @@ class Limb : public Result
             return Layer::create( this, aLayerId );
         }
 
+
+
+
+        /*
+            Dump layers
+        */
+        virtual Limb* dump();
+
+
 };
 
 

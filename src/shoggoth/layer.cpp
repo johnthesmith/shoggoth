@@ -413,11 +413,6 @@ real Layer::calcRmsValue()
 
 
 
-/******************************************************************************
-    Fill layer
-*/
-
-
 /*
     Move values data to this from the argument layer
 */

@@ -1111,6 +1111,7 @@ Net* Net::applyNet
     setLastUpdate( aConfig -> getInt( Path{ "lastUpdate" }, 0 ));
 
     getLayerList() -> dump();
+    getNerveList() -> dump();
 
     if( getVersion() != nextVersion )
     {

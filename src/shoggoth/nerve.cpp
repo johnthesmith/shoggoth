@@ -181,9 +181,9 @@ Nerve* Nerve::fill
     /* Rnd seed */
     Rnd*    aSeed,
     /* MinWeight */
-    real  aMinWeight,
+    real    aMinWeight,
     /* MaxWeight */
-    real  aMaxWeight
+    real    aMaxWeight
 )
 {
     /* Fill weights */
@@ -319,9 +319,9 @@ Nerve* Nerve::fill
 
 Point3i Nerve::calcParentPosByChildIndex(int aChildIndex)
 {
-    auto childPos = getChild()->calcPosByIndex(aChildIndex);
-    auto childSize = getChild()->getSize();
-    auto parentSize = getParent()->getSize();
+    auto childPos = getChild() -> calcPosByIndex(aChildIndex);
+    auto childSize = getChild() -> getSize();
+    auto parentSize = getParent() -> getSize();
 
     Point3i parentPos;
     parentPos.x = (childPos.x * parentSize.x) / childSize.x;
@@ -618,22 +618,24 @@ Nerve* Nerve::extractChildWeightsBuffer
 Nerve* Nerve::dumpToLog()
 {
     getLog()
-    -> begin( "nerve" )
-    -> prm( "from", getParent() -> getId() )
-    -> prm( "to", getChild() -> getId() )
+
+    -> prm( "parent", getParent() -> getId() )
+    -> prm( "bind type", bindTypeToString( getBindType() ))
+    -> prm( "nerve type", nerveTypeToString( getNerveType() ))
+    -> prm( "child", getChild() -> getId() );
     ;
-    for( int i = 0; i < weightsCount; i++ )
-    {
-        getLog()
-        -> trace()
-        -> value( i )
-        -> text( " | weights: " )
-        -> value( weights[ i ])
-        -> text( " | delta:   " )
-        -> value( abs( deltaWeights[ i ] ))
-        ;
-    }
-    getLog() -> end();
+//    for( int i = 0; i < weightsCount; i++ )
+//    {
+//        getLog()
+//        -> trace()
+//        -> value( i )
+//        -> text( " | weights: " )
+//        -> value( weights[ i ])
+//        -> text( " | delta:   " )
+//        -> value( abs( deltaWeights[ i ] ))
+//        ;
+//    }
+
     return this;
 }
 
@@ -689,3 +691,56 @@ string Nerve::calcId()
     + ")-"
     + getChild() -> getId();
 }
+
+
+
+
+
+/*
+    Calculate nerv weights
+*/
+Nerve* Nerve::calcWeights
+(
+    real aLearningSpeed
+)
+{
+    if
+    (
+        /* Learning mode enabled for child layer */
+        child -> getErrorCalc() == EC_LEARNING &&
+        /* Only for add signal nerve */
+        bindType == BT_ADD
+    )
+    {
+        /* Let count of weights  */
+        for( int i = 0; i < bindsCount; i++ )
+        {
+            /* Check weight exists */
+            auto weightIndex = binds[ i ];
+            if( weightIndex > -1 )
+            {
+                /* Вытряхиваем индексы нейронов */
+                auto parentNeuron = calcParentIndexByBind( i );
+                auto childNeuron = calcChildIndexByBind( i );
+
+                /* Retrive spreded error from child */
+                auto error = child -> getNeuronError( childNeuron );
+
+                /* the https://habr.com/ru/articles/313216/ */
+                real gradient =
+                parent -> getNeuronValue( parentNeuron )
+                * error;
+
+                real deltaWeight = gradient * aLearningSpeed
+                + getDeltaWeight( weightIndex ) * 0.3;
+
+                real newWeight = getWeight( weightIndex ) + deltaWeight;
+
+                setWeight( weightIndex, newWeight );
+                setDeltaWeight( weightIndex, deltaWeight );
+            }
+        }
+    }
+    return this;
+}
+
