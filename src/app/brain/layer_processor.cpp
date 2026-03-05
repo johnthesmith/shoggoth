@@ -190,12 +190,6 @@ LayerProcessor* LayerProcessor::calcErrors()
                         int aWeightIndex    /* Not use */
                     ) -> bool
                     {
-//childrenLoop тут конский баг он ничего не вернул для 11 нейрона!!!
-//
-//if( getId() == "fc" )
-//{
-//    cout << index << ":"  << aChild -> getId() << aChildIndex << ":" << aChild -> getCount() << "\n";
-//}
                         /* Calculate summ */
                         switch( aNerve -> getBindType() )
                         {

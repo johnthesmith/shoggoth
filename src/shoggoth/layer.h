@@ -60,19 +60,9 @@ class Layer : public Result
         /* Dimention size */
         Point3i         size                    = POINT_3I_0;
 
-        /* True - method errorChange return true for any neuron, else false */
-        bool            errorChange             = false;
-        /* True if preceptron chenged. Set in neuron->setValue*/
-        bool            incomeChanged           = false;
-
         /* Settings */
         string          id                      = "";           /* Id of layer */
         string          name                    = "";           /* Name of layer */
-
-//        string          storagePath             = "";
-
-//        /* List of actions for layer */
-//        ParamList*      actions                 = NULL;
 
         /*
             Plans of neurons data
@@ -354,16 +344,6 @@ class Layer : public Result
 
 
 
-        /*
-            Return true if neurons error changed in calcError method
-        */
-        bool getErrorChange()
-        {
-            return errorChange;
-        }
-
-
-
 
         /*
             Calculate sum of neurons error
@@ -629,8 +609,10 @@ class Layer : public Result
 
         /*
             Move values data to this from the argument layer
+            Return true if layer was copy
+            Return false if leayer was equal
         */
-        Layer* copyValuesFrom
+        bool copyValuesFrom
         (
             Layer* /* Source layer */
         );

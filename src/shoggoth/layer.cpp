@@ -413,14 +413,18 @@ real Layer::calcRmsValue()
 
 
 
+
+
 /*
     Move values data to this from the argument layer
 */
-Layer* Layer::copyValuesFrom
+bool Layer::copyValuesFrom
 (
     Layer* aLayer
 )
 {
+    bool result = false;
+
     aLayer -> getLimb() -> lock();
 
     char* fromBuffer;
@@ -428,7 +432,6 @@ Layer* Layer::copyValuesFrom
     aLayer -> getValuesBuffer( fromBuffer, fromSize );
 
     getLimb() -> lock();
-
     auto size = getValuesBufferSize();
     if
     (
@@ -437,20 +440,58 @@ Layer* Layer::copyValuesFrom
         size == fromSize
     )
     {
-        memcpy( values, fromBuffer, size );
-    }
-    else
-    {
-        setCode( "LayersValuePlanNotEquals" );
+        /* compare memory */
+        if ( memcmp( values, fromBuffer, size ) != 0 )
+        {
+            memcpy( values, fromBuffer, size );
+            result = true;
+        }
     }
 
     getLimb() -> unlock();
     aLayer -> getLimb() -> unlock();
 
-    return this;
+    return result;
 }
 
-
+///*
+//    Move values data to this from the argument layer
+//*/
+//Layer* Layer::copyValuesFrom
+//(
+//    Layer* aLayer
+//)
+//{
+//    aLayer -> getLimb() -> lock();
+//
+//    char* fromBuffer;
+//    size_t fromSize;
+//    aLayer -> getValuesBuffer( fromBuffer, fromSize );
+//
+//    getLimb() -> lock();
+//
+//    auto size = getValuesBufferSize();
+//    if
+//    (
+//        values != NULL &&
+//        fromBuffer != NULL &&
+//        size == fromSize
+//    )
+//    {
+//        memcpy( values, fromBuffer, size );
+//    }
+//    else
+//    {
+//        setCode( "LayersValuePlanNotEquals" );
+//    }
+//
+//    getLimb() -> unlock();
+//    aLayer -> getLimb() -> unlock();
+//
+//    return this;
+//}
+//
+//
 
 /*
     Move values data to this from the argument layer

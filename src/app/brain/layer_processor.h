@@ -290,11 +290,13 @@ public:
                             auto [ child, manager ] = *(DataStruct*) data;
                             child
                             -> calcValues()
-                            -> forwardCalcComplete( manager );
+                            -> forwardCalcComplete( manager )
+                            ;
                         },
                         &data,
                         sizeof( data )
-                    );
+                    )
+                    ;
                 }
             }
         }

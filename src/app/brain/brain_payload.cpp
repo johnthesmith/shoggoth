@@ -198,7 +198,7 @@ void BrainPayload::onEngineLoop
 
                 processor
                 -> getLimb()
-                -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
+//                -> setTickWrite( appConfig -> getInt( Path{ "tickWrite" }, 0 ))
                 -> setTickChart( appConfig -> getInt( Path{ "tickChart" }, 0 ))
                 -> setDumpConf( appConfig -> getObject( Path{ "dump" }))
                 ;

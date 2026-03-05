@@ -4,35 +4,6 @@
 # pragma once
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//TODO проверяем скорость
-//присобваичваем к каждому потоку время начала и заврешения работы
-//смотрим на предмет зависит ли длительность рачета от объема слоя
-//если не зависит то высокие накладыне расходы на потоки
-
-
-
-
-
-
-
-
-
-
-
-
 /*
     Limb - processor
 */
@@ -72,13 +43,22 @@ private:
     /* Terminated status, stop the calculation and dump works */
     bool            terminated      = false;
 
+    long long int fpsStart = 0;
+    int fpsTick = 0;
+
     /*
         Settings
     */
+
+    /*
+        Learning layer id
+        Learning will start if this layer contains nonzero sum of value
+    */
+    string learningLayerId          = "learning";
     /* 0.0 - learning disable, max 0.1 recomended */
-    real  learningSpeed           = 0.001;
+    real  learningSpeed             = 0.001;
     /* Each tickWrite from tick all Weights will be writen to file */
-    int     tickWrite               = 10;
+//    int     tickWrite               = 10;
     /* Each tickChart from ешсл Chartss will be writen to mon */
     int     tickChart               = 1000;
     /* Configuration objtct for neurnos dump */
@@ -126,8 +106,13 @@ public:
     */
     LimbProcessor* setTerminated
     (
-        bool
-    );
+        bool a
+    )
+    {
+        terminated = a;
+        return this;
+    }
+
 
 
 
@@ -163,17 +148,51 @@ public:
     /*
         Get learning speed
     */
-    real getLearningSpeed();
+    inline real getLearningSpeed()
+    {
+        return learningSpeed;
+    }
 
 
 
     /*
         Set learning speed
     */
-    LimbProcessor* setLearningSpeed
+    inline LimbProcessor* setLearningSpeed
     (
-        real /* Value */
-    );
+        real a
+    )
+    {
+        learningSpeed = a;
+        return this;
+    }
+
+
+
+
+
+    /*
+        Get learning layer id
+    */
+    inline string getLearningLayerId()
+    {
+        return learningLayerId;
+    }
+
+
+
+    /*
+        Set learning speed
+    */
+    inline LimbProcessor* setLearningLayerId
+    (
+        /* Value */
+        string a
+    )
+    {
+        learningLayerId = a;
+        return this;
+    }
 
 
 
@@ -210,8 +229,10 @@ public:
     */
     LimbProcessor* neuronCalcWeight
     (
-        Layer*, /* Layer for calculation */
-        int     /* Neuron index of layer */
+        /* Layer for calculation */
+        Layer*,
+        /* Neuron index of layer */
+        int
     );
 
 
@@ -317,6 +338,4 @@ public:
         Dump layers
     */
     virtual LimbProcessor* dump() override;
-
-
 };

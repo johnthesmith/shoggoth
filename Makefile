@@ -5,7 +5,6 @@ CXX := clang++
 CXXFLAGS := \
 	-fsanitize=address \
 	-DTHREAD_PROTECTED \
-	-I/usr/include/GraphicsMagick \
 	-g \
 	-O3 \
 	-MMD \
@@ -20,6 +19,7 @@ LDLIBS := \
 OBJ_DIR := ./obj
 
 vpath %.cpp \
+./ \
 ../../lib/core \
 ../../lib/json \
 ../../lib/sock \
@@ -117,6 +117,7 @@ BASE_OBJS := \
 	$(OBJ_DIR)/shoggoth_application.o \
 	$(OBJ_DIR)/shoggoth_db.o
 
+
 # Уникальные объекты для каждой программы
 EVOLUTION_EXTRA := \
 	$(OBJ_DIR)/evolution_application.o \
@@ -157,7 +158,6 @@ $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-
 # Включение зависимостей от заголовков
 -include $(DEPFILES)
 
@@ -175,7 +175,7 @@ evolution: $(BASE_OBJS) $(EVOLUTION_EXTRA)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 
 teacher: $(BASE_OBJS) $(TEACHER_EXTRA)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS) -lGraphicsMagick++
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 
 debugger: $(BASE_OBJS) $(DEBUGGER_EXTRA)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS) -lncursesw

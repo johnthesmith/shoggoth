@@ -8,14 +8,35 @@
 
 Perhaps it will be *Shoggoth*.
 
+# Принципы
+
+1. Простое железо — основа
+2. Нет центра — только распределённость и дублирование
+3. Сеть управляет алгоритмами и устройствами, а не наоборот
+4. Абсолютная детерминированность каждого узла и сети в целом
+5. Сеть всегда включена: без примера — распознаёт, с примером — учится
 
 
-# Shoggoth components
+# Архитектура
+
+
+
+# Архитектура приложения
+
+1. Приложение состоит из следующх компонентов
+    1. Сервер
+    2. Клиент
+    3. Ползная нагрузка
+
+
+
+# Виды полезной нагрузки
 
 1. Processor - main calculation kernel proces;
-0. Teacher - process for teaching the network;
-0. Evolition - process for network evolition;
-0. Ui - user interface.
+0. In - process for teaching the network;
+0. Out - process for network evolition;
+0. Control - user interface.
+
 
 
 

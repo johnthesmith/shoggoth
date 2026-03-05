@@ -179,7 +179,7 @@ LayerTeacher* LayerTeacher::imageToValue
             if( bitmap -> isOk() )
             {
                 bitmap
-                -> rotate( aRnd -> get( -aRotate, aRotate ), true )
+                -> rotate( aRnd -> get( -aRotate, aRotate ), true, Rgba{ 1.0, 1.0 , 1.0, 1.0 } )
                 -> zoom( aRnd -> get( aZoomMin, aZoomMax ), true )
                 -> shift( aRnd -> get( -aShift, aShift ), aRnd -> get( -aShift, aShift ))
                 ;

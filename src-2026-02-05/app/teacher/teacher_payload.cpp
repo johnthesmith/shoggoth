@@ -175,12 +175,17 @@ void TeacherPayload::onEngineLoop
             /* Prepare Limb */
             limb -> getNet() -> syncToLimb( limb, false );
 
+            bool readedValues = false;
+            bool writedValues = false;
+
             limb -> getNet() -> swapValuesAndErrors
             (
                 Actions{ READ_VALUES },
                 /* Destination participant object */
                 limb,
-                false
+                false,
+                readedValues,
+                writedValues
             );
 
             limb -> lock();
@@ -361,13 +366,17 @@ void TeacherPayload::onEngineLoop
                                 if( isOk() )
                                 {
                                     /* Upload values and errors to net */
+                                    bool readedValues = false;
+                                    bool writedValues = false;
                                     limb -> getNet() -> swapValuesAndErrors
                                     (
                                         /* Action */
                                         { WRITE_VALUES, WRITE_ERRORS },
                                         /* Participant object */
                                         limb,
-                                        false
+                                        false,
+                                        readedValues,
+                                        writedValues
                                     );
                                     setCode("new_batch_" + currentBatches );
                                 }

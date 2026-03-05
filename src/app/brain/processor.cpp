@@ -109,8 +109,7 @@ LimbProcessor* Processor::getLimb()
 */
 void Processor::onLoop()
 {
-    limb -> calc();
-
+    limb -> calc() -> resultTo( this );
     mon
     -> now( Path{ "current", "now" } )
     -> startTimer( Path{ "current", "moment" } )

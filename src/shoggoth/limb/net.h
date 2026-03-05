@@ -477,7 +477,9 @@ class Net: public Limb
         (
             Actions,    /* Action list for participant */
             Limb*,      /* Participant */
-            bool        /* Skip action for locked */
+            bool,        /* Skip action for locked */
+            bool&,
+            bool&
         );
 
 

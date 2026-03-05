@@ -1725,9 +1725,13 @@ Net* Net::loadWeightsFrom
 */
 Net* Net::swapValuesAndErrors
 (
-    Actions aActions,   /* Action for participant */
-    Limb*   aLimb,      /* Participant */
-    bool    aSkip
+    /* Action for participant */
+    Actions aActions,
+    /* Participant */
+    Limb*   aLimb,
+    bool    aSkip,
+    bool&   aReadedValues,
+    bool&   aWritedValues
 )
 {
     if( lock( aSkip ))
@@ -1737,7 +1741,13 @@ Net* Net::swapValuesAndErrors
             /* Loop for layers configuration */
             getLayerList() -> loop
             (
-                [ this, &aLimb, &aActions ]
+                [
+                    this,
+                    &aLimb,
+                    &aActions,
+                    &aReadedValues,
+                    &aWritedValues
+                ]
                 (
                     void* item
                 )
@@ -1761,10 +1771,16 @@ Net* Net::swapValuesAndErrors
                                 {
                                     default: break;
                                     case READ_VALUES:
-                                        participantLayer -> copyValuesFrom( netLayer );
+                                        aReadedValues |= participantLayer -> copyValuesFrom
+                                        (
+                                            netLayer
+                                        );
                                     break;
                                     case WRITE_VALUES:
-                                        netLayer -> copyValuesFrom( participantLayer );
+                                        aWritedValues |= netLayer -> copyValuesFrom
+                                        (
+                                            participantLayer
+                                        );
                                         if( task != TASK_PROC )
                                         {
                                             addChangedValues( netLayer );
@@ -2174,7 +2190,6 @@ long long int Net::getTick()
     lock();
     auto result = tick;
     unlock();
-
     return result;
 }
 
