@@ -14,12 +14,11 @@
 /* Local libraries */
 #include "../../../../../lib/json/json.h"
 #include "../../../../../lib/core/payload_engine.h"
-#include "../../shoggoth/limb/net.h"
 
+#include "../../shoggoth/net.h"
 
-
-/* Local libraries */
-#include "./limb_teacher.h"
+#include "../shoggoth_application.h"
+#include "limb_teacher.h"
 
 
 
@@ -52,10 +51,8 @@ class TeacherPayload : public PayloadEngine
         */
         TeacherPayload
         (
-            TeacherApplication*,    /* Application object */
-            string,                 /* Payload Id */
-            string,                 /* Net id */
-            string                  /* Net version */
+            ShoggothApplication*,    /* Application object */
+            string                  /* Payload Id */
         );
 
 
@@ -72,11 +69,12 @@ class TeacherPayload : public PayloadEngine
         */
         static TeacherPayload* create
         (
-            TeacherApplication*,
-            string,
-            string,
-            string
-        );
+            ShoggothApplication* aApp,
+            std::string aId
+        )
+        {
+            return new TeacherPayload( aApp, aId );
+        }
 
 
 
@@ -90,14 +88,11 @@ class TeacherPayload : public PayloadEngine
         /*
             Return application object
         */
-        TeacherApplication* getApplication() override;
+        ShoggothApplication* getApplication() override;
 
 
 
-        /*
-            Help method
-        */
-        TeacherPayload* help();
+        LimbTeacher* getLimb();
 
 
 
@@ -110,11 +105,7 @@ class TeacherPayload : public PayloadEngine
         /*
             Main teacher loop event
         */
-        virtual void onEngineLoop
-        (
-            const bool,
-            const bool
-        ) override;
+        virtual void onLoop() override;
 
 
 

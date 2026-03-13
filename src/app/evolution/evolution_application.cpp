@@ -48,7 +48,6 @@ EvolutionApplication* EvolutionApplication::run()
 {
     getLog() -> begin( "Start he Shoggoth evolution application" );
 
-    prepareConfiguration();
 
     EvolutionPayload::create( this, "evolution", "", getNetVersion() )
     -> start()

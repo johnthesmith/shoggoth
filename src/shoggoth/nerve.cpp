@@ -8,7 +8,6 @@
 
 #include "limb.h"
 #include "layer.h"
-#include "io.h"
 
 
 
@@ -17,11 +16,16 @@
 */
 Nerve::Nerve
 (
-    LogManager* aLogManager,    /* The log object */
-    Layer*      aParent,        /* Parent layer */
-    Layer*      aChild,         /* Child layer */
-    NerveType   aNerveType,     /* Type of nerve */
-    BindType    aBindType,      /* Bind of nerve */
+    /* The log object */
+    LogManager* aLogManager,
+    /* Parent layer (from) */
+    Layer*      aParent,
+    /* Child layer (to) */
+    Layer*      aChild,
+    /* Type of nerve */
+    NerveType   aNerveType,
+    /* Bind of nerve */
+    BindType    aBindType,
     Point3i     aWindowSize
 )
 {

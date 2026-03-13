@@ -8,21 +8,24 @@
 #include "../../../../lib/sock/sock_manager.h"
 
 
-using namespace std;
+class Net;
 
 
 
 class ShoggothApplication : public Application
 {
     private:
-
-        SockManager*    sockManager         = NULL;
-        string          netVersion          = "zero";
+        /* Sock manager */
+        SockManager*    sockManager = NULL;
+        /* Share net structure */
+        string          netVersion  = "zero";
+        Net*            net         = NULL;
 
     public:
 
-
-
+        /*
+            Constructor
+        */
         ShoggothApplication
         (
             int,        /* cli argumends count */
@@ -39,9 +42,26 @@ class ShoggothApplication : public Application
 
 
         /*
+            Creator for ShoggothApplication
+        */
+        static inline ShoggothApplication* create
+        (
+            int     argc,
+            char**  argv
+        )
+        {
+            return new ShoggothApplication( argc, argv );
+        }
+
+
+
+        /*
             Destroy of the Shogoth
         */
-        void destroy();
+        inline void destroy()
+        {
+            delete this;
+        }
 
 
 
@@ -67,12 +87,44 @@ class ShoggothApplication : public Application
         /*
             Return the sock manager from application
         */
-        SockManager* getSockManager();
+        inline SockManager* getSockManager()
+        {
+            return sockManager;
+        }
 
 
 
         /*
             Return the net version
         */
-        string getNetVersion();
+        inline string getNetVersion()
+        {
+            return netVersion;
+        }
+
+
+
+        /*
+            Return Net
+        */
+        inline Net* getNet()
+        {
+            return net;
+        }
+
+
+
+        /*
+            on signale event handler
+        */
+        bool onSignal
+        (
+            int aSignal
+        )
+        {
+            terminate();
+            return true;
+        }
 };
+
+

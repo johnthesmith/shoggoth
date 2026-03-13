@@ -260,22 +260,34 @@
         }
     },
 
-    "io":
+    "remote":
     {
-        "source"                :"SERVER",
-        "net"                   :"net/net.json",
-        "host"                  :"127.0.0.1",
-        "port"                  :11121,
-        "readWaitingTimeoutMcs" :500000,
-
-        "methodDump":
-        [
-            "!CMD_WRITE_LAYERS",
-            "!CMD_COMMIT_NET",
-            "!SET_NET_MODE",
-            "!READ_LAYER_STAT"
-        ]
-
+        "server":
+        {
+        },
+        "client":
+        {
+            "connections":
+            {
+                "default":
+                {
+                    "host"                  :"127.0.0.1",
+                    "port"                  :11121,
+                    "readWaitingTimeoutMcs" :500000,
+                }
+            },
+            "methodDump":
+            [
+                "!READ_NET",
+                "!WRITE_LAYERS",
+                "!READ_NET_INFO",
+                "!READ_LAYERS",
+                "!WRITE_LAYERS",
+                "!COMMIT_NET",
+                "!SET_NET_MODE",
+                "!READ_LAYER_STAT"
+            ]
+        }
     }
 }
 

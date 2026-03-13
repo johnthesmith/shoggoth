@@ -3,7 +3,7 @@
 /* Local libraries */
 #include "../../../../../lib/graph/scene_payload.h"
 #include "../../../../../lib/graph/camera.h"
-#include "../../shoggoth/limb/net.h"
+#include "../../shoggoth/net.h"
 
 /* Local libraries */
 #include "./limb_ui.h"

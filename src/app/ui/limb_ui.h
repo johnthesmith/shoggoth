@@ -16,7 +16,7 @@
 
 /* Shoggoth libraries */
 #include "../../shoggoth/limb.h"
-#include "../../shoggoth/limb/net.h"
+#include "../../shoggoth/net.h"
 
 /* Local libraries */
 #include "layer_ui_const.h"

@@ -1,22 +1,34 @@
+.RECIPEPREFIX = >
+
 # Compiler
 CXX := clang++
 
-# Compiler flags
-CXXFLAGS := \
-	-fsanitize=address \
-	-DTHREAD_PROTECTED \
-	-g \
-	-O3 \
-	-MMD \
-	-MP
 
-# Using libs
-LDLIBS := \
-	-lpthread \
-	-lsqlite3
+
+# Определяем режим через make goals
+ifeq ($(filter debug,$(MAKECMDGOALS)),debug)
+    MODE := debug
+else
+    MODE := release
+endif
+
+
+
+ifeq ($(MODE),debug)
+#    CXXFLAGS := -g -O0 -DDEBUG -fsanitize=address -DTHREAD_PROTECTED -MMD -fPIC -MP
+    CXXFLAGS := -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -DTHREAD_PROTECTED -MMD -fPIC -MP -Wall -Wextra
+else
+    CXXFLAGS := -Os -DNDEBUG -MMD -flto -fPIC -MP -ffunction-sections -fdata-sections
+    LDFLAGS := -Wl,--gc-sections -s
+endif
+LDLIBS := -lpthread -lsqlite3
+
+
 
 # Определение объектной директории
-OBJ_DIR := ./obj
+OBJ_DIR := ./obj/$(MODE)
+
+
 
 vpath %.cpp \
 ./ \
@@ -27,9 +39,10 @@ vpath %.cpp \
 src/shoggoth \
 src/shoggoth/limb \
 src/app \
+src/app/processor \
+src/app/server \
 src/app/teacher \
 src/app/evolution \
-src/app/brain \
 src/app/debugger
 
 
@@ -42,10 +55,12 @@ SRCS := \
 	$(wildcard src/shoggoth/*.cpp) \
 	$(wildcard src/shoggoth/limb/*.cpp) \
 	$(wildcard src/app/*.cpp) \
+	$(wildcard src/app/processor/*.cpp) \
 	$(wildcard src/app/teacher/*.cpp) \
 	$(wildcard src/app/evolution/*.cpp) \
-	$(wildcard src/app/brain/*.cpp) \
+	$(wildcard src/app/server/*.cpp) \
 	$(wildcard src/app/debugger/*.cpp)
+
 # $(info SRCS: $(SRCS))
 
 # Создаем явные зависимости для каждого объектного файла
@@ -56,14 +71,13 @@ OBJS := $(addprefix $(OBJ_DIR)/,$(notdir $(SRCS:.cpp=.o)))
 # $(info OBJS: $(OBJS))
 
 
-
 DEPFILES := $(OBJS:.o=.d)
 
 
 
 # Базовые объекты (общие для всех)
 BASE_OBJS := \
-	$(OBJ_DIR)/utils.o \
+    $(OBJ_DIR)/utils.o \
 	$(OBJ_DIR)/real.o \
 	$(OBJ_DIR)/result.o \
 	$(OBJ_DIR)/log_manager.o \
@@ -110,19 +124,27 @@ BASE_OBJS := \
 	$(OBJ_DIR)/nerve.o \
 	$(OBJ_DIR)/limb.o \
 	$(OBJ_DIR)/weights_exchange.o \
-	$(OBJ_DIR)/io.o \
 	$(OBJ_DIR)/layer_list.o \
 	$(OBJ_DIR)/layer.o \
 	$(OBJ_DIR)/shoggoth_consts.o \
 	$(OBJ_DIR)/shoggoth_application.o \
+	$(OBJ_DIR)/shoggoth_rpc_server.o \
+	$(OBJ_DIR)/shoggoth_rpc_client.o \
 	$(OBJ_DIR)/shoggoth_db.o
 
-
 # Уникальные объекты для каждой программы
+SHOGGOTH_EXTRA := \
+	$(OBJ_DIR)/shoggoth.o \
+	$(OBJ_DIR)/thread_manager.o
+
 EVOLUTION_EXTRA := \
 	$(OBJ_DIR)/evolution_application.o \
 	$(OBJ_DIR)/evolution_payload.o \
 	$(OBJ_DIR)/evolution.o
+
+SERVER_EXTRA := \
+	$(OBJ_DIR)/server_payload.o \
+	$(OBJ_DIR)/server.o
 
 TEACHER_EXTRA := \
 	$(OBJ_DIR)/hid.o \
@@ -131,7 +153,6 @@ TEACHER_EXTRA := \
 	$(OBJ_DIR)/teacher.o \
 	$(OBJ_DIR)/layer_teacher.o \
 	$(OBJ_DIR)/limb_teacher.o \
-	$(OBJ_DIR)/teacher_application.o \
 	$(OBJ_DIR)/teacher_payload.o
 
 DEBUGGER_EXTRA := \
@@ -140,23 +161,21 @@ DEBUGGER_EXTRA := \
 	$(OBJ_DIR)/debugger_payload.o \
 	$(OBJ_DIR)/terminal.o
 
-BRAIN_EXTRA := \
+PROCESSOR_EXTRA := \
 	$(OBJ_DIR)/hid.o \
-	$(OBJ_DIR)/brain.o \
-	$(OBJ_DIR)/brain_application.o \
-	$(OBJ_DIR)/server.o \
 	$(OBJ_DIR)/processor.o \
+	$(OBJ_DIR)/processor_payload.o \
 	$(OBJ_DIR)/limb_processor.o \
 	$(OBJ_DIR)/layer_processor.o \
-	$(OBJ_DIR)/shoggoth_rpc_server.o \
-	$(OBJ_DIR)/brain_payload.o \
 	$(OBJ_DIR)/thread_manager.o
 
 
 # Правило компиляции любого .cpp в .o
 $(OBJ_DIR)/%.o: %.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+> @mkdir -p $(@D)
+> $(CXX) $(CXXFLAGS) -c $< -o $@
+
+
 
 # Включение зависимостей от заголовков
 -include $(DEPFILES)
@@ -164,24 +183,40 @@ $(OBJ_DIR)/%.o: %.cpp
 
 
 # Фиктивные цели
-.PHONY: all clean
-
-
+.PHONY: release debug clean
 
 # Цели линковки
-all: evolution teacher brain debugger
+
+release: shoggoth server.so processor.so teacher.so debugger evolution
+> @echo "Release build done"
+> @if command -v upx >/dev/null 2>&1; then \
+>   echo "Packing with UPX..."; \
+>   upx --best --lzma shoggoth evolution debugger 2>/dev/null || true; \
+>   upx --best --lzma server.so processor.so teacher.so 2>/dev/null || true; \
+> else \
+>   echo "UPX not installed, skipping"; \
+> fi
+
+debug: shoggoth server.so processor.so teacher.so debugger evolution
+> @echo "Debug build done"
+
+shoggoth: $(BASE_OBJS) $(SHOGGOTH_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+processor.so: $(BASE_OBJS) $(PROCESSOR_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
+
+server.so: $(BASE_OBJS) $(SERVER_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
+
+teacher.so: $(BASE_OBJS) $(TEACHER_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
 
 evolution: $(BASE_OBJS) $(EVOLUTION_EXTRA)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
-
-teacher: $(BASE_OBJS) $(TEACHER_EXTRA)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 debugger: $(BASE_OBJS) $(DEBUGGER_EXTRA)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS) -lncursesw
-
-brain: $(BASE_OBJS) $(BRAIN_EXTRA)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) -lncursesw
 
 clean:
-	rm -f evolution teacher brain debugger $(OBJ_DIR)/*.o $(OBJ_DIR)/*.d
+> rm -rf shoggoth server.so processor.so teacher.so debugger evolution obj/

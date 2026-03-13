@@ -4,7 +4,6 @@
 /* User libraries */
 #include "evolution_application.h"
 #include "evolution_payload.h"
-#include "../../shoggoth/io.h"
 #include "../../../../../lib/core/str.h"
 
 
@@ -143,10 +142,10 @@ void EvolutionPayload::onEngineLoop
             /* Get server netMode */
             NetMode netMode;
 
-            Io::create( net )
-            -> getNetMode( netMode )
-            -> resultTo( this )
-            -> destroy();
+//            Io::create( net )
+//            -> getNetMode( netMode )
+//            -> resultTo( this )
+//            -> destroy();
 
             /* Retrive the config structure */
             auto localConfig = getApplication() -> getConfig();
@@ -486,10 +485,10 @@ EvolutionPayload* EvolutionPayload::netSwitchToLearn
     ParamList* aReason
 )
 {
-    Io::create( net )
-    -> setNetMode( NET_MODE_LEARN, aReason )
-    -> resultTo( this )
-    -> destroy();
+//    Io::create( net )
+//    -> setNetMode( NET_MODE_LEARN, aReason )
+//    -> resultTo( this )
+//    -> destroy();
 
     return this;
 }
@@ -505,10 +504,10 @@ EvolutionPayload* EvolutionPayload::netSwitchToTest
 )
 {
     //
-    Io::create( net )
-    -> setNetMode( NET_MODE_TEST, aReason )
-    -> resultTo( this )
-    -> destroy();
+//    Io::create( net )
+//    -> setNetMode( NET_MODE_TEST, aReason )
+//    -> resultTo( this )
+//    -> destroy();
 
     if( this -> isOk() )
     {
@@ -547,20 +546,20 @@ EvolutionPayload* EvolutionPayload::commitNet
     -> dump( aReason );
 
     /* Clone parent net */
-    auto io = Io::create( net );
-    io -> getRequest()
-    -> setBool( "success", aSuccess )
-    -> setDouble( "survivalErrorAvg", aSurvivalErrorAvg )
-    -> setInt( "mutationSeed", ++mutationSeed )
-    -> copyFrom( "reason", aReason )
-    -> setString( "id", net -> getId())
-    -> setString( "version", net -> getVersion());
-
-    io
-    -> call( CMD_COMMIT_NET )
-    -> resultTo( this )
-    -> destroy();
-
+//    auto io = Io::create( net );
+//    io -> getRequest()
+//    -> setBool( "success", aSuccess )
+//    -> setDouble( "survivalErrorAvg", aSurvivalErrorAvg )
+//    -> setInt( "mutationSeed", ++mutationSeed )
+//    -> copyFrom( "reason", aReason )
+//    -> setString( "id", net -> getId())
+//    -> setString( "version", net -> getVersion());
+//
+//    io
+//    -> call( CMD_COMMIT_NET )
+//    -> resultTo( this )
+//    -> destroy();
+//
     if( isOk() )
     {
         setResult( aSuccess ? "evolution_commit" : "evolution_rollback" );

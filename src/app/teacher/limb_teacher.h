@@ -8,9 +8,11 @@
 
 
 #include "../../shoggoth/limb.h"
-#include "../../shoggoth/limb/net.h"
+#include "../../shoggoth/net.h"
 #include "layer_teacher.h"
 
+
+class Payload;
 
 
 class LimbTeacher : public Limb
@@ -18,7 +20,9 @@ class LimbTeacher : public Limb
     private:
 
         /* Net object */
-        Net*            net             = NULL;
+        Net*            net     = NULL;
+        /* Master payload */
+        Payload*        payload = NULL;
 
     public:
 
@@ -27,7 +31,10 @@ class LimbTeacher : public Limb
         */
         LimbTeacher
         (
-            Net*    /* Net limb object*/
+            /* Master payload */
+            Payload*,
+            /* Net limb object*/
+            Net*
         );
 
 
@@ -44,8 +51,14 @@ class LimbTeacher : public Limb
         */
         static LimbTeacher* create
         (
-            Net* /* The net object*/
-        );
+            /* Master payload */
+            Payload* aPyaload,
+            /* The net object*/
+            Net* aNet
+        )
+        {
+            return new LimbTeacher( aPyaload, aNet );
+        }
 
 
 

@@ -7,7 +7,10 @@
 */
 LimbTeacher::LimbTeacher
 (
-    Net* aNet /* Net limb object*/
+    /* Payload */
+    Payload* aPayload,
+    /* Net limb object*/
+    Net* aNet
 )
 :Limb
 (
@@ -17,6 +20,7 @@ LimbTeacher::LimbTeacher
 )
 {
     net = aNet;
+    payload = aPayload;
 }
 
 
@@ -28,18 +32,6 @@ LimbTeacher::~LimbTeacher()
 {
 }
 
-
-
-/*
-    Create
-*/
-LimbTeacher* LimbTeacher::create
-(
-    Net* aNet       /* Limb object*/
-)
-{
-    return new LimbTeacher( aNet );
-}
 
 
 

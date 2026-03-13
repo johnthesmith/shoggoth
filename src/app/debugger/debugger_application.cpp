@@ -65,8 +65,6 @@ DebuggerApplication* DebuggerApplication::run()
 {
     getLog() -> begin( "Start the Shoggoth Debugger application" );
 
-    prepareConfiguration();
-
     payload = DebuggerPayload::create( this, "debugger", "", getNetVersion() );
     payload -> setLoopTimeoutMcs(0)
     -> start()

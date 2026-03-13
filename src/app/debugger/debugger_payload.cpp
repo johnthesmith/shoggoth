@@ -8,7 +8,6 @@
 #include <cmath>
 
 /* Shoggoth libraries */
-#include "../../shoggoth/io.h"
 #include "../../../../../lib/core/str.h"
 #include "../../../../../lib/core/utils.h"
 

@@ -172,47 +172,6 @@ enum NetMode
 
 
 /*
-    Shoggoth protocol commands
-*/
-enum Command
-{
-    /* Unknown command */
-    CMD_UNKNOWN,
-    /* Server returns full Net configuration */
-    CMD_READ_NET,
-    /* Server returns current information about net */
-    CMD_READ_NET_INFO,
-    /* Commit net*/
-    CMD_COMMIT_NET,
-    /* Server clone net */
-    CMD_CLONE_NET,
-    /* Server switch to specified net */
-    CMD_SWITCH_NET,
-    /* Server send layers with errors and values plan */
-    CMD_WRITE_LAYERS,
-    /* Server receive layers with errors and values plan */
-    CMD_READ_LAYERS,
-    /* Request weights for one neuron */
-    CMD_REQUEST_WEIGHTS,
-    /* Drop layer tick counter */
-    CMD_DROP_LAYER_TICK,
-    /* Server return the layer statistics */
-    CMD_READ_LAYER_STAT,
-    /* Server receive  */
-    CMD_WRITE_WEIGHTS,
-    /* Server return the layer  */
-    CMD_READ_WEIGHTS,
-    /* Request and return net mode from server */
-    CMD_GET_NET_MODE,
-    /* Set net mode for server */
-    CMD_SET_NET_MODE,
-    /* Clients (teacher) sent test result */
-    CMD_TEST_RESULT
-};
-
-
-
-/*
     Neuron layer error calculation types
 */
 enum ErrorCalc
@@ -313,27 +272,6 @@ Action stringToAction
 std::string taskToString
 (
     Task aValue /* Event enum */
-);
-
-
-
-/*
-    Convert command to string
-*/
-std::string commandToString
-(
-    Command
-);
-
-
-
-
-/*
-    Convert command fromstring
-*/
-Command commandFromString
-(
-    std::string
 );
 
 

@@ -28,68 +28,6 @@ std::string taskToString
 
 
 /*
-    Convert command to string
-*/
-std::string commandToString
-(
-    Command a
-)
-{
-    switch( a )
-    {
-        default:
-        case CMD_UNKNOWN        : return "UNKNOWN";
-        case CMD_COMMIT_NET     : return "COMMIT_NET";
-        case CMD_READ_NET       : return "READ_NET";
-        case CMD_READ_NET_INFO  : return "READ_NET_INFO";
-        case CMD_CLONE_NET      : return "CLONE_NET";
-        case CMD_SWITCH_NET     : return "SWITCH_NET";
-        case CMD_WRITE_LAYERS   : return "WRITE_LAYERS";
-        case CMD_READ_LAYERS    : return "READ_LAYERS";
-        case CMD_REQUEST_WEIGHTS: return "REQUEST_WEIGHTS";
-        case CMD_WRITE_WEIGHTS  : return "WRITE_WEIGHTS";
-        case CMD_READ_WEIGHTS   : return "READ_WEIGHTS";
-        case CMD_DROP_LAYER_TICK: return "DROP_LAYER_TICK";
-        case CMD_READ_LAYER_STAT: return "READ_LAYER_STAT";
-        case CMD_GET_NET_MODE   : return "GET_NET_MODE";
-        case CMD_SET_NET_MODE   : return "SET_NET_MODE";
-        case CMD_TEST_RESULT    : return "TEST_RESULT";
-    }
-}
-
-
-
-/*
-    Convert calculation stage from string
-*/
-Command commandFromString
-(
-    std::string a
-)
-{
-    if( a == "READ_NET" )            return CMD_READ_NET;
-    if( a == "READ_NET_INFO" )       return CMD_READ_NET_INFO;
-    if( a == "COMMIT_NET" )          return CMD_COMMIT_NET;
-    if( a == "CLONE_NET" )           return CMD_CLONE_NET;
-    if( a == "SWITCH_NET" )          return CMD_SWITCH_NET;
-    if( a == "WRITE_LAYERS" )        return CMD_WRITE_LAYERS;
-    if( a == "READ_LAYERS" )         return CMD_READ_LAYERS;
-    if( a == "REQUEST_WEIGHTS" )     return CMD_REQUEST_WEIGHTS;
-    if( a == "WRITE_WEIGHTS" )       return CMD_WRITE_WEIGHTS;
-    if( a == "READ_WEIGHTS" )        return CMD_READ_WEIGHTS;
-    if( a == "DROP_LAYER_TICK" )     return CMD_DROP_LAYER_TICK;
-    if( a == "READ_LAYER_STAT" )     return CMD_READ_LAYER_STAT;
-    if( a == "GET_NET_MODE" )        return CMD_GET_NET_MODE;
-    if( a == "SET_NET_MODE" )        return CMD_SET_NET_MODE;
-    if( a == "TEST_RESULT" )         return CMD_TEST_RESULT;
-
-    return CMD_UNKNOWN;
-}
-
-
-
-
-/*
     Convert calculation stage to string
 */
 std::string calcStageToString

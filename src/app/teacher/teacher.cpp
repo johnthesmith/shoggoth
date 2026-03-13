@@ -1,18 +1,19 @@
 /*
     Teacher main file for Shoggoth neural network
 */
-#include "teacher_application.h"
 
+#include "../shoggoth_application.h"
+#include "teacher_payload.h"
 
-
-int main
+extern "C" Payload* create_payload
 (
-    int argc,
-    char** argv
+    Application* app,
+    std::string aPayloadId
 )
 {
-    TeacherApplication::create( argc, argv )
-    -> run()
-    -> destroy();
-    return 0;
+    return TeacherPayload::create
+    (
+        ( ShoggothApplication* ) app,
+        aPayloadId
+    );
 }

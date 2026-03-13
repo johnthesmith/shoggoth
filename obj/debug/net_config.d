@@ -1,0 +1,65 @@
+obj/debug/net_config.o: src/shoggoth/net_config.cpp \
+  src/shoggoth/./net_config.h \
+  src/shoggoth/./../../../../lib/json/param_list.h \
+  src/shoggoth/./../../../../lib/json/../core/heap.h \
+  src/shoggoth/./../../../../lib/json/../core/rnd.h \
+  src/shoggoth/./../../../../lib/json/param.h \
+  src/shoggoth/./../../../../lib/json/../core/utils.h \
+  src/shoggoth/./../../../../lib/json/../core/console.h \
+  src/shoggoth/./nerve.h src/shoggoth/./../../../../lib/core/result.h \
+  src/shoggoth/./../../../../lib/core/log_manager.h \
+  src/shoggoth/./../../../../lib/core/log.h \
+  src/shoggoth/./../../../../lib/core/console.h \
+  src/shoggoth/./../../../../lib/core/text_align.h \
+  src/shoggoth/./../../../../lib/core/../json/param_list.h \
+  src/shoggoth/./../../../../lib/core/mon.h \
+  src/shoggoth/./../../../../lib/core/../json/json.h \
+  src/shoggoth/./../../../../lib/core/../json/../core/result.h \
+  src/shoggoth/./../../../../lib/core/../json/../core/text.h \
+  src/shoggoth/./../../../../lib/core/rnd.h \
+  src/shoggoth/./../../../../lib/core/chart_list.h \
+  src/shoggoth/./../../../../lib/core/chart_data.h \
+  src/shoggoth/./../../../../lib/core/chain_d1.h \
+  src/shoggoth/./../../../../lib/core/chain.h \
+  src/shoggoth/./../../../../lib/core/chain_item.h \
+  src/shoggoth/./../../../../lib/core/buffer_d1.h \
+  src/shoggoth/./../../../../lib/core/chain_item_d1.h \
+  src/shoggoth/./shoggoth_consts.h src/shoggoth/./shoggoth_db.h \
+  src/shoggoth/./../../../../lib/core/real.cpp src/shoggoth/./layer.h \
+  src/shoggoth/./../../../../lib/graph/point3i.h src/shoggoth/./func.h \
+  src/shoggoth/./../../../../lib/core/math.h \
+  src/shoggoth/../../../../lib/core/math.h
+src/shoggoth/./net_config.h:
+src/shoggoth/./../../../../lib/json/param_list.h:
+src/shoggoth/./../../../../lib/json/../core/heap.h:
+src/shoggoth/./../../../../lib/json/../core/rnd.h:
+src/shoggoth/./../../../../lib/json/param.h:
+src/shoggoth/./../../../../lib/json/../core/utils.h:
+src/shoggoth/./../../../../lib/json/../core/console.h:
+src/shoggoth/./nerve.h:
+src/shoggoth/./../../../../lib/core/result.h:
+src/shoggoth/./../../../../lib/core/log_manager.h:
+src/shoggoth/./../../../../lib/core/log.h:
+src/shoggoth/./../../../../lib/core/console.h:
+src/shoggoth/./../../../../lib/core/text_align.h:
+src/shoggoth/./../../../../lib/core/../json/param_list.h:
+src/shoggoth/./../../../../lib/core/mon.h:
+src/shoggoth/./../../../../lib/core/../json/json.h:
+src/shoggoth/./../../../../lib/core/../json/../core/result.h:
+src/shoggoth/./../../../../lib/core/../json/../core/text.h:
+src/shoggoth/./../../../../lib/core/rnd.h:
+src/shoggoth/./../../../../lib/core/chart_list.h:
+src/shoggoth/./../../../../lib/core/chart_data.h:
+src/shoggoth/./../../../../lib/core/chain_d1.h:
+src/shoggoth/./../../../../lib/core/chain.h:
+src/shoggoth/./../../../../lib/core/chain_item.h:
+src/shoggoth/./../../../../lib/core/buffer_d1.h:
+src/shoggoth/./../../../../lib/core/chain_item_d1.h:
+src/shoggoth/./shoggoth_consts.h:
+src/shoggoth/./shoggoth_db.h:
+src/shoggoth/./../../../../lib/core/real.cpp:
+src/shoggoth/./layer.h:
+src/shoggoth/./../../../../lib/graph/point3i.h:
+src/shoggoth/./func.h:
+src/shoggoth/./../../../../lib/core/math.h:
+src/shoggoth/../../../../lib/core/math.h:

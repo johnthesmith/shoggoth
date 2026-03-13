@@ -1,16 +1,6 @@
-/* System libraries */
-#include <iostream>
-
-/* Libraryes */
-#include "../../../../lib/core/utils.h"
-
 /* Application libraryes */
 #include "shoggoth_application.h"
-
-
-
-using namespace std;
-
+#include "../shoggoth/net.h"
 
 
 /*
@@ -18,8 +8,10 @@ using namespace std;
 */
 ShoggothApplication::ShoggothApplication
 (
-    int aCount,        /* cli argumends count */
-    char** aList       /* cli arguments */
+    /* cli argumends count */
+    int aCount,
+    /* cli arguments */
+    char** aList
 )
 :Application
 (
@@ -27,7 +19,26 @@ ShoggothApplication::ShoggothApplication
     aList
 )
 {
+    getLog() -> begin( "Shoggoth application start" );
+
+    /* Create sock manager */
     sockManager = SockManager::create();
+
+    /* Create main net */
+    net = Net::create
+    (
+        this,
+        sockManager,
+        "",
+        getNetVersion(),
+        TASK_PROC
+    );
+
+    /* Registarte signal */
+    registerSignal( SIGINT );
+    registerSignal( SIGTERM );
+    registerSignal( SIGSEGV );
+    registerSignal( SIGQUIT );
 }
 
 
@@ -37,17 +48,13 @@ ShoggothApplication::ShoggothApplication
 */
 ShoggothApplication::~ShoggothApplication()
 {
+    /* Destroy net */
+    net -> destroy();
+
+    /* DEstroy sock manager */
     sockManager -> destroy();
-}
 
-
-
-/*
-    Destroy of the Shoogoth
-*/
-void ShoggothApplication::destroy()
-{
-    delete this;
+    getLog() -> end( "Shoggoth stop" );
 }
 
 
@@ -60,59 +67,4 @@ ShoggothApplication* ShoggothApplication::onThreadAfter()
     getSockManager() -> closeHandlesByThread( "" );
     return this;
 }
-
-
-
-/*
-    Prepare configuration for application running
-*/
-ShoggothApplication* ShoggothApplication::prepareConfiguration()
-{
-    /* Output cli arguments */
-    getLog() -> begin( "Start CLI parameters" );
-    for( int i = 0; i < getCli() -> getCount(); i++ )
-    {
-        auto param = getCli() -> getByIndex( i );
-        getLog()
-        -> trace( "" )
-        -> prm( param -> getName(), param -> getString() );
-    }
-    getLog() -> end();
-
-    getLog()
-    -> trace( "Config source" )
-    -> prm( "file", getConfigFileName() );
-
-    /* Set net attributes for the begining */
-    netVersion = getCli() -> getString( Path{ "net_version" }, "zero" );
-
-    return this;
-}
-
-
-
-/**********************************************************************
-    Setters and getters
-*/
-
-
-
-/*
-    Return the sock manager from application
-*/
-SockManager* ShoggothApplication::getSockManager()
-{
-    return sockManager;
-}
-
-
-
-/*
-    Return the net version
-*/
-string ShoggothApplication::getNetVersion()
-{
-    return netVersion;
-}
-
 
