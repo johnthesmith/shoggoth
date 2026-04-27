@@ -9,8 +9,6 @@
 #include <string>
 
 #include "../../../../lib/core/rnd.h"
-#include "../../../../lib/sock/sock_manager.h"
-
 
 #include "limb.h"
 #include "shoggoth_db.h"
@@ -30,14 +28,8 @@ class Net: public Limb
         /* The application object */
         ShoggothApplication*    application     = NULL;
 
-        /* Socket manager object */
-        SockManager*    sockManager     = NULL;
-
         /* Last net config after IO */
         ParamList*      config          = NULL;
-
-        /* Monitoring object */
-        Mon*            mon             = NULL;
 
         /* Rnd object */
         Rnd*            rnd             = NULL;
@@ -52,15 +44,13 @@ class Net: public Limb
         /* Weights request */
         WeightsExchange* weightsExchange = NULL;
 
-        /* Net task */
-        Task task                       = TASK_UNKNOWN;
-
         /* Synchronization states */
         /* Random vesion after load */
         int             randVersion     = 0;
 
         /* Protects net weights from writing */
         bool            weightWriteLock = false;
+
         /* Net id */
         string          id              = "";
         /* Net version, for switching at next turn of calculation */
@@ -68,14 +58,14 @@ class Net: public Limb
         /* Tick of the net. Settings by processor */
         unsigned long long tick         = 0;
 
+        /* Hash map */
+        std::map<std::string, uint64_t> hashValues = {};
+
         Net* loadNerves
         (
             /* Load nerves for applyNet */
-            ParamList*,
-            /* Task name */
-            string
+            ParamList*
         );
-
 
     public:
 
@@ -86,14 +76,10 @@ class Net: public Limb
         (
             /* Application object */
             ShoggothApplication*,
-            /* Socket manager */
-            SockManager*,
             /* The net id */
             std::string,
             /* The net version */
-            std::string,
-            /* Task of the current net */
-            Task
+            std::string
         );
 
 
@@ -112,23 +98,17 @@ class Net: public Limb
         (
             /* Application object */
             ShoggothApplication*    aApplication,
-            /* Socket manager object */
-            SockManager*    aSockManager,
             /* The net id */
             std::string          aId,
             /* The net version */
-            std::string          aVersion,
-            /* The net version */
-            Task            aTask
+            std::string          aVersion
         )
         {
             return new Net
             (
                 aApplication,
-                aSockManager,
                 aId,
-                aVersion,
-                aTask
+                aVersion
             );
         }
 
@@ -282,21 +262,6 @@ class Net: public Limb
         string getLogPath
         (
             /* Subpath */
-            string = "",
-            /* Specific version */
-            string = ""
-        );
-
-
-
-        /*
-            Return mon path
-        */
-        string getMonPath
-        (
-            /* Subpath */
-            string = "",
-            /* Specific version */
             string = ""
         );
 
@@ -340,16 +305,6 @@ class Net: public Limb
 
 
 
-        /*
-            Return net monitoring file
-        */
-        string getMonFile
-        (
-            /* Specific version */
-            string = ""
-        );
-
-
 
         /******************************************************************************
             Layers
@@ -379,7 +334,6 @@ class Net: public Limb
         );
 
 
-
         /*
             Read net configuration and reallocate net objects
         */
@@ -389,13 +343,6 @@ class Net: public Limb
             ParamList*,
             /* Connetion */
             std::string = "default"
-        );
-
-
-
-        bool readNetFromFile
-        (
-            ParamList* /* Answer */
         );
 
 
@@ -431,6 +378,9 @@ class Net: public Limb
 
 
 
+        /*
+            Apply net
+        */
         Net* applyNet
         (
             /* Config */
@@ -453,17 +403,14 @@ class Net: public Limb
 
 
 
-        /*
-            Return socket manager object
-        */
-        SockManager* getSockManager();
-
-
 
         /*
             Return config of the net
         */
-        ParamList* getConfig();
+        inline ParamList* getConfig()
+        {
+            return config;
+        }
 
 
 
@@ -479,13 +426,29 @@ class Net: public Limb
         /*
             Swap layers between net and other participants for actions
         */
-        Net* swapValuesAndErrors
+        bool valuesAndErrorsToLimb
         (
-            Actions,    /* Action list for participant */
-            Limb*,      /* Participant */
-            bool,        /* Skip action for locked */
-            bool&,
-            bool&
+            /* Participant limb object */
+            Limb*,
+            /* List of layers for reading from net */
+            vector<string>,
+            /* Skip action for locked */
+            bool
+        );
+
+
+
+        /*
+            Swap layers between net and other participants for actions
+        */
+        bool valuesAndErrorsFromLimb
+        (
+            /* Participant limb object */
+            Limb*,
+            /* List of layers for writing to net */
+            vector<string>,
+            /* Skip action for locked */
+            bool
         );
 
 
@@ -495,8 +458,10 @@ class Net: public Limb
         */
         bool syncToLimb
         (
-            Limb*   /* targetLimb */,
-            bool    /* Skip synchronization for Net is lock */
+            /* targetLimb */
+            Limb*
+            /* Skip synchronization for Net is lock */
+            // bool
         );
 
 
@@ -565,8 +530,6 @@ class Net: public Limb
         */
         string generateVersion
         (
-            /* Id of the net */
-            std::string,
             /* Current version of the net */
             std::string,
             /* Parent succes */
@@ -605,23 +568,10 @@ class Net: public Limb
         */
         string getParentVersion
         (
-            /* Net ID (not used) */
-            string,
             /* Net version */
             string,
             /* Parent generation (0 - current net) */
             int = 0
-        );
-
-
-
-        /*
-            Return true value if layer contains action for current net task
-        */
-        bool checkLayerAction
-        (
-            Layer*,
-            Action
         );
 
 
@@ -649,12 +599,6 @@ class Net: public Limb
         */
         Net* incTick();
 
-
-
-        /*
-            Return net mon object
-        */
-        Mon* getMon();
 
 
 
@@ -689,4 +633,33 @@ class Net: public Limb
         {
             return db;
         }
+
+
+
+        /*
+            Recalculate layer hash and store it
+        */
+        Net* calcLayerValuesHash
+        (
+            Layer* aLayer
+        )
+        {
+            hashValues[ aLayer -> getId() ] = aLayer -> calcValuesHash();
+            return this;
+        }
+
+
+
+        /*
+            Return layer hash by layer id
+        */
+        inline uint64_t getHashByLayerId
+        (
+            /* Layer id */
+            std::string a
+        )
+        {
+            return hashValues.count( a ) ? hashValues[a] : 0;
+        }
 };
+

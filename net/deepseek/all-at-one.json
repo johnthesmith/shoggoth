@@ -1,0 +1,440 @@
+{
+    "engine":
+    {
+        "payloads":
+        {
+            "loader":
+            {
+                "enabled": true,
+                "lib": "../../loader.so",
+                "thread": true,
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": true
+                    },
+                    "code":
+                    {
+                        "ok":
+                        {
+                            "log":"TRACE",
+                            "timeoutMcs":100000
+                        }
+                    },
+                    "layers": {}
+                },
+            },
+
+            "teacher":
+            {
+                "enabled": true,
+                "lib": "../../teacher.so",
+                "thread":true,
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": true
+                    },
+                    "code":
+                    {
+                        "*":
+                        {
+                            "log":"TRACE",
+                            "timeoutMcs":10
+                        }
+                    },
+
+                    "layers":
+                    {
+                        "read-values":
+                        [
+                            "learning",
+                            "error"
+                        ],
+                        "write-values":
+                        [
+                            "retina",
+                            "error",
+                            "test",
+                            "sample",
+                            "test_error",
+                            "learning"
+                        ]
+                    },
+
+
+                    "idErrorLayer" : "error",
+                    "currentBatches" : "learning",
+                    "batches":
+                    {
+                        "silent":
+                        {
+                            "all":
+                            [
+                                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "test", "min":0.0, "max":0.0 },
+                                { "cmd":"VALUES_TO_LAYER", "layer": "retina", "values": [ 0.0 ] }
+                            ],
+                            "list":[]
+                        },
+
+                        "draw":
+                        {
+                            "all":
+                            [
+                                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "test", "min":0.0, "max":0.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
+                            ],
+                            "list":
+                            [
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/test" }
+                                ]
+                            ]
+                        },
+
+                        "learning":
+                        {
+                            "strategy": "ORDER",
+                            "order":
+                            [
+                                0,
+                                0, 1,
+                                0, 1, 2,
+                                0, 1, 2, 3,
+                                0, 1, 2, 3, 4,
+                                0, 1, 2, 3, 4, 5,
+                                0, 1, 2, 3, 4, 5, 6,
+                                0, 1, 2, 3, 4, 5, 6, 7,
+                                0, 1, 2, 3, 4, 5, 6, 7, 8,
+                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                9,
+                                9, 8,
+                                9, 8, 7,
+                                9, 8, 7, 6,
+                                9, 8, 7, 6, 5,
+                                9, 8, 7, 6, 5, 4,
+                                9, 8, 7, 6, 5, 4, 3,
+                                9, 8, 7, 6, 5, 4, 3, 2,
+                                9, 8, 7, 6, 5, 4, 3, 2, 1,
+                                9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+                            ],
+                            "repeat-count": "20",
+                            "all":
+                            [
+                                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "test", "min":0.0, "max":0.0 },
+                                { "cmd":"VALUES_TO_LAYER", "layer": "learning", "values": [ 2.0 ] }
+                            ],
+                            "list":
+                            [
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+                                ]
+                            ]
+                        },
+                        "testing":
+                        {
+                            "controlDump":
+                            [
+                                "result", "test"
+                            ],
+                            "all":
+                            [
+                                { "cmd":"VALUE_TO_LAYER", "layer": "test_error", "min":1.0, "max":1.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 },
+                                { "cmd":"VALUE_TO_LAYER", "layer": "sample", "min":0.0, "max":0.0 }
+                            ],
+                            "list":
+                            [
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "test", "values":[ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] }
+                                ]
+                            ]
+                        },
+                        "null":
+                        {
+                            "all":[],
+                            "list":[]
+                        },
+                        "reading":
+                        {
+                            "all":
+                            [
+                                { "cmd":"VALUE_TO_LAYER", "layer": "error", "min":1.0, "max":1.0 }
+                            ],
+                            "list":
+                            [
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit0", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit1", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit2", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit3", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit4", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit5", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit6", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit7", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit8", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ],
+                                [
+                                    { "cmd":"FOLDER_TO_LAYER","layer": "retina", "folder": "../../patterns/digit9", "-zoomMin":0.5, "-zoomMax": 1.0, "rotate":0.0625, "-shift":0.1, "bright":0.1 },
+                                    { "cmd":"VALUES_TO_LAYER","layer": "sample", "values":[ 0.0 ] }
+                                ]
+                            ]
+                        }
+                    }
+                }
+            },
+            "processor":
+            {
+                "enabled": true,
+                "lib": "../../processor.so",
+                "thread": true,
+
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": true
+                    },
+                    "code":
+                    {
+                        "*": { "log":"TRACE", "timeoutMcs":1 }
+                    },
+                    "layers":
+                    {
+                        "let":
+                        [
+                            "cortex_1a", "cortex_1b", "cortex_1c", "cortex_1d",
+                            "cortex_2a", "cortex_2b", "cortex_2c", "cortex_2d",
+                            "cortex_2e", "cortex_2f", "cortex_2g", "cortex_2h",
+                            "pool_1a", "pool_1b","pool_1c","pool_1d",
+                            "pool_2a", "pool_2b","pool_2c","pool_2d",
+                            "pool_2e", "pool_2f","pool_2g","pool_2h",
+                            "fc",
+                            "command",
+                            "test_error",
+                            "test_command"
+                        ],
+                        "read-values":
+                        [
+                            "retina", "learning", "bias", "sample"
+                        ],
+                        "write-values":
+                        [
+                            "learning", "result", "error"
+                        ]
+                    },
+
+                    "mon":
+                    {
+                        "file": "processor.json",
+                        "charts":
+                        {
+                            "values":
+                            {
+                                "retina": false,
+                                "command": true
+                            },
+                            "errors":
+                            {
+                                "error": true
+                            },
+                            "ticks":
+                            {
+                            }
+                        }
+                    },
+                    "dump":
+                    [
+                        {
+                            "enabled"       :false,
+                            "lock"          :true,
+                            "pauseMcs"      :0,
+                            "stages"        :[ "AFTER_FRONT" ]
+                        },
+
+                        {
+                            "enabled": false,
+                            "dumptype": "LAYERS",
+                            "file": "dump/layers.txt"
+                        },
+                        {
+                            "enabled"       :false,
+                            "dumptype"      : "LAYER",
+                            "file"          :"dump/%data%-%layer%.txt",
+                            "stages"        :[ "AFTER_FRONT" ],
+                            "layers"        :[ "sample" ],
+                            "data"          :[ "VALUES" ],
+                            "dataview"      :"DIGIT",
+                            "precision"     :4
+                        },
+                        {
+                            "enabled"       :true,
+                            "dumptype"      :"LAYER",
+                            "file"          :"dump/%data%-%layer%.txt",
+                            "stages"        :[ "AFTER_BACK" ],
+                            "layers"        :
+                            [
+                                "bias",
+                                "retina",
+                                "error",
+                                "learning",
+                                "command",
+                                "result",
+                                "sample"
+                            ],
+                            "reserv":
+                            [
+                                "retina",
+                                "fc",
+                                "pool_2a","pool_2b","pool_2c","pool_2d",
+                                "pool_2e","pool_2f","pool_2g","pool_2h",
+                                "cortex_2a", "cortex_2b", "cortex_2c", "cortex_2g",
+                                "cortex_2e", "cortex_2f", "cortex_2g", "cortex_2h",
+                                "pool_1a","pool_1b","pool_1c","pool_1d",
+                                "cortex_1a", "cortex_1b", "cortex_1c", "cortex_1d"
+                            ],
+                            "data"          :[ "VALUES", "ERRORS" ],
+                            "dataview"      :"DIGIT",
+                            "precision"     :5
+                        },
+                        {
+                            "enabled"       :false,
+                            "dumptype"      :"NERVE",
+                            "file"          :"dump/%layer-from%-%layer-to%.txt",
+                            "stages"        :[ "AFTER_FRONT" ],
+                            "nerves"        :
+                            [
+                                [ "retina", "cortex_1a" ],
+                                [ "cortex_1a", "pool_1a" ],
+                                [ "pool_1a", "cordex_2a" ],
+                                [ "cortex_2a", "pool_2a" ],
+                                [ "pool_2a", "fc" ],
+                                [ "fc", "result" ]
+                            ],
+                            "data"          :[ "WEIGHTS" ],
+                            "dataview"      :"DIGIT",
+                            "precision"     :2
+                        },
+                        {
+                            "enabled"       :false,
+                            "dumptype"      :"NEURON",
+                            "file"          :"dump/%dumptype%-%stage%-%data%-%layer%-%neuron%.txt",
+                            "stages"        :[ "AFTER_FRONT" ],
+                            "neurons"       :
+                            {
+                                "cortex_1a": [[ 2,2,0 ]]
+                            },
+                            "data"          :[ "WEIGHTS" ],
+                            "dataview"      :"DIGIT",
+                            "precision"     :4
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

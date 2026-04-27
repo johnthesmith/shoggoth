@@ -1,25 +1,96 @@
 {
     "engine":
     {
-        "enabled": true,
-        "trap"   : false,
         "payloads":
         {
+            "loader":
+            {
+                "enabled": true,
+                "lib": "../../loader.so",
+                "thread": true,
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": true
+                    },
+                    "code":
+                    {
+                        "ok":
+                        {
+                            "log":"TRACE",
+                            "timeoutMcs":100000
+                        }
+                    },
+                    "layers": {}
+                },
+            },
+
+            "server":
+            {
+                "enabled": true,
+                "lib": "../../server.so",
+                "thread": true,
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": false
+                    },
+                    "code":
+                    {
+                        "ok":
+                        {
+                            "log":"TRACE",
+                            "timeoutMcs":1000000
+                        }
+                    },
+                    "port":11121,
+                    "readWaitingTimeoutMcs" :1000000
+                }
+            },
+
             "processor":
             {
                 "enabled": true,
                 "lib": "../../processor.so",
                 "thread": true,
 
-                "code":
-                {
-                    "ok"        : { "log":"TRACE",      "timeoutMcs":1000000 },
-                    "disabled"  : { "log":"TRACE",      "timeoutMcs":1000000 },
-                    "*"         : { "log":"ERROR",      "exit":true }
-                },
-
                 "config":
                 {
+                    "log":
+                    {
+                        "trap": true
+                    },
+                    "code":
+                    {
+                        "*": { "log":"TRACE", "timeoutMcs":1 }
+                    },
+                    "layers":
+                    {
+                        "let":
+                        [
+                            "cortex_1a", "cortex_1b", "cortex_1c", "cortex_1d",
+                            "cortex_2a", "cortex_2b", "cortex_2c", "cortex_2d",
+                            "cortex_2e", "cortex_2f", "cortex_2g", "cortex_2h",
+                            "pool_1a", "pool_1b","pool_1c","pool_1d",
+                            "pool_2a", "pool_2b","pool_2c","pool_2d",
+                            "pool_2e", "pool_2f","pool_2g","pool_2h",
+                            "fc",
+                            "command",
+                            "test_error",
+                            "test_command"
+                        ],
+                        "read-values":
+                        [
+                            "retina", "learning", "bias", "sample"
+                        ],
+                        "write-values":
+                        [
+                            "learning", "result", "error"
+                        ]
+                    },
+
                     "mon":
                     {
                         "file": "processor.json",
@@ -70,6 +141,8 @@
                             "stages"        :[ "AFTER_BACK" ],
                             "layers"        :
                             [
+                                "bias",
+                                "retina",
                                 "error",
                                 "learning",
                                 "command",
@@ -124,19 +197,7 @@
                         }
                     ]
                 }
-            },
-            "server":
-            {
-                "enabled": true,
-                "lib": "../../server.so",
-                "thread": true,
-                "config":
-                {
-                    "port"                  :11121,
-                    "readWaitingTimeoutMcs" :1000000
-                }
             }
-
         }
     }
 }

@@ -3,6 +3,7 @@
 #include <unistd.h> /* usleep */
 
 #include "limb_processor.h"
+#include "processor_payload.h"
 
 #include "../../shoggoth/func.h"
 #include "../../shoggoth/shoggoth_consts.h"
@@ -16,53 +17,37 @@
 
 
 
+
 /*
     Constructor
 */
 LimbProcessor::LimbProcessor
 (
-    /* Payload */
-    Payload* aPayload,
-    /* Net limb object*/
-    Net* aNet
+    /* Paylaod for limb */
+    ProcessorPayload* aPayload
 )
 :Limb
 (
-    aNet -> getLogManager(),
-    /* Empty version */
+    aPayload -> getApplication() -> getLogManager(),
+    aPayload -> getId(),
     ""
 )
 {
-    net = aNet;
     payload = aPayload;
-
-    mon = Mon::create( net -> getMonPath( "procesor.json" ))
-    -> setString( Path{ "start", "Source" }, "Limb processor" )
-    -> now( Path{ "start", "now" });
 
 //    weightsChart = ChartList::create();
 
-    threadManager = ThreadManager::create( aNet -> getLogManager() );
-    threadManagerWeight = ThreadManager::create( aNet -> getLogManager() );
+    threadManager = ThreadManager::create
+    (
+        aPayload -> getApplication() -> getLogManager()
+    );
+
+    threadManagerWeight = ThreadManager::create
+    (
+        aPayload -> getApplication() -> getLogManager()
+    );
 
     fps = ChartData::create() -> setMaxCount( 100 );
-}
-
-
-
-/*
-    Destructor
-*/
-LimbProcessor::~LimbProcessor()
-{
-    fps -> destroy();
-
-    threadManager -> destroy();
-    threadManagerWeight -> destroy();
-
-//    weightsChart -> destroy();
-
-    mon -> destroy();
 }
 
 
@@ -81,8 +66,7 @@ LimbProcessor::~LimbProcessor()
 LimbProcessor* LimbProcessor::calc()
 {
     auto fpsBegin = now();
-
-    mon -> now( Path{ "trace", "start" }, true );
+    auto net = payload -> getApplication() -> getNet();
 
     net -> lock();
 //    if
@@ -100,11 +84,10 @@ LimbProcessor* LimbProcessor::calc()
 //        /* Writes weights for current version */
 //        weightsWrite( net -> getNervesPath( "", getVersion() ));
 //    }
-//    mon -> now( Path{ "trace", "write_nerves" }, true);
+    payload -> getMon() -> now( Path{ "trace", "write_nerves" }, true);
 
     /* Detect changes of config */
-    auto reload = net -> getLastUpdate() != this -> getLastUpdate();
-    if( net -> syncToLimb( this, false ))
+    if( net -> syncToLimb( this ))
     {
         /*
             Clear parents and children for each layer
@@ -123,7 +106,7 @@ LimbProcessor* LimbProcessor::calc()
         /* Reallocates and fill weights */
         nerveControl();
     }
-    mon -> now( Path{ "trace", "syncToLimb" }, true );
+    payload -> getMon() -> now( Path{ "trace", "syncToLimb" }, true );
 
 
     if( getVersion() != net -> getVersion() )
@@ -136,7 +119,7 @@ LimbProcessor* LimbProcessor::calc()
     /*
         Calculation begin
     */
-    mon
+    payload -> getMon()
     -> setInt( Path{ "config", "seed" }, net -> getRnd() -> getSeed() )
     -> setString( Path{ "config", "learningLayerId" }, getLearningLayerId() )
     -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
@@ -146,26 +129,16 @@ LimbProcessor* LimbProcessor::calc()
     auto netLastChangeValues = net -> getLastChangeValues();
 
     /* Swap values and errors */
-    bool readedValues = false;
-    bool writedValues = false;
-    net
-    -> swapValuesAndErrors
+    auto readedValues = net -> valuesAndErrorsToLimb
     (
-        /* Action */
-        {
-            /* Upload start values from Net */
-            READ_VALUES
-        },
-        /* Participant object */
         this,
-        false,
-        readedValues,
-        writedValues
+        payload -> getConfig() -> getStringVector( Path{ "layers", "read-values" }),
+        false
     );
-    mon -> now( Path{ "trace" , "swapValuesAndErrors" }, true );
-    mon -> now( Path{ "trace", "debugDumpStageStart" }, true );
 
-
+    payload
+    -> getMon()
+    -> now( Path{ "trace" , "swapValuesAndErrors" }, true );
 
     auto learningLayer = getLayerList() -> getById( learningLayerId );
 
@@ -181,7 +154,7 @@ LimbProcessor* LimbProcessor::calc()
     {
         /* Increase the tick */
         net -> incTick();
-        mon -> setInt( Path{ "current", "tick" }, net -> getTick() );
+        payload -> getMon() -> setInt( Path{ "current", "tick" }, net -> getTick() );
 
         /* Drop learing mode flag */
         calcDebugDump( CALC_STAGE_START );
@@ -191,7 +164,7 @@ LimbProcessor* LimbProcessor::calc()
             from layers without parents
         */
         resetCalcState();
-        mon -> now( Path{ "trace" , "resetCalcState" }, true );
+        payload -> getMon() -> now( Path{ "trace" , "resetCalcState" }, true );
 
         /* Start tasks */
         getLayerList() -> loop
@@ -207,13 +180,13 @@ LimbProcessor* LimbProcessor::calc()
                 return false;
             }
         );
-        mon -> now( Path{ "trace" , "forwardStart" }, true );
+        payload -> getMon() -> now( Path{ "trace" , "forwardStart" }, true );
         /* Wait tasks */
         threadManager -> wait();
-        mon -> now( Path{ "trace" , "forwardWait" }, true );
+        payload -> getMon() -> now( Path{ "trace" , "forwardWait" }, true );
         onChangeValues();
         calcDebugDump( CALC_STAGE_AFTER_FRONT );
-        mon -> now( Path{ "trace", "forwardDump" }, true);
+        payload -> getMon() -> now( Path{ "trace", "forwardDump" }, true);
 
         /*
             Backward calculation (neuron errors)
@@ -234,12 +207,11 @@ LimbProcessor* LimbProcessor::calc()
                 return false;
             }
         );
-        mon -> now( Path{ "trace" , "backwardStart" }, true );
+        payload -> getMon() -> now( Path{ "trace" , "backwardStart" }, true );
         threadManager -> wait();
-        mon -> now( Path{ "trace" , "backwardWait" }, true );
+        payload -> getMon() -> now( Path{ "trace" , "backwardWait" }, true );
         calcDebugDump( CALC_STAGE_AFTER_BACK );
-        mon -> now( Path{ "trace", "backwardDump" }, true);
-
+        payload -> getMon() -> now( Path{ "trace", "backwardDump" }, true);
 
         /*
             Learning calculation (nerve weights)
@@ -253,7 +225,7 @@ LimbProcessor* LimbProcessor::calc()
         getNerveList()
         -> loop
         (
-            [ this, &netLastChangeValues ]
+            [ this, &netLastChangeValues, &net ]
             ( void* item )
             {
                 auto nerve = (Nerve*) item;
@@ -284,11 +256,11 @@ LimbProcessor* LimbProcessor::calc()
             }
         );
 
-        mon -> now( Path{ "trace", "weightStart" }, true);
+        payload -> getMon() -> now( Path{ "trace", "weightStart" }, true);
         threadManagerWeight -> wait();
-        mon -> now( Path{ "trace", "weightWait" }, true );
+        payload -> getMon() -> now( Path{ "trace", "weightWait" }, true );
         calcDebugDump( CALC_STAGE_AFTER_LEARNING );
-        mon -> now( Path{ "trace", "weightDump" }, true );
+        payload -> getMon() -> now( Path{ "trace", "weightDump" }, true );
 
         /*
             End of calculation
@@ -301,32 +273,20 @@ LimbProcessor* LimbProcessor::calc()
             net -> getLastChangeValues() == netLastChangeValues
         )
         {
-            bool readedValues = false;
-            bool writedValues = false;
-            net
-            /* Swap values and errors */
-            -> swapValuesAndErrors
+            net -> valuesAndErrorsFromLimb
             (
-                /* Action */
-                {
-                    /* Load values and errors to Net */
-                    WRITE_VALUES,
-                    WRITE_ERRORS
-                },
-                /* Participant object */
                 this,
-                false,
-                readedValues,
-                writedValues
-            )
+                payload -> getConfig() -> getStringVector( Path{ "layers", "write-values" }),
+                false
+            );
             /* Load weights to Net from this limb */
-            -> loadWeightsFrom( this )
+            net -> loadWeightsFrom( this )
             /* Write stat for Net */
             -> stat()
             ;
         }
 
-        mon -> now( Path{ "trace", "move_data_to_net" }, true );
+        payload -> getMon() -> now( Path{ "trace", "move_data_to_net" }, true );
 
         /* Write charts in to monitoring */
         if
@@ -337,9 +297,9 @@ LimbProcessor* LimbProcessor::calc()
             net -> getTick() % tickChart == 0
         )
         {
-            mon -> remove( Path{ "mon" } );
+            payload -> getMon() -> remove( Path{ "mon" } );
 
-            auto monConfig = getPayload()
+            auto monConfig = payload
             -> getConfig()
             -> getObject( Path{ "mon", "charts" });
 
@@ -360,7 +320,7 @@ LimbProcessor* LimbProcessor::calc()
 
                         if( monConfig -> getBool( Path{ "values", layerId } ))
                         {
-                            mon -> setString
+                            payload -> getMon() -> setString
                             (
                                 Path
                                 {
@@ -374,7 +334,7 @@ LimbProcessor* LimbProcessor::calc()
 
                         if( monConfig -> getBool( Path{ "errors", layerId } ))
                         {
-                            mon -> setString
+                            payload -> getMon() -> setString
                             (
                                 Path
                                 {
@@ -388,7 +348,7 @@ LimbProcessor* LimbProcessor::calc()
 
                         if( monConfig -> getBool( Path{ "ticks", layerId } ))
                         {
-                            mon -> setString
+                            payload -> getMon() -> setString
                             (
                                 Path
                                 {
@@ -419,7 +379,7 @@ LimbProcessor* LimbProcessor::calc()
                 net -> unlock();
             }
         }
-        mon -> now( Path{ "trace", "write_charts" }, true );
+        payload -> getMon() -> now( Path{ "trace", "write_charts" }, true );
     }
     else
     {
@@ -427,7 +387,7 @@ LimbProcessor* LimbProcessor::calc()
         usleep( 100 );
     }
 
-    mon
+    payload -> getMon()
     -> trace( Path{ "trace" } )
     -> now( Path{ "current", "last" } )
     -> setString( Path{ "current", "result" }, getCode() )
@@ -437,7 +397,7 @@ LimbProcessor* LimbProcessor::calc()
     {
         if( fpsStart + SECOND < fpsBegin )
         {
-            mon -> setInt( Path{ "current", "fps-fact" }, fpsTick );
+            payload -> getMon() -> setInt( Path{ "current", "fps-fact" }, fpsTick );
             fpsStart = fpsBegin;
             fpsTick = 0;
         }
@@ -449,7 +409,7 @@ LimbProcessor* LimbProcessor::calc()
         /* Calc and out fps */
         auto fpsEnd = now();
         fps -> createLast( (real) SECOND / ( fpsEnd - fpsBegin ));
-        mon -> setDouble( Path{ "current", "fps-max" }, fps -> avg() );
+        payload -> getMon() -> setDouble( Path{ "current", "fps-max" }, fps -> avg() );
     }
 
     return this;
@@ -490,10 +450,11 @@ LimbProcessor* LimbProcessor::nerveControl()
     getNerveList() -> weightsAllocate();
 
     auto loadingError = false;
+    auto net = payload -> getApplication() -> getNet();
 
     getNerveList() -> loop
     (
-        [ this, &loadingError ]
+        [ &loadingError, &net ]
         ( void* item )
         {
             auto nerve = ( Nerve* ) item;
@@ -520,7 +481,7 @@ LimbProcessor* LimbProcessor::nerveControl()
     {
         getNerveList() -> loop
         (
-            [ this ]
+            [ net ]
             ( void* item )
             {
                 auto nerve = ( Nerve* ) item;
@@ -665,12 +626,13 @@ LimbProcessor* LimbProcessor::calcDebugDump
     /* Convert stage */
     auto stage = calcStageToString( aStage );
     auto stageAll = calcStageToString( CALC_STAGE_ALL );
-    auto dumpConf = getPayload() -> getConfig() -> getObject( Path{ "dump" });
+    auto dumpConf = payload -> getConfig() -> getObject( Path{ "dump" });
+    auto net = payload -> getApplication() -> getNet();
 
     /* Loop for monitoring rules from config */
     dumpConf -> objectsLoop
     (
-        [ this, &stage, &stageAll, &aStage ]
+        [ this, &stage, &stageAll, &aStage, &net ]
         ( ParamList* params, string )
         {
             /* Enabled check */
@@ -698,7 +660,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                     );
 
                     /* Change file to mon path/file */
-                    file = net -> getMonPath( file );
+                    file = payload -> getApplication() -> getMonPath( file );
 
                     /* Replace stage and tick in the file */
                     file = replace
@@ -757,7 +719,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                 layers,
                                                 dataview,
                                                 data,
-                                                net -> getTick()
+                                                payload -> getApplication()-> getNet() -> getTick()
                                             );
                                         }
                                     }
@@ -835,7 +797,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                         {
                                             neurons -> loop
                                             (
-                                                [ this, file1, data, dataview ]
+                                                [ this, file1, data ]
                                                 ( Param* param )
                                                 {
                                                     if( param -> isObject() )
@@ -852,8 +814,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                     this,
                                                                     layer,
                                                                     data,
-                                                                    file1,
-                                                                    dataview
+                                                                    file1
                                                                 ]
                                                                 ( ParamList* item, string )
                                                                 {
@@ -873,8 +834,7 @@ LimbProcessor* LimbProcessor::calcDebugDump
                                                                         file2,
                                                                         layer,
                                                                         pos,
-                                                                        data,
-                                                                        dataview
+                                                                        data
                                                                     );
                                                                     return false;
                                                                 } /* Poses loop callback */
@@ -909,7 +869,9 @@ LimbProcessor* LimbProcessor::calcDebugDump
                     -> setInt( "tick", net -> getTick() )
                     -> setString( "stage", calcStageToString( aStage ) );
 
-                    auto file = net -> getMonPath( "processor_thread_calc_lock.json" );
+                    auto file = payload
+                    -> getApplication()
+                    -> getMonPath( "processor_thread_calc_lock.json" );
 
                     getLog()
                     -> info( "Process locked" )

@@ -29,14 +29,6 @@ EvolutionPayload::EvolutionPayload
 /* Call parent constructor */
 : PayloadEngine( a, aPayloadId )
 {
-    net = Net::create
-    (
-        a,
-        a -> getSockManager(),
-        aNetId,
-        aNetVersion,
-        TASK_EVOLUTION
-    );
 }
 
 
@@ -99,307 +91,306 @@ EvolutionApplication* EvolutionPayload::getApplication()
 */
 void EvolutionPayload::onEngineLoop
 (
-    bool,
-    bool aEnabled
+    bool
 )
 {
-    if( aEnabled )
-    {
-        /* Reset net state */
-        net -> setOk();
-
-        /* Check server net config */
-        auto netConfig = ParamList::create();
-
-        /* Read net config from server */
-        net -> readNet( netConfig );
-
-        if
-        (
-            net -> isConfigUpdate( netConfig ) ||
-            net -> isVersionChanged()
-        )
-        {
-            getLog()
-            -> begin( "Net config updated" )
-            -> prm( "File", getApplication() -> getConfigFileName() )
-            -> dump( netConfig, "Net config" )
-            -> lineEnd();
-            net -> applyNet( netConfig );
-            getLog() -> end();
-        }
-        netConfig -> destroy();
-
-        /* Synchronize net from the server */
-        net
-        -> syncWithServer()
-        -> resultTo( this );
-
-        if( isOk() )
-        {
-            getLog() -> begin( "Processing" );
-
-            /* Get server netMode */
-            NetMode netMode;
-
-//            Io::create( net )
-//            -> getNetMode( netMode )
-//            -> resultTo( this )
-//            -> destroy();
-
-            /* Retrive the config structure */
-            auto localConfig = getApplication() -> getConfig();
-
-            /* Read default net mode from string */
-            auto directNetMode = netModeFromString
-            (
-                localConfig
-                -> getString
-                (
-                    Path
-                    {
-                        "engine",
-                        "evolution",
-                        "netMode",
-                        "direct"
-                    }
-                )
-            );
-
-            getMon()
-            -> setString
-            (
-                Path{ "config", "netMode", "server" }, netModeToString( netMode )
-            )
-            -> setString
-            (
-                Path{ "config", "netMode", "direct" }, netModeToString( directNetMode )
-            );
-
-            if( directNetMode != NET_MODE_UNKNOWN && directNetMode != netMode )
-            {
-                switch( directNetMode )
-                {
-                    case NET_MODE_UNKNOWN: break;
-                    case NET_MODE_WORK: break;
-                    case NET_MODE_LEARN:
-                        netSwitchToLearn
-                        (
-                            ParamList::shared().get()
-                            -> setString( "type", "EVOLUTION_CONFIG" )
-                        );
-                    break;
-                    case NET_MODE_TEST:
-                        netSwitchToTest
-                        (
-                            ParamList::shared().get()
-                            -> setString( "type", "EVOLUTION_CONFIG" )
-                        );
-                    break;
-                }
-            }
-            else
-            {
-                if( netMode == NET_MODE_UNKNOWN )
-                {
-                    netSwitchToLearn
-                    (
-                        ParamList::shared().get()
-                        -> setString( "type", "EVOLUTION_START" )
-                    );
-                }
-                else
-                {
-                    auto configPath = Path
-                    {
-                        "engine",
-                        "evolution",
-                        "netMode",
-                        "config",
-                        netModeToString( netMode )
-                    };
-
-                    /* Retrive the configuration for curent net mode */
-                    auto modeConfig = localConfig -> getObject( configPath );
-                    if( modeConfig == NULL )
-                    {
-                        setResult( "NoConfigForNetMode" )
-                        -> getDetails() -> setString( "path", implode( configPath, "." ));
-                    }
-                    else
-                    {
-
-                        bool stopWithNan = false;
-                        if( netMode == NET_MODE_LEARN )
-                        {
-                            net -> getLayerList() -> loop
-                            (
-                                [ &stopWithNan ]
-                                ( void* item )
-                                {
-                                    auto layer = (Layer*) item;
-                                    auto sumVal = layer -> calcSumValue();
-                                    stopWithNan = isnan( sumVal ) || isinf( sumVal );
-                                    return  stopWithNan;
-                                }
-                            );
-                        }
-
-                        if( stopWithNan )
-                        {
-                            /* Checking the NAN criterion */
-                            commitNet
-                            (
-                                false,
-                                net -> getConfig() -> getDouble
-                                (
-                                    Path{ "survival", "error", "avg" }
-                                ),
-                                ParamList::shared().get()
-                                -> setString( "type", "EVOLUTION_NAN" )
-                            );
-                            getLog()
-                            -> info( "Result" )
-                            -> prm( "reason", "is_nan" );
-                        }
-                        else
-                        {
-                            auto cfgMaxTick = modeConfig -> getInt( Path{ "maxTick" });
-                            /* Loop for the each layer of the net mode configuration */
-                            modeConfig -> objectsLoop
-                            (
-                                Path{ "layers" },
-                                [ this, &netMode, &cfgMaxTick ]
-                                (
-                                    ParamList* cfg,
-                                    string layerId
-                                )
-                                {
-                                    auto layer = net -> getLayerList()
-                                    -> getById( layerId );
-
-                                    if( layer == NULL )
-                                    {
-                                        setResult( "UnknownLayer" )
-                                        -> getDetails()
-                                        -> setString( Path{ "path" }, layerId );
-                                    }
-                                    else
-                                    {
-                                        /* Decision making */
-                                        switch( netMode )
-                                        {
-                                            case NET_MODE_WORK:
-                                            case NET_MODE_UNKNOWN: break;
-                                            case NET_MODE_LEARN:
-                                            {
-                                                /* Let config params */
-                                                auto cfgTickSmoth = cfg -> getDouble( Path{ "tickSmoth" });
-                                                auto cfgTickDeltaLimit = cfg -> getDouble( Path{ "tickDeltaLimit" });
-                                                auto cfgTickSmothCount = cfg -> getInt( Path{ "tickSmothCount" });
-
-                                                /* Ticks smothing */
-                                                auto smoth = ChartData::create()
-                                                -> setMaxCount( cfgTickSmothCount );
-
-                                                layer
-                                                -> getChartTick()
-                                                -> smoth( cfgTickSmoth, smoth );
-
-                                                getMon()
-                                                -> setString
-                                                (
-                                                    Path
-                                                    {
-                                                        "modes",
-                                                        netModeToString( netMode ),
-                                                        "tickssmoth",
-                                                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-                                                    },
-                                                    smoth -> toString( 40 )
-                                                );
-
-                                                if
-                                                (
-                                                    cfgMaxTick < net -> getTick() ||
-                                                    (
-                                                        smoth -> getCount() == cfgTickSmothCount &&
-                                                        smoth -> deltaMinMax() < cfgTickDeltaLimit
-                                                    )
-                                                )
-                                                {
-                                                    netSwitchToTest
-                                                    (
-                                                        ParamList::shared().get()
-                                                        -> setString( "type", "LEARNING_LIMIT" )
-                                                        -> setInt( "cfgMaxTick", cfgMaxTick )
-                                                        -> setString( "layer", layer -> getId() )
-                                                    );
-
-                                                    getLog() -> trace( "Result" )
-                                                    -> prm( "layer", layer -> getId() )
-                                                    -> prm( "reason", "LEARNINT_LIMIT" );
-                                                }
-
-                                                /* Destroy the smoth */
-                                                smoth -> destroy();
-                                            }
-                                            break;
-
-                                            case NET_MODE_TEST:
-                                                testStage( layer, cfg );
-                                            break;
-                                        }   /*  End of net mode case */
-                                    } /* Unknown layer */
-                                    return false;
-                                }
-                            ); /* Loop of layers in config mode */
-                        } /* non stop nan */
-                    }
-                }
-            } /* Net mode is not unknown */
-
-            /* Layers stat out */
-            net -> getLayerList() -> loop
-            (
-                [ this ]
-                ( void* item )
-                {
-                    auto layer = (Layer*) item;
-
-                    /* Monitoring */
-                    getMon()
-                    -> setString
-                    (
-                        Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
-                        layer -> getChartTick() -> toString( 40 )
-                    )
-                    -> setString
-                    (
-                        Path
-                        {
-                            "errorsBeforeChange",
-                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
-                        },
-                        layer -> getChartErrorsBeforeChange() -> toString( 40 )
-                    );
-
-                    return false;
-                }
-            );
-
-            getLog() -> end();
-        }
-
-        getMon()
-        -> setInt( Path{ "net", "tick" }, net -> getTick() )
-        -> setString( Path{ "net", "id" }, net -> getId() )
-        -> setString( Path{ "net", "version" }, net -> getVersion() )
-        -> setInt( Path{ "net", "count", "layers" }, net -> getLayerList() -> getCount() )
-        -> setInt( Path{ "net", "count", "nerves" }, net -> getNerveList() -> getCount() )
-        ;
-
-    }
+//    if( aEnabled )
+//    {
+//        /* Reset net state */
+//        net -> setOk();
+//
+//        /* Check server net config */
+//        auto netConfig = ParamList::create();
+//
+//        /* Read net config from server */
+//        net -> readNet( netConfig );
+//
+//        if
+//        (
+//            net -> isConfigUpdate( netConfig ) ||
+//            net -> isVersionChanged()
+//        )
+//        {
+//            getLog()
+//            -> begin( "Net config updated" )
+//            -> prm( "File", getApplication() -> getConfigFileName() )
+//            -> dump( netConfig, "Net config" )
+//            -> lineEnd();
+//            net -> applyNet( netConfig );
+//            getLog() -> end();
+//        }
+//        netConfig -> destroy();
+//
+//        /* Synchronize net from the server */
+//        net
+//        -> syncWithServer()
+//        -> resultTo( this );
+//
+//        if( isOk() )
+//        {
+//            getLog() -> begin( "Processing" );
+//
+//            /* Get server netMode */
+//            NetMode netMode;
+//
+////            Io::create( net )
+////            -> getNetMode( netMode )
+////            -> resultTo( this )
+////            -> destroy();
+//
+//            /* Retrive the config structure */
+//            auto localConfig = getApplication() -> getConfig();
+//
+//            /* Read default net mode from string */
+//            auto directNetMode = netModeFromString
+//            (
+//                localConfig
+//                -> getString
+//                (
+//                    Path
+//                    {
+//                        "engine",
+//                        "evolution",
+//                        "netMode",
+//                        "direct"
+//                    }
+//                )
+//            );
+//
+//            getMon()
+//            -> setString
+//            (
+//                Path{ "config", "netMode", "server" }, netModeToString( netMode )
+//            )
+//            -> setString
+//            (
+//                Path{ "config", "netMode", "direct" }, netModeToString( directNetMode )
+//            );
+//
+//            if( directNetMode != NET_MODE_UNKNOWN && directNetMode != netMode )
+//            {
+//                switch( directNetMode )
+//                {
+//                    case NET_MODE_UNKNOWN: break;
+//                    case NET_MODE_WORK: break;
+//                    case NET_MODE_LEARN:
+//                        netSwitchToLearn
+//                        (
+//                            ParamList::shared().get()
+//                            -> setString( "type", "EVOLUTION_CONFIG" )
+//                        );
+//                    break;
+//                    case NET_MODE_TEST:
+//                        netSwitchToTest
+//                        (
+//                            ParamList::shared().get()
+//                            -> setString( "type", "EVOLUTION_CONFIG" )
+//                        );
+//                    break;
+//                }
+//            }
+//            else
+//            {
+//                if( netMode == NET_MODE_UNKNOWN )
+//                {
+//                    netSwitchToLearn
+//                    (
+//                        ParamList::shared().get()
+//                        -> setString( "type", "EVOLUTION_START" )
+//                    );
+//                }
+//                else
+//                {
+//                    auto configPath = Path
+//                    {
+//                        "engine",
+//                        "evolution",
+//                        "netMode",
+//                        "config",
+//                        netModeToString( netMode )
+//                    };
+//
+//                    /* Retrive the configuration for curent net mode */
+//                    auto modeConfig = localConfig -> getObject( configPath );
+//                    if( modeConfig == NULL )
+//                    {
+//                        setResult( "NoConfigForNetMode" )
+//                        -> getDetails() -> setString( "path", implode( configPath, "." ));
+//                    }
+//                    else
+//                    {
+//
+//                        bool stopWithNan = false;
+//                        if( netMode == NET_MODE_LEARN )
+//                        {
+//                            net -> getLayerList() -> loop
+//                            (
+//                                [ &stopWithNan ]
+//                                ( void* item )
+//                                {
+//                                    auto layer = (Layer*) item;
+//                                    auto sumVal = layer -> calcSumValue();
+//                                    stopWithNan = isnan( sumVal ) || isinf( sumVal );
+//                                    return  stopWithNan;
+//                                }
+//                            );
+//                        }
+//
+//                        if( stopWithNan )
+//                        {
+//                            /* Checking the NAN criterion */
+//                            commitNet
+//                            (
+//                                false,
+//                                net -> getConfig() -> getDouble
+//                                (
+//                                    Path{ "survival", "error", "avg" }
+//                                ),
+//                                ParamList::shared().get()
+//                                -> setString( "type", "EVOLUTION_NAN" )
+//                            );
+//                            getLog()
+//                            -> info( "Result" )
+//                            -> prm( "reason", "is_nan" );
+//                        }
+//                        else
+//                        {
+//                            auto cfgMaxTick = modeConfig -> getInt( Path{ "maxTick" });
+//                            /* Loop for the each layer of the net mode configuration */
+//                            modeConfig -> objectsLoop
+//                            (
+//                                Path{ "layers" },
+//                                [ this, &netMode, &cfgMaxTick ]
+//                                (
+//                                    ParamList* cfg,
+//                                    string layerId
+//                                )
+//                                {
+//                                    auto layer = net -> getLayerList()
+//                                    -> getById( layerId );
+//
+//                                    if( layer == NULL )
+//                                    {
+//                                        setResult( "UnknownLayer" )
+//                                        -> getDetails()
+//                                        -> setString( Path{ "path" }, layerId );
+//                                    }
+//                                    else
+//                                    {
+//                                        /* Decision making */
+//                                        switch( netMode )
+//                                        {
+//                                            case NET_MODE_WORK:
+//                                            case NET_MODE_UNKNOWN: break;
+//                                            case NET_MODE_LEARN:
+//                                            {
+//                                                /* Let config params */
+//                                                auto cfgTickSmoth = cfg -> getDouble( Path{ "tickSmoth" });
+//                                                auto cfgTickDeltaLimit = cfg -> getDouble( Path{ "tickDeltaLimit" });
+//                                                auto cfgTickSmothCount = cfg -> getInt( Path{ "tickSmothCount" });
+//
+//                                                /* Ticks smothing */
+//                                                auto smoth = ChartData::create()
+//                                                -> setMaxCount( cfgTickSmothCount );
+//
+//                                                layer
+//                                                -> getChartTick()
+//                                                -> smoth( cfgTickSmoth, smoth );
+//
+//                                                getMon()
+//                                                -> setString
+//                                                (
+//                                                    Path
+//                                                    {
+//                                                        "modes",
+//                                                        netModeToString( netMode ),
+//                                                        "tickssmoth",
+//                                                        strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+//                                                    },
+//                                                    smoth -> toString( 40 )
+//                                                );
+//
+//                                                if
+//                                                (
+//                                                    cfgMaxTick < net -> getTick() ||
+//                                                    (
+//                                                        smoth -> getCount() == cfgTickSmothCount &&
+//                                                        smoth -> deltaMinMax() < cfgTickDeltaLimit
+//                                                    )
+//                                                )
+//                                                {
+//                                                    netSwitchToTest
+//                                                    (
+//                                                        ParamList::shared().get()
+//                                                        -> setString( "type", "LEARNING_LIMIT" )
+//                                                        -> setInt( "cfgMaxTick", cfgMaxTick )
+//                                                        -> setString( "layer", layer -> getId() )
+//                                                    );
+//
+//                                                    getLog() -> trace( "Result" )
+//                                                    -> prm( "layer", layer -> getId() )
+//                                                    -> prm( "reason", "LEARNINT_LIMIT" );
+//                                                }
+//
+//                                                /* Destroy the smoth */
+//                                                smoth -> destroy();
+//                                            }
+//                                            break;
+//
+//                                            case NET_MODE_TEST:
+//                                                testStage( layer, cfg );
+//                                            break;
+//                                        }   /*  End of net mode case */
+//                                    } /* Unknown layer */
+//                                    return false;
+//                                }
+//                            ); /* Loop of layers in config mode */
+//                        } /* non stop nan */
+//                    }
+//                }
+//            } /* Net mode is not unknown */
+//
+//            /* Layers stat out */
+//            net -> getLayerList() -> loop
+//            (
+//                [ this ]
+//                ( void* item )
+//                {
+//                    auto layer = (Layer*) item;
+//
+//                    /* Monitoring */
+//                    getMon()
+//                    -> setString
+//                    (
+//                        Path{ "ticks", strAlign( layer -> getId(), ALIGN_LEFT, 20 ) },
+//                        layer -> getChartTick() -> toString( 40 )
+//                    )
+//                    -> setString
+//                    (
+//                        Path
+//                        {
+//                            "errorsBeforeChange",
+//                            strAlign( layer -> getId(), ALIGN_LEFT, 20 )
+//                        },
+//                        layer -> getChartErrorsBeforeChange() -> toString( 40 )
+//                    );
+//
+//                    return false;
+//                }
+//            );
+//
+//            getLog() -> end();
+//        }
+//
+//        getMon()
+//        -> setInt( Path{ "net", "tick" }, net -> getTick() )
+//        -> setString( Path{ "net", "id" }, net -> getId() )
+//        -> setString( Path{ "net", "version" }, net -> getVersion() )
+//        -> setInt( Path{ "net", "count", "layers" }, net -> getLayerList() -> getCount() )
+//        -> setInt( Path{ "net", "count", "nerves" }, net -> getNerveList() -> getCount() )
+//        ;
+//
+//    }
 }
 
 
@@ -482,7 +473,7 @@ EvolutionPayload* EvolutionPayload::testStage
 */
 EvolutionPayload* EvolutionPayload::netSwitchToLearn
 (
-    ParamList* aReason
+    ParamList* /* aReason */
 )
 {
 //    Io::create( net )
@@ -500,7 +491,7 @@ EvolutionPayload* EvolutionPayload::netSwitchToLearn
 */
 EvolutionPayload* EvolutionPayload::netSwitchToTest
 (
-    ParamList* aReason
+    ParamList* /* aReason */
 )
 {
     //
@@ -536,7 +527,7 @@ TODO
 EvolutionPayload* EvolutionPayload::commitNet
 (
     bool aSuccess,
-    real aSurvivalErrorAvg,
+    real /* aSurvivalErrorAvg */,
     ParamList* aReason
 )
 {

@@ -466,6 +466,7 @@ NerveList* NerveList::dump
         [ this ]
         ( void* p )
         {
+            getLog() -> trace( "nerve" );
             auto iNerve = (Nerve*) p;
             iNerve -> dumpToLog();
             return false;

@@ -1,5 +1,6 @@
 /* Local libraries */
 #include "server_payload.h"
+#include <filesystem>
 
 /* Core libraryes */
 #include "../../../../../lib/core/mon.h"
@@ -18,15 +19,18 @@ ServerPayload::ServerPayload
 /* Call parent constructor */
 : PayloadEngine( (Application*) aApp, aId )
 {
+    /* Log report */
+    getLog() -> trace( "Create server" );
     net = aApp -> getNet();
 
     /* Create server monitor */
-    mon = Mon::create( net -> getMonPath( "server_payload.json" ))
+    mon = Mon::create( aApp -> getMonPath( aId  + ".json" ))
     -> setString( Path{ "start", "source" }, "Server payload" )
-    -> startTimer( Path{ "start", "moment" });
-
-    /* Log report */
-    getApplication() -> getLog() -> trace( "Create server" );
+    -> startTimer( Path{ "start", "moment" })
+    -> now( Path{ "start", "time" } )
+    -> setString( Path{ "start", "pwd" }, std::filesystem::current_path() )
+    -> setString( Path{ "start", "log" }, getLog() -> getFileName() )
+    ;
 }
 
 
@@ -55,47 +59,20 @@ ServerPayload::~ServerPayload()
 /*
     Server main loop event
 */
-void ServerPayload::onLoop()
-{
-    mon
-    -> now( Path{ "current", "now" } )
-    -> startTimer( Path{ "current", "moment" } )
-    -> interval
-    (
-        Path{ "current", "uptime" },
-        Path{ "current", "moment" },
-        Path{ "start", "moment" }
-    )
-    -> interval
-    (
-        Path{ "resume", "uptime" },
-        Path{ "current", "moment" },
-        Path{ "resume", "moment" }
-    )
-    -> addInt( Path{ "current", "loop" } )
-    -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
-    -> dumpResult( Path{ "result" }, this );
-
-    mon -> flush();
-}
-
-
-
-/*
-    Server resume action
-*/
-void ServerPayload::onStartAfter()
+void ServerPayload::onEngineLoop( bool )
 {
     if( serverThread == NULL )
     {
         auto config = getConfig();
+
         auto listenPort = config -> getInt( Path{ "port" });
+
+        getLog()
+        -> begin( "Server starting" )
+        -> prm( "Listenen port", listenPort );
+
         if( listenPort != 0 )
         {
-            getLog()
-            -> begin( "Server starting" )
-            -> prm( "Listenen port", listenPort );
-
             mon
             -> startTimer( Path{ "resume", "moment" })
             -> setInt( Path{ "resume", "port" }, listenPort )
@@ -103,7 +80,7 @@ void ServerPayload::onStartAfter()
 
             auto readWaitingTimeoutMcs = config -> getInt
             (
-                Path{ "listen", "readWaitingTimeoutMcs" },
+                Path{ "readWaitingTimeoutMcs" },
                 READ_WAITING_TIMEOUT_MCS
             );
 
@@ -130,10 +107,38 @@ void ServerPayload::onStartAfter()
                     getApplication() -> destroyThreadLog();
                 }
             );
-
-            getLog() -> end() -> lineEnd();
         }
+        getLog() -> end() -> lineEnd();
     }
+
+    mon
+    -> now( Path{ "current", "now" } )
+    -> startTimer( Path{ "current", "moment" } )
+    -> interval
+    (
+        Path{ "current", "uptime" },
+        Path{ "current", "moment" },
+        Path{ "start", "moment" }
+    )
+    -> interval
+    (
+        Path{ "resume", "uptime" },
+        Path{ "current", "moment" },
+        Path{ "resume", "moment" }
+    )
+    -> addInt( Path{ "current", "loop" } )
+    -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
+    -> dumpResult( Path{ "result" }, this );
+    mon -> flush();
+}
+
+
+
+/*
+    Server resume action
+*/
+void ServerPayload::onStartAfter()
+{
 }
 
 

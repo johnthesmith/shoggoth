@@ -74,7 +74,7 @@ class NetConfig : public ParamList
                 nerves -> objectsLoop
                 (
                     [ &callback ]
-                    ( ParamList* item, string name )
+                    ( ParamList* item, string /* name */ )
                     {
                         return callback( item );
                     }

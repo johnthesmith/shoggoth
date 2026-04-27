@@ -24,6 +24,7 @@
 #include <string>
 
 #include "../../../../lib/core/result.h"
+#include "../../../../lib/core/hash.h"
 #include "../../../../lib/core/log.h"
 #include "../../../../lib/graph/point3i.h"      /* Size of layer */
 #include "../../../../lib/json/param_list.h"    /* For read size from params */
@@ -54,30 +55,29 @@ class Layer : public Result
             States
         */
         /* Limb object */
-        Limb*           limb                    = NULL;
+        Limb*       limb        = NULL;
         /* Count of neurons */
-        int             count                   = 0;
+        size_t      count       = 0;
         /* Dimention size */
-        Point3i         size                    = POINT_3I_0;
+        Point3i     size        = POINT_3I_0;
 
         /* Settings */
-        string          id                      = "";           /* Id of layer */
-        string          name                    = "";           /* Name of layer */
+        /* Id of layer */
+        string      id          = "";
+        /* Name of layer */
+        string      name        = "";
 
-        /*
-            Plans of neurons data
-        */
-
-        real*         values                  = NULL;
-        real*         errors                  = NULL;
+        /* Plans of neurons data */
+        real*       values      = NULL;
+        real*       errors      = NULL;
 
         /*
             Layer settings
         */
-        ErrorCalc       errorCalc               = EC_NONE;
-        WeightCalc      weightCalc              = WC_NONE;
+        ErrorCalc   errorCalc   = EC_NONE;
+        WeightCalc  weightCalc  = WC_NONE;
 
-        int             threadCount             = 0;
+        int         threadCount = 0;
 
         /*
             Ticker
@@ -103,7 +103,7 @@ class Layer : public Result
         */
         virtual Layer* setCount
         (
-            const int = 0 /* New count */
+            const size_t = 0 /* New count */
         );
 
     public:
@@ -159,7 +159,7 @@ class Layer : public Result
         /*
             Return count of neurons in layer
         */
-        int getCount()
+        size_t getCount()
         {
             return count;
         }
@@ -521,7 +521,7 @@ class Layer : public Result
         inline Layer* setNeuronValue
         (
             /* Index of neuron */
-            int aIndex,
+            size_t aIndex,
             /* Value */
             real aValue
         )
@@ -848,6 +848,21 @@ class Layer : public Result
 
 
 
+        uint64_t calcErrorsHash()
+        {
+            return mem_hash( errors, count );
+        }
+
+
+
+        uint64_t calcValuesHash()
+        {
+            return mem_hash( values, count );
+        }
+
+
+
+
         ChartData* getChartErrorsBeforeChange()
         {
             return chartErrorsBeforeChange;
@@ -865,4 +880,17 @@ class Layer : public Result
         {
             return Point3i::byIndex( index, size );
         }
+
+
+
+        /*
+            Fill values of layer neurons
+        */
+        Layer* fillValue
+        (
+            ParamList*
+        );
+
+
+
 };

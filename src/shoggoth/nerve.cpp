@@ -566,7 +566,7 @@ Nerve* Nerve::saveWeight
 */
 Nerve* Nerve::extractParentsWeightsBuffer
 (
-    int     aNeuronIndex,
+    int     /* aNeuronIndex */,
     char*   &aBuffer,
     size_t  &aSize
 )
@@ -590,7 +590,7 @@ Nerve* Nerve::extractParentsWeightsBuffer
 */
 Nerve* Nerve::extractChildWeightsBuffer
 (
-    int     aNeuronIndex,
+    int     /* aNeuronIndex */,
     char*   &aBuffer,
     size_t  &aSize
 )

@@ -47,14 +47,8 @@
             "functionBack": "NULL",
             "functionBackOut": "NULL",
             "errorCalc": "NONE",
-            "weightCalc": "NONE",
-            "actions":
-            {
-                "PROC": [ "READ_VALUES", "WRITE_VALUES" ],
-                "TEACHER": [ "WRITE_VALUES" ]
-            }
+            "weightCalc": "NONE"
         },
-
         "retina":
         {
             "*": ["types", "layers", "retina", "const"],
@@ -63,9 +57,6 @@
             "position": [0.0, 0.0, 0.0],
             "drawSize": [1.0, 1.0, 1.0]
         },
-
-
-
         "cortex_1a":
         {
             "*": ["types", "layers", "cortex1", "const"],
@@ -90,9 +81,6 @@
             "name": "Cortex 1d",
             "position": [0.9, 0.0, 1.0]
         },
-
-
-
         "pool_1a":
         {
             "*": ["types", "layers", "pool-1", "const"],
@@ -215,13 +203,13 @@
             "drawSize": [0.1, 0.1, 0.1]
         },
 
-
-
         "bias":
         {
             "*": ["types", "layers", "bias", "const"],
             "name": "Bias",
-            "position": [0.0, 1.0, 1.0]
+            "position": [0.0, 1.0, 1.0],
+            "values": [ 1.0 ],
+            "errors": [ 0.0 ]
         },
 
         "result":
@@ -433,7 +421,6 @@
         },
 
         {
-            "uses": ["PROC", "UI"],
             "idFrom": "result",
             "idTo": "error",
             "nerveType": "ONE_TO_ONE",
@@ -443,7 +430,6 @@
         },
         {
             "description": "Formering the command signal",
-            "uses": ["PROC", "UI"],
             "idFrom": "sample",
             "idTo": "command",
             "nerveType": "ALL_TO_ALL",
@@ -453,7 +439,6 @@
         },
         {
             "desciption": "Turn on/off the error layer",
-            "uses": ["PROC", "UI"],
             "idFrom": "command",
             "idTo": "error",
             "nerveType": "ALL_TO_ALL",
@@ -463,7 +448,6 @@
         },
         {
             "description": "Calculate error for sample",
-            "uses": ["PROC", "UI"],
             "idFrom": "sample",
             "idTo": "error",
             "nerveType": "ONE_TO_ONE",
@@ -473,7 +457,6 @@
         },
         {
             "description": "Conducts the result values in to test block",
-            "uses": ["PROC", "UI"],
             "idFrom": "result",
             "idTo": "test_error",
             "nerveType": "ONE_TO_ONE",
@@ -483,7 +466,6 @@
         },
         {
             "description": "Calculate error for test",
-            "uses": ["PROC", "UI"],
             "idFrom": "test",
             "idTo": "test_error",
             "nerveType": "ONE_TO_ONE",
@@ -493,7 +475,6 @@
         },
         {
             "description": "Formering the test command signal",
-            "uses": ["PROC", "UI"],
             "idFrom": "test",
             "idTo": "test_command",
             "nerveType": "ALL_TO_ALL",
@@ -504,7 +485,6 @@
 
         {
             "desciption": "Turn on/off the test error layer",
-            "uses": ["PROC", "UI"],
             "idFrom": "test_command",
             "idTo": "test_error",
             "nerveType": "ALL_TO_ALL",
@@ -515,7 +495,6 @@
 
         {
             "description": "Передача текущего значения",
-            "uses": [ "PROC" ],
             "idFrom": "learning",
             "idTo": "learning",
             "nerveType": "ONE_TO_ONE",
@@ -526,7 +505,6 @@
 
         {
             "description": "Генератор -1 подключаем",
-            "uses": [ "PROC" ],
             "idFrom": "bias",
             "idTo": "learning",
             "nerveType": "ONE_TO_ONE",
@@ -537,7 +515,6 @@
 
         {
             "description": "Передача команды на обучение ",
-            "uses": [ "PROC" ],
             "idFrom": "learning",
             "idTo": "command",
             "nerveType": "ONE_TO_ONE",
@@ -545,6 +522,5 @@
             "minWeight": 1.0,
             "maxWeight": 1.0
         }
-
     ]
 }

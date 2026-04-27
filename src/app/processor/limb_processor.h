@@ -19,24 +19,25 @@
 #include "layer_processor.h"
 
 
-class Payload;
+/*
+    Predeclaration
+*/
+class ProcessorPayload;
 
 
 class LimbProcessor : public Limb
 {
 private:
-    /* External Net object */
-    Net*            net                 = NULL;
-    /* Master payload */
-    Payload*        payload             = NULL;
-    /* Monitor object */
-    Mon*            mon                 = NULL;
+    /* Payload */
+    ProcessorPayload*   payload             = nullptr;
     /* Chart list object */
-    ChartList*      weightsChart        = NULL;
+    ChartList*          weightsChart        = nullptr;
     /* Forward and backward thread manager */
-    ThreadManager*  threadManager       = NULL;
+    ThreadManager*      threadManager       = nullptr;
     /* Weight thread manager */
-    ThreadManager*  threadManagerWeight = NULL;
+    ThreadManager*      threadManagerWeight = nullptr;
+
+
 
     /*
         Calculation state
@@ -65,6 +66,7 @@ private:
 
     /* Fps */
     ChartData* fps = NULL;
+
 public:
 
     /*
@@ -72,10 +74,8 @@ public:
     */
     LimbProcessor
     (
-        /* Master payload */
-        Payload*,
-        /* Net limb object*/
-        Net*
+        /* Paylaod for limb */
+        ProcessorPayload*
     );
 
 
@@ -83,7 +83,13 @@ public:
     /*
         Destructor
     */
-    ~LimbProcessor();
+    ~LimbProcessor()
+    {
+        fps -> destroy();
+        threadManager -> destroy();
+        threadManagerWeight -> destroy();
+//    weightsChart -> destroy();
+    }
 
 
 
@@ -92,13 +98,11 @@ public:
     */
     inline static LimbProcessor* create
     (
-        /* Master payload */
-        Payload* aPyaload,
-        /* The net object*/
-        Net* aNet
+        /* Master payload id */
+        ProcessorPayload* aPayload
     )
     {
-        return new LimbProcessor( aPyaload, aNet );
+        return new LimbProcessor( aPayload );
     }
 
 
@@ -337,16 +341,5 @@ public:
         Dump layers
     */
     virtual LimbProcessor* dump() override;
-
-
-
-    /*
-        Return payload for limb
-    */
-    inline Payload* getPayload()
-    {
-        return payload;
-    }
-
 };
 

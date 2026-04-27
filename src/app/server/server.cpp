@@ -1,7 +1,6 @@
 /*
     Processor main file for Shoggoth neural network
 */
-
 #include "../shoggoth_application.h"
 #include "server_payload.h"
 

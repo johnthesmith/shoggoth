@@ -82,28 +82,6 @@ LayerTeacher* LayerTeacher::noiseValue
 
 
 
-/*
-    Noise fill values of layer neurons
-*/
-LayerTeacher* LayerTeacher::fillValue
-(
-    ParamList* aValues
-)
-{
-    getLimb() -> lock();
-    auto c = getCount();
-    auto cv = aValues -> getCount();
-    for( int i = 0; i < c; i ++ )
-    {
-        setNeuronValue( i, aValues -> getByIndex( i % cv ) -> getDouble() ) ;
-    }
-    getLimb() -> unlock();
-
-    return this;
-}
-
-
-
 /**********************************************************************
     Load valus
 */

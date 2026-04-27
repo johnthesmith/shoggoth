@@ -22,34 +22,6 @@ enum NerveType
 
 
 /*
-    List of actions like resolving
-    actions = f( event, active modules )
-*/
-enum Action
-{
-    ACTION_UNKNOWN                  = 10,
-    READ_VALUES                     = 11,
-    WRITE_VALUES                    = 12,
-    READ_ERRORS                     = 13,
-    WRITE_ERRORS                    = 14,
-    SYNC_RESET                      = 17,
-    READ_STAT_VALUE                 = 18,
-    READ_STAT_ERROR                 = 19,
-    READ_STAT_ERRORS_BEFORE_CHANGE  = 20,
-    READ_STAT_TICK                  = 21
-};
-
-
-
-/*
-    List of actions
-*/
-typedef std::vector <Action> Actions;
-
-
-
-
-/*
     Type of neuron direction
     Uses for neuronet monitoring
 */
@@ -115,20 +87,6 @@ enum Dumptype
     DUMP_TYPE_NEURON
 };
 
-
-
-/*
-    List of participants task
-*/
-enum Task
-{
-    TASK_UNKNOWN,
-    TASK_UI,
-    TASK_PROC,
-    TASK_TEACHER,
-    TASK_EVOLUTION,
-    TASK_DEBUGGER
-};
 
 
 
@@ -226,53 +184,6 @@ enum BindType
     */
     BT_MAX
 };
-
-
-
-/*
-    Convert command to string
-*/
-inline std::string actionToString
-(
-    Action a
-)
-{
-    switch( a )
-    {
-        default:
-        case ACTION_UNKNOWN     : return "ACTION_UNKNOWN";
-        case READ_VALUES        : return "READ_VALUES";
-        case WRITE_VALUES       : return "WRITE_VALUES";
-        case READ_ERRORS        : return "READ_ERRORS";
-        case WRITE_ERRORS       : return "WRITE_ERRORS";
-        case SYNC_RESET         : return "SYNC_RESET";
-        case READ_STAT_ERROR    : return "READ_STAT_ERROR";
-        case READ_STAT_ERRORS_BEFORE_CHANGE:
-            return "READ_STAT_ERRORS_BEFORE_CHANGE";
-        case READ_STAT_VALUE    : return "READ_STAT_VALUE";
-        case READ_STAT_TICK     : return "READ_STAT_TICK";
-    }
-}
-
-
-
-/*
-    Return Action const by string value
-*/
-Action stringToAction
-(
-    std::string
-);
-
-
-
-/*
-    Return task of participant string by task enum
-*/
-std::string taskToString
-(
-    Task aValue /* Event enum */
-);
 
 
 

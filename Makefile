@@ -15,7 +15,6 @@ endif
 
 
 ifeq ($(MODE),debug)
-#    CXXFLAGS := -g -O0 -DDEBUG -fsanitize=address -DTHREAD_PROTECTED -MMD -fPIC -MP
     CXXFLAGS := -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -DTHREAD_PROTECTED -MMD -fPIC -MP -Wall -Wextra
 else
     CXXFLAGS := -Os -DNDEBUG -MMD -flto -fPIC -MP -ffunction-sections -fdata-sections
@@ -39,8 +38,10 @@ vpath %.cpp \
 src/shoggoth \
 src/shoggoth/limb \
 src/app \
-src/app/processor \
+src/app/loader \
 src/app/server \
+src/app/client \
+src/app/processor \
 src/app/teacher \
 src/app/evolution \
 src/app/debugger
@@ -54,11 +55,13 @@ SRCS := \
 	$(wildcard ../../lib/graph/*.cpp) \
 	$(wildcard src/shoggoth/*.cpp) \
 	$(wildcard src/shoggoth/limb/*.cpp) \
+	$(wildcard src/app/server/*.cpp) \
+	$(wildcard src/app/client/*.cpp) \
 	$(wildcard src/app/*.cpp) \
+	$(wildcard src/app/loader/*.cpp) \
 	$(wildcard src/app/processor/*.cpp) \
 	$(wildcard src/app/teacher/*.cpp) \
 	$(wildcard src/app/evolution/*.cpp) \
-	$(wildcard src/app/server/*.cpp) \
 	$(wildcard src/app/debugger/*.cpp)
 
 # $(info SRCS: $(SRCS))
@@ -146,6 +149,14 @@ SERVER_EXTRA := \
 	$(OBJ_DIR)/server_payload.o \
 	$(OBJ_DIR)/server.o
 
+CLIENT_EXTRA := \
+	$(OBJ_DIR)/client_payload.o \
+	$(OBJ_DIR)/client.o
+
+LOADER_EXTRA := \
+	$(OBJ_DIR)/loader.o \
+	$(OBJ_DIR)/loader_payload.o
+
 TEACHER_EXTRA := \
 	$(OBJ_DIR)/hid.o \
 	$(OBJ_DIR)/rgba.o \
@@ -187,26 +198,32 @@ $(OBJ_DIR)/%.o: %.cpp
 
 # Цели линковки
 
-release: shoggoth server.so processor.so teacher.so debugger evolution
+release: shoggoth loader.so server.so client.so processor.so teacher.so debugger evolution
 > @echo "Release build done"
 > @if command -v upx >/dev/null 2>&1; then \
 >   echo "Packing with UPX..."; \
 >   upx --best --lzma shoggoth evolution debugger 2>/dev/null || true; \
->   upx --best --lzma server.so processor.so teacher.so 2>/dev/null || true; \
+>   upx --best --lzma loader.so server.so client.so processor.so teacher.so 2>/dev/null || true; \
 > else \
 >   echo "UPX not installed, skipping"; \
 > fi
 
-debug: shoggoth server.so processor.so teacher.so debugger evolution
+debug: shoggoth loader.so server.so client.so processor.so teacher.so debugger evolution
 > @echo "Debug build done"
 
 shoggoth: $(BASE_OBJS) $(SHOGGOTH_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
+loader.so: $(BASE_OBJS) $(LOADER_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
+
 processor.so: $(BASE_OBJS) $(PROCESSOR_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
 
 server.so: $(BASE_OBJS) $(SERVER_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
+
+client.so: $(BASE_OBJS) $(CLIENT_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
 
 teacher.so: $(BASE_OBJS) $(TEACHER_EXTRA)
@@ -219,4 +236,12 @@ debugger: $(BASE_OBJS) $(DEBUGGER_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) -lncursesw
 
 clean:
-> rm -rf shoggoth server.so processor.so teacher.so debugger evolution obj/
+> rm -rf shoggoth \
+loader.so \
+server.so \
+client.so \
+processor.so \
+teacher.so \
+debugger \
+evolution \
+obj/

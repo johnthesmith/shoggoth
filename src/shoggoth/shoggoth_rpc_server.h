@@ -301,8 +301,10 @@ class ShoggothRpcServer : public RpcServer
         */
         ShoggothRpcServer* setNetMode
         (
-            ParamList*, /* Arguments */
-            ParamList*  /* Results */
+            /* Arguments */
+            ParamList*,
+            /* Results */
+            ParamList*
         );
 
 
@@ -316,7 +318,21 @@ class ShoggothRpcServer : public RpcServer
         );
 
 
+
+        /*
+            Synchronize layers between client.net and server.ent
+        */
+        ShoggothRpcServer* syncLayers
+        (
+            /* Arguments */
+            ParamList*,
+            /* Results */
+            ParamList*
+        );
+
+
     private:
+
 
         ShoggothRpcServer* buildLayerStatAnswer
         (

@@ -124,8 +124,7 @@ class EvolutionPayload : public PayloadEngine
         */
         virtual void onEngineLoop
         (
-            const bool,
-            const bool
+            bool
         ) override;
 
 

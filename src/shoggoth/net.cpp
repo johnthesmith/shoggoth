@@ -19,35 +19,34 @@ Net::Net
 (
     /* Application object */
     ShoggothApplication*    aApplication,
-    /* Socket manager object */
-    SockManager*    aSockManager,
     /* The net id */
     std::string     aId,
     /* The net version */
-    std::string     aVersion,
-    /* The net version */
-    Task            aTask
+    std::string     aVersion
 )
-:Limb( aApplication -> getLogManager(), aVersion )
+:Limb
+(
+    aApplication -> getLogManager(),
+    /* Payload id */
+    "",
+    aVersion
+)
 {
     application = aApplication;
-    sockManager = aSockManager;
+
     id          = aId;
 
     /* Set versions */
     nextVersion = aVersion;
 
-    task        = aTask;
-
     application -> getLog() -> trace( "Create net" );
 
     rnd = Rnd::create();
 
-    mon = Mon::create( getMonFile() );
-
     db = ShoggothDb::create( getLogManager(), "db.sql" );
 
     config = ParamList::create();
+
     weightsExchange = WeightsExchange::create();
 }
 
@@ -59,9 +58,6 @@ Net::Net
 Net::~Net()
 {
     db -> destroy();
-
-    /* Destroy monitoring */
-    mon -> destroy();
 
     /* Weights exchanger destoy */
     weightsExchange -> destroy();
@@ -334,60 +330,6 @@ Net* Net::readNet
 
 
 
-bool Net::readNetFromFile
-(
-    ParamList* aAnswer
-)
-{
-    bool result = false;
-
-    /* Buid file for next version */
-    string file = getNetConfigFile( getNextVersion() );
-
-    if( fileExists( file ))
-    {
-        auto lastUpdate = (long) getConfig() -> getInt( Path{ "lastUpdate" }, 0 );
-        auto aUpdated = checkFileUpdate( file, lastUpdate );
-
-        if( aUpdated || isVersionChanged())
-        {
-            getLog()
-            -> begin( "Read net config" )
-            -> prm( "file", file )
-            -> prm( "pwd", std::filesystem::current_path() )
-            -> lineEnd();
-
-            Json::create()
-            -> fromFile( file )
-            -> include()
-            -> copyTo( aAnswer )
-            -> resultTo( this )
-            -> destroy();
-
-            if( isOk() )
-            {
-                aAnswer -> setInt( "lastUpdate", lastUpdate );
-                result = true;
-            }
-            else
-            {
-                getLog()
-                -> warning( this -> getCode() )
-                -> prm( "message", this -> getMessage())
-                ;
-            }
-
-            getLog() -> end();
-        }
-    }
-
-    return result;
-
-}
-
-
-
-
 bool Net::isConfigUpdate
 (
     ParamList* aConfig
@@ -403,8 +345,6 @@ bool Net::isConfigUpdate
 */
 string Net::getParentVersion
 (
-    /* Net ID (not used) */
-    string aNetId,
     /* Net version */
     string aNetVersion,
     /* Parent generation (0 - current net) */
@@ -721,14 +661,12 @@ Net* Net::mutateChangeParam
 
 
 
-
-
 /*
     Apply net
 */
 Net* Net::applyNet
 (
-    ParamList* aConfig
+    ParamList*  aConfig
 )
 {
     config -> copyFrom( aConfig );
@@ -751,56 +689,44 @@ Net* Net::applyNet
         /* Remove layers absents in the use list */
         purgeLayers( configLayers );
 
-        auto taskName = taskToString( task );
-
-        getLog()
-        -> begin( "Layers load for task" )
-        -> prm( "task", taskName );
-
         /* Create layers */
+        getLog() -> begin( "Layers load for task" );
         configLayers -> objectsLoop
         (
-            [ this, &taskName ]
+            [ this ]
             (
                 ParamList* iParam,
-                string iName
+                string layerId
             )
             {
-                getLog() -> trace( iName );
+                getLog() -> begin( "Layer loading" ) -> prm( "id", layerId );
 
                 /* Create layer if its in used list */
                 auto used = ParamList::create();
 
                 /* Layer creates */
-                if
-                (
-                    iParam -> getObject
-                    (
-                        Path{ "actions", taskName }
-                    ) != NULL
-                )
+                if( getApplication() -> layerIsUsing( layerId ) )
                 {
-                    auto layerId = iName;
                     auto layer = addLayer( layerId );
                     loadLayer( layer, iParam );
-//                    layer -> setStoragePath( storagePath );
                 }
                 else
                 {
                     getLog()
                     -> trace( "Layer skiped" )
-                    -> prm( "id", iName )
+                    -> prm( "id", layerId )
                     ;
                 }
 
                 used -> destroy();
+                getLog() -> end();
                 return false;
             }
         );
+        /* End of layers load */
+        getLog() -> end( "" );
 
-        getLog() -> end( "" ); /* End of layers load */
-
-        loadNerves( config, taskName );
+        loadNerves( config );
     }
 
     /* Update last update net moment */
@@ -828,13 +754,6 @@ Net* Net::applyNet
                 return false;
             }
         );
-
-        mon
-        -> setFile( getMonFile() )
-        -> now( Path{ "created" })
-        -> setString( Path{ "id" }, id )
-        -> setString( Path{ "version" }, getVersion() )
-        -> flush();
     }
 
     return this;
@@ -847,8 +766,7 @@ Net* Net::applyNet
 */
 Net* Net::loadNerves
 (
-    ParamList* aConfig,
-    string aTaskName
+    ParamList* aConfig
 )
 {
     /* Nerves */
@@ -858,13 +776,11 @@ Net* Net::loadNerves
         auto layers = getLayerList();
         auto nerves = getNerveList();
 
-        getLog()
-        -> begin( "Nerves load for task" )
-        -> prm( "task", aTaskName );
+        getLog() -> begin( "Nerves load" );
 
         jsonNerves -> loop
         (
-            [ this, &layers, &nerves, &aTaskName ]
+            [ this, &layers, &nerves ]
             ( Param* aItem )
             {
                 /* Check the json layer */
@@ -889,113 +805,94 @@ Net* Net::loadNerves
                         jsonNerve -> getObject( Path{ "windowSize" } )
                     );
 
-                    if
-                    (
-                        ! aItem
-                        -> getObject()
-                        -> valueExists( Path{ "uses" }, aTaskName )
-                    )
+                    /* Cartesian product for form and to */
+                    for( auto& idFrom:fromList )
                     {
-                        getLog()
-                        -> trace( "Nerve skiped for the task" )
-                        -> prm( "idFrom", implode( fromList, "," ))
-                        -> prm( "idTo", implode( toList, "," ))
-                        -> lineEnd()
-                        ;
-                    }
-                    else
-                    {
-                        /* Cartesian product for form and to */
-                        for( auto& idFrom:fromList )
+                        for( auto& idTo:toList )
                         {
-                            for( auto& idTo:toList )
+                            /* Find the layers */
+                            auto from = layers -> getById( idFrom );
+                            auto to = layers -> getById( idTo );
+
+                            if( from != NULL && to != NULL )
                             {
-                                /* Find the layers */
-                                auto from = layers -> getById( idFrom );
-                                auto to = layers -> getById( idTo );
+                                auto nerve = nerves -> find
+                                (
+                                    idFrom,
+                                    idTo,
+                                    bindType
+                                );
 
-                                if( from != NULL && to != NULL )
+                                if( nerve != NULL )
                                 {
-                                    auto nerve = nerves -> find
+                                    if
                                     (
-                                        idFrom,
-                                        idTo,
-                                        bindType
-                                    );
-
-                                    if( nerve != NULL )
+                                        nerve -> getParent() != from ||
+                                        nerve -> getChild() != to ||
+                                        nerve -> getBindType() != bindType ||
+                                        nerve -> getNerveType() != nerveType ||
+                                        nerveDelete
+                                    )
                                     {
-                                        if
-                                        (
-                                            nerve -> getParent() != from ||
-                                            nerve -> getChild() != to ||
-                                            nerve -> getBindType() != bindType ||
-                                            nerve -> getNerveType() != nerveType ||
-                                            nerveDelete
-                                        )
-                                        {
-                                            deleteNerve( nerve );
-                                            nerve = NULL;
-                                        }
-                                        else
-                                        {
-                                            getLog()
-                                            -> trace( "Nerve exists and stay" )
-                                            -> prm( "idFrom", idFrom )
-                                            -> prm( "idTo", idTo )
-                                            -> lineEnd()
-                                            ;
-                                        }
+                                        deleteNerve( nerve );
+                                        nerve = NULL;
                                     }
-
-                                    if( nerve == NULL && !nerveDelete )
+                                    else
                                     {
-                                        auto minW = jsonNerve
-                                        -> getDouble( Path{ "minWeight" } , 0 );
-                                        auto maxW = jsonNerve
-                                        -> getDouble( Path{ "maxWeight" }, 0 );
-                                        auto mulW = config
-                                        -> getDouble( Path{ "weightMul" }, 1 );
-                                        nerve = createNerve
-                                        (
-                                            from,
-                                            to,
-                                            nerveType,
-                                            bindType,
-                                            windowSize
-                                        )
-                                        -> setMinWeight
-                                        (
-                                            minW * ( minW == maxW ? 1 : mulW )
-                                        )
-                                        -> setMaxWeight
-                                        (
-                                            maxW * ( minW == maxW ? 1 : mulW )
-                                        )
+                                        getLog()
+                                        -> trace( "Nerve exists" )
+                                        -> prm( "idFrom", idFrom )
+                                        -> prm( "idTo", idTo )
+                                        -> lineEnd()
                                         ;
-                                        if( !nerve -> isOk() )
-                                        {
-                                            getLog()
-                                            -> warning( "Nerve error" )
-                                            -> prm( "code", nerve -> getCode() )
-                                            -> lineEnd();
-                                        }
                                     }
                                 }
-                                else
+
+                                if( nerve == NULL && !nerveDelete )
                                 {
-                                    getLog()
-                                    -> info( "Layers not found for nerve" )
-                                    -> prm( "idFrom", idFrom )
-                                    -> prm( "idTo", idTo )
-                                    -> lineEnd()
+                                    auto minW = jsonNerve
+                                    -> getDouble( Path{ "minWeight" } , 0 );
+                                    auto maxW = jsonNerve
+                                    -> getDouble( Path{ "maxWeight" }, 0 );
+                                    auto mulW = config
+                                    -> getDouble( Path{ "weightMul" }, 1 );
+                                    nerve = createNerve
+                                    (
+                                        from,
+                                        to,
+                                        nerveType,
+                                        bindType,
+                                        windowSize
+                                    )
+                                    -> setMinWeight
+                                    (
+                                        minW * ( minW == maxW ? 1 : mulW )
+                                    )
+                                    -> setMaxWeight
+                                    (
+                                        maxW * ( minW == maxW ? 1 : mulW )
+                                    )
                                     ;
+                                    if( !nerve -> isOk() )
+                                    {
+                                        getLog()
+                                        -> warning( "Nerve error" )
+                                        -> prm( "code", nerve -> getCode() )
+                                        -> lineEnd();
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                getLog()
+                                -> info( "Nerve skiped" )
+                                -> prm( "idFrom", idFrom )
+                                -> prm( "idTo", idTo )
+                                -> lineEnd()
+                                ;
                             }
                         }
                     }
-
-
                 }
                 return false;
             }
@@ -1069,32 +966,12 @@ string Net::getNetConfigFile
 */
 string Net::getLogPath
 (
-    string aSubpath,
-    /* Specific version */
-    string aVersion
+    string aSubpath
 )
 {
     return getNetPath
     (
         "log" + ( aSubpath == "" ? "" : "/" + aSubpath )
-    );
-}
-
-
-
-/*
-    Return mon path
-*/
-string Net::getMonPath
-(
-    string aSubpath,
-    /* Specific version */
-    string aVersion
-)
-{
-    return getNetPath
-    (
-        "mon" + ( aSubpath == "" ? "" : "/" + aSubpath )
     );
 }
 
@@ -1136,23 +1013,6 @@ string Net::getNervesPath
     );
 }
 
-
-
-/*
-    Return net monitoring file
-*/
-string Net::getMonFile
-(
-    /* Specific version */
-    string aVersion
-)
-{
-    return getNetVersionPath
-    (
-        "/mon/" + taskToString( task ) + ".json",
-        aVersion
-    );
-}
 
 
 
@@ -1216,11 +1076,17 @@ Net* Net::loadLayer
             aLayer
             -> setFrontFunc
             (
-                strToFunc( aParams -> getString( Path{ "functionFront" }, "NULL" ))
+                strToFunc
+                (
+                    aParams -> getString( Path{ "functionFront" }, "NULL" )
+                )
             )
             -> setBackFunc
             (
-                strToFunc( aParams -> getString( Path{ "functionBack" }, "NULL" ))
+                strToFunc
+                (
+                    aParams -> getString( Path{ "functionBack" }, "NULL" )
+                )
             )
             -> setBackFuncOut
             (
@@ -1246,6 +1112,13 @@ Net* Net::loadLayer
 
             /* Update layer */
             aLayer -> setSize( size );
+
+            /* Apply default values */
+            auto values = aParams -> getObject( Path{ "values" } );
+            if( values != nullptr )
+            {
+                aLayer -> fillValue( values );
+            }
         }
     }
     return this;
@@ -1290,27 +1163,6 @@ Net* Net::purgeLayers
     return this;
 }
 
-
-
-/*
-    Return socket manager object
-*/
-
-SockManager* Net::getSockManager()
-{
-    return sockManager;
-}
-
-
-
-
-/*
-    Return config of the net
-*/
-ParamList* Net::getConfig()
-{
-    return config;
-}
 
 
 
@@ -1419,17 +1271,15 @@ Net* Net::loadWeightsFrom
 /*
     Swap layers between net and other participants for actions
 */
-Net* Net::swapValuesAndErrors
+bool Net::valuesAndErrorsToLimb
 (
-    /* Action for participant */
-    Actions aActions,
     /* Participant */
-    Limb*   aLimb,
-    bool    aSkip,
-    bool&   aReadedValues,
-    bool&   aWritedValues
+    Limb*           aLimb,
+    vector<string>  aLayers,
+    bool            aSkip
 )
 {
+    bool result = false;
     if( lock( aSkip ))
     {
         if( aLimb -> lock( aSkip ))
@@ -1437,63 +1287,27 @@ Net* Net::swapValuesAndErrors
             /* Loop for layers configuration */
             getLayerList() -> loop
             (
-                [
-                    this,
-                    &aLimb,
-                    &aActions,
-                    &aReadedValues,
-                    &aWritedValues
-                ]
-                (
-                    void* item
-                )
+                [ &aLimb, &result, &aLayers ]
+                ( void* item )
                 {
                     auto netLayer = ( Layer* ) item;
-                    /* For each of action */
-                    for( auto iAction : aActions )
+                    /* ... finds layer by id in net and participant ... */
+                    auto participantLayer = aLimb
+                    -> getLayerList()
+                    -> getById( netLayer -> getId() );
+                    /* ... if both layers fonded ... */
+                    if( participantLayer != NULL )
                     {
-                        if( checkLayerAction( netLayer, iAction ))
+                        if
+                        (
+                            std::find(aLayers.begin(), aLayers.end(), netLayer -> getId())
+                            != aLayers.end()
+                        )
                         {
-                            /* ... finds layer by id in net and participant ... */
-                            auto participantLayer = aLimb
-                            -> getLayerList()
-                            -> getById( netLayer -> getId() );
-
-                            /* ... if both layers fonded ... */
-                            if( participantLayer != NULL )
-                            {
-                                /* ... then swap values and errors */
-                                switch( iAction )
-                                {
-                                    default: break;
-                                    case READ_VALUES:
-                                        aReadedValues |= participantLayer -> copyValuesFrom
-                                        (
-                                            netLayer
-                                        );
-                                    break;
-                                    case WRITE_VALUES:
-                                        aWritedValues |= netLayer -> copyValuesFrom
-                                        (
-                                            participantLayer
-                                        );
-                                        if( task != TASK_PROC )
-                                        {
-                                            addChangedValues( netLayer );
-                                        }
-                                    break;
-                                    case READ_ERRORS:
-                                        participantLayer -> copyErrorsFrom( netLayer );
-                                    break;
-                                    case WRITE_ERRORS:
-                                        netLayer -> copyErrorsFrom( participantLayer );
-                                        if( task != TASK_PROC )
-                                        {
-                                            addChangedErrors( netLayer );
-                                        }
-                                    break;
-                                }
-                            }
+                            result |= participantLayer -> copyValuesFrom
+                            (
+                                netLayer
+                            );
                         }
                     }
                     return false;
@@ -1503,24 +1317,80 @@ Net* Net::swapValuesAndErrors
         }
         unlock();
     }
-
-    return this;
+    return result;
 }
 
+
+
+/*
+    Swap layers between net and other participants for actions
+*/
+bool Net::valuesAndErrorsFromLimb
+(
+    /* Participant */
+    Limb*           aLimb,
+    vector<string>  aLayers,
+    bool            aSkip
+)
+{
+    bool result = false;
+    if( lock( aSkip ))
+    {
+        if( aLimb -> lock( aSkip ))
+        {
+            /* Loop for layers configuration */
+            getLayerList() -> loop
+            (
+                [ this, &aLimb, &result, &aLayers ]
+                ( void* item )
+                {
+                    auto netLayer = ( Layer* ) item;
+                    /* ... finds layer by id in net and participant ... */
+                    auto layerId = netLayer -> getId();
+                    auto participantLayer = aLimb
+                    -> getLayerList()
+                    -> getById( layerId );
+                    /* ... if both layers fonded ... */
+                    if( participantLayer != NULL )
+                    {
+                        if
+                        (
+                            std::find(aLayers.begin(),
+                            aLayers.end(),
+                            netLayer -> getId())
+                            != aLayers.end()
+                        )
+                        {
+                            result |= netLayer -> copyValuesFrom
+                            (
+                                participantLayer
+                            );
+                            /* Calculate hash for the layer */
+                            calcLayerValuesHash( netLayer );
+                        }
+                    }
+                    return false;
+                }
+            );
+            aLimb -> unlock();
+        }
+        unlock();
+    }
+    return result;
+}
 
 
 
 bool Net::syncToLimb
 (
-    Limb* targetLimb,
-    bool aSkip
+    Limb* targetLimb
 )
 {
     auto result = targetLimb -> getLastUpdate() != getLastUpdate();
     if( result )
     {
         /* Rebuild structure layers and nervs */
-        copyTo( targetLimb, true, aSkip, false );
+        copyTo( targetLimb, true /*, aSkip, false */ );
         /* Apply specific config */
         targetLimb -> onAfterReconfig( getConfig() );
         /* Commit last  update */
@@ -1529,169 +1399,6 @@ bool Net::syncToLimb
     return result;
 }
 
-
-
-/*
-    Synchronaize with server
-    For the modified layer, write to the server
-    else read from the server.
-*/
-Net* Net::syncWithServer
-(
-    /* Connection config */
-    std::string aConnection
-)
-{
-    /* The application does not have to be a processor */
-    getLog()
-    -> trapOn()
-    -> begin( "Synchronize layers with server" );
-
-    /* Create lists of layers */
-    vector<string> readValues;
-    vector<string> readErrors;
-    vector<string> writeValues;
-    vector<string> writeErrors;
-
-    vector<string> readStatValue;
-    vector<string> readStatError;
-    vector<string> readStatTick;
-    vector<string> readStatErrorsBeforeChange;
-
-    lock();
-    getLayerList() -> loop
-    (
-        [
-            this,
-            &readValues,
-            &readErrors,
-            &writeValues,
-            &writeErrors,
-
-            &readStatValue,
-            &readStatError,
-            &readStatErrorsBeforeChange,
-            &readStatTick
-        ]
-        ( void* aLayer )
-        {
-            auto layer = ( Layer* ) aLayer;
-            auto layerId = layer -> getId();
-
-            /* Values were changed and must be written to the server */
-            if
-            (
-                find
-                (
-                    changedValues.begin(),
-                    changedValues.end(),
-                    layerId
-                ) != changedValues.end()
-            )
-            {
-                /* Check application rules for write values of the layer */
-                if( checkLayerAction( layer, WRITE_VALUES ))
-                {
-                    writeValues.push_back( layerId );
-                }
-            }
-            else
-            {
-                /* Check application rules for write values of the layer */
-                if( checkLayerAction( layer, READ_VALUES ))
-                {
-                    readValues.push_back( layerId );
-                }
-            }
-
-            /* Errors was changed and must be write to server */
-            if
-            (
-                find
-                (
-                    changedErrors.begin(),
-                    changedErrors.end(),
-                    layerId
-                ) != changedErrors.end()
-            )
-            {
-                /* Check application rules for write erros of the layer */
-                if( checkLayerAction( layer, WRITE_ERRORS ))
-                {
-                    writeErrors.push_back( layerId );
-                }
-            }
-            else
-            {
-                /* Check application rules for read errors of the layer */
-                if( checkLayerAction( layer, READ_ERRORS ))
-                {
-                    readErrors.push_back( layerId );
-                }
-            }
-
-            /* Check application rules stat requests */
-            if( checkLayerAction( layer, READ_STAT_VALUE ))
-            {
-                readStatValue.push_back( layerId );
-            }
-            /* Check application rules stat requests */
-            if( checkLayerAction( layer, READ_STAT_ERROR ))
-            {
-                readStatError.push_back( layerId );
-            }
-            /* Check application rules stat requests */
-            if( checkLayerAction( layer, READ_STAT_ERRORS_BEFORE_CHANGE ))
-            {
-                readStatErrorsBeforeChange.push_back( layerId );
-            }
-            /* Check application rules stat requests */
-            if( checkLayerAction( layer, READ_STAT_TICK ))
-            {
-                readStatTick.push_back( layerId );
-            }
-
-            return false;
-        }
-    );
-    changedValues.clear();
-    changedErrors.clear();
-    unlock();
-
-    /* Exchange with server */
-    auto client = ShoggothRpcClient::create( getApplication(), aConnection );
-
-    client
-    -> writeLayers( this, writeValues, writeErrors )
-    -> readLayers( this, readValues, readErrors )
-//    -> requestWeights()
-    ;
-
-    if( client -> isOk() )
-    {
-        requestStat
-        (
-            readStatValue,
-            readStatError,
-            readStatTick,
-            readStatErrorsBeforeChange,
-            aConnection
-        );
-    }
-
-    if( client -> readNetInfo() -> isOk() )
-    {
-        lock();
-        setTick( client -> getAnswer() -> getInt( Path{ "tick" }));
-        unlock();
-    }
-    client -> destroy();
-
-    /* Finalize */
-    getLog() -> end() -> trapOff();
-
-    return this;
-}
 
 
 
@@ -1762,8 +1469,6 @@ string Net::getParentVersion()
 */
 string Net::generateVersion
 (
-    /* Id of the net */
-    string aId,
     /* Version of the net */
     string aVersion,
     /* Success */
@@ -1855,33 +1560,6 @@ Net* Net::stat()
 
 
 /*
-    Return true value if layer contains action for current net task
-*/
-bool Net::checkLayerAction
-(
-    Layer* aLayer,
-    Action aAction
-)
-{
-    auto layerActions = getConfig() -> getObject
-    (
-        Path
-        {
-            "layers",
-            aLayer -> getId(),
-            "actions",
-            taskToString( task )
-        }
-    );
-
-    return
-    layerActions != NULL &&
-    layerActions -> contains( actionToString( aAction ));
-}
-
-
-
-/*
     Return the tick of the net
 */
 long long int Net::getTick()
@@ -1921,14 +1599,6 @@ Net* Net::incTick()
     unlock();
     return this;
 }
-
-
-
-Mon* Net::getMon()
-{
-    return mon;
-}
-
 
 
 

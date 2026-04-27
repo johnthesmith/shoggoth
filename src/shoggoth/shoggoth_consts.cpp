@@ -5,28 +5,6 @@
 
 
 
-
-/*
-    Return task of participant string by task enum
-*/
-std::string taskToString
-(
-    Task a /* Event enum */
-)
-{
-    switch( a )
-    {
-        default:
-        case TASK_UNKNOWN   : return "UNKNOWN";
-        case TASK_UI        : return "UI";
-        case TASK_PROC      : return "PROC";
-        case TASK_TEACHER   : return "TEACHER";
-        case TASK_EVOLUTION : return "EVOLUTION";
-    }
-}
-
-
-
 /*
     Convert calculation stage to string
 */

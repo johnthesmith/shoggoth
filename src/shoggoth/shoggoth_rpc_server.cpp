@@ -16,7 +16,7 @@ ShoggothRpcServer::ShoggothRpcServer
 :RpcServer
 (
     aNet -> getApplication() -> getLogManager(),
-    aNet -> getSockManager(),
+    aNet -> getApplication() -> getSockManager(),
     aDomain,
     aType,
     aPort
@@ -24,7 +24,7 @@ ShoggothRpcServer::ShoggothRpcServer
 {
     net = aNet;
 
-    mon = Mon::create( aNet -> getMonPath( "shoggoth_server_rpc.json" ))
+    mon = Mon::create( aNet -> getApplication() -> getMonPath( "shoggoth_server_rpc.json" ))
     -> setString( Path{ "start", "source" }, "shoggoth_server_rpc" )
     -> startTimer( Path{ "start", "moment" })
     -> now( Path{ "start", "momentStr" })
@@ -120,6 +120,8 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         case CMD_GET_NET_MODE       :getNetMode( aArguments, aResults); break;
         case CMD_SET_NET_MODE       :setNetMode( aArguments, aResults); break;
         case CMD_TEST_RESULT        :testResult( aArguments, aResults); break;
+        case CMD_SYNC_LAYERS        :syncLayers( aArguments, aResults); break;
+
         default                     :unknownMethod( aArguments, aResults); break;
     }
 
@@ -197,7 +199,7 @@ bool ShoggothRpcServer::isAnswerOk
 */
 ShoggothRpcServer* ShoggothRpcServer::unknownMethod
 (
-    ParamList* aArguments,
+    ParamList* /* aArguments */,
     ParamList* aResults
 )
 {
@@ -212,7 +214,7 @@ ShoggothRpcServer* ShoggothRpcServer::unknownMethod
 */
 ShoggothRpcServer* ShoggothRpcServer::readNet
 (
-    ParamList* aArguments,
+    ParamList* /* aArguments */,
     ParamList* aResults
 )
 {
@@ -229,7 +231,7 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
 */
 ShoggothRpcServer* ShoggothRpcServer::readNetInfo
 (
-    ParamList* aArguments,
+    ParamList* /* aArguments */,
     ParamList* aResults
 )
 {
@@ -271,7 +273,6 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
         parentNetId,
         net -> getParentVersion
         (
-            parentNetId,
             parentNetVersion,
             parentGeneration
         ),
@@ -356,8 +357,8 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
             reason -> getObject() -> getDouble( Path{ "currentSurvivalErrorAvg" })
         );
 
-        auto parentVersion = net -> getParentVersion( "", version, success ? 0 : 1 );
-        auto newVersion = net -> generateVersion( "", version, success );
+        auto parentVersion = net -> getParentVersion( version, success ? 0 : 1 );
+        auto newVersion = net -> generateVersion( version, success );
         auto mutationRnd = Rnd::create() -> setSeed( mutationSeed );
 
         /* Clone network */
@@ -445,6 +446,8 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
                             -> writeErrorsBeforeChange()
                             -> setValuesFromBuffer( buffer, size )
                             -> dropTickCount();
+
+                            net -> calcLayerValuesHash( layer );
                         }
                     }
                 }
@@ -848,7 +851,7 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
 */
 ShoggothRpcServer* ShoggothRpcServer::writeWeights
 (
-    ParamList* aArguments,
+    ParamList* /* aArguments */ ,
     ParamList* aResults
 )
 {
@@ -886,7 +889,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeWeights
 */
 ShoggothRpcServer* ShoggothRpcServer::readWeights
 (
-    ParamList* aArguments,
+    ParamList* /* aArguments */,
     ParamList* aResults
 )
 {
@@ -963,7 +966,7 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
     auto reason = aArguments -> getByName( Path{ "reason" });
     if( reason != NULL && reason -> isObject() )
     {
-        net -> getMon()
+        mon
         -> now( Path{ "lastMode", strMode, "moment" })
         -> setInt( Path{ "lastMode", strMode, "tick" },  net -> getTick() )
         -> copyObject
@@ -1026,5 +1029,23 @@ ShoggothRpcServer* ShoggothRpcServer::changeNetMode
         }
     );
     net -> unlock();
+    return this;
+}
+
+
+
+
+
+/*
+    Synchronize layers between client.net and server.ent
+*/
+ShoggothRpcServer* ShoggothRpcServer::syncLayers
+(
+    ParamList* aArguments,
+    ParamList* aResults
+)
+{
+    setAnswerResult( aResults, RESULT_OK );
+
     return this;
 }

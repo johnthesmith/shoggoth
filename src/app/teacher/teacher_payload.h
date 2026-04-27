@@ -1,7 +1,6 @@
 /*
     This file of Teacher Shoggoth network
     Main application loop.
-    Contains the Net object.
 
     Authors:
         still@itserv.ru
@@ -31,13 +30,12 @@ class TeacherPayload : public PayloadEngine
     private:
 
         /* Neural net object */
-        Net*            net             = NULL;
-        LimbTeacher*    limb            = NULL;
+        Mon*            mon                 = NULL;
+        Net*            net                 = NULL;
+        LimbTeacher*    limb                = NULL;
 
-        long long       lastChange      = 0;
-        std::string     lastBatches     = "";
-
-        long long       testId          = 0;
+        long long       lastChange          = 0;
+        std::string     lastBatches         = "";
 
         int             currentIndexBatch   = -1;
         int             orderIndex          = 0;
@@ -51,8 +49,10 @@ class TeacherPayload : public PayloadEngine
         */
         TeacherPayload
         (
-            ShoggothApplication*,    /* Application object */
-            string                  /* Payload Id */
+            /* Application object */
+            ShoggothApplication*,
+            /* Payload Id */
+            string
         );
 
 
@@ -105,7 +105,10 @@ class TeacherPayload : public PayloadEngine
         /*
             Main teacher loop event
         */
-        virtual void onLoop() override;
+        virtual void onEngineLoop
+        (
+            bool
+        ) override;
 
 
 
@@ -117,32 +120,6 @@ class TeacherPayload : public PayloadEngine
             Return current error limit from Net config
         */
         real getErrorLimit();
-
-
-
-        /*
-            Return error layer id from application config
-            Teacher uses this layer for for controlling
-        */
-        string getIdErrorLayer();
-
-
-
-        /*
-            Return name of mode for batches
-        */
-        std::string requestCurrentBatches();
-
-
-
-        /*
-            Return enabled status
-        */
-        bool getEnabled();
-
-
-
-        ParamList* getBatches();
 
 
 

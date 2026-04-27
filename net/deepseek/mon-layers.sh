@@ -1,4 +1,6 @@
 watch -c -n 0.1 cat \
+mon/dump/VALUES-bias.txt \
+mon/dump/ERRORS-bias.txt \
 mon/dump/VALUES-learning.txt \
 mon/dump/ERRORS-learning.txt \
 mon/dump/VALUES-command.txt \

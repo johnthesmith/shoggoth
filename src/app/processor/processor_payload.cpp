@@ -1,7 +1,6 @@
 /*
     Shoggoth processor payload
 */
-
 #include <iostream>
 
 /* Core libraryes */
@@ -18,59 +17,8 @@ using namespace std;
 
 
 /*
-    Constructor
+    Return application object
 */
-ProcessorPayload::ProcessorPayload
-(
-    ShoggothApplication* aApp,
-    std::string aId
-)
-/* Call parent constructor */
-: PayloadEngine( (Application*) aApp, aId )
-{
-    aApp -> getLog() -> trace( "Processor creating" );
-    net = aApp -> getNet();
-
-    /* Create Processor monitor */
-    mon = Mon::create( net -> getMonPath( "processor_payload.json" ))
-    -> setString( Path{ "start", "source" }, "Processor payload" )
-    -> startTimer( Path{ "start", "moment" });
-
-    /* Create the limb */
-    limb = LimbProcessor::create( ( Payload* )this, net );
-}
-
-
-
-/*
-    Destructor
-*/
-ProcessorPayload::~ProcessorPayload()
-{
-    waitStop();
-
-    /* Destroy Processor monitor */
-    mon -> destroy();
-
-    /* Destroy limb */
-    limb -> destroy();
-
-    /* Log report */
-    getLog() -> trace( "Processor destroyd" );
-}
-
-
-
-/*
-    Destructor
-*/
-void ProcessorPayload::destroy()
-{
-    delete this;
-}
-
-
-
 ShoggothApplication* ProcessorPayload::getApplication()
 {
     return ( ShoggothApplication* ) PayloadEngine::getApplication();
@@ -95,9 +43,11 @@ LimbProcessor* ProcessorPayload::getLimb()
 
 /*
     Processor main loop event
-    TODO Its need to analize. We must use onEngineLoop !!!
 */
-void ProcessorPayload::onLoop()
+void ProcessorPayload::onEngineLoop
+(
+    bool
+)
 {
     limb -> calc() -> resultTo( this );
 
@@ -122,8 +72,10 @@ void ProcessorPayload::onLoop()
     -> div
     (
         Path{ "current", "loopAvg" },
-        Path{ "current", "loop" }, Path{ "current", "uptimeSec" }
+        Path{ "current", "loop" },
+        Path{ "current", "uptimeSec" }
     )
+    -> addInt( Path{ "results", getCode() } )
     -> dumpResult( Path{ "result" }, this )
     -> flush()
     ;
@@ -160,7 +112,3 @@ void ProcessorPayload::onStopAfter()
 {
     getLog() -> trace( "Processor stoped" ) -> lineEnd();
 }
-
-
-
-

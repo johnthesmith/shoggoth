@@ -1,5 +1,5 @@
 #include "limb_teacher.h"
-
+#include "../../../../../lib/core/payload.h"
 
 
 /*
@@ -8,18 +8,15 @@
 LimbTeacher::LimbTeacher
 (
     /* Payload */
-    Payload* aPayload,
-    /* Net limb object*/
-    Net* aNet
+    Payload* aPayload
 )
 :Limb
 (
-    aNet -> getLogManager(),
-    /* Empty version */
-    ""
+   aPayload -> getApplication() -> getLogManager(),
+   aPayload -> getId(),
+   ""
 )
 {
-    net = aNet;
     payload = aPayload;
 }
 
@@ -44,12 +41,12 @@ Layer* LimbTeacher::copyLayerFrom
     Layer* aFromLayer
 )
 {
-    auto config = net -> getConfig();
+    auto config = payload -> getConfig();
 
     auto result = LayerTeacher::create( this, aFromLayer -> getId() );
 
     auto configLayer = config -> getObject( Path { "layers", aFromLayer -> getId() } );
-    if( configLayer != NULL )
+    if( configLayer != nullptr )
     {
         result -> setSize( configLayer );
     }
@@ -72,14 +69,4 @@ LayerTeacher* LimbTeacher::getLayerById
 )
 {
     return (LayerTeacher*) ( getLayerList() -> getById( aId ));
-}
-
-
-
-/*
-    Return net object
-*/
-Net* LimbTeacher::getNet()
-{
-    return net;
 }

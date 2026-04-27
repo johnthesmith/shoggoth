@@ -115,14 +115,4 @@ class LayerTeacher : public Layer
             /* Max value */
             real
         );
-
-
-
-        /*
-            Noise fill values of layer neurons
-        */
-        LayerTeacher* fillValue
-        (
-            ParamList*
-        );
 };

@@ -78,7 +78,7 @@ class ShoggothRpcClient: public RpcClient
         {
             auto config = aApp
             -> getConfig()
-            -> selectObject( Path { "remote", "client", "connections", aConnection });
+            -> selectObject( Path { "connections", aConnection });
 
             std::string host = "127.0.0.1";
             int port = 21021;
@@ -88,11 +88,7 @@ class ShoggothRpcClient: public RpcClient
             {
                 host = config -> getString( Path{ "host" }, host );
                 port = config -> getInt( Path{ "port" }, port );
-                timeoutMcs = config -> getInt
-                (
-                    Path{ "readWaitingTimeoutMcs" },
-                    timeoutMcs
-                );
+                timeoutMcs = config -> getInt( Path{ "timeout-mcs" }, timeoutMcs );
             }
 
             auto result = new ShoggothRpcClient
@@ -253,6 +249,77 @@ class ShoggothRpcClient: public RpcClient
             Return net information from server
         */
         ShoggothRpcClient* readNetInfo();
+
+
+
+        /*
+            Synchronize net layers
+
+            1. засовываем в реквест:
+                1. все слои которые надо записать у которых
+                    отправленные хэши != текущим в Net
+                    c данными values
+                2. все слои которые надо прочитать read-values
+                    с их текущими хэшами из Net
+            2. вызываем обмен
+                1. сервер
+                    1. проверяет все для записи
+                        1. если хэш присланный не свопадает с server.Net
+                            1. засовываем в Net данные
+                            2. все засунутые idLayer отправляет в ответ
+                    2. провет все для чтения
+                        1. засосвывает в ответ из server.Net данные
+                            если хэши не совпадают
+            3. клиет оплучив ответ
+               1. созраняет все hash для write для idLayers как отправленные
+               2. сохраняет все data для read
+
+            Contract:
+                Request:
+                {
+                    "read":
+                    {
+                        "<layerId>":<layerHash>,
+                        ...
+                    },
+                    "write":
+                    {
+                        "<layerId>":
+                        {
+                            "hash":"<layerClientHash>",
+                            "values":"<layerValuesData>"
+                        },
+                        ...
+                    }
+                }
+
+                Answer:
+                {
+                    "read":
+                    {
+                        "<layerId>":
+                        {
+                            "hash":"<layerServerHash>",
+                            "values":"<layerValuesData>"
+                        },
+                        ...
+                    },
+                    "write":
+                    {
+                        "<layerId>":<layerHash>,
+                        ...
+                    }
+                }
+        */
+        ShoggothRpcClient* netSyncLayers
+        (
+            /* Net obejct */
+            Net*,
+            /* Old values hashes id layer:hash */
+            std::unordered_map<std::string, uint64_t>&,
+            Mon*
+        );
+
 
 
         /*

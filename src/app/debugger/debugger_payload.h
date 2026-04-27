@@ -98,7 +98,6 @@ class DebuggerPayload : public PayloadEngine
         */
         virtual void onEngineLoop
         (
-            const bool,
             const bool
         ) override;
 };

@@ -417,6 +417,7 @@ ShoggothRpcClient* ShoggothRpcClient::writeLayers
                 }
             }
         }
+
         net -> unlock();
         call( CMD_WRITE_LAYERS );
     }
@@ -517,6 +518,149 @@ ShoggothRpcClient* ShoggothRpcClient::readLayers
             net -> unlock();
         }
     }
+    return this;
+}
+
+
+
+/*
+    Synchronize net with server
+*/
+ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
+(
+    /* Net obejct */
+    Net* net,
+    /* Old values hashes id layer:hash */
+    std::unordered_map<std::string, uint64_t>& lastSendedHash,
+    /* Mon for dump inforamtion */
+    Mon* mon
+)
+{
+    /*
+        Collect arguments
+    */
+    net -> lock();
+    /* Put read values */
+    auto readLayers = getApplication() -> layersByOperation( "read-values" );
+    for( auto layerId:readLayers )
+    {
+        if( net -> getLayerList() -> getById( layerId ) != nullptr )
+        {
+            auto hash = net -> getHashByLayerId( layerId );
+mon-> setUInt( Path{ "hash", "read",  layerId }, hash);
+            getRequest() -> setUInt( Path{ "read", layerId }, hash );
+        }
+    }
+
+    /* Put write values */
+    auto writeLayers = getApplication() -> layersByOperation( "write-values" );
+    for( auto layerId:writeLayers )
+    {
+        auto layer = net -> getLayerList() -> getById( layerId );
+        if( layer != nullptr )
+        {
+            /* Retrive last hash */
+            auto lastHash
+            = lastSendedHash.count( layerId )
+            ? lastSendedHash[ layerId ] : 0;
+            /*  Retrive layer hash */
+            auto hash = net -> getHashByLayerId( layerId );
+
+mon-> setUInt( Path{ "hash", "write",  layerId }, hash);
+
+            if( lastHash != hash )
+            {
+                /* Buffer pointer */
+                char* buffer = NULL;
+                /* Size of buffer */
+                size_t size = 0;
+                /*  Retrive buffer and size for layer */
+                layer -> getValuesBuffer( buffer, size );
+                getRequest()
+                -> setUInt( Path{ "write", layerId, "hash" }, hash )
+                -> setData
+                (
+                    Path{ "write", layerId, "values" },
+                    (char*) buffer,
+                    size
+                );
+            }
+        }
+    }
+    net -> unlock();
+
+    /*
+        Call method
+    */
+    call( CMD_SYNC_LAYERS );
+
+    /*
+        Answer processing
+    */
+    if( isOk() )
+    {
+        auto answer = getAnswer();
+
+        /* Writable layers synch */
+        auto answerWrite = answer -> getObject( Path{ "write" });
+        if( answerWrite != nullptr )
+        {
+            answerWrite -> loop
+            (
+                [ &lastSendedHash ]
+                ( Param * item )
+                {
+                    auto hash = item -> getUInt();
+                    auto layerId = item -> getName();
+                    if( hash != 0 )
+                    {
+                        lastSendedHash[ layerId ] = hash;
+                    }
+                    return false;
+                }
+            );
+        }
+
+        /* Readable layers synch */
+        auto answerRead = answer -> getObject( Path{ "read" });
+        if( answerRead != nullptr )
+        {
+            net -> lock();
+            answerRead -> loop
+            (
+                [ &net ]
+                ( Param* item )
+                {
+                    auto itemParams = item -> getObject();
+                    /* Get layer by id form key name */
+                    auto layer = net
+                    -> getLayerList()
+                    -> getById( item -> getName() );
+
+                    if( itemParams != nullptr && layer != nullptr )
+                    {
+                        /* Retrive hash */
+                        auto hash = itemParams -> getUInt( Path{ "hash" } );
+                        /* Retrive buffer of values */
+                        char* buffer = NULL;
+                        size_t size = 0;
+                        itemParams -> getData( Path{ "values" }, buffer, size );
+
+                        if( buffer != NULL && size > 0 )
+                        {
+                            /* Load buffer in to layer */
+                            layer -> setValuesFromBuffer( buffer, size );
+                            /* Recalculate value s hash */
+                            net -> calcLayerValuesHash( layer );
+                        }
+                    }
+                    return false;
+                }
+            );
+            net -> unlock();
+        }
+    }
+
     return this;
 }
 

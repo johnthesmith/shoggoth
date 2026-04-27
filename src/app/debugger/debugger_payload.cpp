@@ -33,32 +33,21 @@ DebuggerPayload::DebuggerPayload
 )
 : PayloadEngine( aApplication, aPayloadId ) /* Call parent constructor */
 {
-    net = Net::create
-    (
-        aApplication,
-        aApplication -> getSockManager(),
-        aNetId,
-        aNetVersion,
-        TASK_DEBUGGER
-    );
-
-    getApplication()
-
-    -> getTerminal()
-    -> addColor( "header", COLOR_WHITE, COLOR_BLUE )
-
-    -> addWindow( "header", 0, 0, 1, 1 )
-    -> window( "header" )
-    -> color( "header" )
-    -> setColorDefault()
-
-    -> addWindow( "bottom", 0, 0, 1, 1 )
-    -> window( "bottom" )
-    -> color( "header" )
-    -> setColorDefault()
-
-    -> cursor( 0 )
-    ;
+//    -> getTerminal()
+//    -> addColor( "header", COLOR_WHITE, COLOR_BLUE )
+//
+//    -> addWindow( "header", 0, 0, 1, 1 )
+//    -> window( "header" )
+//    -> color( "header" )
+//    -> setColorDefault()
+//
+//    -> addWindow( "bottom", 0, 0, 1, 1 )
+//    -> window( "bottom" )
+//    -> color( "header" )
+//    -> setColorDefault()
+//
+//    -> cursor( 0 )
+//    ;
 }
 
 
@@ -120,8 +109,7 @@ DebuggerApplication* DebuggerPayload::getApplication()
 */
 void DebuggerPayload::onEngineLoop
 (
-    bool aConfigUpdate,
-    bool aEnabled
+    bool
 )
 {
     auto terminal = getApplication() -> getTerminal();

@@ -17,53 +17,21 @@
 #include "nerve_list.h"
 
 
-///*
-//    Lambda function for return parents neurons of child
-//*/
-//typedef
-//function
-//<
-//    bool
-//    (
-//        Layer*, /* Layer with parent neurons */
-//        int,    /* Neuron index*/
-//        Nerve*, /* Nerve */
-//        real, /* Weight of bind */
-//        int     /* return weight index */
-//    )
-//>
-//parentsLambda;
-//
-//
-//
-///*
-//    Lambda function for return children neurons for parent
-//*/
-//typedef
-//function
-//<
-//    bool
-//    (
-//        Layer*, /* return layer with children neurons */
-//        int,    /* return child neuron index*/
-//        Nerve*, /* return nerve */
-//        real, /* return weight of bind */
-//        int     /* return weight index */
-//    )
-//>
-//childrenLambda;
-
-
-
 
 class Limb : public Result
 {
     private:
+        /* Shoggot application */
+        LogManager*     logManager      = nullptr;
+        /* Payload id */
+        std::string     payloadId       = "";
+        /* Current net version */
+        string          version         = "";
 
-        LogManager*     logManager  = NULL;
-
-        LayerList*      layers      = NULL;
-        NerveList*      nerves      = NULL;     /* List of nerves*/
+        /* List of layers in the limb */
+        LayerList*      layers      = nullptr;
+        /* List of nerves*/
+        NerveList*      nerves      = nullptr;
 
         /*
             wSynchronization states
@@ -74,9 +42,6 @@ class Limb : public Result
         long long       lastChangeStructure = 0;
         /* Moment last values changed */
         long long       lastChangeValues = 0;
-        /* Current net version */
-        string          version         = "";
-
     public:
 
         /*
@@ -84,7 +49,10 @@ class Limb : public Result
         */
         Limb
         (
+            /* Log manager object */
             LogManager*,
+            /* Payload Id */
+            std::string,
             /* version */
             string
         );
@@ -103,31 +71,37 @@ class Limb : public Result
         */
         static Limb* create
         (
-            /* The log object*/
-            LogManager*,
+            /* Log Manager object */
+            LogManager* aLogManager,
+            /* Master payload id */
+            std::string aPayloadId,
             /* Version */
-            string
-        );
+            string aVersion = ""
+        )
+        {
+            return new Limb( aLogManager, aPayloadId, aVersion );
+        }
+
 
 
 
         /* Destroy
         */
-        void destroy();
+        void destroy()
+        {
+            delete this;
+        }
+
 
 
 
         /*
             Return log object
         */
-        Log* getLog();
-
-
-
-        /*
-            Return log manager object
-        */
-        LogManager* getLogManager();
+        inline Log* getLog()
+        {
+            return logManager -> getLog();
+        }
 
 
 
@@ -192,11 +166,11 @@ class Limb : public Result
             /* Destination */
             Limb*,
             /* Need structure synchronize if structuires not equals */
-            bool,
-            /* Skip synchronization if this was locked */
-            bool,
-            /* Skip synchronization if limb was locked */
-            bool
+            bool //,
+//            /* Skip synchronization if this was locked */
+//            bool,
+//            /* Skip synchronization if limb was locked */
+//            bool
         );
 
 
@@ -354,17 +328,6 @@ class Limb : public Result
             Current age of the limbs config
         */
 
-        /*
-            Increamet age of limb
-        */
-        Limb* setLastUpdate
-        (
-            long long
-        );
-
-
-        long long getLastUpdate();
-
 
 
         /*
@@ -381,9 +344,10 @@ class Limb : public Result
             Create new layer for this limb and copy parameters from source layer.
             This method have to overriden at children Limbs.
         */
-        virtual Layer* copyLayerFrom
+        Layer* copyLayerFrom
         (
-            Layer* /* Source layer */
+            /* Source layer */
+            Layer*
         );
 
 
@@ -442,9 +406,7 @@ class Limb : public Result
             /* Type parent or child */
             Direction,
             /* Data type */
-            Data,
-            /* Data view*/
-            Dataview
+            Data
         );
 
 
@@ -482,9 +444,7 @@ class Limb : public Result
             /* Neuron Index in the layer */
             Point3i         aNeuronPos,
             /* Data type */
-            Data            aData,
-            /* Data view*/
-            Dataview        aDataview
+            Data            aData
         );
 
 
@@ -500,8 +460,6 @@ class Limb : public Result
             Nerve*,
             /* Data type */
             Data,
-            /* Data view*/
-            Dataview,
             /* Colored */
             bool = true
         );
@@ -578,89 +536,46 @@ class Limb : public Result
         virtual Limb* dump();
 
 
+
+
+
+        /*
+            Increamet age of limb
+        */
+        inline Limb* setLastUpdate
+        (
+            long long a
+        )
+        {
+            lastUpdate = a;
+            return this;
+        }
+
+
+
+        inline long long getLastUpdate()
+        {
+            return lastUpdate;
+        }
+
+
+
+        /*
+            Retrun payload id
+        */
+        inline std::string getPayloadId()
+        {
+            return payloadId;
+        }
+
+
+
+        inline LogManager* getLogManager()
+        {
+            return logManager;
+        }
 };
 
-
-
-
-
-
-
-
-
-//Arguments:
-//
-//int wParent
-//int hParent
-//int dParent
-//
-//int wChild
-//int hChild
-//int dChild
-//
-//int iChild
-//
-//Processing:
-//
-//int xChild = iChild % wChild
-//int yChild = ( iChild / wChild ) % hChild
-//int zChild = iChild / ( wChild * hChild )
-//
-//float wk = (float)wParent / wChild
-//float hk = (float)hParent / hChild
-//float dk = (float)dParent / dChild
-//
-//int xParent = wk * xChild
-//int yParent = hk * yChild
-//int zParent = dk * zChild
-//
-//
-//int iParent = xParent + yParent * wParent + zParent * wParent * hParent
-//
-//
-//
-//iParent = (int)((iChild % wChild) * wk)
-//        + (int)(((iChild / wChild) % hChild) * hk) * wParent
-//        + (int)((iChild / (wChild * hChild)) * dk) * wParent * hParent
-//
-//
-//for (int iChild = 0; iChild < this->count; iChild++)
-//{
-//    int iParent = (int)((iChild % wChild) * wk)
-//                + (int)(((iChild / wChild) % hChild) * hk) * wParent
-//                + (int)((iChild / (wChild*hChild)) * dk) * wParent * hParent;
-//
-//    // обработка iParent
-//}
-//
-//
-//
-//
-//
-//for (int iChild = 0; iChild < this->count; iChild++)
-//{
-//    int xParent = (int)((iChild % wChild) * wk);
-//    int yParent = (int)(((iChild / wChild) % hChild) * hk);
-//    int zParent = (int)((iChild / (wChild*hChild)) * dk);
-//
-//    for (int iWin = 0; iWin < wWin*hWin*dWin; iWin++)
-//    {
-//        int xWin = iWin % wWin;
-//        int yWin = (iWin / wWin) % hWin;
-//        int zWin = iWin / (wWin*hWin);
-//
-//        int dx = xWin - wWin/2;
-//        int dy = yWin - hWin/2;
-//        int dz = zWin - dWin/2;
-//
-//        int xi = xParent + dx;
-//        int yi = yParent + dy;
-//        int zi = zParent + dz;
-//
-//        // iParentShifted = xi + yi*wParent + zi*wParent*hParent
-//        // обработка xi, yi, zi
-//    }
-//}
 
 
 

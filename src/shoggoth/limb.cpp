@@ -7,23 +7,24 @@
 #include "../../../../lib/core/str.h"
 
 
+
 /*
     Constructor
 */
 Limb::Limb
 (
     LogManager* aLogManager,
+    std::string aPayloadId,
     string aVersion
 )
+:
+    logManager ( aLogManager ),
+    payloadId ( aPayloadId ),
+    version( aVersion )
 {
-    /* Set properties */
-    logManager = aLogManager;
-
-    version = aVersion;
-
     /* Create layers and nerves structures */
     layers = LayerList::create( this );
-    nerves = NerveList::create( logManager );
+    nerves = NerveList::create( aLogManager );
 }
 
 
@@ -33,53 +34,10 @@ Limb::Limb
 */
 Limb::~Limb()
 {
+    getLog() -> begin( "Limb destroing" ) -> prm( "payload id", getPayloadId() );
     nerves -> clear() -> destroy();
     layers -> clear() -> destroy();
-}
-
-
-
-/*
-    Create
-*/
-Limb* Limb::create
-(
-    /* Log object*/
-    LogManager* aLogManager,
-    string aVersion
-)
-{
-    return new Limb( aLogManager, aVersion );
-}
-
-
-
-/*
-    Destroy
-*/
-void Limb::destroy()
-{
-    delete this;
-}
-
-
-
-/*
-    Return log object
-*/
-Log* Limb::getLog()
-{
-    return logManager -> getLog();
-}
-
-
-
-/*
-    Return log object
-*/
-LogManager* Limb::getLogManager()
-{
-    return logManager;
+    getLog() -> end( "Limb destroed" ) -> prm( "payload id", getPayloadId() );
 }
 
 
@@ -172,7 +130,7 @@ Nerve* Limb::createNerve
     getLog() -> begin( "Nerve create" );
     auto result = Nerve::create
     (
-        logManager,
+        getLogManager(),
         aLayerFrom,
         aLayerTo,
         aNerveType,
@@ -218,9 +176,9 @@ Limb* Limb::deleteNerve
 bool Limb::copyTo
 (
     Limb* aLimb,
-    bool aStrictSync,
-    bool aSkipLockThis,
-    bool aSkipLockLimb
+    bool aStrictSync//,
+//    bool aSkipLockThis,
+//    bool aSkipLockLimb
 )
 {
     bool result = false;
@@ -280,32 +238,8 @@ bool Limb::copyTo
 
 
 /**********************************************************************
-    Setters and getters
-*/
-
-
-/**********************************************************************
     Current age of the limbs config
 */
-
-/*
-    Increamet age of limb
-*/
-Limb* Limb::setLastUpdate
-(
-    long long aValue
-)
-{
-    lastUpdate = aValue;
-    return this;
-}
-
-
-long long Limb::getLastUpdate()
-{
-    return lastUpdate;
-}
-
 
 
 /*
@@ -364,7 +298,7 @@ Layer* Limb::copyLayerFrom
 */
 void Limb::onAfterReconfig
 (
-    ParamList* aConfig
+    ParamList*
 )
 {
 }
@@ -415,9 +349,7 @@ string Limb::getDumpFile
     /* Type parent or child */
     Direction       aDirection,
     /* Data type */
-    Data            aData,
-    /* Data view*/
-    Dataview        aDataview
+    Data            aData
 )
 {
     /* Replace file name */
@@ -554,9 +486,7 @@ Limb* Limb::dumpNeuron
     /* Neuron Index in the layer */
     Point3i         aNeuronPos,
     /* Data type */
-    Data            aData,
-    /* Data view*/
-    Dataview        aDataview
+    Data            aData
 )
 {
     aFile = replace( aFile, "%neuron%", aNeuronPos.toString() );
@@ -603,9 +533,9 @@ Limb* Limb::dumpNeuron
                 (
                     Layer*  aParentLayer,
                     int     aParentNeuronIndex,
-                    Nerve*  aNerve,
+                    Nerve*,
                     real    aWeight,
-                    int     aWeightIndex
+                    int
                 )
                 {
                     if( aParentLayer != lastParentLayer )
@@ -691,9 +621,9 @@ Limb* Limb::dumpNeuron
                 (
                     Layer*  aChildLayer,
                     int     aChildNeuronIndex,
-                    Nerve*  aNerve,
+                    Nerve*,
                     real    aWeight,
-                    int     aWeightIndex
+                    int
                 )
                 {
                     if( aChildLayer != lastChildLayer )
@@ -776,8 +706,6 @@ Limb* Limb::dumpNerve
     Nerve*          aNerve,
     /* Data type */
     Data            aData,
-    /* Data view*/
-    Dataview        aDataview,
     /* Colored */
     bool            aColored
 )
@@ -851,6 +779,14 @@ Limb* Limb::dumpNerve
 
 
 
+
+/**********************************************************************
+    Setters and getters
+*/
+
+
+
+
 /*
     Dump layers
 */
@@ -858,6 +794,3 @@ Limb* Limb::dump()
 {
     return this;
 }
-
-
-

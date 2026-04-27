@@ -4,11 +4,13 @@
 */
 #pragma once
 
+
+#include <filesystem>
+
+
 /* Local libraries */
 #include "../../../../../lib/core/payload_engine.h"
-
 #include "../../shoggoth/net.h"
-
 #include "../shoggoth_application.h"
 #include "limb_processor.h"
 
@@ -33,17 +35,50 @@ class ProcessorPayload : public PayloadEngine
         */
         ProcessorPayload
         (
-            ShoggothApplication*,
+            ShoggothApplication* aApp,
             /* Payload id */
-            std::string
-        );
+            std::string aId
+        )
+        /* Call parent constructor */
+        : PayloadEngine
+        (
+            (Application*) aApp,
+            aId
+        )
+        {
+            getLog() -> trace( "Processor creating" );
+            net = aApp -> getNet();
+
+            /* Create Processor monitor */
+            mon = Mon::create( net -> getApplication() -> getMonPath( aId + ".json" ))
+            -> setString( Path{ "start", "source" }, aId )
+            -> startTimer( Path{ "start", "moment" })
+            -> now( Path{ "start", "time" } )
+            -> setString( Path{ "start", "pwd" }, std::filesystem::current_path() )
+            ;
+
+            /* Create the limb */
+            limb = LimbProcessor::create( this );
+        }
+
+
 
 
 
         /*
             Destructor
         */
-        ~ProcessorPayload();
+        ~ProcessorPayload()
+        {
+            waitStop();
+
+            /* Destroy limb */
+            limb -> destroy();
+            /* Destroy Processor monitor */
+            mon -> destroy();
+            /* Log report */
+            getLog() -> trace( "Processor destroyd" );
+        }
 
 
 
@@ -66,7 +101,11 @@ class ProcessorPayload : public PayloadEngine
         /*
             Destructor
         */
-        void destroy() override;
+        void destroy() override
+        {
+            delete this;
+        }
+
 
 
 
@@ -86,7 +125,10 @@ class ProcessorPayload : public PayloadEngine
         /*
             Shoggoth main loop event
         */
-        virtual void onLoop() override;
+        virtual void onEngineLoop
+        (
+            bool
+        ) override;
 
 
 

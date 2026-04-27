@@ -45,7 +45,9 @@ enum Command
     /* Set net mode for server */
     CMD_SET_NET_MODE,
     /* Clients (teacher) sent test result */
-    CMD_TEST_RESULT
+    CMD_TEST_RESULT,
+    /* Sinchronize layers between client and server 2026-04-22 */
+    CMD_SYNC_LAYERS
 };
 
 
@@ -77,6 +79,7 @@ inline std::string commandToString
         case CMD_GET_NET_MODE   : return "GET_NET_MODE";
         case CMD_SET_NET_MODE   : return "SET_NET_MODE";
         case CMD_TEST_RESULT    : return "TEST_RESULT";
+        case CMD_SYNC_LAYERS    : return "SYNC_LAYERS";
     }
 }
 
@@ -105,6 +108,7 @@ inline Command commandFromString
     if( a == "GET_NET_MODE" )        return CMD_GET_NET_MODE;
     if( a == "SET_NET_MODE" )        return CMD_SET_NET_MODE;
     if( a == "TEST_RESULT" )         return CMD_TEST_RESULT;
+    if( a == "SYNC_LAYERS" )         return CMD_SYNC_LAYERS;
 
     return CMD_UNKNOWN;
 }

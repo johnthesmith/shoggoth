@@ -2,7 +2,6 @@
 #include "layer_processor.h"
 
 
-
 /*
     Constructor
 */
@@ -83,7 +82,6 @@ LayerProcessor* LayerProcessor::calcValues()
             index,
             BT_ALL,
             [
-                this,
                 &add,
                 &mul,
                 &count,

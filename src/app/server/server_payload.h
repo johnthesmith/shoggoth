@@ -85,7 +85,7 @@ class ServerPayload : public PayloadEngine
         /*
             Server main loop event
         */
-        virtual void onLoop() override;
+        virtual void onEngineLoop( bool ) override;
 
 
 

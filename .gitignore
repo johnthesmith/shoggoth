@@ -12,6 +12,7 @@
 *.log
 
 # Exclude neuronet out files
+**/obj
 **/mon
 **/log
 **/nerves

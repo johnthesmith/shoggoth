@@ -19,8 +19,6 @@ class LimbTeacher : public Limb
 {
     private:
 
-        /* Net object */
-        Net*            net     = NULL;
         /* Master payload */
         Payload*        payload = NULL;
 
@@ -32,9 +30,7 @@ class LimbTeacher : public Limb
         LimbTeacher
         (
             /* Master payload */
-            Payload*,
-            /* Net limb object*/
-            Net*
+            Payload*
         );
 
 
@@ -52,12 +48,10 @@ class LimbTeacher : public Limb
         static LimbTeacher* create
         (
             /* Master payload */
-            Payload* aPyaload,
-            /* The net object*/
-            Net* aNet
+            Payload* aPayload
         )
         {
-            return new LimbTeacher( aPyaload, aNet );
+            return new LimbTeacher( aPayload );
         }
 
 
@@ -74,18 +68,24 @@ class LimbTeacher : public Limb
 
 
         /*
+            Create new layer in this limb
+        */
+        inline Layer* createLayer
+        (
+            string aLayerId
+        ) override
+        {
+            return ( Layer* ) LayerTeacher::create( ( Limb* ) this, aLayerId );
+        }
+
+
+
+
+        /*
             Return layer by id or NULL for not exists
         */
         LayerTeacher* getLayerById
         (
             string
         );
-
-
-
-        /*
-            Return net object
-        */
-        Net* getNet();
-
 };

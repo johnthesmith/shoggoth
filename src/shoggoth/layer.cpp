@@ -84,7 +84,7 @@ Layer* Layer::setSize
     const Point3i& a
 )
 {
-    setCount( a.x * a.y * a.z );
+    setCount( (size_t) ( a.x * a.y * a.z ));
     size = a;
     limb -> onChangeValues();
     return this;
@@ -128,10 +128,13 @@ Layer* Layer::setSize
 */
 Layer* Layer::clearValues()
 {
-    getLimb() -> lock();
-    memset( values, 0, getValuesBufferSize() );
-    getLimb() -> onChangeValues();
-    getLimb() -> unlock();
+    if( values != nullptr )
+    {
+        getLimb() -> lock();
+        memset( values, 0, getValuesBufferSize() );
+        getLimb() -> onChangeValues();
+        getLimb() -> unlock();
+    }
     return this;
 }
 
@@ -142,10 +145,13 @@ Layer* Layer::clearValues()
 */
 Layer* Layer::clearErrors()
 {
-    getLimb() -> lock();
-    memset( errors, 0, getValuesBufferSize() );
-    getLimb() -> onChangeValues();
-    getLimb() -> unlock();
+    if( values != nullptr )
+    {
+        getLimb() -> lock();
+        memset( errors, 0, getValuesBufferSize() );
+        getLimb() -> onChangeValues();
+        getLimb() -> unlock();
+    }
     return this;
 }
 
@@ -207,7 +213,7 @@ Layer* Layer::errorsFromBuffer
 */
 Layer* Layer::setCount
 (
-    const int aCount
+    const size_t aCount
 )
 {
     getLimb() -> lock();
@@ -317,7 +323,7 @@ real Layer::calcRmsError()
     if( count > 0 )
     {
         getLimb() -> lock();
-        for( int i = 0; i < count; i ++ )
+        for( size_t i = 0; i < count; i ++ )
         {
             result += errors[ i ] * errors[ i ];
         }
@@ -338,7 +344,7 @@ real Layer::calcSumValue()
     real result = 0.0;
 
     getLimb() -> lock();
-    for( int i = 0; i < count; i ++ )
+    for( size_t i = 0; i < count; i ++ )
     {
         result += values[ i ];
     }
@@ -358,7 +364,7 @@ real Layer::calcRmsValue()
     if( count > 0 )
     {
         getLimb() -> lock();
-        for( int i = 0; i < count; i ++ )
+        for( size_t i = 0; i < count; i ++ )
         {
             result += values[ i ] * values[ i ];
         }
@@ -560,7 +566,7 @@ bool Layer::compare
 string Layer::getValuesString()
 {
     vector <string> valuesString;
-    for( int i = 0; i < count; i++ )
+    for( size_t i = 0; i < count; i++ )
     {
         valuesString.push_back( toString( values[ i ] ));
     }
@@ -575,7 +581,7 @@ string Layer::getValuesString()
 Layer* Layer::dumpToLog()
 {
     getLog() -> begin() -> prm( "layer_id", getId() );
-    for( int i = 0; i < count; i++ )
+    for( size_t i = 0; i < count; i++ )
     {
         getLog()
         -> trace()
@@ -597,7 +603,7 @@ Layer* Layer::dumpToLog()
 Layer* Layer::dump()
 {
     cout << "layer_id" << getId() << "\n";
-    for( int i = 0; i < count; i++ )
+    for( size_t i = 0; i < count; i++ )
     {
         cout
         << " index "
@@ -623,7 +629,7 @@ Layer* Layer::dumpToMon
     ChartList* aChartList
 )
 {
-    for( int i = 0; i < count; i++ )
+    for( size_t i = 0; i < count; i++ )
     {
         auto iValuesChart = aChartList -> add
         (
@@ -716,4 +722,27 @@ Layer* Layer::writeErrorsBeforeChange()
 Log* Layer::getLog()
 {
     return limb -> getLog();
+}
+
+
+
+
+/*
+    Fill values of layer neurons
+*/
+Layer* Layer::fillValue
+(
+    ParamList* aValues
+)
+{
+    getLimb() -> lock();
+    auto c = getCount();
+    auto cv = aValues -> getCount();
+    for( int i = 0; i < c; i ++ )
+    {
+        setNeuronValue( i, aValues -> getByIndex( i % cv ) -> getDouble() ) ;
+    }
+    getLimb() -> unlock();
+
+    return this;
 }

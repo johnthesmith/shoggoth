@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ../../shoggoth \
---net_version="000000.000000.000000" \
+--net-version="000000.000000.000000" \
 --config=./processor.json \
---mon=./mon/processor_main.json \
---log=./log/processor_main.log
+--mon=./mon/processor_application.json
+# --log=./log/processor_main.log

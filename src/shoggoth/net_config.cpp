@@ -230,9 +230,9 @@ ParamList* NetConfig::createNerve
 NetConfig* NetConfig::deleteNerve
 (
     /* Parent layer id */
-    string aParentId,
+    string /* aParentId */,
     /* Children layer id */
-    string aChildId
+    string /* aChildId */
 )
 {
     return this;

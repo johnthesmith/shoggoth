@@ -30,7 +30,7 @@ inline NeuronFunc FUNC_NULL =
 /*
     Zero function
 */
-inline NeuronFunc FUNC_ZERO = []( real x ) -> real
+inline NeuronFunc FUNC_ZERO = []( real /* x */ ) -> real
 {
     return 0;
 };
@@ -42,7 +42,7 @@ inline NeuronFunc FUNC_ZERO = []( real x ) -> real
     Heaviside step Function
 */
 
-inline NeuronFunc FUNC_ONE = []( real x ) -> real
+inline NeuronFunc FUNC_ONE = []( real /* x */ ) -> real
 {
     return 1;
 };
