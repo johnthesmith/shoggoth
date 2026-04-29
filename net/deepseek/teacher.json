@@ -22,7 +22,7 @@
                 {
                     "log":
                     {
-                        "trap": true
+                        "trap": false
                     },
 
                     "code":

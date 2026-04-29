@@ -74,6 +74,7 @@ class ClientPayload : public PayloadEngine
         */
         ~ClientPayload()
         {
+            waitStop();
             /* Destroy Processor monitor */
             mon -> destroy();
             /* Log report */
@@ -140,5 +141,5 @@ class ClientPayload : public PayloadEngine
         /*
             Main Client loop event
         */
-        virtual void onEngineLoop( bool ) override;
+        void onEngineLoop( bool ) override;
 };

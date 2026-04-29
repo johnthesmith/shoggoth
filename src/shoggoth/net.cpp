@@ -1119,6 +1119,8 @@ Net* Net::loadLayer
             {
                 aLayer -> fillValue( values );
             }
+
+            calcLayerValuesHash( aLayer );
         }
     }
     return this;

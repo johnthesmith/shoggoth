@@ -24,7 +24,7 @@ using namespace std;
 */
 
 
-ПРоверить что клиент отрпавляет запрос по слоям и включает в него данные по валуесам
+//ПРоверить что клиент отрпавляет запрос по слоям и включает в него данные по валуесам
 
 
 
@@ -45,6 +45,7 @@ void ClientPayload::onEngineLoop( bool )
     auto netConfig = ParamList::create();
 
     /* Read net config from server */
+    net -> lock();
     net -> setOk();
     net -> readNet( netConfig );
 
@@ -61,6 +62,7 @@ void ClientPayload::onEngineLoop( bool )
         net -> applyNet( netConfig );
         getLog() -> end();
     }
+    net -> unlock();
     netConfig -> destroy();
 
     /* Execut synchronize */

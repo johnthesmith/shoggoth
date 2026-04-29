@@ -129,6 +129,26 @@ void ServerPayload::onEngineLoop( bool )
     -> addInt( Path{ "current", "loop" } )
     -> setInt( Path{ "config", "loopTimeoutMcs" }, getLoopTimeoutMcs() )
     -> dumpResult( Path{ "result" }, this );
+
+    /* Dump layers hash in to mon */
+    net -> lock();
+    net -> getLayerList() -> loop
+    (
+        [ this ]
+        ( void* item )
+        {
+            auto layer = (Layer*) item;
+            auto layerId = layer -> getId();
+            mon -> setUInt
+            (
+                Path{ "layer-hash", layerId },
+                net -> getValuesHashByLayerId( layerId )
+            );
+            return false;
+        }
+    );
+    net -> unlock();
+
     mon -> flush();
 }
 

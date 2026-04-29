@@ -1035,9 +1035,14 @@ ShoggothRpcServer* ShoggothRpcServer::changeNetMode
 
 
 
-
 /*
     Synchronize layers between client.net and server.ent
+    1. проверяет все для записи
+        1. засовываем в Net данные
+        2. все засунутые idLayer отправляет в ответ в write
+    2. провет все для чтения
+        1. засосвывает в ответ из server.Net данные
+            если хэши не совпадают
 */
 ShoggothRpcServer* ShoggothRpcServer::syncLayers
 (
@@ -1046,6 +1051,71 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
 )
 {
     setAnswerResult( aResults, RESULT_OK );
+
+    net -> lock();
+
+    /* Writable layers synch */
+    auto write = aArguments -> getObject( Path{ "write" });
+    if( write != nullptr )
+    {
+        write -> objectsLoop
+        (
+            [ this, &aResults ]
+            ( ParamList* layerItem, std::string name )
+            {
+                auto layer = net -> getLayerList() -> getById( name );
+                if( layer != nullptr )
+                {
+                    auto hash = layerItem -> getUInt( Path{ "hash" });
+                    /* Buffer pointer */
+                    char* buffer = nullptr;
+                    /* Size of buffer */
+                    size_t size = 0;
+                    /* Retrive data */
+                    layerItem -> getData( Path{ "values" }, buffer, size );
+                    /*  Retrive buffer and size for layer */
+                    layer -> setValuesFromBuffer( buffer, size );
+                    /* Write hash for the layer */
+                    net -> setValuesHashByLayerId( name, hash );
+
+                    aResults -> setUInt( Path{ "write", name }, hash );
+                }
+                return false;
+            }
+        );
+    }
+
+    /* Readable layers synch */
+    auto read = aArguments -> getObject( Path{ "read" });
+    if( read != nullptr )
+    {
+        read -> loop
+        (
+            [ this, &aResults ]
+            ( Param* layerItem )
+            {
+                auto layerId = layerItem -> getName();
+                auto clientHash = layerItem -> getUInt();
+                auto serverHash = net -> getValuesHashByLayerId( layerId );
+
+                auto layer = net -> getLayerList() -> getById( layerId );
+                if( layer != nullptr && clientHash != serverHash )
+                {
+                    /* Retrive buffer of values */
+                    char* buffer = NULL;
+                    size_t size = 0;
+                    layer -> getValuesBuffer( buffer, size );
+
+                    aResults
+                    -> setUInt( Path{ "read", layerId, "hash" }, serverHash )
+                    -> setData( Path{ "read", layerId }, buffer, size );
+                }
+
+                return false;
+            }
+        );
+    }
+    net -> unlock();
 
     return this;
 }

@@ -546,8 +546,7 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
     {
         if( net -> getLayerList() -> getById( layerId ) != nullptr )
         {
-            auto hash = net -> getHashByLayerId( layerId );
-mon-> setUInt( Path{ "hash", "read",  layerId }, hash);
+            auto hash = net -> getValuesHashByLayerId( layerId );
             getRequest() -> setUInt( Path{ "read", layerId }, hash );
         }
     }
@@ -564,9 +563,7 @@ mon-> setUInt( Path{ "hash", "read",  layerId }, hash);
             = lastSendedHash.count( layerId )
             ? lastSendedHash[ layerId ] : 0;
             /*  Retrive layer hash */
-            auto hash = net -> getHashByLayerId( layerId );
-
-mon-> setUInt( Path{ "hash", "write",  layerId }, hash);
+            auto hash = net -> getValuesHashByLayerId( layerId );
 
             if( lastHash != hash )
             {
@@ -631,21 +628,16 @@ mon-> setUInt( Path{ "hash", "write",  layerId }, hash);
                 [ &net ]
                 ( Param* item )
                 {
-                    auto itemParams = item -> getObject();
                     /* Get layer by id form key name */
                     auto layer = net
                     -> getLayerList()
                     -> getById( item -> getName() );
 
-                    if( itemParams != nullptr && layer != nullptr )
+                    if( layer != nullptr )
                     {
-                        /* Retrive hash */
-                        auto hash = itemParams -> getUInt( Path{ "hash" } );
                         /* Retrive buffer of values */
-                        char* buffer = NULL;
-                        size_t size = 0;
-                        itemParams -> getData( Path{ "values" }, buffer, size );
-
+                        auto buffer = item -> getData();
+                        auto size = item -> getSize();
                         if( buffer != NULL && size > 0 )
                         {
                             /* Load buffer in to layer */

@@ -653,7 +653,24 @@ class Net: public Limb
         /*
             Return layer hash by layer id
         */
-        inline uint64_t getHashByLayerId
+        Net* setValuesHashByLayerId
+        (
+            /* Layer Id */
+            std::string aLayerId,
+            /* Layer values hash */
+            uint64_t aHash
+        )
+        {
+            hashValues[ aLayerId ] = aHash;
+            return this;
+        }
+
+
+
+        /*
+            Return layer hash by layer id
+        */
+        inline uint64_t getValuesHashByLayerId
         (
             /* Layer id */
             std::string a
@@ -662,4 +679,3 @@ class Net: public Limb
             return hashValues.count( a ) ? hashValues[a] : 0;
         }
 };
-
