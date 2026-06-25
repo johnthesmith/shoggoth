@@ -131,7 +131,7 @@ void LoaderPayload::onEngineLoop
     {
         /* Apply config */
         net -> lock();
-        net -> applyNet( netConfig );
+        net -> applyConfig( getApplication() -> getConfig(), netConfig );
         net -> unlock();
     }
 
@@ -165,7 +165,7 @@ bool LoaderPayload::readNetFromFile
 
     if( fileExists( file ))
     {
-        auto lastUpdate = (long) net -> getConfig() -> getInt( Path{ "lastUpdate" }, 0 );
+        auto lastUpdate = (long) net -> getLastUpdate();
         auto aUpdated = checkFileUpdate( file, lastUpdate );
         if( aUpdated || net -> isVersionChanged() )
         {

@@ -4,7 +4,7 @@
 
     Authors:
         still@itserv.ru
-        igor_ptx@gmail.com
+        igorptx@gmail.com
 */
 #pragma once
 

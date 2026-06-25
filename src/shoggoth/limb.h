@@ -7,12 +7,16 @@
 */
 
 
-
+#include <atomic>
 #include <iostream>
 #include <cstring>
-#include <mutex>    /* For net sinchronization */
+/* For net sinchronization */
+#include <mutex>
+/* For layers precalc lists */
+#include <unordered_set>
 
 #include "../../../../lib/core/log_manager.h"
+#include "../../../../lib/core/rnd.h"
 #include "layer_list.h"
 #include "nerve_list.h"
 
@@ -27,11 +31,18 @@ class Limb : public Result
         std::string     payloadId       = "";
         /* Current net version */
         string          version         = "";
-
         /* List of layers in the limb */
-        LayerList*      layers      = nullptr;
+        LayerList*      layers          = nullptr;
         /* List of nerves*/
-        NerveList*      nerves      = nullptr;
+        NerveList*      nerves          = nullptr;
+        /* Rnd object */
+        Rnd*            rnd             = NULL;
+        /* Using layers */
+        std::unordered_set<std::string> allLayers;
+        std::unordered_set<std::string> readValues;
+        std::unordered_set<std::string> writeValues;
+        std::unordered_set<std::string> readErrors;
+        std::unordered_set<std::string> writeErrors;
 
         /*
             wSynchronization states
@@ -42,6 +53,11 @@ class Limb : public Result
         long long       lastChangeStructure = 0;
         /* Moment last values changed */
         long long       lastChangeValues = 0;
+        /* Learning tick */
+        std::atomic <unsigned long long int> learningTick = 0;
+        /* Hash map */
+        std::map<std::string, uint64_t> hashValues = {};
+
     public:
 
         /*
@@ -84,14 +100,60 @@ class Limb : public Result
 
 
 
-
-        /* Destroy
+        /*
+            Destroy
         */
         void destroy()
         {
             delete this;
         }
 
+
+
+        /*
+            Apply config
+        */
+        Limb* applyConfig
+        (
+            /* Application config  */
+            ParamList*  aAppConfig,
+            /* Net config */
+            ParamList*  aNetConfig
+        );
+
+
+
+        /*
+            Load nerves from config
+        */
+        Limb* loadLayers
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Load layer structure from param list
+            Layer may be resized.
+        */
+        Limb* loadLayer
+        (
+            /* Layer object */
+            Layer*,
+            /* Layer configuration */
+            ParamList*
+        );
+
+
+
+        /*
+            Load nerves from config
+        */
+        Limb* loadNerves
+        (
+            ParamList*
+        );
 
 
 
@@ -164,13 +226,7 @@ class Limb : public Result
         bool copyTo
         (
             /* Destination */
-            Limb*,
-            /* Need structure synchronize if structuires not equals */
-            bool //,
-//            /* Skip synchronization if this was locked */
-//            bool,
-//            /* Skip synchronization if limb was locked */
-//            bool
+            Limb*
         );
 
 
@@ -329,39 +385,6 @@ class Limb : public Result
         */
 
 
-
-        /*
-            Copy list of layers
-        */
-        Limb* copyStructureFrom
-        (
-            LayerList*
-        );
-
-
-
-        /*
-            Create new layer for this limb and copy parameters from source layer.
-            This method have to overriden at children Limbs.
-        */
-        Layer* copyLayerFrom
-        (
-            /* Source layer */
-            Layer*
-        );
-
-
-
-        /*
-            Configuration postprocessing
-        */
-        virtual void onAfterReconfig
-        (
-            ParamList*
-        );
-
-
-
         /*
             Check layer parents existing by type
         */
@@ -501,7 +524,9 @@ class Limb : public Result
             string a
         )
         {
+            lock();
             version = a;
+            unlock();
             return this;
         }
 
@@ -512,7 +537,10 @@ class Limb : public Result
         */
         string getVersion()
         {
-            return version;
+            lock();
+            auto v = version;
+            unlock();
+            return v;
         }
 
 
@@ -574,6 +602,200 @@ class Limb : public Result
         {
             return logManager;
         }
+
+
+
+        /*
+            Return the tick of the net
+        */
+        unsigned long long int getLearningTick()
+        {
+            return learningTick.load( std::memory_order_relaxed );
+        }
+
+
+
+        /*
+            Set the tick for the net
+        */
+        Limb* setLearningTick
+        (
+            /* Tick number */
+            unsigned long long int a
+        )
+        {
+            learningTick.store( a, std::memory_order_relaxed );
+            return this;
+        }
+
+
+
+        /*
+            Tick increment
+        */
+        Limb* incLearningTick()
+        {
+            learningTick.fetch_add( 1, std::memory_order_relaxed );
+            return this;
+        }
+
+
+
+        /*
+            Load selected weights to this limb from the limb argument
+        */
+        Limb* weightsFrom
+        (
+            /* Sorce limb */
+            Limb*
+        );
+
+
+
+        Rnd* getRnd()
+        {
+            return rnd;
+        }
+
+
+
+        Limb* setRndSeed
+        (
+            long long int a
+        )
+        {
+            rnd -> setSeed( a );
+            return this;
+        }
+
+
+
+        /*
+            Remove layers absent in the list
+        */
+        Limb* purgeLayers
+        (
+            ParamList*
+        );
+
+
+
+        Limb* collectLayersUsing
+        (
+            ParamList*
+        );
+
+
+
+        /*
+            Recalculate layer hash and store it
+        */
+        Limb* calcLayerValuesHash
+        (
+            Layer* aLayer
+        )
+        {
+            hashValues[ aLayer -> getId() ] = aLayer -> calcValuesHash();
+            return this;
+        }
+
+
+        /*
+            Return layer hash by layer id
+        */
+        Limb* setValuesHashByLayerId
+        (
+            /* Layer Id */
+            std::string aLayerId,
+            /* Layer values hash */
+            uint64_t aHash
+        )
+        {
+            hashValues[ aLayerId ] = aHash;
+            return this;
+        }
+
+
+
+        /*
+            Return layer hash by layer id
+        */
+        inline uint64_t getValuesHashByLayerId
+        (
+            /* Layer id */
+            std::string a
+        )
+        {
+            return hashValues.count( a ) ? hashValues[a] : 0;
+        }
+
+
+
+        /*
+            Return list of layers
+        */
+        const std::unordered_set<std::string>& getAllLayers() 
+        const
+        {
+            return allLayers;
+        }
+
+
+
+        /*
+            Return list of read values layers
+        */
+        const std::unordered_set<std::string>& getReadValues() 
+        const
+        {
+            return readValues;
+        }
+
+
+        /*
+            Return list of write values layers
+        */
+        const std::unordered_set<std::string>& getWriteValues() 
+        const
+        {
+            return writeValues;
+        }
+
+
+        /*
+            Return list of read errors layers
+        */
+        const std::unordered_set<std::string>& getReadErrors() 
+        const
+        {
+            return readErrors;
+        }
+
+
+        /*
+            Return list of write errors layers
+        */
+        const std::unordered_set<std::string>& getWriteErrors() 
+        const
+        {
+            return writeErrors;
+        }
+
+
+        /*
+            Load values and errors from argument limb
+        */
+        valuesFrom
+        valuesTo
+        errorsFrom
+        errorsTo
+
+        // Надо загрущить в текущий лимб занчения и ошибик из другого лимба
+        // Используем списки слоев которые должны быть загружены из текущего лимба
+        //
+
+
+
 };
 
 

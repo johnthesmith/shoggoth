@@ -38,16 +38,20 @@ void ClientPayload::onEngineLoop( bool )
     getMon()
     -> setString( Path{ "net", "id" }, net -> getId() )
     -> setString( Path{ "net", "version" }, net -> getVersion() )
-    -> setInt( Path{ "net", "number" }, net -> getTick() )
+    -> setInt( Path{ "net", "number" }, net -> getLearningTick() )
     ;
 
     /* Check server net config */
     auto netConfig = ParamList::create();
+    auto connection = getConfig() -> getString( Path{ "connection" });
 
+    ShoggothRpcClient::create( getApplication(), connection )
+    -> readNet( netConfig )
+    -> destroy();
+ 
     /* Read net config from server */
     net -> lock();
     net -> setOk();
-    net -> readNet( netConfig );
 
     if
     (
@@ -59,19 +63,16 @@ void ClientPayload::onEngineLoop( bool )
         -> begin( "Net config updated" )
         -> prm( "File", getApplication() -> getConfigFileName() )
         -> lineEnd();
-        net -> applyNet( netConfig );
+
+        net -> applyConfig( getApplication() -> getConfig(), netConfig );
         getLog() -> end();
     }
     net -> unlock();
     netConfig -> destroy();
 
-    /* Execut synchronize */
-    ShoggothRpcClient::create
-    (
-        getApplication(),
-        getConfig() -> getString( Path{ "connection" })
-    )
-    -> netSyncLayers( net, oldValuesHashes, mon )
+    /* Execute synchronize */
+    ShoggothRpcClient::create( getApplication(), connection )
+    -> netSyncLayers( oldValuesHashes, mon )
     -> resultTo( this )
     -> destroy();
 

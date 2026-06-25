@@ -1,5 +1,6 @@
+#include "../../shoggoth/net.h"
 #include "shoggoth_rpc_server.h"
-#include "net.h"
+#include "server_payload.h"
 
 
 
@@ -8,23 +9,28 @@
 */
 ShoggothRpcServer::ShoggothRpcServer
 (
-    Net*            aNet,
+    ServerPayload*  aPayload,
     SocketDomain    aDomain,
     SocketType      aType,
     int             aPort
 )
 :RpcServer
 (
-    aNet -> getApplication() -> getLogManager(),
-    aNet -> getApplication() -> getSockManager(),
+    aPayload -> getApplication() -> getLogManager(),
+    aPayload -> getApplication() -> getSockManager(),
     aDomain,
     aType,
     aPort
 )
 {
-    net = aNet;
+    payload = aPayload;
 
-    mon = Mon::create( aNet -> getApplication() -> getMonPath( "shoggoth_server_rpc.json" ))
+    mon = Mon::create
+    (
+        payload
+        -> getApplication()
+        -> getMonPath( "shoggoth_server_rpc.json" )
+    )
     -> setString( Path{ "start", "source" }, "shoggoth_server_rpc" )
     -> startTimer( Path{ "start", "moment" })
     -> now( Path{ "start", "momentStr" })
@@ -46,19 +52,6 @@ ShoggothRpcServer::~ShoggothRpcServer()
 
 
 
-/*
-    Create socket
-*/
-ShoggothRpcServer* ShoggothRpcServer::create
-(
-    Net*    aNet,
-    int     aPort
-)
-{
-    return new ShoggothRpcServer( aNet, SD_INET, ST_TCP, aPort );
-}
-
-
 
 /******************************************************************************
     Setters and geters
@@ -67,7 +60,7 @@ ShoggothRpcServer* ShoggothRpcServer::create
 
 ShoggothApplication* ShoggothRpcServer::getApplication()
 {
-    return net -> getApplication();
+    return payload -> getApplication();
 }
 
 
@@ -101,7 +94,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
     -> prm( "Code", method )
     -> lineEnd();
 
-    net -> lock();
+    getNet() -> lock();
 
     switch( method )
     {
@@ -125,7 +118,7 @@ ShoggothRpcServer* ShoggothRpcServer::onCallAfter
         default                     :unknownMethod( aArguments, aResults); break;
     }
 
-    net -> unlock();
+    getNet() -> unlock();
 
     return this;
 }
@@ -218,7 +211,7 @@ ShoggothRpcServer* ShoggothRpcServer::readNet
     ParamList* aResults
 )
 {
-    aResults -> copyFrom( net -> getConfig() );
+    aResults -> copyFrom( getApplication() -> getConfig() );
     setAnswerResult( aResults, RESULT_OK );
 
     return this;
@@ -235,9 +228,9 @@ ShoggothRpcServer* ShoggothRpcServer::readNetInfo
     ParamList* aResults
 )
 {
-    net -> lock();
-    aResults -> setInt( "tick", net -> getTick() );
-    net -> unlock();
+    getNet() -> lock();
+    aResults -> setInt( "tick", getNet() -> getLearningTick() );
+    getNet() -> unlock();
     setAnswerResult( aResults, RESULT_OK );
 
     return this;
@@ -254,41 +247,41 @@ ShoggothRpcServer* ShoggothRpcServer::cloneNet
     ParamList* aResults
 )
 {
-    auto parentNetId = aArguments -> getString( Path{ "parentNetId" }, "" );
-    auto parentNetVersion = aArguments -> getString( Path{ "parentNetVersion" }, "" );
-    auto parentGeneration = aArguments -> getInt( Path{ "parentGeneration" }, 0 );
-    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
-
-    getLog() -> info( "Clone net argument" ) -> dump( aArguments );
-
-    /* Return positive answer */
-    setAnswerResult( aResults, RESULT_OK );
-
-    /* Version of cloned child */
-    string childVersion = "";
-
-    /* Clone network */
-    net -> clone
-    (
-        parentNetId,
-        net -> getParentVersion
-        (
-            parentNetVersion,
-            parentGeneration
-        ),
-        childVersion,
-        survivalErrorAvg,
-        /* No clone */
-        NULL
-    );
-
-    /* Return result */
-    aResults
-    -> setString( "id",  parentNetId == "" ? net -> getId() : parentNetId )
-    -> setString( "version", childVersion );
-
-    setAnswerResult( aResults, RESULT_OK );
-
+//    auto parentNetId = aArguments -> getString( Path{ "parentNetId" }, "" );
+//    auto parentNetVersion = aArguments -> getString( Path{ "parentNetVersion" }, "" );
+//    auto parentGeneration = aArguments -> getInt( Path{ "parentGeneration" }, 0 );
+//    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
+//
+//    getLog() -> info( "Clone net argument" ) -> dump( aArguments );
+//
+//    /* Return positive answer */
+//    setAnswerResult( aResults, RESULT_OK );
+//
+//    /* Version of cloned child */
+//    string childVersion = "";
+//
+//    /* Clone network */
+//    getApplication() -> getNet() -> clone
+//    (
+//        parentNetId,
+//        getApplication() -> getNet() -> getParentVersion
+//        (
+//            parentNetVersion,
+//            parentGeneration
+//        ),
+//        childVersion,
+//        survivalErrorAvg,
+//        /* No clone */
+//        NULL
+//    );
+//
+//    /* Return result */
+//    aResults
+//    -> setString( "id",  parentNetId == "" ? net -> getId() : parentNetId )
+//    -> setString( "version", childVersion );
+//
+//    setAnswerResult( aResults, RESULT_OK );
+//
     return this;
 }
 
@@ -303,14 +296,14 @@ ShoggothRpcServer* ShoggothRpcServer::switchNet
     ParamList* aResults
 )
 {
-    auto id = aArguments -> getString( Path{ "id" }, "" );
-    auto version = aArguments -> getString( Path{ "version" }, "" );
-
-    /* Set new value of version */
-    net -> setNextVersion( version );
-
-    /* Return positive answer */
-    setAnswerResult( aResults, RESULT_OK );
+//    auto id = aArguments -> getString( Path{ "id" }, "" );
+//    auto version = aArguments -> getString( Path{ "version" }, "" );
+//
+//    /* Set new value of version */
+//    net -> setNextVersion( version );
+//
+//    /* Return positive answer */
+//    setAnswerResult( aResults, RESULT_OK );
 
     return this;
 }
@@ -329,64 +322,64 @@ ShoggothRpcServer* ShoggothRpcServer::commitNet
     ParamList* aResults
 )
 {
-    /* Dump arguments */
-    getLog() -> info( "Commit net argument" ) -> dump( aArguments );
-
-    /* Read arguments */
-    auto version = aArguments -> getString( Path{ "version" }, "" );
-    auto reason = aArguments -> getByName( Path{ "reason" });
-    auto success = aArguments -> getBool( Path{ "success" });
-    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
-    auto mutationSeed = aArguments -> getInt( Path{ "mutationSeed" });
-
-    if
-    (
-        /* Arguments validation */
-        validate( version != "", "VersionNetIsEmpty", aResults ) &&
-        validate( reason != NULL, "ReasonNotFound", aResults ) &&
-        validate( reason -> isObject(), "ReasonIsNotObject", aResults )
-    )
-    {
-        net -> getDb() -> netCommit
-        (
-            version,
-            success ? "SUCCESS" : "ROLLBACK",
-            net -> getTick(),
-            reason -> getObject() -> getDouble( Path{ "testCount" }, 0 ),
-            reason -> getObject() -> getDouble( Path{ "parentSurvivalErrorAvg" }),
-            reason -> getObject() -> getDouble( Path{ "currentSurvivalErrorAvg" })
-        );
-
-        auto parentVersion = net -> getParentVersion( version, success ? 0 : 1 );
-        auto newVersion = net -> generateVersion( version, success );
-        auto mutationRnd = Rnd::create() -> setSeed( mutationSeed );
-
-        /* Clone network */
-        net -> clone
-        (
-            "",
-            parentVersion,
-            newVersion,
-            survivalErrorAvg,
-            mutationRnd
-        );
-
-        mutationRnd -> destroy();
-
-        /* Switch to new version */
-        net -> setNextVersion( newVersion );
-
-        /* Change net mode */
-        changeNetMode( NET_MODE_LEARN );
-
-        /* Return result */
-        aResults
-        -> setString( "id", "" )
-        -> setString( "version", newVersion );
-
-        /* Return positive answer */
-        setAnswerResult( aResults, RESULT_OK );
-    }
+//    /* Dump arguments */
+//    getLog() -> info( "Commit net argument" ) -> dump( aArguments );
+//
+//    /* Read arguments */
+//    auto version = aArguments -> getString( Path{ "version" }, "" );
+//    auto reason = aArguments -> getByName( Path{ "reason" });
+//    auto success = aArguments -> getBool( Path{ "success" });
+//    auto survivalErrorAvg = aArguments -> getDouble( Path{ "survivalErrorAvg" }, 1e10 );
+//    auto mutationSeed = aArguments -> getInt( Path{ "mutationSeed" });
+//
+//    if
+//    (
+//        /* Arguments validation */
+//        validate( version != "", "VersionNetIsEmpty", aResults ) &&
+//        validate( reason != NULL, "ReasonNotFound", aResults ) &&
+//        validate( reason -> isObject(), "ReasonIsNotObject", aResults )
+//    )
+//    {
+//        net -> getDb() -> netCommit
+//        (
+//            version,
+//            success ? "SUCCESS" : "ROLLBACK",
+//            net -> getTick(),
+//            reason -> getObject() -> getDouble( Path{ "testCount" }, 0 ),
+//            reason -> getObject() -> getDouble( Path{ "parentSurvivalErrorAvg" }),
+//            reason -> getObject() -> getDouble( Path{ "currentSurvivalErrorAvg" })
+//        );
+//
+//        auto parentVersion = net -> getParentVersion( version, success ? 0 : 1 );
+//        auto newVersion = net -> generateVersion( version, success );
+//        auto mutationRnd = Rnd::create() -> setSeed( mutationSeed );
+//
+//        /* Clone network */
+//        net -> clone
+//        (
+//            "",
+//            parentVersion,
+//            newVersion,
+//            survivalErrorAvg,
+//            mutationRnd
+//        );
+//
+//        mutationRnd -> destroy();
+//
+//        /* Switch to new version */
+//        net -> setNextVersion( newVersion );
+//
+//        /* Change net mode */
+//        changeNetMode( NET_MODE_LEARN );
+//
+//        /* Return result */
+//        aResults
+//        -> setString( "id", "" )
+//        -> setString( "version", newVersion );
+//
+//        /* Return positive answer */
+//        setAnswerResult( aResults, RESULT_OK );
+//    }
 
     return this;
 }
@@ -427,7 +420,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
                     validate( idLayer != "", "IdLayerIsEmpty", aResults )
                 )
                 {
-                    auto layer = net -> getLayerById( idLayer );
+                    auto layer = getNet() -> getLayerById( idLayer );
                     if( layer == NULL )
                     {
                         setAnswerResult( aResults, "LayerUnknown" )
@@ -447,7 +440,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
                             -> setValuesFromBuffer( buffer, size )
                             -> dropTickCount();
 
-                            net -> calcLayerValuesHash( layer );
+                            getNet() -> calcLayerValuesHash( layer );
                         }
                     }
                 }
@@ -478,7 +471,7 @@ ShoggothRpcServer* ShoggothRpcServer::writeLayers
                         validate( idLayer != "", "IdLayerIsEmpty", aResults )
                     )
                     {
-                        auto layer = net -> getLayerById( idLayer );
+                        auto layer = getNet() -> getLayerById( idLayer );
                         if( layer == NULL )
                         {
                             setAnswerResult( aResults, "LayerUnknown" )
@@ -559,7 +552,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
                     validate( idLayer != "", "IdLayerIsEmpty", aResults )
                 )
                 {
-                    auto layer = net -> getLayerById( idLayer );
+                    auto layer = getNet() -> getLayerById( idLayer );
                     if( layer == NULL )
                     {
                         setAnswerResult( aResults, "LayerUnknown" )
@@ -576,7 +569,7 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
                         if( buffer != NULL )
                         {
                             aResults
-                            -> setInt( "tick", net -> getTick() )
+                            -> setInt( "tick", getNet() -> getLearningTick())
                             -> setPath( Path{ "values" })
                             -> setData
                             (
@@ -615,7 +608,10 @@ ShoggothRpcServer* ShoggothRpcServer::readLayers
                         validate( idLayer != "", "IdLayerIsEmpty", aResults )
                     )
                     {
-                        auto layer = net -> getLayerById( idLayer );
+                        auto layer = getApplication()
+                        -> getNet()
+                        -> getLayerById( idLayer );
+
                         if( layer == NULL )
                         {
                             setAnswerResult( aResults, "LayerUnknown" )
@@ -681,7 +677,8 @@ ShoggothRpcServer* ShoggothRpcServer::requestWeights
         /* Return positive answer */
         setAnswerResult( aResults, RESULT_OK );
 
-        net
+        getApplication()
+        -> getNet()
         -> getWeightsExchange()
         -> synchNeuronsByClient( clientId, neurons )
         -> prepareAnswer( clientId, neurons );
@@ -704,7 +701,10 @@ ShoggothRpcServer* ShoggothRpcServer::dropLayerTick
     aResults -> copyFrom( aArguments );
 
     auto layerId = aResults -> getString( Path{ "layerId" });
-    auto layer = net -> getLayerList() -> getById( layerId );
+    auto layer = getApplication()
+    -> getNet()
+    -> getLayerList()
+    -> getById( layerId );
 
     if( layer != NULL )
     {
@@ -796,7 +796,9 @@ ShoggothRpcServer* ShoggothRpcServer::buildLayerStatAnswer
                     validate( idLayer != "", "IdLayerIsEmpty", aResults )
                 )
                 {
-                    auto layer = net -> getLayerById( idLayer );
+                    auto layer = getApplication()
+                    -> getNet()
+                    -> getLayerById( idLayer );
                     if( layer == NULL )
                     {
                         setAnswerResult( aResults, "LayerUnknown" )
@@ -968,7 +970,11 @@ ShoggothRpcServer* ShoggothRpcServer::setNetMode
     {
         mon
         -> now( Path{ "lastMode", strMode, "moment" })
-        -> setInt( Path{ "lastMode", strMode, "tick" },  net -> getTick() )
+        -> setInt
+        (
+            Path{ "lastMode", strMode, "tick" },
+            getNet() -> getLearningTick()
+        )
         -> copyObject
         (
             Path{ "lastMode", strMode, "reason" },
@@ -992,7 +998,7 @@ ShoggothRpcServer* ShoggothRpcServer::testResult
     ParamList* aResults
 )
 {
-    net -> getDb() -> testResult
+    getNet() -> getDb() -> testResult
     (
         aArguments -> getString( Path{ "netVersion" }),
         aArguments -> getInt( Path{ "tick" }),
@@ -1014,11 +1020,11 @@ ShoggothRpcServer* ShoggothRpcServer::changeNetMode
     NetMode aMode
 )
 {
-    net -> lock();
+    getNet() -> lock();
     mode = aMode;
 
     /* Reset statistics for new mode */
-    net -> getLayerList() -> loop
+    getNet() -> getLayerList() -> loop
     (
         []
         ( void* item )
@@ -1028,7 +1034,7 @@ ShoggothRpcServer* ShoggothRpcServer::changeNetMode
             return false;
         }
     );
-    net -> unlock();
+    getNet() -> unlock();
     return this;
 }
 
@@ -1036,7 +1042,7 @@ ShoggothRpcServer* ShoggothRpcServer::changeNetMode
 
 
 /*
-    Synchronize layers between client.net and server.ent
+    Synchronize layers between client.net and server.net
     1. проверяет все для записи
         1. засовываем в Net данные
         2. все засунутые idLayer отправляет в ответ в write
@@ -1052,7 +1058,7 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
 {
     setAnswerResult( aResults, RESULT_OK );
 
-    net -> lock();
+    getNet() -> lock();
 
     /* Writable layers synch */
     auto write = aArguments -> getObject( Path{ "write" });
@@ -1063,7 +1069,7 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
             [ this, &aResults ]
             ( ParamList* layerItem, std::string name )
             {
-                auto layer = net -> getLayerList() -> getById( name );
+                auto layer = getNet() -> getLayerList() -> getById( name );
                 if( layer != nullptr )
                 {
                     auto hash = layerItem -> getUInt( Path{ "hash" });
@@ -1076,7 +1082,7 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
                     /*  Retrive buffer and size for layer */
                     layer -> setValuesFromBuffer( buffer, size );
                     /* Write hash for the layer */
-                    net -> setValuesHashByLayerId( name, hash );
+                    getNet() -> setValuesHashByLayerId( name, hash );
 
                     aResults -> setUInt( Path{ "write", name }, hash );
                 }
@@ -1096,9 +1102,9 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
             {
                 auto layerId = layerItem -> getName();
                 auto clientHash = layerItem -> getUInt();
-                auto serverHash = net -> getValuesHashByLayerId( layerId );
+                auto serverHash = getNet() -> getValuesHashByLayerId( layerId );
 
-                auto layer = net -> getLayerList() -> getById( layerId );
+                auto layer = getNet() -> getLayerList() -> getById( layerId );
                 if( layer != nullptr && clientHash != serverHash )
                 {
                     /* Retrive buffer of values */
@@ -1115,7 +1121,15 @@ ShoggothRpcServer* ShoggothRpcServer::syncLayers
             }
         );
     }
-    net -> unlock();
+    getNet() -> unlock();
 
     return this;
 }
+
+
+
+Net* ShoggothRpcServer::getNet()
+{
+    return getApplication() -> getNet();
+}
+

@@ -69,22 +69,17 @@ LimbProcessor* LimbProcessor::calc()
     auto net = payload -> getApplication() -> getNet();
 
     net -> lock();
-//    if
-//    (
-//        /* Net is not locked for writing */
-//        !net -> getWeightWriteLock()
-//        &&
-//        (
-//            ( getVersion() != net -> getVersion() && getVersion() != "" )
-//            ||
-//            ( tickWrite != 0 && net -> getTick() % tickWrite == 0 )
-//        )
-//    )
-//    {
-//        /* Writes weights for current version */
-//        weightsWrite( net -> getNervesPath( "", getVersion() ));
-//    }
     payload -> getMon() -> now( Path{ "trace", "write_nerves" }, true);
+
+
+    if( net -> getLastUpdate() != getLastUpdate() )
+    {
+        applyConfig
+        (
+            payload -> getApplication() -> getConfig(), 
+            payload -> getApplication() -> getNetConfig() 
+        );
+    } 
 
     /* Detect changes of config */
     if( net -> syncToLimb( this ))
@@ -114,6 +109,10 @@ LimbProcessor* LimbProcessor::calc()
         /* Set version from net */
         setVersion( net -> getVersion() );
     }
+
+    /* TODO need to analize and choise this or cmp in the layer   */
+    auto netLastChangeValues = net -> getLastChangeValues();
+
     net ->  unlock();
 
     /*
@@ -124,9 +123,6 @@ LimbProcessor* LimbProcessor::calc()
     -> setString( Path{ "config", "learningLayerId" }, getLearningLayerId() )
     -> setDouble( Path{ "config", "learningSpeed" }, learningSpeed )
     ;
-
-    /* TODO need to analize and choise this or cmp in the layer   */
-    auto netLastChangeValues = net -> getLastChangeValues();
 
     /* Swap values and errors */
     auto readedValues = net -> valuesAndErrorsToLimb
@@ -141,20 +137,17 @@ LimbProcessor* LimbProcessor::calc()
     -> now( Path{ "trace" , "swapValuesAndErrors" }, true );
 
     auto learningLayer = getLayerList() -> getById( learningLayerId );
+    auto learning = learningLayer != nullptr
+        ? learningLayer -> calcSumValue() > EPSILON_D
+        : false;
 
-    auto needCalc =
-    readedValues
-    ||
-    (
-        learningLayer != NULL
-        && learningLayer -> calcSumValue() > EPSILON_D
-    );
-
+    auto needCalc = net -> getTick() > 0 && ( readedValues || learning );
     if( needCalc )
     {
-        /* Increase the tick */
-        net -> incTick();
-        payload -> getMon() -> setInt( Path{ "current", "tick" }, net -> getTick() );
+        if( getTick() != net -> getTick())
+        {
+            weightsFrom( net );
+        }
 
         /* Drop learing mode flag */
         calcDebugDump( CALC_STAGE_START );
@@ -188,89 +181,95 @@ LimbProcessor* LimbProcessor::calc()
         calcDebugDump( CALC_STAGE_AFTER_FRONT );
         payload -> getMon() -> now( Path{ "trace", "forwardDump" }, true);
 
-        /*
-            Backward calculation (neuron errors)
-        */
-        resetCalcState();
-        getLayerList() -> loop
-        (
-            [ this ]
-            ( void* item )
-            {
-                auto layer = ( LayerProcessor* ) item;
-                if( layer -> isOutput())
-                {
-                    layer
-                    -> calcErrors()
-                    -> backwardCalcComplete( threadManager );
-                }
-                return false;
-            }
-        );
-        payload -> getMon() -> now( Path{ "trace" , "backwardStart" }, true );
-        threadManager -> wait();
-        payload -> getMon() -> now( Path{ "trace" , "backwardWait" }, true );
-        calcDebugDump( CALC_STAGE_AFTER_BACK );
-        payload -> getMon() -> now( Path{ "trace", "backwardDump" }, true);
-
-        /*
-            Learning calculation (nerve weights)
-        */
-        struct DataStruct
+        if( learning )
         {
-            Nerve* nerve;
-            real learningSpeed;
-        };
-
-        getNerveList()
-        -> loop
-        (
-            [ this, &netLastChangeValues, &net ]
-            ( void* item )
-            {
-                auto nerve = (Nerve*) item;
-                auto data = DataStruct{ nerve, learningSpeed };
-
-                auto terminate =
-                terminated ||
-                net -> getLastChangeValues() != netLastChangeValues;
-
-                if( !terminate )
+            /*
+                Backward calculation (neuron errors)
+            */
+            resetCalcState();
+            getLayerList() -> loop
+            (
+                [ this ]
+                ( void* item )
                 {
-                    threadManagerWeight
-                    -> add( nerve -> buildId() )
-                    -> run
-                    (
-                        []
-                        ( void* data )
-                        {
-                            auto [ nerve, learningSpeed ] = *(DataStruct*) data;
-                            nerve -> calcWeights( learningSpeed );
-                        },
-                        &data,
-                        sizeof( data )
-                    );
+                    auto layer = ( LayerProcessor* ) item;
+                    if( layer -> isOutput())
+                    {
+                        layer
+                        -> calcErrors()
+                        -> backwardCalcComplete( threadManager );
+                    }
+                    return false;
                 }
+            );
+            payload -> getMon() -> now( Path{ "trace" , "backwardStart" }, true );
+            threadManager -> wait();
+            payload -> getMon() -> now( Path{ "trace" , "backwardWait" }, true );
+            calcDebugDump( CALC_STAGE_AFTER_BACK );
+            payload -> getMon() -> now( Path{ "trace", "backwardDump" }, true);
 
-                return terminate;
-            }
-        );
+            /*
+                Learning calculation (nerve weights)
+            */
+            struct DataStruct
+            {
+                Nerve* nerve;
+                real learningSpeed;
+            };
 
-        payload -> getMon() -> now( Path{ "trace", "weightStart" }, true);
-        threadManagerWeight -> wait();
-        payload -> getMon() -> now( Path{ "trace", "weightWait" }, true );
-        calcDebugDump( CALC_STAGE_AFTER_LEARNING );
-        payload -> getMon() -> now( Path{ "trace", "weightDump" }, true );
+            getNerveList()
+            -> loop
+            (
+                [ this, &netLastChangeValues, &net ]
+                ( void* item )
+                {
+                    auto nerve = (Nerve*) item;
+                    auto data = DataStruct{ nerve, learningSpeed };
+
+                    auto terminate =
+                    terminated ||
+                    net -> getLastChangeValues() != netLastChangeValues;
+
+                    if( !terminate )
+                    {
+                        threadManagerWeight
+                        -> add( nerve -> buildId() )
+                        -> run
+                        (
+                            []
+                            ( void* data )
+                            {
+                                auto [ nerve, learningSpeed ] = *(DataStruct*) data;
+                                nerve -> calcWeights( learningSpeed );
+                            },
+                            &data,
+                            sizeof( data )
+                        );
+                    }
+
+                    return terminate;
+                }
+            );
+
+            payload -> getMon() -> now( Path{ "trace", "weightStart" }, true);
+            threadManagerWeight -> wait();
+            payload -> getMon() -> now( Path{ "trace", "weightWait" }, true );
+            calcDebugDump( CALC_STAGE_AFTER_LEARNING );
+            payload -> getMon() -> now( Path{ "trace", "weightDump" }, true );
+        }
 
         /*
             End of calculation
         */
 
         /* Move calculated data to net */
+        net -> lock();
+
         if
         (
             !terminated  &&
-            net -> getLastChangeValues() == netLastChangeValues
+            net -> getLastChangeValues() ==
+            netLastChangeValues
         )
         {
             net -> valuesAndErrorsFromLimb
@@ -279,13 +278,18 @@ LimbProcessor* LimbProcessor::calc()
                 payload -> getConfig() -> getStringVector( Path{ "layers", "write-values" }),
                 false
             );
-            /* Load weights to Net from this limb */
-            net -> loadWeightsFrom( this )
-            /* Write stat for Net */
-            -> stat()
-            ;
-        }
 
+            if( learning )
+            {
+                /* Increase the tick */
+                incTick();
+                /* Load weights to Net from this limb */
+                net -> weightsFrom( this );
+            }
+
+            /* Write stat for Net */
+            net -> stat();
+        }
         payload -> getMon() -> now( Path{ "trace", "move_data_to_net" }, true );
 
         /* Write charts in to monitoring */
@@ -305,7 +309,6 @@ LimbProcessor* LimbProcessor::calc()
 
             if( monConfig != nullptr )
             {
-                net -> lock();
                 net
                 -> getLayerList()
                 -> loop
@@ -375,10 +378,10 @@ LimbProcessor* LimbProcessor::calc()
                         return false;
                     }
                 );
-
-                net -> unlock();
             }
         }
+        net -> unlock();
+
         payload -> getMon() -> now( Path{ "trace", "write_charts" }, true );
     }
     else
@@ -390,6 +393,7 @@ LimbProcessor* LimbProcessor::calc()
     payload -> getMon()
     -> trace( Path{ "trace" } )
     -> now( Path{ "current", "last" } )
+    -> setInt( Path{ "current", "tick" }, net -> getTick() )
     -> setString( Path{ "current", "result" }, getCode() )
     -> flush();
 

@@ -168,7 +168,23 @@ class ShoggothRpcClient: public RpcClient
         /*
             Read net config
         */
-        ShoggothRpcClient* readNet();
+        ShoggothRpcClient* readNet
+        (
+            ParamList* aAnswer
+        )
+        {
+            if( isOk() )
+            {
+                if( aAnswer != nullptr )
+                {
+                    setAnswer( aAnswer );
+                }
+                getRequest() -> clear();
+                call( CMD_READ_NET );
+            }
+            return this;
+        }
+
 
 
 
@@ -313,8 +329,6 @@ class ShoggothRpcClient: public RpcClient
         */
         ShoggothRpcClient* netSyncLayers
         (
-            /* Net obejct */
-            Net*,
             /* Old values hashes id layer:hash */
             std::unordered_map<std::string, uint64_t>&,
             Mon*
@@ -349,4 +363,14 @@ class ShoggothRpcClient: public RpcClient
             /* List of layers id for errors */
             vector<string> aErrors
         );
+
+
+
+        /*       
+            Return net
+        */
+        Net* getNet()
+        {
+            return getApplication() -> getNet();
+        }
 };

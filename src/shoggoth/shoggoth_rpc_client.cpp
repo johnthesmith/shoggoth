@@ -192,21 +192,6 @@ ShoggothRpcClient* ShoggothRpcClient::switchNet
 
 
 /*
-    Read net config
-*/
-ShoggothRpcClient* ShoggothRpcClient::readNet()
-{
-    if( isOk() )
-    {
-        getRequest() -> clear();
-        call( CMD_READ_NET );
-    }
-    return this;
-}
-
-
-
-/*
     Return server net mode
 */
 NetMode ShoggothRpcClient::getNetMode()
@@ -263,10 +248,10 @@ ShoggothRpcClient* ShoggothRpcClient::readWeights
 
     if( call( CMD_READ_WEIGHTS ) -> isOk() )
     {
-        char* buffer = NULL;
+        uint8_t* buffer = nullptr;
         size_t size = 0;
-        getAnswer() -> getData( Path{ "data" }, buffer, size );
-        if( buffer != NULL && size > 0 )
+        getAnswer() -> getData( Path{ "data" }, (char*&)buffer, size );
+        if( buffer != nullptr && size > 0 )
         {
             aNerve -> readFromBuffer( buffer, size );
         }
@@ -332,7 +317,8 @@ ShoggothRpcClient* ShoggothRpcClient::readLayerStat
         -> setPath( Path{ "value" }) -> pushVector( aStatValue )
         -> setPath( Path{ "error" }) -> pushVector( aStatError )
         -> setPath( Path{ "tick" }) -> pushVector( aStatTick )
-        -> setPath( Path{ "errorsBeforeChange" }) -> pushVector( aStatErrorsBeforeChange );
+        -> setPath( Path{ "errorsBeforeChange" })
+        -> pushVector( aStatErrorsBeforeChange );
 
         call( CMD_READ_LAYER_STAT );
     }
@@ -467,7 +453,7 @@ ShoggothRpcClient* ShoggothRpcClient::readLayers
             auto layers = net -> getLayerList();
 
             /* Set tick from server net */
-            net -> setTick( getAnswer() -> getInt( Path{ "tick" } ));
+            getNet() -> setLearningTick( getAnswer() -> getInt( Path{ "tick" } ));
 
             /* Loop for values */
             for( auto id : aValues )
@@ -528,8 +514,6 @@ ShoggothRpcClient* ShoggothRpcClient::readLayers
 */
 ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
 (
-    /* Net obejct */
-    Net* net,
     /* Old values hashes id layer:hash */
     std::unordered_map<std::string, uint64_t>& lastSendedHash,
     /* Mon for dump inforamtion */
@@ -539,23 +523,24 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
     /*
         Collect arguments
     */
-    net -> lock();
+    getNet() -> lock();
     /* Put read values */
-    auto readLayers = getApplication() -> layersByOperation( "read-values" );
+    auto readLayers = getNet() -> getReadValues();
+
     for( auto layerId:readLayers )
     {
-        if( net -> getLayerList() -> getById( layerId ) != nullptr )
+        if( getNet() -> getLayerList() -> getById( layerId ) != nullptr )
         {
-            auto hash = net -> getValuesHashByLayerId( layerId );
+            auto hash = getNet() -> getValuesHashByLayerId( layerId );
             getRequest() -> setUInt( Path{ "read", layerId }, hash );
         }
     }
 
     /* Put write values */
-    auto writeLayers = getApplication() -> layersByOperation( "write-values" );
+    auto writeLayers = getNet() -> getWriteValues();
     for( auto layerId:writeLayers )
     {
-        auto layer = net -> getLayerList() -> getById( layerId );
+        auto layer = getNet() -> getLayerList() -> getById( layerId );
         if( layer != nullptr )
         {
             /* Retrive last hash */
@@ -563,7 +548,7 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
             = lastSendedHash.count( layerId )
             ? lastSendedHash[ layerId ] : 0;
             /*  Retrive layer hash */
-            auto hash = net -> getValuesHashByLayerId( layerId );
+            auto hash = getNet() -> getValuesHashByLayerId( layerId );
 
             if( lastHash != hash )
             {
@@ -584,7 +569,7 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
             }
         }
     }
-    net -> unlock();
+    getNet() -> unlock();
 
     /*
         Call method
@@ -622,14 +607,14 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
         auto answerRead = answer -> getObject( Path{ "read" });
         if( answerRead != nullptr )
         {
-            net -> lock();
+            getNet() -> lock();
             answerRead -> loop
             (
-                [ &net ]
+                [ this ]
                 ( Param* item )
                 {
                     /* Get layer by id form key name */
-                    auto layer = net
+                    auto layer = getNet()
                     -> getLayerList()
                     -> getById( item -> getName() );
 
@@ -643,13 +628,13 @@ ShoggothRpcClient* ShoggothRpcClient::netSyncLayers
                             /* Load buffer in to layer */
                             layer -> setValuesFromBuffer( buffer, size );
                             /* Recalculate value s hash */
-                            net -> calcLayerValuesHash( layer );
+                            getNet() -> calcLayerValuesHash( layer );
                         }
                     }
                     return false;
                 }
             );
-            net -> unlock();
+            getNet() -> unlock();
         }
     }
 

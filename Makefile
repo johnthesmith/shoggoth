@@ -41,6 +41,7 @@ src/app \
 src/app/loader \
 src/app/server \
 src/app/client \
+src/app/memory \
 src/app/processor \
 src/app/teacher \
 src/app/evolution \
@@ -57,6 +58,7 @@ SRCS := \
 	$(wildcard src/shoggoth/limb/*.cpp) \
 	$(wildcard src/app/server/*.cpp) \
 	$(wildcard src/app/client/*.cpp) \
+	$(wildcard src/app/memory/*.cpp) \
 	$(wildcard src/app/*.cpp) \
 	$(wildcard src/app/loader/*.cpp) \
 	$(wildcard src/app/processor/*.cpp) \
@@ -153,6 +155,10 @@ CLIENT_EXTRA := \
 	$(OBJ_DIR)/client_payload.o \
 	$(OBJ_DIR)/client.o
 
+MEMORY_EXTRA := \
+	$(OBJ_DIR)/memory_payload.o \
+	$(OBJ_DIR)/memory.o
+
 LOADER_EXTRA := \
 	$(OBJ_DIR)/loader.o \
 	$(OBJ_DIR)/loader_payload.o
@@ -198,17 +204,17 @@ $(OBJ_DIR)/%.o: %.cpp
 
 # Цели линковки
 
-release: shoggoth loader.so server.so client.so processor.so teacher.so debugger evolution
+release: shoggoth loader.so server.so client.so memory.so processor.so teacher.so debugger evolution
 > @echo "Release build done"
 > @if command -v upx >/dev/null 2>&1; then \
 >   echo "Packing with UPX..."; \
 >   upx --best --lzma shoggoth evolution debugger 2>/dev/null || true; \
->   upx --best --lzma loader.so server.so client.so processor.so teacher.so 2>/dev/null || true; \
+>   upx --best --lzma loader.so server.so client.so memory.so processor.so teacher.so 2>/dev/null || true; \
 > else \
 >   echo "UPX not installed, skipping"; \
 > fi
 
-debug: shoggoth loader.so server.so client.so processor.so teacher.so debugger evolution
+debug: shoggoth loader.so server.so client.so memory.so processor.so teacher.so debugger evolution
 > @echo "Debug build done"
 
 shoggoth: $(BASE_OBJS) $(SHOGGOTH_EXTRA)
@@ -226,6 +232,9 @@ server.so: $(BASE_OBJS) $(SERVER_EXTRA)
 client.so: $(BASE_OBJS) $(CLIENT_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
 
+memory.so: $(BASE_OBJS) $(MEMORY_EXTRA)
+> $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
+
 teacher.so: $(BASE_OBJS) $(TEACHER_EXTRA)
 > $(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(LDLIBS)
 
@@ -240,6 +249,7 @@ clean:
 loader.so \
 server.so \
 client.so \
+memory.so \
 processor.so \
 teacher.so \
 debugger \

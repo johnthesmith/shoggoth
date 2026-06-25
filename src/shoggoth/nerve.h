@@ -32,6 +32,8 @@ class Nerve: public Result
 {
     private:
 
+        /* Syntetic id from the buildId method */
+        std::string id              = "";
         /* Array of weights, it contins weight value */
         real*       weights         = NULL;
         /* Array of control values for max count 0 || 1 */
@@ -75,7 +77,6 @@ class Nerve: public Result
         /* The log manger object */
         LogManager* logManager      = NULL;
 
-        string      id              = "";
         BindType    bindType        = BT_ADD;
         NerveType   nerveType       = ALL_TO_ALL;
 
@@ -130,22 +131,6 @@ class Nerve: public Result
         Return log object
     */
     Log* getLog();
-
-
-
-    /*
-        Allocate memomry buffer for weights
-    */
-    template <typename Func>
-    Nerve* allocate
-    (
-        /*
-            Callback function
-            void
-                Nerve*
-        */
-        Func aOnAllocate
-    );
 
 
 
@@ -261,6 +246,17 @@ class Nerve: public Result
     int getWeightsCount()
     {
         return weightsCount;
+    }
+
+
+
+    /*
+        Return size of buffer for weightd
+    */
+    unsigned long long int calcWeightsBufferSize()
+    {
+        return sizeof( real ) * weightsCount;
+
     }
 
 
@@ -388,7 +384,7 @@ class Nerve: public Result
     Nerve* readFromBuffer
     (
         /* buffer */
-        char *,
+        uint8_t*,
         /* size of buffer */
         size_t
     );
@@ -477,7 +473,7 @@ class Nerve: public Result
     Point3i calcParentPosByChildIndex
     (
         /* Child index */
-        int
+        size_t
     );
 
 
@@ -587,7 +583,7 @@ class Nerve: public Result
         int aChildIndex
     )
     {
-        auto bindIndex = aParentIndex + parent -> getCount() * aChildIndex;
+        int bindIndex = aParentIndex + parent -> getCount() * aChildIndex;
         return
         bindIndex >= 0 && bindIndex < bindsCount
         ? binds[ bindIndex ]
@@ -698,7 +694,7 @@ class Nerve: public Result
 
 
     /*
-        Return nerve id
+        Build and return nerve id
     */
     string buildId()
     {
@@ -709,4 +705,38 @@ class Nerve: public Result
         + "-"
         + getChild() -> getId();
     }
+
+
+
+    /*
+        Return nerve id
+    */
+    string getId()
+    {
+        return id;
+    }
+
+
+
+    Nerve* copyWeightsFrom
+    (
+        Nerve* aFrom
+    )
+    {
+        if( aFrom -> getWeightsCount() == getWeightsCount() )
+        {
+            memcpy
+            (
+                ( char* )getWeights(),
+                (char*)( aFrom -> getWeights()),
+                weightsCount * sizeof( real )
+            );
+        }
+        else
+        {
+            setResult( "NotMatchWeightsCountFroCopy" );
+        }
+        return this;
+    }
+
 };

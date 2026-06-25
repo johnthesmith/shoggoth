@@ -37,9 +37,13 @@ Nerve::Nerve
     bindType    = aBindType;
     size        = aWindowSize;
 
+    /* Build nerve id */
+    id          = buildId();
+
     /* Connect */
     getLog()
     -> trace( "Nerve created" )
+    -> prm( "id", id )
     -> prm( "from", parent -> getNameOrId() )
     -> prm( "to", child -> getNameOrId() )
     -> lineEnd();
@@ -199,7 +203,7 @@ Nerve* Nerve::fill
 
     if( weights != NULL )
     {
-        for( int i = 0; i < weightsCount; i++ )
+        for( size_t i = 0; i < weightsCount; i++ )
         {
             weights[ i ]
             = aSeed == NULL
@@ -221,7 +225,7 @@ Nerve* Nerve::fill
                 Заполняем каждую связь прямо ссылаясб на массив весов
                 те каждая связь уникальна и обладает своим весом.
             */
-            for( int i = 0; i < bindsCount; i ++ )
+            for( size_t i = 0; i < bindsCount; i ++ )
             {
                 binds[ i ] = i;
             }
@@ -231,7 +235,7 @@ Nerve* Nerve::fill
         case ONE_TO_ONE:
         {
             /* Reset index of weights */
-            for( int i = 0; i < bindsCount; i ++ )
+            for( size_t i = 0; i < bindsCount; i ++ )
             {
                 binds[ i ] = -1;
             }
@@ -242,19 +246,26 @@ Nerve* Nerve::fill
             if( cp > cc )
             {
                 /* Для случая если парентов больше чем потомков */
-                for( int ip = 0; ip < cp; ip ++ )
+                for( size_t ip = 0; ip < cp; ip ++ )
                 {
                     auto ic = calcChildPosByParentIndex( ip ).toIndex( childSize );
-                    binds[ ip + ic * cp ] = ip;
+cout << "1\n";
+cout << getId() <<bindsCount << ":" << ip + ic * cp << "\n";
+
+                    binds[ ip + ic * cp ] = (int)ip;
+cout << "2\n";
                 }
             }
             else
             {
                 /* Для случая если потомков больше чем потомков или столько же */
-                for( int ic = 0; ic < cc; ic ++ )
+                for( size_t ic = 0; ic < cc; ic ++ )
                 {
-                    int ip = calcParentPosByChildIndex( ic ).toIndex( parentSize );
-                    binds[ ip + ic * cp ] = ic;
+                    size_t ip = calcParentPosByChildIndex( ic ).toIndex( parentSize );
+cout << "3\n";
+cout << getId() <<bindsCount << ":" << ip + ic * cp << "\n";
+                    binds[ ip + ic * cp ] = (int)ic;
+cout << "4\n";
                 }
             }
         }
@@ -262,41 +273,41 @@ Nerve* Nerve::fill
 
         case SOME_TO_SOME:
         {
-            /* Reset index of weights */
-            for( int i = 0; i < bindsCount; i ++ )
-            {
-                binds[ i ] = -1;
-            }
-
-            auto parentSize = getParent() -> getSize();
-            /* Обходим потомков */
-            for( int ic = 0; ic < cc; ic ++ )
-            {
-                /*
-                    Для каждого потомка находим отражение в родителях
-                    нормированием, при этом нейрон будет центром матрицы
-                    весов
-                */
-                auto parentCenter = calcParentPosByChildIndex( ic );
-
-                /* Обходим матрицу весов и находим родителей для каждого веса */
-                for( int iw = 0; iw < weightsCount; iw ++ )
-                {
-                    /* Calc parent pos by weight index */
-                    auto p = parentCenter + Point3i::byIndex( iw, size ) - size / 2;
-
-                    if
-                    (
-                        p.x > -1 && p.x < parentSize.x &&
-                        p.y > -1 && p.y < parentSize.y &&
-                        p.z > -1 && p.z < parentSize.z
-                    )
-                    {
-                        /* В указатели на веса записываем текущий индекс связи */
-                        binds[ p.toIndex( parentSize ) + ic * cp ] = iw;
-                    }
-                }
-            }
+//            /* Reset index of weights */
+//            for( size_t i = 0; i < bindsCount; i ++ )
+//            {
+//                binds[ i ] = -1;
+//            }
+//
+//            auto parentSize = getParent() -> getSize();
+//            /* Обходим потомков */
+//            for( size_t ic = 0; ic < cc; ic ++ )
+//            {
+//                /*
+//                    Для каждого потомка находим отражение в родителях
+//                    нормированием, при этом нейрон будет центром матрицы
+//                    весов
+//                */
+//                auto parentCenter = calcParentPosByChildIndex( ic );
+//
+//                /* Обходим матрицу весов и находим родителей для каждого веса */
+//                for( size_t iw = 0; iw < weightsCount; iw ++ )
+//                {
+//                    /* Calc parent pos by weight index */
+//                    auto p = parentCenter + Point3i::byIndex( iw, size ) - size / 2;
+//
+//                    if
+//                    (
+//                        p.x > -1 && p.x < parentSize.x &&
+//                        p.y > -1 && p.y < parentSize.y &&
+//                        p.z > -1 && p.z < parentSize.z
+//                    )
+//                    {
+//                        /* В указатели на веса записываем текущий индекс связи */
+//                        binds[ p.toIndex( parentSize ) + ic * cp ] = iw;
+//                    }
+//                }
+//            }
         }
         break;
     }
@@ -321,16 +332,21 @@ Nerve* Nerve::fill
 
 */
 
-Point3i Nerve::calcParentPosByChildIndex(int aChildIndex)
+Point3i Nerve::calcParentPosByChildIndex
+(
+    size_t aChildIndex
+)
 {
-    auto childPos = getChild() -> calcPosByIndex(aChildIndex);
+    auto childPos = getChild() -> calcPosByIndex( aChildIndex );
     auto childSize = getChild() -> getSize();
     auto parentSize = getParent() -> getSize();
 
     Point3i parentPos;
-    parentPos.x = (childPos.x * parentSize.x) / childSize.x;
-    parentPos.y = (childPos.y * parentSize.y) / childSize.y;
-    parentPos.z = (childPos.z * parentSize.z) / childSize.z;
+
+    parentPos.x = ( childPos.x * parentSize.x ) / childSize.x;
+    parentPos.y = ( childPos.y * parentSize.y ) / childSize.y;
+    parentPos.z = ( childPos.z * parentSize.z ) / childSize.z;
+
     return parentPos;
 }
 
@@ -373,13 +389,13 @@ Point3i Nerve::calcChildPosByParentIndex( int aParentIndex )
 
 Nerve* Nerve::readFromBuffer
 (
-    char* aBuffer,
+    uint8_t* aBuffer,
     size_t aSize
 )
 {
     if( aSize == weightsCount * sizeof( real ) )
     {
-        memcpy(( char* )weights, aBuffer, aSize );
+        memcpy(( char* )weights, (char*)aBuffer, aSize );
     }
     else
     {
@@ -423,15 +439,7 @@ string Nerve::getWeightFileName
     string aPath
 )
 {
-    return
-    aPath
-    + "/"
-    + getParent() -> getId()
-    + "_"
-    + bindTypeToString(bindType)
-    + "_"
-    + getChild() -> getId()
-    + ".bin";
+    return aPath + "/" + getId() + ".bin";
 }
 
 

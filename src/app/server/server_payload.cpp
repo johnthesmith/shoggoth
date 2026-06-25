@@ -84,7 +84,7 @@ void ServerPayload::onEngineLoop( bool )
                 READ_WAITING_TIMEOUT_MCS
             );
 
-            srv = ShoggothRpcServer::create( net, listenPort );
+            srv = ShoggothRpcServer::create( this, listenPort );
             srv -> setReadWaitingTimeoutMcs( readWaitingTimeoutMcs );
             serverThread = new thread
             (

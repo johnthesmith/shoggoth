@@ -3,6 +3,28 @@
     {
         "payloads":
         {
+            "memory":
+            {
+                "enabled": true,
+                "lib": "../../memory.so",
+                "thread": true,
+                "config":
+                {
+                    "log":
+                    {
+                        "trap": false
+                    },
+                    "code":
+                    {
+                        "ok":
+                        {
+                            "log":"TRACE",
+                            "timeoutMcs":1000000
+                        }
+                    }
+                }
+            },
+
             "loader":
             {
                 "enabled": true,

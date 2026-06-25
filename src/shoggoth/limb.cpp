@@ -5,7 +5,7 @@
 #include "limb.h"
 #include "../../../../lib/core/math.h"
 #include "../../../../lib/core/str.h"
-
+#include "../../../../lib/graph/param_point.h"
 
 
 /*
@@ -22,6 +22,7 @@ Limb::Limb
     payloadId ( aPayloadId ),
     version( aVersion )
 {
+    rnd = Rnd::create();
     /* Create layers and nerves structures */
     layers = LayerList::create( this );
     nerves = NerveList::create( aLogManager );
@@ -37,8 +38,347 @@ Limb::~Limb()
     getLog() -> begin( "Limb destroing" ) -> prm( "payload id", getPayloadId() );
     nerves -> clear() -> destroy();
     layers -> clear() -> destroy();
+    /* Destroy rnd object */
+    rnd -> destroy();
     getLog() -> end( "Limb destroed" ) -> prm( "payload id", getPayloadId() );
 }
+
+
+
+/*
+    Apply config
+*/
+Limb* Limb::applyConfig
+(
+    /* Application config  */
+    ParamList*  aAppConfig,
+    /* Net config */
+    ParamList*  aNetConfig
+)
+{
+    lock();
+
+    auto configLayers = aNetConfig -> getObject( Path{ "layers" });
+
+    if( configLayers != NULL )
+    {
+        /* Separate using layers */
+        collectLayersUsing( aAppConfig );
+
+        /* Remove layers absents in the use list */
+        purgeLayers( configLayers );
+
+        /* Set net version from config */
+        setVersion( aNetConfig -> getString( Path{ "version", "current" } ));
+
+        /* Set rnd seed version from config */
+        getRnd() -> setSeed( aNetConfig -> getUInt( Path{ "seed" } ));
+
+        /* Load limb elements */
+        loadLayers( configLayers );
+        loadNerves( aNetConfig );
+    }
+
+    /* Update last update net moment */
+    setLastUpdate( aNetConfig -> getInt( Path{ "lastUpdate" }, 0 ));
+
+    /* Drop tick */
+    setLearningTick( 0 );
+
+    getLayerList() -> dump();
+    getNerveList() -> dump();
+
+    /* Clear tick stat for each layer */
+    getLayerList() -> loop
+    (
+        []
+        ( void* aLayer )
+        {
+            auto layer = ( Layer* ) aLayer;
+            layer -> getChartTick() -> clear();
+            return false;
+        }
+    );
+
+    return this;
+}
+
+
+
+/*
+    Load nerves from config
+*/
+Limb* Limb::loadLayers
+(
+    ParamList* aConfigLayers
+)
+{
+    /* Create layers */
+    getLog() -> begin( "Layers load for task" );
+    aConfigLayers -> objectsLoop
+    (
+        [ this ]
+        (
+            ParamList* iParam,
+            string layerId
+        )
+        {
+            getLog() -> begin( "Layer loading" ) -> prm( "id", layerId );
+
+            /* Layer creates */
+            if( allLayers.find( layerId ) != allLayers.end() )
+            {
+                /* Add new layer in to limb */
+                auto layer = addLayer( layerId );
+                /* Load arguments */
+                loadLayer( layer, iParam );
+            }
+            else
+            {
+                getLog()
+                -> trace( "Layer skiped" )
+                -> prm( "id", layerId )
+                ;
+            }
+
+            getLog() -> end();
+            return false;
+        }
+    );
+    /* End of layers load */
+    getLog() -> end( "" );
+    return this;
+}
+
+
+
+/*
+    Load layer structure from param list
+    Layer may be resized.
+*/
+Limb* Limb::loadLayer
+(
+    /* Layer object */
+    Layer*      aLayer,
+    /* Layer configuration */
+    ParamList*  aParams
+)
+{
+    if( this -> isOk() )
+    {
+        /* Set ID from params */
+        if
+        (
+            aLayer-> getId()
+            != aParams -> getString( Path{ "id" }, aLayer -> getId() )
+        )
+        {
+            setCode( "InvalidLayerID" );
+        }
+        else
+        {
+            /* Apply neuron functions for layer */
+            aLayer
+            -> setFrontFunc
+            (
+                strToFunc
+                (
+                    aParams -> getString( Path{ "functionFront" }, "NULL" )
+                )
+            )
+            -> setBackFunc
+            (
+                strToFunc
+                (
+                    aParams -> getString( Path{ "functionBack" }, "NULL" )
+                )
+            )
+            -> setBackFuncOut
+            (
+                strToFunc( aParams -> getString( Path{ "functionBackOut" }, "NULL" ))
+            )
+            -> setErrorCalc
+            (
+                errorCalcFromString( aParams -> getString( Path{ "errorCalc" }, "NONE" ))
+            )
+            -> setWeightCalc
+            (
+                weightCalcFromString( aParams -> getString( Path{ "weightCalc" }, "NONE" ))
+            );
+
+            /* Set Size from params */
+            auto size = ParamPoint::point3i( aParams -> getObject( Path{ "size" } ));
+
+            /* Remove nerves for size changed layer */
+            if( size.mulComponents() != aLayer -> getCount() )
+            {
+                getNerveList() -> removeByLayer( aLayer );
+            }
+
+            /* Update layer */
+            aLayer -> setSize( size );
+
+            /* Apply default values */
+            auto values = aParams -> getObject( Path{ "values" } );
+            if( values != nullptr )
+            {
+                aLayer -> fillValue( values );
+            }
+
+            calcLayerValuesHash( aLayer );
+        }
+    }
+    return this;
+}
+
+
+
+/*
+    Load nerves from config
+*/
+Limb* Limb::loadNerves
+(
+    ParamList* aConfig
+)
+{
+    /* Nerves */
+    auto jsonNerves = aConfig -> getObject( Path{ "nerves" });
+    if( jsonNerves != NULL )
+    {
+        auto layers = getLayerList();
+        auto nerves = getNerveList();
+
+        getLog() -> begin( "Nerves load" );
+
+        jsonNerves -> loop
+        (
+            [ this, &layers, &nerves, &aConfig ]
+            ( Param* aItem )
+            {
+                /* Check the json layer */
+                if( aItem -> isObject() )
+                {
+                    auto jsonNerve = aItem -> getObject();
+
+                    auto fromList = jsonNerve -> getStringVector( Path{ "idFrom" });
+                    auto toList = jsonNerve -> getStringVector( Path{ "idTo" });
+
+                    auto bindType = bindTypeFromString
+                    (
+                        jsonNerve -> getString( Path{ "bindType" } )
+                    );
+                    auto nerveType = nerveTypeFromString
+                    (
+                        jsonNerve -> getString( Path{ "nerveType" } )
+                    );
+                    auto nerveDelete = jsonNerve -> getBool( Path{ "delete" });
+                    auto windowSize = ParamPoint::point3i
+                    (
+                        jsonNerve -> getObject( Path{ "windowSize" } )
+                    );
+
+                    /* Cartesian product for form and to */
+                    for( auto& idFrom:fromList )
+                    {
+                        for( auto& idTo:toList )
+                        {
+                            /* Find the layers */
+                            auto from = layers -> getById( idFrom );
+                            auto to = layers -> getById( idTo );
+
+                            if( from != NULL && to != NULL )
+                            {
+                                auto nerve = nerves -> find
+                                (
+                                    idFrom,
+                                    idTo,
+                                    bindType
+                                );
+
+                                if( nerve != NULL )
+                                {
+                                    if
+                                    (
+                                        nerve -> getParent() != from ||
+                                        nerve -> getChild() != to ||
+                                        nerve -> getBindType() != bindType ||
+                                        nerve -> getNerveType() != nerveType ||
+                                        nerveDelete
+                                    )
+                                    {
+                                        deleteNerve( nerve );
+                                        nerve = NULL;
+                                    }
+                                    else
+                                    {
+                                        getLog()
+                                        -> trace( "Nerve exists" )
+                                        -> prm( "idFrom", idFrom )
+                                        -> prm( "idTo", idTo )
+                                        -> lineEnd()
+                                        ;
+                                    }
+                                }
+
+                                if( nerve == NULL && !nerveDelete )
+                                {
+                                    auto minW = jsonNerve
+                                    -> getDouble( Path{ "minWeight" } , 0 );
+                                    auto maxW = jsonNerve
+                                    -> getDouble( Path{ "maxWeight" }, 0 );
+                                    auto mulW = aConfig
+                                    -> getDouble( Path{ "weightMul" }, 1 );
+                                    nerve = createNerve
+                                    (
+                                        from,
+                                        to,
+                                        nerveType,
+                                        bindType,
+                                        windowSize
+                                    )
+                                    -> setMinWeight
+                                    (
+                                        minW * ( minW == maxW ? 1 : mulW )
+                                    )
+                                    -> setMaxWeight
+                                    (
+                                        maxW * ( minW == maxW ? 1 : mulW )
+                                    )
+                                    ;
+                                    if( !nerve -> isOk() )
+                                    {
+                                        getLog()
+                                        -> warning( "Nerve error" )
+                                        -> prm( "code", nerve -> getCode() )
+                                        -> lineEnd();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                getLog()
+                                -> info( "Nerve skiped" )
+                                -> prm( "idFrom", idFrom )
+                                -> prm( "idTo", idTo )
+                                -> lineEnd()
+                                ;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        );
+
+        getLog()
+        -> end();
+
+    } /* End of nerves load */
+    return this;
+}
+
+
+
 
 
 
@@ -175,44 +515,23 @@ Limb* Limb::deleteNerve
 
 bool Limb::copyTo
 (
-    Limb* aLimb,
-    bool aStrictSync//,
-//    bool aSkipLockThis,
-//    bool aSkipLockLimb
+    Limb* aLimb
 )
 {
     bool result = false;
 
     if( aLimb != this )
     {
-        if( lock( /* aSkipLockThis */ ))
+        if( lock())
         {
-            if( aLimb -> lock( /* aSkipLockLimb */ ))
+            if( aLimb -> lock())
             {
-                auto layersIsEqual = layers -> compare( aLimb -> getLayerList() );
-                auto nervesIsEqual = layersIsEqual && nerves -> compare( aLimb -> getNerveList() );
+                result =
+                layers -> compare( aLimb -> getLayerList() )
+                &&
+                nerves -> compare( aLimb -> getNerveList() );
 
-                if( aStrictSync )
-                {
-                    if( !layersIsEqual )
-                    {
-                        /* Copy structure of layers */
-                        aLimb -> copyStructureFrom( this -> getLayerList() );
-                        layersIsEqual = true;
-                        result = true;
-                    }
-                    if( !nervesIsEqual )
-                    {
-                        /* Copy structure of nerves */
-                        aLimb
-                        -> getNerveList()
-                        -> copyStructureFrom( this -> getNerveList(), aLimb -> getLayerList() );
-                        nervesIsEqual = true;
-                        result = true;
-                    }
-                }
-
-                if( layersIsEqual && nervesIsEqual )
+                if( result )
                 {
                     aLimb
                     -> getLayerList()
@@ -221,7 +540,6 @@ bool Limb::copyTo
                     ;
                 }
 
-                /* Data sinchronization */
                 aLimb -> unlock();
             }
             unlock();
@@ -240,68 +558,6 @@ bool Limb::copyTo
 /**********************************************************************
     Current age of the limbs config
 */
-
-
-/*
-    Copy list of layers
-*/
-Limb* Limb::copyStructureFrom
-(
-    LayerList* aSource
-)
-{
-    nerves -> clear();
-    layers -> clear();
-
-    aSource -> loop
-    (
-        [ this ]
-        ( void* p )
-        {
-            /* Create new layer object and push it to this*/
-            auto iLayer = (Layer*) p;
-            auto nLayer = copyLayerFrom( iLayer );
-            nLayer -> setName( iLayer -> getName());
-            layers -> push( nLayer );
-            return false;
-        }
-    );
-    return this;
-}
-
-
-
-/*
-    Create new layer for this limb and copy parameters from source layer.
-    This method have to overriden at children Limbs.
-*/
-Layer* Limb::copyLayerFrom
-(
-    Layer* aLayerFrom
-)
-{
-    return
-    createLayer( aLayerFrom -> getId() )
-    -> setErrorCalc( aLayerFrom -> getErrorCalc() )
-    -> setWeightCalc( aLayerFrom -> getWeightCalc() )
-    -> setFrontFunc( aLayerFrom -> getFrontFunc() )
-    -> setBackFunc( aLayerFrom -> getBackFunc() )
-    -> setBackFuncOut( aLayerFrom -> getBackFuncOut() )
-    -> setSize( aLayerFrom -> getSize() );
-}
-
-
-
-
-/*
-    Configuration postprocessing
-*/
-void Limb::onAfterReconfig
-(
-    ParamList*
-)
-{
-}
 
 
 
@@ -739,7 +995,7 @@ Limb* Limb::dumpNerve
                             case DATA_INDEX_WEIGHTS:
                                 line.push_back
                                 (
-                                    toString( index, aColored, 2 )
+                                    toString( (long long int)index, aColored, 2 )
                                 );
                             break;
                             case DATA_WEIGHTS:
@@ -763,7 +1019,7 @@ Limb* Limb::dumpNerve
                     }
 
                     f
-                    << toString( c, false, length( cc ))
+                    << toString( (long long int)c, false, length( cc ))
                     << " / "
                     << implode( line, "|" )
                     << endl;
@@ -773,6 +1029,187 @@ Limb* Limb::dumpNerve
             flock( fd, LOCK_UN );
         }
         close(fd);
+    }
+    return this;
+}
+
+
+
+
+/*
+    Load selected weights to this limb from the limb argument
+*/
+Limb* Limb::weightsFrom
+(
+    /* Sorce limb */
+    Limb* aFrom
+)
+{
+    lock();
+    aFrom -> lock();
+
+    auto fromNerveList = aFrom -> getNerveList();
+    auto c = fromNerveList -> getCount();
+
+    if( c == getNerveList() -> getCount() )
+    {
+        auto ok = true;
+
+        for( int i = 0; i < c; i ++ )
+        {
+            auto nerveFrom = (Nerve*) fromNerveList -> getByIndex( i );
+            auto nerveTo = (Nerve*) getNerveList() -> getByIndex( i );
+            ok = ok && nerveFrom -> getId() == nerveTo -> getId();
+        }
+
+        if( ok )
+        {
+            for( int i = 0; i < c; i ++ )
+            {
+                auto nerveFrom = (Nerve*) fromNerveList -> getByIndex( i );
+                auto nerveTo = (Nerve*) getNerveList() -> getByIndex( i );
+                nerveTo -> copyWeightsFrom( nerveFrom );
+            }
+        }
+        else
+        {
+            /* Nerves have differnese */
+        }
+    }
+    else
+    {
+        /* Nerves count for limbs not equal */
+    }
+
+    aFrom -> unlock();
+    unlock();
+
+    return this;
+}
+
+
+
+/*
+    Remove layers absent in the list
+*/
+Limb* Limb::purgeLayers
+(
+    ParamList* aLayers  /* List from config */
+)
+{
+    lock();
+    /* Build pure list */
+    vector <string> purgeList = {};
+    getLayerList() -> loop
+    (
+        [ &purgeList, &aLayers ]
+        ( void* iLayer )
+        {
+            auto layerId = (( Layer* ) iLayer ) -> getId();
+            if( aLayers -> getObject( Path{ layerId }) == NULL )
+            {
+                /* Layer is absent in the config and must be delete */
+                purgeList.push_back( layerId );
+            }
+            return false;
+        }
+    );
+
+    /* Delete layers */
+    auto c = purgeList.size();
+    for( long unsigned int i = 0; i<c; i++ )
+    {
+        deleteLayer( purgeList[ i ] );
+    }
+
+    unlock();
+    return this;
+}
+
+
+
+Limb* Limb::collectLayersUsing
+(
+    ParamList* aConfig
+)
+{
+    /* Lock */
+    allLayers.clear();
+    readValues.clear();
+    writeValues.clear();
+    readErrors.clear();
+    writeErrors.clear();
+
+    auto payloads = aConfig -> getObject
+    (
+        Path
+        {
+            "engine",
+            "payloads"
+        }
+    );
+
+    if( payloads != nullptr )
+    {
+        payloads -> loop
+        (
+            [ this ]
+            ( Param* item )
+            {
+                if
+                (
+                    item -> isObject() &&
+                    (
+                        item -> getName() == payloadId
+                        ||
+                        payloadId == ""
+                    )
+                )
+                {
+                    auto layers = item -> getObject() -> getObject
+                    (
+                        Path{ "config", "layers" }
+                    );
+                    if( layers != nullptr )
+                    {
+                        layers -> loop
+                        (
+                            [ this ]
+                            ( Param* list )
+                            {
+                                auto layersId = list -> getObject();
+                                if( layersId != nullptr )
+                                {
+                                    auto key = list -> getName();
+                                    layersId -> loop
+                                    (
+                                        [ &key, this ]
+                                        ( Param* item )
+                                        {
+                                            auto val = item -> getString();
+                                            /* Add to all layers list */
+                                            allLayers.insert( val );
+                                            /* Add for operatibale lists */
+                                            if( key== "read-values" )
+                                                readValues.insert( val );
+                                            else if( key== "write-values" )
+                                                readValues.insert( val );
+                                            else if( key== "read-errors" )
+                                                readErrors.insert( val );
+                                            else if( key== "write-errors" )
+                                                writeErrors.insert( val );
+                                            return false;
+                                        }
+                                    );
+                                }
+                                return false;
+                            }
+                        );
+                    }
+                }
+                return false;
+            }
+        );
     }
     return this;
 }
@@ -794,3 +1231,4 @@ Limb* Limb::dump()
 {
     return this;
 }
+

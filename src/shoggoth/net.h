@@ -8,14 +8,11 @@
 
 #include <string>
 
-#include "../../../../lib/core/rnd.h"
-
 #include "limb.h"
 #include "shoggoth_db.h"
 #include "net_config.h"
 #include "weights_exchange.h"
 #include "../app/shoggoth_application.h"
-
 
 
 
@@ -27,12 +24,6 @@ class Net: public Limb
 
         /* The application object */
         ShoggothApplication*    application     = NULL;
-
-        /* Last net config after IO */
-        ParamList*      config          = NULL;
-
-        /* Rnd object */
-        Rnd*            rnd             = NULL;
 
         /* Net database */
         ShoggothDb*     db              = nullptr;
@@ -55,17 +46,6 @@ class Net: public Limb
         string          id              = "";
         /* Net version, for switching at next turn of calculation */
         string          nextVersion     = "";
-        /* Tick of the net. Settings by processor */
-        unsigned long long tick         = 0;
-
-        /* Hash map */
-        std::map<std::string, uint64_t> hashValues = {};
-
-        Net* loadNerves
-        (
-            /* Load nerves for applyNet */
-            ParamList*
-        );
 
     public:
 
@@ -251,8 +231,25 @@ class Net: public Limb
         string getNetConfigFile
         (
             /* Specific version */
-            string = ""
-        );
+            string aVersion = ""
+        )
+        {
+            return getNetVersionPath( "net.json", aVersion );
+        }
+
+
+
+        /*
+            Return net weight file
+        */
+        string getNetWeightFile
+        (
+            /* Specific version */
+            string aVersion = ""
+        )
+        {
+            return getNetVersionPath( "weights.bin", aVersion );
+        }
 
 
 
@@ -310,43 +307,6 @@ class Net: public Limb
             Layers
         */
 
-
-
-        /*
-            Load layer structure from param list
-            Layer may be resized.
-        */
-        Net* loadLayer
-        (
-            Layer*,
-            ParamList*
-        );
-
-
-
-
-        /*
-            Remove layers absent in the list
-        */
-        Net* purgeLayers
-        (
-            ParamList*
-        );
-
-
-        /*
-            Read net configuration and reallocate net objects
-        */
-        Net* readNet
-        (
-            /* Answer */
-            ParamList*,
-            /* Connetion */
-            std::string = "default"
-        );
-
-
-
         bool isConfigUpdate
         (
             ParamList*  /* Config */
@@ -362,8 +322,7 @@ class Net: public Limb
             string,         /* Parent Net Id */
             string,         /* Parent Net Version */
             string,         /* New net version */
-            real,           /* survivalErrorAvg */
-            Rnd*            /* rnd stream object for mutation */
+            real            /* survivalErrorAvg */
         );
 
 
@@ -371,19 +330,6 @@ class Net: public Limb
         Net* mutateChangeParam
         (
             ParamList*,
-            ParamList*,
-            /* rnd stream object for mutation */
-            Rnd*
-        );
-
-
-
-        /*
-            Apply net
-        */
-        Net* applyNet
-        (
-            /* Config */
             ParamList*
         );
 
@@ -400,17 +346,6 @@ class Net: public Limb
 
 
         int getCalcLayerIndex();
-
-
-
-
-        /*
-            Return config of the net
-        */
-        inline ParamList* getConfig()
-        {
-            return config;
-        }
 
 
 
@@ -450,20 +385,6 @@ class Net: public Limb
             /* Skip action for locked */
             bool
         );
-
-
-
-        /*
-            Send changes from net in to other limb
-        */
-        bool syncToLimb
-        (
-            /* targetLimb */
-            Limb*
-            /* Skip synchronization for Net is lock */
-            // bool
-        );
-
 
 
 
@@ -519,13 +440,6 @@ class Net: public Limb
 
 
         /*
-            Return parent net version
-        */
-        string getParentVersion();
-
-
-
-        /*
             Return next version
         */
         string generateVersion
@@ -576,55 +490,9 @@ class Net: public Limb
 
 
 
-        /*
-            Return the tick of the net
-        */
-        long long int getTick();
-
-
-
-        /*
-            Return the tick of the net
-        */
-        Net* setTick
-        (
-            /* Tick number */
-            long long int
-        );
-
-
-
-        /*
-            Tick increment
-        */
-        Net* incTick();
-
-
-
-
-        Rnd* getRnd();
-
-
-
-        Net* setRndSeedFromConfig();
-
-
-
-
         bool getWeightWriteLock()
         {
             return weightWriteLock;
-        }
-
-
-
-        Net* setWeightWriteLock
-        (
-            bool a
-        )
-        {
-            weightWriteLock = a;
-            return this;
         }
 
 
@@ -637,45 +505,31 @@ class Net: public Limb
 
 
         /*
-            Recalculate layer hash and store it
+            Fill weight for net uses config
         */
-        Net* calcLayerValuesHash
-        (
-            Layer* aLayer
-        )
+        Net* fillWeights()
         {
-            hashValues[ aLayer -> getId() ] = aLayer -> calcValuesHash();
+            lock();
+            getNerveList() -> loop
+            (
+                [ this ]
+                ( void* item )
+                {
+                    auto nerve = ( Nerve* )item;
+                    nerve -> fill( getRnd() );
+                    return false;
+                }
+            );
+            unlock();
             return this;
         }
 
-
-
-        /*
-            Return layer hash by layer id
-        */
-        Net* setValuesHashByLayerId
-        (
-            /* Layer Id */
-            std::string aLayerId,
-            /* Layer values hash */
-            uint64_t aHash
-        )
-        {
-            hashValues[ aLayerId ] = aHash;
-            return this;
-        }
-
-
-
-        /*
-            Return layer hash by layer id
-        */
-        inline uint64_t getValuesHashByLayerId
-        (
-            /* Layer id */
-            std::string a
-        )
-        {
-            return hashValues.count( a ) ? hashValues[a] : 0;
-        }
 };
+
+//
+//1. выносим cfg в app
+//2. переносим applycfg в limb
+//3. добавляем в апп аплай
+//4. удаляем синктулимб и делаем аплай
+//5. делаем проверяем размножение текущей версии между лимбаим и цфг.
+//6. в процессоре и в мемори делаем нету выделение памяти под вэйты

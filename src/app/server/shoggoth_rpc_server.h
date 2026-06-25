@@ -1,26 +1,28 @@
 #pragma once
 
-#include "../../../../lib/sock/rpc_server.h"
-#include "../../../../lib/core/mon.h"
-#include "shoggoth_rpc_contract.h"
-#include "shoggoth_consts.h"
-
+#include "../../../../../lib/sock/rpc_server.h"
+#include "../../../../../lib/core/mon.h"
+#include "../../shoggoth/shoggoth_rpc_contract.h"
+#include "../../shoggoth/shoggoth_consts.h"
 
 class Net;
+class ServerPayload;
 class ShoggothApplication;
+
+
 
 class ShoggothRpcServer : public RpcServer
 {
     private:
 
         /* Net limb with main layers */
-        Net*    net = NULL;
+        ServerPayload*  payload = NULL;
 
         /* Monitor object */
-        Mon*    mon = NULL;
+        Mon*            mon = NULL;
 
         /* Servers net mode */
-        NetMode mode = NET_MODE_UNKNOWN;
+        NetMode         mode = NET_MODE_UNKNOWN;
 
     public:
 
@@ -29,7 +31,7 @@ class ShoggothRpcServer : public RpcServer
         */
         ShoggothRpcServer
         (
-            Net*,
+            ServerPayload*,
             SocketDomain        = SD_INET,
             SocketType          = ST_TCP,
             int                 = 11120
@@ -49,8 +51,10 @@ class ShoggothRpcServer : public RpcServer
         */
         static ShoggothRpcServer* create
         (
-            Net*,   /* Net object */
-            int     /* Port */
+            /* Net object */
+            Payload*,
+            /* Port */
+            int
         );
 
 
@@ -330,6 +334,9 @@ class ShoggothRpcServer : public RpcServer
             ParamList*
         );
 
+
+
+        inline Net* getNet();
 
     private:
 

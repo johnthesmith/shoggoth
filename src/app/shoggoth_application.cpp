@@ -26,6 +26,9 @@ ShoggothApplication::ShoggothApplication
     /* Create sock manager */
     sockManager = SockManager::create();
 
+    /* Create new param list for config */
+    netConfig = ParamList::create();
+
     /* Create main net */
     net = Net::create
     (
@@ -52,6 +55,9 @@ ShoggothApplication::~ShoggothApplication()
     /* Destroy net */
     net -> destroy();
 
+    /* Destroy net config */
+    netConfig -> destroy();
+
     /* DEstroy sock manager */
     sockManager -> destroy();
 
@@ -67,119 +73,6 @@ ShoggothApplication* ShoggothApplication::onThreadAfter()
 {
     getSockManager() -> closeHandlesByThread( "" );
     return this;
-}
-
-
-
-ShoggothApplication* ShoggothApplication::collectLayersUsing()
-{
-    /* Lock */
-    std::lock_guard<std::mutex> lock( mLayersMutex );
-
-    layersUsing.clear();
-
-    auto payloads = getConfig() -> getObject
-    (
-        Path
-        {
-            "engine",
-            "payloads"
-        }
-    );
-
-    if( payloads != nullptr )
-    {
-        payloads -> loop
-        (
-            [ this ]
-            ( Param* item )
-            {
-                if( item -> isObject())
-                {
-                    auto layers = item -> getObject() -> getObject
-                    (
-                        Path{ "config", "layers" }
-                    );
-                    if( layers != nullptr )
-                    {
-                        layers -> loop
-                        (
-                            [ this ]
-                            ( Param* list )
-                            {
-                                auto layersId = list -> getObject();
-                                if( layersId != nullptr )
-                                {
-                                    auto key =list -> getName();
-                                    layersId -> loop
-                                    (
-                                        [ &key, this ]
-                                        ( Param* item )
-                                        {
-                                            auto val = item -> getString();
-                                            layersUsing[ val ].insert( key );
-                                            return false;
-                                        }
-                                    );
-                                }
-                                return false;
-                            }
-                        );
-                    }
-                }
-                return false;
-            }
-        );
-    }
-    return this;
-}
-
-
-
-std::vector<std::string> ShoggothApplication::layersByOperation
-(
-    /* Type operation */
-    std::string aOperation
-)
-{
-    std::lock_guard<std::mutex> lock(mLayersMutex);
-
-    std::vector<std::string> result;
-
-    for( const auto& [ layer, operations ] : layersUsing )
-    {
-        if( operations.count( aOperation ))
-        {
-            result.push_back( layer );
-        }
-    }
-
-    return result;
-}
-
-
-
-/*
-    Return true if layer must be loaded
-*/
-bool ShoggothApplication::layerIsUsing
-(
-    /* Layer id */
-    std::string aId,
-    /* Type of operation */
-    std::string aOperation
-)
-{
-    std::lock_guard<std::mutex> lock(mLayersMutex);
-
-    auto it = layersUsing.find(aId);
-
-    bool result =
-    ( it != layersUsing.end()) &&
-    ( aOperation.empty() || it -> second.count( aOperation ))
-    ;
-
-    return result;
 }
 
 
@@ -208,3 +101,31 @@ bool ShoggothApplication::checkActionValues
     return actionLayers != nullptr && actionLayers -> contains( aLayerId );
 }
 
+
+
+
+
+/*
+    Generate event before main application loop in run method
+*/
+ShoggothApplication* ShoggothApplication::onBeforeLoop()
+{
+    netConfig -> lock();
+    net -> lock();
+
+    auto netConfigUpdate = netConfig -> getInt
+    (
+        Path{ "last-update" },
+        0
+    );
+
+    if( netConfigUpdate != net -> getLastUpdate())
+    {
+        net -> applyConfig( getNetConfig(), getConfig() );
+    }
+
+    net -> unlock();
+    netConfig -> unlock();
+
+    return this;
+}

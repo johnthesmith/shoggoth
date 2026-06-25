@@ -11,6 +11,7 @@
 #include "../../../../lib/sock/sock_manager.h"
 
 
+
 class Net;
 
 
@@ -18,14 +19,14 @@ class Net;
 class ShoggothApplication : public Application
 {
     private:
+
         /* Sock manager */
         SockManager*    sockManager     = NULL;
         /* Share net structure */
         Net*            net             = NULL;
-        /* Using layers */
-        std::map<std::string, std::set<std::string>> layersUsing = {};
-        /* Mutex for layer useing list */
-        std::mutex mLayersMutex;
+        /* Net config */
+        ParamList*      netConfig       = NULL;
+
     public:
 
         /*
@@ -110,6 +111,16 @@ class ShoggothApplication : public Application
 
 
         /*
+            Return Net
+        */
+        inline ParamList* getNetConfig()
+        {
+            return netConfig;
+        }
+
+
+
+        /*
             on signale event handler
         */
         virtual bool onSignal
@@ -146,22 +157,6 @@ class ShoggothApplication : public Application
 
 
 
-        ShoggothApplication* collectLayersUsing();
-
-
-        /*
-            Return true if layer must be loaded
-        */
-        bool layerIsUsing
-        (
-            /* Layer id */
-            std::string,
-            /* Type of operation */
-            std::string = ""
-        );
-
-
-
         /*
             Return true value if layer contains action for current net task
         */
@@ -177,28 +172,33 @@ class ShoggothApplication : public Application
 
 
 
-        std::vector<std::string> layersByOperation
-        (
-            /* Type operation */
-            std::string
-        );
-
-
-
         /**********************************************************************
             Application events
         */
 
+
         /*
-            Generate event after config updated
+            Generate event before main application loop in run method
         */
-        virtual ShoggothApplication* onConfigUpdated() override
+        ShoggothApplication* onBeforeLoop() override;
+
+
+
+        /*
+            Return true if application configured and ready
+        */
+        bool isReady()
         {
-            collectLayersUsing();
-            return this;
+            return netConfig -> getCount() > 0;
         }
 
 
 
-
+        /*
+            Return net config seed
+        */
+        unsigned long long int getNetSeed()
+        {
+            return netConfig -> getUInt( Path{ "seed" }, 0 );
+        }
 };

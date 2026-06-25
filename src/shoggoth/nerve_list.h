@@ -259,5 +259,33 @@ class NerveList :  public Heap
             return this;
         }
 
+
+
+        /*
+            Return nerve by id if exists
+        */
+        Nerve* byId
+        (
+            /* Id */
+            std::string a
+        )
+        {
+            Nerve* result = nullptr;
+            loop
+            (
+                [ &result, &a ]
+                ( void* item )
+                {
+                    auto nerve = ( Nerve* ) item;
+                    if( nerve -> getId() == a )
+                    {
+                        result = nerve;
+                    }
+                    return result != nullptr;
+                }
+            );
+            return result;
+        }
+
 };
 

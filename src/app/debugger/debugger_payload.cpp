@@ -120,7 +120,7 @@ void DebuggerPayload::onEngineLoop
     {
         terminal
         -> window()
-        -> text( toString( key, false ) + " | ");
+        -> text( toString( (long long int)key, false ) + " | ");
     }
 
     terminal

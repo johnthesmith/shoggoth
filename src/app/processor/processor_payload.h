@@ -24,9 +24,9 @@ class ProcessorPayload : public PayloadEngine
     private:
 
         /* Shoggoth */
-        Mon*                    mon                 = NULL;
-        Net*                    net                 = NULL;
-        LimbProcessor*          limb                = NULL;
+        Mon*                    mon     = nullptr;
+        Net*                    net     = nullptr;
+        LimbProcessor*          limb    = nullptr;
 
     public:
 

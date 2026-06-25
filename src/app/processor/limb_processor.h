@@ -45,8 +45,8 @@ private:
     /* Terminated status, stop the calculation and dump works */
     bool            terminated      = false;
 
-    long long int fpsStart = 0;
-    int fpsTick = 0;
+    long long int           fpsStart    = 0;
+    int                     fpsTick     = 0;
 
     /*
         Settings

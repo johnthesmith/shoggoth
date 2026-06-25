@@ -191,7 +191,7 @@ Log -.-o Scene
 ## Math definition
 
 1. Each neuron have the:
-    1. v - value [ 0; +1 ] 
+    1. v - value [ 0; +1 ]
     0. e - error [ -1; +1 ]
 0. Neurons may have the bind between them.
 0. Each bind have the:
@@ -215,14 +215,14 @@ Log -.-o Scene
 ### Neuron
 
 1. The element of neuronet with Value and Error. Element can has the Extention for optional information.
-0. Neuron is defined in [Neuron](./lib/neuron/neuron.h). 
+0. Neuron is defined in [Neuron](./lib/neuron/neuron.h).
 0. Neuron uses the sigmoid function to calculate Value and derivative sigmoid function to calculate Error in learning mode.
 
 
 
 ### Neuron extention
 
-1. It is a optional structure for neurons. 
+1. It is a optional structure for neurons.
 0. Each neuron may or not may has one Extantion.
 0. The extention will be created for the neuron on demand, when user setts the advinced parameter.
 0. No extentions needed for huge [layers](#layer).
@@ -257,7 +257,7 @@ flowchart LR
         P_Основной["Основной поток\n(инициализация, контроль)"]
         P_Сервер["Поток: Сервер"]
         P_Процессор["Поток: Процессор\n(ядро сети)"]
-        
+
         P_Основной -->|запускает| P_Сервер
         P_Основной -->|запускает| P_Процессор
     end
@@ -266,7 +266,7 @@ flowchart LR
         direction LR
         T_Основной["Основной поток\n(логика обучения)"]
         T_Тичер["Поток: Тичер\n(локальная копия сети)"]
-        
+
         T_Основной -->|использует| T_Тичер
     end
 
@@ -332,12 +332,12 @@ flowchart TD
     sample -->|+ = <-1;-1>| error_learn
     sample -->|+ x <1;1>| command_learn
     command_learn -->|* x <-1;-1>| error_learn
-    
+
     test --> |+ = <-1;-1>| error_work
     test --> |+ x <1;1>| command_work
     command_work --> | * x <-1;-1> | error_work
     result --> |+ x 1;1| error_work
-    
+
     teacher1((teacher)) .-> retina
     teacher1((teacher)) .-> sample
     teacher1((teacher)) .-> bias
@@ -348,7 +348,7 @@ flowchart TD
     classDef cortex  fill:#FFA50050,stroke:#FFA500FF;
     classDef command fill:#00FF0050,stroke:#00FF00FF;
     classDef error   fill:#FF000050,stroke:#FF0000FF;
-    classDef result  fill:#00FFFF50,stroke:#00FFFFFF;   
+    classDef result  fill:#00FFFF50,stroke:#00FFFFFF;
 
     class retina,bias,sample,test in;
     class cortex_1,cortex_2 cortex;
@@ -388,8 +388,10 @@ saveNerves --> saveLayers --> stop
 
 ## Authors
 
-- [@igptx](https://www.github.com/igptx)
+- [@igptx](https://www.github.com/igptx) igorptx@gmail.com
 - [@johnthesmith](https://www.github.com/johnthesmith)
+
+
 
 
 

@@ -40,12 +40,7 @@ Net::Net
     nextVersion = aVersion;
 
     application -> getLog() -> trace( "Create net" );
-
-    rnd = Rnd::create();
-
     db = ShoggothDb::create( getLogManager(), "db.sql" );
-
-    config = ParamList::create();
 
     weightsExchange = WeightsExchange::create();
 }
@@ -61,12 +56,6 @@ Net::~Net()
 
     /* Weights exchanger destoy */
     weightsExchange -> destroy();
-
-    /* Config object clear and destroy */
-    config -> destroy();
-
-    /* Destroy rnd object */
-    rnd -> destroy();
 
     getLog() -> trace( "Destroy net" );
 }
@@ -308,28 +297,6 @@ Net* Net::writeWeightsList()
 
 
 
-Net* Net::readNet
-(
-    ParamList* aAnswer,
-    std::string aConnection
-)
-{
-    getLog()
-    -> begin( "Read net config" )
-    -> lineEnd();
-
-    ShoggothRpcClient::create( getApplication(), aConnection, aAnswer )
-    -> readNet()
-    -> resultTo( this )
-    -> destroy();
-
-    getLog() -> end();
-
-    return this;
-}
-
-
-
 bool Net::isConfigUpdate
 (
     ParamList* aConfig
@@ -384,8 +351,7 @@ Net* Net::clone
     string aParentNetId,
     string aParentNetVersion,
     string aChildVersion,
-    real aSurvivalErrorAvg,
-    Rnd* aMutationRnd
+    real aSurvivalErrorAvg
 )
 {
     getLog() -> begin( "Net clone" );
@@ -410,68 +376,64 @@ Net* Net::clone
     /* Unlock weightWriteLock for net */
     mutateConfig -> setBool( Path{ "processor", "weightWriteLock" }, false );
 
-    if( aMutationRnd != NULL )
+    /* Mutation */
+    auto mutations = mutateConfig -> getObject( Path{ "mutations" });
+
+    if( mutations != NULL )
     {
-        /* Mutation */
-        auto mutations = mutateConfig -> getObject( Path{ "mutations" });
+        /* calculate sum of rnd of all mutation */
+        real sumRnd = mutations -> calcSum( Path{ "rnd" } );
+        real dice = getRnd() -> get( 0.0, sumRnd );
 
-        if( mutations != NULL )
-        {
-            /* calculate sum of rnd of all mutation */
-            real sumRnd = mutations -> calcSum( Path{ "rnd" } );
-            real dice = aMutationRnd -> get( 0.0, sumRnd );
+        real prevDice = 0.0;
 
-            real prevDice = 0.0;
+        getLog()
+        -> trace( "Select mutation" )
+        -> prm( "Rnd sum", sumRnd )
+        -> prm( "Dice", dice );
 
-            getLog()
-            -> trace( "Select mutation" )
-            -> prm( "Rnd sum", sumRnd )
-            -> prm( "Dice", dice );
-
-            /* Loop for each mutation */
-            mutations -> loop
-            (
-                [
-                    &mutateConfig,
-                    this,
-                    &dice,
-                    &prevDice,
-                    &aMutationRnd,
-                    &mutation
-                ]
-                ( Param* iParam )
+        /* Loop for each mutation */
+        mutations -> loop
+        (
+            [
+                &mutateConfig,
+                this,
+                &dice,
+                &prevDice,
+                &mutation
+            ]
+            ( Param* iParam )
+            {
+                if( iParam -> isObject() )
                 {
-                    if( iParam -> isObject() )
+                    /* Processing mutation */
+                    auto itemMutation = iParam -> getObject();
+
+                    if
+                    (
+                        dice >= prevDice &&
+                        dice < prevDice + itemMutation -> getDouble( Path{ "rnd" })
+                    )
                     {
-                        /* Processing mutation */
-                        auto itemMutation = iParam -> getObject();
+                        mutation = itemMutation;
 
-                        if
+                        auto operation = mutation -> getString
                         (
-                            dice >= prevDice &&
-                            dice < prevDice + itemMutation -> getDouble( Path{ "rnd" })
-                        )
-                        {
-                            mutation = itemMutation;
+                            Path{ "operation" },
+                            "changeParam"
+                        );
 
-                            auto operation = mutation -> getString
-                            (
-                                Path{ "operation" },
-                                "changeParam"
-                            );
-
-                            if( operation == "insertLayer" )
-                                mutateConfig -> mutateInsertLayer( mutation, aMutationRnd );
-                            else
-                                mutateChangeParam( mutateConfig, mutation, aMutationRnd );
-                        }
-
-                        prevDice = prevDice + itemMutation -> getDouble( Path{ "rnd" });
+                        if( operation == "insertLayer" )
+                            mutateConfig -> mutateInsertLayer( mutation, getRnd() );
+                        else
+                            mutateChangeParam( mutateConfig, mutation );
                     }
-                    return mutation != NULL;
+
+                    prevDice = prevDice + itemMutation -> getDouble( Path{ "rnd" });
                 }
-            );
-        }
+                return mutation != NULL;
+            }
+        );
     }
 
     getDb() -> netStart
@@ -515,8 +477,7 @@ Net* Net::clone
 Net* Net::mutateChangeParam
 (
     ParamList* config,
-    ParamList* mutation,
-    Rnd* aMutationRnd
+    ParamList* mutation
 )
 {
     /* Get path for mutation */
@@ -541,8 +502,8 @@ Net* Net::mutateChangeParam
                 auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
                 auto add = mutation -> getDouble( Path{ "add" }, 0.0 );
                 auto val = mutated -> getDouble();
-                auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
-                auto rAdd = aMutationRnd -> get( -add, +add );
+                auto rMul = getRnd() -> get( 1.0 / mul, mul );
+                auto rAdd = getRnd() -> get( -add, +add );
                 auto vMax = mutation -> getDouble( Path{ "max" }, val );
                 auto vMin = mutation -> getDouble( Path{ "min" }, val );
 
@@ -587,8 +548,8 @@ Net* Net::mutateChangeParam
                 auto mul = mutation -> getDouble( Path{ "mul" }, 1.0 );
                 int add = mutation -> getInt( Path{ "add" }, 0 );
                 auto val = mutated -> getInt();
-                auto rMul = aMutationRnd -> get( 1.0 / mul, mul );
-                auto rAdd = aMutationRnd -> get( -add, +add );
+                auto rMul = getRnd() -> get( 1.0 / mul, mul );
+                auto rAdd = getRnd() -> get( -add, +add );
                 auto vMax = mutation -> getDouble( Path{ "max" }, val );
                 auto vMin = mutation -> getDouble( Path{ "min" }, val );
 
@@ -661,251 +622,6 @@ Net* Net::mutateChangeParam
 
 
 
-/*
-    Apply net
-*/
-Net* Net::applyNet
-(
-    ParamList*  aConfig
-)
-{
-    config -> copyFrom( aConfig );
-    auto configLayers = config -> getObject( Path{ "layers" });
-
-    if( configLayers != NULL )
-    {
-        /* Set net version from config */
-        setNextVersion( config -> getString( Path{ "version", "current" } ));
-
-        /* Read weights write lock flag */
-        setWeightWriteLock
-        (
-            config -> getBool( Path{ "processor", "weightWriteLock" })
-        );
-
-        /* Set rnd seed version from config */
-        setRndSeedFromConfig();
-
-        /* Remove layers absents in the use list */
-        purgeLayers( configLayers );
-
-        /* Create layers */
-        getLog() -> begin( "Layers load for task" );
-        configLayers -> objectsLoop
-        (
-            [ this ]
-            (
-                ParamList* iParam,
-                string layerId
-            )
-            {
-                getLog() -> begin( "Layer loading" ) -> prm( "id", layerId );
-
-                /* Create layer if its in used list */
-                auto used = ParamList::create();
-
-                /* Layer creates */
-                if( getApplication() -> layerIsUsing( layerId ) )
-                {
-                    auto layer = addLayer( layerId );
-                    loadLayer( layer, iParam );
-                }
-                else
-                {
-                    getLog()
-                    -> trace( "Layer skiped" )
-                    -> prm( "id", layerId )
-                    ;
-                }
-
-                used -> destroy();
-                getLog() -> end();
-                return false;
-            }
-        );
-        /* End of layers load */
-        getLog() -> end( "" );
-
-        loadNerves( config );
-    }
-
-    /* Update last update net moment */
-    setLastUpdate( aConfig -> getInt( Path{ "lastUpdate" }, 0 ));
-
-    getLayerList() -> dump();
-    getNerveList() -> dump();
-
-    if( getVersion() != nextVersion )
-    {
-        /* Set nextVersion in to version */
-        setVersion( nextVersion );
-
-        /* Drop tick */
-        tick = 0;
-
-        /* Clear tick stat for each layer */
-        getLayerList() -> loop
-        (
-            []
-            ( void* aLayer )
-            {
-                auto layer = ( Layer* ) aLayer;
-                layer -> getChartTick() -> clear();
-                return false;
-            }
-        );
-    }
-
-    return this;
-}
-
-
-
-/*
-    Load nerves from config
-*/
-Net* Net::loadNerves
-(
-    ParamList* aConfig
-)
-{
-    /* Nerves */
-    auto jsonNerves = aConfig -> getObject( Path{ "nerves" });
-    if( jsonNerves != NULL )
-    {
-        auto layers = getLayerList();
-        auto nerves = getNerveList();
-
-        getLog() -> begin( "Nerves load" );
-
-        jsonNerves -> loop
-        (
-            [ this, &layers, &nerves ]
-            ( Param* aItem )
-            {
-                /* Check the json layer */
-                if( aItem -> isObject() )
-                {
-                    auto jsonNerve = aItem -> getObject();
-
-                    auto fromList = jsonNerve -> getStringVector( Path{ "idFrom" });
-                    auto toList = jsonNerve -> getStringVector( Path{ "idTo" });
-
-                    auto bindType = bindTypeFromString
-                    (
-                        jsonNerve -> getString( Path{ "bindType" } )
-                    );
-                    auto nerveType = nerveTypeFromString
-                    (
-                        jsonNerve -> getString( Path{ "nerveType" } )
-                    );
-                    auto nerveDelete = jsonNerve -> getBool( Path{ "delete" });
-                    auto windowSize = ParamPoint::point3i
-                    (
-                        jsonNerve -> getObject( Path{ "windowSize" } )
-                    );
-
-                    /* Cartesian product for form and to */
-                    for( auto& idFrom:fromList )
-                    {
-                        for( auto& idTo:toList )
-                        {
-                            /* Find the layers */
-                            auto from = layers -> getById( idFrom );
-                            auto to = layers -> getById( idTo );
-
-                            if( from != NULL && to != NULL )
-                            {
-                                auto nerve = nerves -> find
-                                (
-                                    idFrom,
-                                    idTo,
-                                    bindType
-                                );
-
-                                if( nerve != NULL )
-                                {
-                                    if
-                                    (
-                                        nerve -> getParent() != from ||
-                                        nerve -> getChild() != to ||
-                                        nerve -> getBindType() != bindType ||
-                                        nerve -> getNerveType() != nerveType ||
-                                        nerveDelete
-                                    )
-                                    {
-                                        deleteNerve( nerve );
-                                        nerve = NULL;
-                                    }
-                                    else
-                                    {
-                                        getLog()
-                                        -> trace( "Nerve exists" )
-                                        -> prm( "idFrom", idFrom )
-                                        -> prm( "idTo", idTo )
-                                        -> lineEnd()
-                                        ;
-                                    }
-                                }
-
-                                if( nerve == NULL && !nerveDelete )
-                                {
-                                    auto minW = jsonNerve
-                                    -> getDouble( Path{ "minWeight" } , 0 );
-                                    auto maxW = jsonNerve
-                                    -> getDouble( Path{ "maxWeight" }, 0 );
-                                    auto mulW = config
-                                    -> getDouble( Path{ "weightMul" }, 1 );
-                                    nerve = createNerve
-                                    (
-                                        from,
-                                        to,
-                                        nerveType,
-                                        bindType,
-                                        windowSize
-                                    )
-                                    -> setMinWeight
-                                    (
-                                        minW * ( minW == maxW ? 1 : mulW )
-                                    )
-                                    -> setMaxWeight
-                                    (
-                                        maxW * ( minW == maxW ? 1 : mulW )
-                                    )
-                                    ;
-                                    if( !nerve -> isOk() )
-                                    {
-                                        getLog()
-                                        -> warning( "Nerve error" )
-                                        -> prm( "code", nerve -> getCode() )
-                                        -> lineEnd();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                getLog()
-                                -> info( "Nerve skiped" )
-                                -> prm( "idFrom", idFrom )
-                                -> prm( "idTo", idTo )
-                                -> lineEnd()
-                                ;
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-        );
-
-        getLog()
-        -> end();
-
-    } /* End of nerves load */
-    return this;
-}
-
-
 
 /******************************************************************************
     Pathes
@@ -943,20 +659,6 @@ string Net::getNetVersionPath
     (
         "ver/" + aVersion  + ( aSubpath == "" ? "" : "/" + aSubpath )
     );
-}
-
-
-
-/*
-    Return net config
-*/
-string Net::getNetConfigFile
-(
-    /* Specific version */
-    string aVersion
-)
-{
-    return getNetVersionPath( "net.json", aVersion );
 }
 
 
@@ -1047,123 +749,6 @@ Layer* Net::getLayerById
 
 
 
-
-
-/*
-    Load layer structure from param list
-    Layer may be resized.
-*/
-Net* Net::loadLayer
-(
-    Layer*      aLayer,
-    ParamList*  aParams     /* Layer configuration */
-)
-{
-    if( this -> isOk() )
-    {
-        /* Set ID from params */
-        if
-        (
-            aLayer-> getId()
-            != aParams -> getString( Path{ "id" }, aLayer -> getId() )
-        )
-        {
-            setCode( "InvalidLayerID" );
-        }
-        else
-        {
-            /* Apply neuron functions for layer */
-            aLayer
-            -> setFrontFunc
-            (
-                strToFunc
-                (
-                    aParams -> getString( Path{ "functionFront" }, "NULL" )
-                )
-            )
-            -> setBackFunc
-            (
-                strToFunc
-                (
-                    aParams -> getString( Path{ "functionBack" }, "NULL" )
-                )
-            )
-            -> setBackFuncOut
-            (
-                strToFunc( aParams -> getString( Path{ "functionBackOut" }, "NULL" ))
-            )
-            -> setErrorCalc
-            (
-                errorCalcFromString( aParams -> getString( Path{ "errorCalc" }, "NONE" ))
-            )
-            -> setWeightCalc
-            (
-                weightCalcFromString( aParams -> getString( Path{ "weightCalc" }, "NONE" ))
-            );
-
-            /* Set Size from params */
-            auto size = ParamPoint::point3i( aParams -> getObject( Path{ "size" } ));
-
-            /* Remove nerves for size changed layer */
-            if( size.mulComponents() != aLayer -> getCount() )
-            {
-                getNerveList() -> removeByLayer( aLayer );
-            }
-
-            /* Update layer */
-            aLayer -> setSize( size );
-
-            /* Apply default values */
-            auto values = aParams -> getObject( Path{ "values" } );
-            if( values != nullptr )
-            {
-                aLayer -> fillValue( values );
-            }
-
-            calcLayerValuesHash( aLayer );
-        }
-    }
-    return this;
-}
-
-
-
-/*
-    Remove layers absent in the list
-*/
-Net* Net::purgeLayers
-(
-    ParamList* aLayers  /* List from config */
-)
-{
-    lock();
-    /* Build pure list */
-    vector <string> purgeList = {};
-    getLayerList() -> loop
-    (
-        [ &purgeList, &aLayers ]
-        ( void* iLayer )
-        {
-            auto layerId = (( Layer* ) iLayer ) -> getId();
-            if( aLayers -> getObject( Path{ layerId }) == NULL )
-            {
-                /* Layer is absent in the config and must be delete */
-                purgeList.push_back( layerId );
-            }
-            return false;
-        }
-    );
-
-    /* Delete layers */
-    auto c = purgeList.size();
-    for( long unsigned int i = 0; i<c; i++ )
-    {
-        deleteLayer( purgeList[ i ] );
-    }
-
-    unlock();
-    return this;
-}
 
 
 
@@ -1383,27 +968,6 @@ bool Net::valuesAndErrorsFromLimb
 
 
 
-bool Net::syncToLimb
-(
-    Limb* targetLimb
-)
-{
-    auto result = targetLimb -> getLastUpdate() != getLastUpdate();
-    if( result )
-    {
-        /* Rebuild structure layers and nervs */
-        copyTo( targetLimb, true /*, aSkip, false */ );
-        /* Apply specific config */
-        targetLimb -> onAfterReconfig( getConfig() );
-        /* Commit last  update */
-        targetLimb -> setLastUpdate( getLastUpdate() );
-    }
-    return result;
-}
-
-
-
-
 Net* Net::addChangedValues
 (
     Layer* aLayer
@@ -1447,16 +1011,6 @@ Net* Net::setId
 {
     id = aValue;
     return this;
-}
-
-
-
-/*
-    Return parent net version
-*/
-string Net::getParentVersion()
-{
-    return config -> getString( Path{ "version", "parent" });
 }
 
 
@@ -1556,63 +1110,5 @@ Net* Net::stat()
             return false;
         }
     );
-    return this;
-}
-
-
-
-/*
-    Return the tick of the net
-*/
-long long int Net::getTick()
-{
-    lock();
-    auto result = tick;
-    unlock();
-    return result;
-}
-
-
-
-/*
-    Return the tick of the net
-*/
-Net* Net::setTick
-(
-    /* Tick number */
-    long long int a
-)
-{
-    lock();
-    tick = a;
-    unlock();
-    return this;
-}
-
-
-
-/*
-    Return the tick of the net
-*/
-Net* Net::incTick()
-{
-    lock();
-    tick++;
-    unlock();
-    return this;
-}
-
-
-
-Rnd* Net::getRnd()
-{
-    return rnd;
-}
-
-
-
-Net* Net::setRndSeedFromConfig()
-{
-    getRnd() -> setSeed( config -> getInt( Path{ "seed" } ) );
     return this;
 }

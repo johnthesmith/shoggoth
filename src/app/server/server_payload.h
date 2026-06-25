@@ -6,9 +6,8 @@
 
 /* Local libraries */
 #include "../../../../../lib/core/payload_engine.h"
-
-#include "../../shoggoth/shoggoth_rpc_server.h"
-
+#include "shoggoth_rpc_server.h"
+#include "../shoggoth_application.h"
 
 using namespace std;
 
@@ -74,6 +73,14 @@ class ServerPayload : public PayloadEngine
 
         ServerPayload* help();
 
+
+        ShoggothApplication* getApplication() override
+        {
+            return static_cast<ShoggothApplication*>
+            (
+                Payload::getApplication()
+            );
+        }
 
 
         /******************************************************************************
